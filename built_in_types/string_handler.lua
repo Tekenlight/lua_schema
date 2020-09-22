@@ -6,17 +6,17 @@ __string_handler_class.valid = function(s)
 end
 
 __string_handler_class.to_xmlua = function(s)
-	if (0 == __string_handler_class.valid(s)) then error("Input not a string"); end
+	if (false == __string_handler_class.valid(s)) then error("Input not a string"); end
 	return s;
 end
 
 __string_handler_class.to_xml_string = function(s)
-	if (0 == __string_handler_class.valid(s)) then error("Input not a string"); end
+	if (false == __string_handler_class.valid(s)) then error("Input not a string"); end
 	return s;
 end
 
 __string_handler_class.to_json_string = function(s)
-	if (0 == __string_handler_class.valid(s)) then error("Input not a string"); end
+	if (false == __string_handler_class.valid(s)) then error("Input not a string"); end
 	return "\""..s.."\"";
 end
 
