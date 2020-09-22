@@ -11,6 +11,11 @@ _basic_string_handler.properties = {
 
 _basic_string_handler.type_handler = _handlers[_basic_string_handler.properties.schema_type];
 
+_basic_string_handler.get_unique_namespaces_declared = function(string_handler)
+	local namespaces = { [string_handler.properties.q_name.ns] = ""};
+	return namespaces;
+end
+
 local mt = { __index = _basic_string_handler; } ;
 local _factory = {};
 

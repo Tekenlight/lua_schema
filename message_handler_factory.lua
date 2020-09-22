@@ -14,18 +14,38 @@ local json_tag_formatter = function(message_handler_instance)
 	return tag
 end
 
+local gather_namespace_declarations = function(message_handler_instance)
+	local ns = message_handler_instance:get_unique_namespaces_declared();
+	local i = 1;
+	local nw_prefix = '';
+	for n,v in pairs(ns) do
+		ns_prefix = "ns"..i;
+		ns[n] = ns_prefix;
+		i= i+1;
+	end
+	return ns;
+end
+
+local get_attributes = function(message_handler_instance, content)
+	local attributes = content._attr;
+	return attributes;
+end
+
 local simple_type_to_xml = function(message_handler_instance, content)
 	basic_stuff.assert_input_is_simple_type(content);
 	local doc = {};
 	if (not basic_stuff.is_nil(message_handler_instance.properties.q_name.ns)) then
 		-- Probably logic of DECL also should be dynamically deduced
-		local prefix = 'ns1'; -- TODO This prefix should be generated within a context
+		local ns = gather_namespace_declarations(message_handler_instance);
+		local prefix = ns[message_handler_instance.properties.q_name.ns];
 		doc[1]=prefix..":"..message_handler_instance.properties.q_name.local_name;
-		if (message_handler_instance.properties.q_name.ns_type == 'DECL') then
-			doc[2] = { ["xmlns:"..prefix] = message_handler_instance.properties.q_name.ns };
-		else
-			doc[2] = {};
+		doc[2] = {};
+		for n,v in pairs(ns) do
+			doc[2]["xmlns:"..prefix] = n;
 		end
+		--[[ TBD: Determine how to handle declarations differently from references of namespaces
+		--if (message_handler_instance.properties.q_name.ns_type == 'DECL') then
+		end ]]--
 	else
 		doc[1] = message_handler_instance.properties.q_name.local_name;
 		doc[2] = {};
@@ -36,11 +56,6 @@ local simple_type_to_xml = function(message_handler_instance, content)
 	return s;
 end
 
-local get_attributes = function(message_handler_instance, content)
-	local attributes = content._attr;
-	return attributes;
-end
-
 local complex_type_simple_content_to_xml = function(message_handler_instance, content)
 	local doc = {};
 
@@ -48,13 +63,16 @@ local complex_type_simple_content_to_xml = function(message_handler_instance, co
 
 	if (not basic_stuff.is_nil(message_handler_instance.properties.q_name.ns)) then
 		-- Probably logic of DECL also should be dynamically deduced
-		local prefix = 'ns1'; -- TODO This prefix should be generated within a context
+		local ns = gather_namespace_declarations(message_handler_instance);
+		local prefix = ns[message_handler_instance.properties.q_name.ns];
 		doc[1]=prefix..":"..message_handler_instance.properties.q_name.local_name;
-		if (message_handler_instance.properties.q_name.ns_type == 'DECL') then
-			doc[2] = { ["xmlns:"..prefix] = message_handler_instance.properties.q_name.ns };
-		else
-			doc[2] = {};
+		doc[2] = {};
+		for n,v in pairs(ns) do
+			doc[2]["xmlns:"..prefix] = n;
 		end
+		--[[ TBD: Determine how to handle declarations differently from references of namespaces
+		--if (message_handler_instance.properties.q_name.ns_type == 'DECL') then
+		end ]]--
 	else
 		doc[1] = message_handler_instance.properties.q_name.local_name;
 		doc[2] = {};
@@ -103,8 +121,8 @@ function _message_handler_factory:get_message_handler(type_name)
 			end
 		end
 	end
+
 	return message_handler;
 end
-
 
 return _message_handler_factory;
