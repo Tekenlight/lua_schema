@@ -6,7 +6,7 @@ local _message_handler_factory = {};
 
 local json_tag_formatter = function(message_handler_instance)
 	local tag = '';
-	if (message_handler_instance.properties.q_name.ns ~= nil) then
+	if (not basic_stuff.is_nil(message_handler_instance.properties.q_name.ns)) then
 		tag = "{"..message_handler_instance.properties.q_name.ns.."}"..message_handler_instance.properties.q_name.local_name;
 	else
 		tag =  message_handler_instance.properties.q_name.local_name;
@@ -17,14 +17,14 @@ end
 local simple_type_to_xml = function(message_handler_instance, content)
 	basic_stuff.assert_input_is_simple_type(content);
 	local doc = {};
-	if (message_handler_instance.properties.q_name.ns ~= nil) then
+	if (not basic_stuff.is_nil(message_handler_instance.properties.q_name.ns)) then
 		-- Probably logic of DECL also should be dynamically deduced
 		local prefix = 'ns1'; -- TODO This prefix should be generated within a context
 		doc[1]=prefix..":"..message_handler_instance.properties.q_name.local_name;
 		if (message_handler_instance.properties.q_name.ns_type == 'DECL') then
 			doc[2] = { ["xmlns:"..prefix] = message_handler_instance.properties.q_name.ns };
 		else
-			dic[2] = {};
+			doc[2] = {};
 		end
 	else
 		doc[1] = message_handler_instance.properties.q_name.local_name;
@@ -46,13 +46,14 @@ local complex_type_simple_content_to_xml = function(message_handler_instance, co
 
 	basic_stuff.assert_input_is_simple_content(content);
 
-	if (message_handler_instance.properties.q_name.ns ~= nil) then
+	if (not basic_stuff.is_nil(message_handler_instance.properties.q_name.ns)) then
 		-- Probably logic of DECL also should be dynamically deduced
 		local prefix = 'ns1'; -- TODO This prefix should be generated within a context
-		doc[2] = {};
 		doc[1]=prefix..":"..message_handler_instance.properties.q_name.local_name;
 		if (message_handler_instance.properties.q_name.ns_type == 'DECL') then
 			doc[2] = { ["xmlns:"..prefix] = message_handler_instance.properties.q_name.ns };
+		else
+			doc[2] = {};
 		end
 	else
 		doc[1] = message_handler_instance.properties.q_name.local_name;

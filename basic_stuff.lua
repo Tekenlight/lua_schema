@@ -15,4 +15,11 @@ basic_stuff.assert_input_is_simple_type = function(content)
 	end
 end
 
+basic_stuff.is_nil = function(s)
+	if (s==nil or s=='') then
+		return true;
+	end
+	return false;
+end
+
 return basic_stuff;
