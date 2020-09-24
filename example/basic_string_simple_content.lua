@@ -17,6 +17,18 @@ function _basic_string_simple_content_handler:get_attributes(content)
 	return attributes;
 end
 
+function _basic_string_simple_content_handler:is_valid(content)
+	if (not basic_stuff.is_simple_content(content)) then
+		print("111");
+		return false;
+	end
+	if (not self.type_handler:is_valid(content._contained_value)) then
+		print("222");
+		return false;
+	end
+	return true;
+end
+
 function _basic_string_simple_content_handler:to_xmlua(ns, s)
 	local doc = {};
 	if (not basic_stuff.is_nil(self.properties.q_name.ns)) then

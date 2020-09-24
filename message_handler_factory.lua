@@ -48,30 +48,34 @@ end
 function _message_handler_factory:get_message_handler(type_name)
 	local message_handler_base = require(type_name);
 	local message_handler = message_handler_base.new_instance();
-	message_handler.to_json = function (self_instance, content)
-		if (self_instance.properties.element_type == 'S') then
+	function message_handler:to_json(content)
+		if (self.properties.element_type == 'S') then
 			basic_stuff.assert_input_is_simple_type(content);
 		else
-			if (self_instance.properties.content_type=='S') then
+			if (self.properties.content_type=='S') then
 				basic_stuff.assert_input_is_simple_content(content);
 			else
 				return "THIS IS NOT YET SUPPORTED"; -- TBD
 			end
 		end
-		return to_json_string(self_instance, content);
+		return to_json_string(self, content);
 	end
 
-	message_handler.to_xml = function(self_instance, content)
-		if (self_instance.properties.element_type == 'S') then
+	function message_handler:to_xml(content)
+		if (self.properties.element_type == 'S') then
 			basic_stuff.assert_input_is_simple_type(content);
 		else
-			if (self_instance.properties.content_type=='S') then
+			if (self.properties.content_type=='S') then
 				basic_stuff.assert_input_is_simple_content(content);
 			else
 				return "THIS IS NOT YET SUPPORTED"; -- TBD
 			end
 		end
-		return to_xml_string(self_instance, content);
+		if (not self:is_valid(content)) then
+			error("Passed content is not valid");
+			return false;
+		end
+		return to_xml_string(self, content);
 	end
 
 	return message_handler;

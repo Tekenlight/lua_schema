@@ -12,6 +12,18 @@ _basic_string_nons_handler.properties = {
 
 _basic_string_nons_handler.type_handler = _handlers[_basic_string_nons_handler.properties.schema_type];
 
+function _basic_string_nons_handler:is_valid(content)
+	if (not basic_stuff.is_simple_type(content)) then
+	print("HHHHH");
+		return false;
+	end
+	if (not self.type_handler:is_valid(content)) then
+	print("IIIII");
+		return false;
+	end
+	return true;
+end
+
 function _basic_string_nons_handler:get_attributes(content)
 	local attributes = {};
 	return attributes;
