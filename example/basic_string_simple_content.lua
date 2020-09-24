@@ -1,4 +1,5 @@
 _handlers = require("built_in_types.handlers");
+basic_stuff = require("basic_stuff");
 
 local _basic_string_simple_content_handler = {};
 _basic_string_simple_content_handler.properties = {
@@ -11,8 +12,34 @@ _basic_string_simple_content_handler.properties = {
 
 _basic_string_simple_content_handler.type_handler = _handlers[_basic_string_simple_content_handler.properties.schema_type];
 
-_basic_string_simple_content_handler.get_unique_namespaces_declared = function(string_handler)
-	local namespaces = { [string_handler.properties.q_name.ns] = ""};
+function _basic_string_simple_content_handler:get_attributes(content)
+	local attributes = content._attr;
+	return attributes;
+end
+
+function _basic_string_simple_content_handler:to_xmlua(ns, s)
+	local doc = {};
+	if (not basic_stuff.is_nil(self.properties.q_name.ns)) then
+		local prefix = ns[self.properties.q_name.ns];
+		doc[1]=prefix..":"..self.properties.q_name.local_name;
+		doc[2] = {};
+		for n,v in pairs(ns) do
+			doc[2]["xmlns:"..prefix] = n;
+		end
+	else
+		doc[1] = self.properties.q_name.local_name;
+		doc[2] = {};
+	end
+	local attr = self:get_attributes(s);
+	for n,v in pairs(attr) do
+		doc[2][n] = tostring(v);
+	end
+	doc[3]=self.type_handler:to_xmlua(s._contained_value);
+	return doc;
+end
+
+function _basic_string_simple_content_handler:get_unique_namespaces_declared()
+	local namespaces = { [self.properties.q_name.ns] = ""};
 	return namespaces;
 end
 

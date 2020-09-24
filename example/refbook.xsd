@@ -1,0 +1,20 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://example.com" xmlns:bk="http://example.com">
+	<xsd:simpleType name="one">
+		<xsd:restriction base="xsd:string">
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="two">
+		<xsd:restriction base="bk:one">
+			<xsd:maxLength value="8"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="book" type="bk:BookType"/>
+	<xsd:complexType name ="BookType">
+		<xsd:sequence>
+			<!--xsd:element name="restype"  type="bk:two"/-->
+			<xsd:element name="author"   type="xsd:string"/>
+			<xsd:element name="title"    type="xsd:string"/>
+			<xsd:element name="genre"    type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

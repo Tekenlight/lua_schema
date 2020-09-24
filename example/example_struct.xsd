@@ -1,0 +1,11 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://example.com" xmlns:bk="http://example.com">
+	<xsd:element name="book" type="bk:example_struct"/>
+	<xsd:complexType name ="example_struct">
+		<xsd:sequence>
+			<!--xsd:element name="restype"  type="bk:two"/-->
+			<xsd:element name="author"   type="xsd:string"/>
+			<xsd:element name="title"    type="xsd:string"/>
+			<xsd:element name="genre"    type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>
