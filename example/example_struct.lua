@@ -13,8 +13,8 @@ local _subelement_properties = {
 					 content_type = 'S',
 					 schema_type = '{http://www.w3.org/2001/XMLSchema}string',
 				     generate_name = 'author',
-				     minOccurs = 1,
-				     maxOccurs = 1,
+				     min_occurs = 1,
+				     max_occurs = 1,
 				     type_handler = _built_int_type_handlers['{http://www.w3.org/2001/XMLSchema}string'] },
 	['{}title'] = { q_name={ns='', ns_type='',  local_name='title'},
 					 element_type = 'S',
@@ -69,9 +69,11 @@ function _struct_handler:is_valid(s)
 	
 	for n,v in pairs(self.properties.generated_subelments) do
 		if (basic_stuff.is_nil(s[n])) then
-			return false;
+			if (self.properties.generated_subelments[n].min_occurs > 0) then
+				return false;
+			end
 		else
-			if (not self.properties.generated_subelments[n].type_handler.is_valid(s[n])) then
+			if (not self.properties.generated_subelments[n].type_handler:is_valid(s[n])) then
 				return false;
 			end
 		end
@@ -81,9 +83,6 @@ function _struct_handler:is_valid(s)
 end
 
 function _struct_handler:to_xmlua(s)
-end
-
-function _struct_handler:to_xml_string(s)
 end
 
 function _struct_handler:get_unique_namespaces_declared(struct_handler)
