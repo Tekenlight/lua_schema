@@ -3,7 +3,7 @@ basic_stuff = require("basic_stuff");
 
 local _basic_string_nons_handler = {};
 _basic_string_nons_handler.properties = {
-	q_name={ns='', ns_type='',  local_name="basic_string"},
+	q_name={ns='', ns_type='',  local_name="basic_string_nons"},
 	element_type="S",
 	content_type="S",
 	schema_type = "{http://www.w3.org/2001/XMLSchema}string",

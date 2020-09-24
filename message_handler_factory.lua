@@ -5,6 +5,7 @@ local basic_stuff = require("basic_stuff");
 local _message_handler_factory = {};
 
 local get_jspon_tag = function(message_handler_instance)
+	--[[
 	local tag = '';
 	if (not basic_stuff.is_nil(message_handler_instance.properties.q_name.ns)) then
 		tag = "{"..message_handler_instance.properties.q_name.ns.."}"..message_handler_instance.properties.q_name.local_name;
@@ -12,6 +13,8 @@ local get_jspon_tag = function(message_handler_instance)
 		tag =  message_handler_instance.properties.q_name.local_name;
 	end
 	return tag
+	]]--
+	return message_handler_instance.properties.q_name.local_name;
 end
 
 local gather_namespace_declarations = function(message_handler_instance)
@@ -57,6 +60,10 @@ function _message_handler_factory:get_message_handler(type_name)
 			else
 				return "THIS IS NOT YET SUPPORTED"; -- TBD
 			end
+		end
+		if (not self:is_valid(content)) then
+			error("Passed content is not valid");
+			return false;
 		end
 		return to_json_string(self, content);
 	end
