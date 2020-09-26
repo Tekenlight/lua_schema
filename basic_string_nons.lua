@@ -14,11 +14,9 @@ _basic_string_nons_handler.type_handler = require("org.w3.2001.XMLSchema.string_
 
 function _basic_string_nons_handler:is_valid(content)
 	if (not basic_stuff.is_simple_type(content)) then
-	print("HHHHH");
 		return false;
 	end
 	if (not self.type_handler:is_valid(content)) then
-	print("IIIII");
 		return false;
 	end
 	return true;
