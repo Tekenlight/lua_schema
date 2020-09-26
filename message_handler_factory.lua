@@ -48,7 +48,7 @@ local to_json_string = function(message_handler_instance, content)
 	return json_output;
 end
 
-function _message_handler_factory:get_message_handler(name_space, type_name)
+function _message_handler_factory:get_message_handler(type_name, name_space)
 	local message_handler_base = basic_stuff.get_type_handler(name_space, type_name);
 	local message_handler = message_handler_base.new_instance();
 	function message_handler:to_json(content)

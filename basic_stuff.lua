@@ -98,8 +98,13 @@ basic_stuff.package_name_from_uri = function(s)
 end
 
 basic_stuff.get_type_handler = function(ns, tn)
-	local package = basic_stuff.package_name_from_uri(ns);
-	local handler = package.."."..tn
+	local handler = nil;
+	if (ns ~= nil) then
+		local package = basic_stuff.package_name_from_uri(ns);
+		handler = package.."."..tn
+	else
+		handler = tn;
+	end
 	return require(handler);
 end
 

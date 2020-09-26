@@ -1,7 +1,7 @@
 #!/opt/local/bin/lua
 mhf = require("message_handler_factory")
 
-basic_string = mhf:get_message_handler("http://example.com", "basic_string_simple_content");
+basic_string = mhf:get_message_handler("basic_string_simple_content", "http://example.com");
 
 local content = {_attr = { ["attr1"] = 123, ["attr2"] = 456 }, _contained_value = "hello" }
 print(basic_string:to_xml(content))
