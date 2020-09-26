@@ -58,7 +58,7 @@ function _message_handler_factory:get_message_handler(type_name, name_space)
 			if (self.properties.content_type=='S') then
 				basic_stuff.assert_input_is_simple_content(content);
 			else
-				return "THIS IS NOT YET SUPPORTED"; -- TBD
+				--return "THIS IS NOT YET SUPPORTED"; -- TBD
 			end
 		end
 		if (not self:is_valid(content)) then
@@ -75,7 +75,7 @@ function _message_handler_factory:get_message_handler(type_name, name_space)
 			if (self.properties.content_type=='S') then
 				basic_stuff.assert_input_is_simple_content(content);
 			else
-				return "THIS IS NOT YET SUPPORTED"; -- TBD
+				--return "THIS IS NOT YET SUPPORTED"; -- TBD
 			end
 		end
 		if (not self:is_valid(content)) then
