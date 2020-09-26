@@ -9,9 +9,8 @@ basic_stuff.is_simple_content = function(content)
 			(type(content._contained_value) ~= 'boolean') and (type(content._contained_value) ~= 'number')) then
 		return false;
 	end
-	for n,v in pairs(content) do
+	for n,_ in pairs(content) do
 		if ((n ~= "_attr") and (n~= "_contained_value")) then
-			print("HERE");
 			return false;
 		end
 	end
@@ -82,16 +81,16 @@ basic_stuff.package_name_from_uri = function(s)
 		end
 		hpc = hpc - 1;
 	end
-	for n,v in pairs(pp) do
+	for _,__ in pairs(pp) do
 		i = i+1;
-		up[i] = v;
+		up[i] = __;
 	end
 	local package_name = "";
-	for i, v in pairs(up) do
+	for i, __ in pairs(up) do
 		if (i == 1) then
-			package_name = v;
+			package_name = __;
 		else
-			package_name = package_name.."."..v;
+			package_name = package_name.."."..__;
 		end
 	end
 	return package_name;
