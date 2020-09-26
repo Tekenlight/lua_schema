@@ -10,7 +10,7 @@ _basic_string_simple_content_handler.properties = {
 	attr = {}
 };
 
-_basic_string_simple_content_handler.type_handler = _handlers[_basic_string_simple_content_handler.properties.schema_type];
+_basic_string_simple_content_handler.type_handler = require("org.w3.2001.XMLSchema.string_handler");
 
 function _basic_string_simple_content_handler:get_attributes(content)
 	local attributes = content._attr;

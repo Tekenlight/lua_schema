@@ -10,7 +10,7 @@ _basic_string_nons_handler.properties = {
 	attr = nil
 };
 
-_basic_string_nons_handler.type_handler = _handlers[_basic_string_nons_handler.properties.schema_type];
+_basic_string_nons_handler.type_handler = require("org.w3.2001.XMLSchema.string_handler");
 
 function _basic_string_nons_handler:is_valid(content)
 	if (not basic_stuff.is_simple_type(content)) then

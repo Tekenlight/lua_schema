@@ -15,7 +15,8 @@ local _subelement_properties = {
 				     generate_name = 'author',
 				     min_occurs = 1,
 				     max_occurs = 1,
-				     type_handler = _built_int_type_handlers['{http://www.w3.org/2001/XMLSchema}string'] },
+				     type_handler = require("org.w3.2001.XMLSchema.string_handler")
+				 },
 	['{}title'] = { q_name={ns='', ns_type='',  local_name='title'},
 					 element_type = 'S',
 					 content_type = 'S',
@@ -23,7 +24,8 @@ local _subelement_properties = {
 				     generate_name = 'title',
 				     min_occurs = 1,
 				     max_occurs = 1,
-				     type_handler = _built_int_type_handlers['{http://www.w3.org/2001/XMLSchema}string'] },
+				     type_handler = require("org.w3.2001.XMLSchema.string_handler")
+				 },
 	['{}genre'] = { q_name={ns='', ns_type='',  local_name='genre'},
 					 element_type = 'S',
 					 content_type = 'S',
@@ -31,7 +33,8 @@ local _subelement_properties = {
 				     generate_name = 'genre',
 				     min_occurs = 1,
 				     max_occurs = 1,
-				     type_handler = _built_int_type_handlers['{http://www.w3.org/2001/XMLSchema}string'] },
+				     type_handler = require("org.w3.2001.XMLSchema.string_handler")
+				 }
 };
 
 local _generated_sub_elements = {
