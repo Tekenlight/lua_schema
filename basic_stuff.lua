@@ -97,4 +97,10 @@ basic_stuff.package_name_from_uri = function(s)
 	return package_name;
 end
 
+basic_stuff.get_type_handler = function(ns, tn)
+	local package = basic_stuff.package_name_from_uri(ns);
+	local handler = package.."."..tn
+	return require(handler);
+end
+
 return basic_stuff;

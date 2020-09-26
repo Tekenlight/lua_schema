@@ -1,4 +1,3 @@
-_built_int_type_handlers = require('built_in_types.handlers');
 local basic_stuff = require("basic_stuff");
 
 local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
