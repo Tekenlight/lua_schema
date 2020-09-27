@@ -2,7 +2,7 @@
 	<xsd:complexType name="basic_string_simple_content_type">
 		<xsd:simpleContent>
 			<xsd:extension base="xsd:string">
-				<xsd:attribute name="attr1" type="xsd:string"/>
+				<xsd:attribute name="attr1" type="xsd:int"/>
 				<xsd:attribute name="attr2" type="xsd:string"/>
 			</xsd:extension>
 		</xsd:simpleContent>
