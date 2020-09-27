@@ -151,7 +151,7 @@ basic_stuff.struct_is_valid = function(struct_handler, content)
 	end
 
 	for n,v in pairs(content) do
-		if (struct_handler.properties.generated_subelments[n] == nil) then
+		if ((n ~= "_attr") and (struct_handler.properties.generated_subelments[n] == nil)) then
 			return false;
 		end
 	end
