@@ -1,14 +1,12 @@
 local basic_stuff = require("basic_stuff");
 
 local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-							 [1] = '{}one_deeper',
-							 [2] = '{}author',
-							 [3] = '{}title',
-							 [4] = '{}genre'
+							 [1] = '{}author',
+							 [2] = '{}title',
+							 [3] = '{}genre'
 						 };
 
 local _subelement_properties = {
-	['{}one_deeper'] = (require('com.example.struct2')):new_element_instance('', 'one_deeper', 'one_deeper', 1, 1),
 	['{}author'] = {
 		properties = {
 			q_name={ns='', ns_type='',  local_name='author'},
@@ -60,7 +58,6 @@ local _subelement_properties = {
 };
 
 local _generated_sub_elements = {
-	['one_deeper'] = _subelement_properties['{}one_deeper'],
 	['author'] = _subelement_properties['{}author'],
 	['title'] = _subelement_properties['{}title'],
 	['genre'] = _subelement_properties['{}genre']
@@ -68,10 +65,11 @@ local _generated_sub_elements = {
 
 local _struct_handler = {};
 _struct_handler.properties = {
-	q_name={ns='http://example.com', ns_type='DECL',  local_name='example_struct'},
+	type_name={ns='http://example.com', ns_type='DECL',  local_name='struct2`'},
+	q_name={ns='', ns_type='',  local_name=''},
 	element_type='C',
 	content_type='C',
-	schema_type = '{http://example.com}example_struct', --[[This is the name of the type
+	schema_type = '{http://example.com}struct2', --[[This is the name of the type
 														    can be implicit (in which case the
 															name is derived) or explicit in the
 															schema definition
@@ -99,6 +97,18 @@ local _factory = {};
 function _factory:new_instance()
 	local o = {};
 	o = setmetatable(o, mt);
+	return o;
+end
+
+function _factory:new_element_instance(ns, name, generated_name, min_occurs, max_occurs)
+	local o = {};
+	o = setmetatable(o, mt);
+	o.properties.q_name.ns = ns;
+	o.properties.q_name.ns_type = 'DECL';
+	o.properties.q_name.local_name = name;
+	o.properties.generated_name = generated_name;
+	o.properties.min_occurs = min_occurs;
+	o.properties.max_occurs = max_occurs;
 	return o;
 end
 

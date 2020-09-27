@@ -158,7 +158,7 @@ basic_stuff.struct_is_valid = function(struct_handler, content)
 	
 	for n,v in pairs(struct_handler.properties.generated_subelments) do
 		if (basic_stuff.is_nil(content[n])) then
-			if (struct_handler.properties.generated_subelments[n].min_occurs > 0) then
+			if (struct_handler.properties.generated_subelments[n].properties.min_occurs > 0) then
 				return false;
 			end
 		else
@@ -249,6 +249,7 @@ basic_stuff.complex_type_simple_content_to_xmlua = function(schema_type_handler,
 end
 
 basic_stuff.struct_to_xmlua = function(schema_type_handler, ns, content)
+	print('from '..schema_type_handler.properties.q_name.local_name);
 	local doc = {};
 	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
 		local prefix = ns[schema_type_handler.properties.q_name.ns];
