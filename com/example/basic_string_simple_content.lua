@@ -8,30 +8,36 @@ _basic_string_simple_content_handler.properties = {
 	content_type="S",
 	schema_type = "{http://www.w3.org/2001/XMLSchema}string",
 	attr = {
-		["{}attr1"] = {
-			properties = {
-				q_name = { ns = '', ns_type = 'DECL', local_name = "attr1" },
-				schema_type = "{http://www.w3.org/2001/XMLSchema}int",
-				default = '',
-				fixed = '',
-				use = 'O', -- One of 'O' - Optional, 'P' - Prohibited, 'R' - Required
-				form = 'U', -- Q - Qualified, U - Unqualified
-				generated_name = 'attr1'
+		_attr_properties = {
+			["{}attr1"] = {
+				properties = {
+					q_name = { ns = '', ns_type = 'DECL', local_name = "attr1" },
+					schema_type = "{http://www.w3.org/2001/XMLSchema}int",
+					default = '',
+					fixed = '',
+					use = 'O', -- One of 'O' - Optional, 'P' - Prohibited, 'R' - Required
+					form = 'U', -- Q - Qualified, U - Unqualified
+					generated_name = 'attr1'
+				},
+				type_handler = require("org.w3.2001.XMLSchema.int_handler")
 			},
-			type_handler = require("org.w3.2001.XMLSchema.int_handler")
-		},
-		["{}attr2"] = {
-			properties = {
-				q_name = { ns = '', ns_type = 'DECL', local_name = "attr2" },
-				schema_type = "{http://www.w3.org/2001/XMLSchema}string",
-				default = '',
-				fixed = '',
-				use = 'R', -- One of 'O' - Optional, 'P' - Prohibited, 'R' - Required
-				form = 'U', -- Q - Qualified, U - Unqualified
-				generated_name = 'attr2'
+			["{}attr2"] = {
+				properties = {
+					q_name = { ns = '', ns_type = 'DECL', local_name = "attr2" },
+					schema_type = "{http://www.w3.org/2001/XMLSchema}string",
+					default = '',
+					fixed = '',
+					use = 'R', -- One of 'O' - Optional, 'P' - Prohibited, 'R' - Required
+					form = 'U', -- Q - Qualified, U - Unqualified
+					generated_name = 'attr2'
+				},
+				type_handler = require("org.w3.2001.XMLSchema.string_handler")
 			},
-			type_handler = require("org.w3.2001.XMLSchema.string_handler")
 		},
+		_generated_attr = {
+			["attr1"] = "{}attr1",
+			["attr2"] = "{}attr2"
+		}
 	}
 };
 
@@ -42,7 +48,7 @@ function _basic_string_simple_content_handler:get_attributes(ns, content)
 	--return attributes;
 	local attributes = {};
 	if (self.properties.attr ~= nil) then
-		for n,v in pairs(self.properties.attr) do
+		for n,v in pairs(self.properties.attr._attr_properties) do
 			if (nil ~= content._attr[v.properties.generated_name]) then
 				if (v.properties.form == 'U') then
 					attributes[v.properties.q_name.local_name] =
@@ -60,11 +66,12 @@ end
 
 function _basic_string_simple_content_handler:is_valid(content)
 	if (not basic_stuff.is_simple_content(content)) then
-		print("111");
 		return false;
 	end
 	if (not self.type_handler:is_valid(content._contained_value)) then
-		print("222");
+		return false;
+	end
+	if (not basic_stuff.attributes_are_valid(self.properties.attr, content._attr)) then
 		return false;
 	end
 	return true;

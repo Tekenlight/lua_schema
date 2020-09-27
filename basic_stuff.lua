@@ -107,4 +107,27 @@ basic_stuff.get_type_handler = function(ns, tn)
 	return require(handler);
 end
 
+basic_stuff.attributes_are_valid = function(attrs_def, attrs)
+	if (attrs == nil) then return false end
+	for n,v in pairs(attrs_def._attr_properties) do
+		if ((v.properties.use == 'R') and (attrs[v.properties.generated_name] == nil)) then
+			return false;
+		elseif ((v.properties.use == 'P') and (attrs[v.properties.generated_name] ~= nil)) then
+			return false;
+		elseif((not basic_stuff.is_nil(v.properties.fixed)) and
+						(tostring(attrs[v.properties.generated_name]) ~= v.properties.fixed)) then
+			return false;
+		elseif ((attrs[v.properties.generated_name] ~= nil) and
+						(not v.type_handler:is_valid(attrs[v.properties.generated_name]))) then
+			return false;
+		end
+	end
+	for n,v in pairs(attrs) do
+		if (attrs_def._generated_attr[n] == nil) then
+			return false
+		end
+	end
+	return true;
+end
+
 return basic_stuff;
