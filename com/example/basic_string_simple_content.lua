@@ -7,13 +7,54 @@ _basic_string_simple_content_handler.properties = {
 	element_type="C",
 	content_type="S",
 	schema_type = "{http://www.w3.org/2001/XMLSchema}string",
-	attr = {}
+	attr = {
+		["{}attr1"] = {
+			properties = {
+				q_name = { ns = '', ns_type = 'DECL', local_name = "attr1" },
+				schema_type = "{http://www.w3.org/2001/XMLSchema}int",
+				default = '',
+				fixed = '',
+				use = 'O', -- One of 'O' - Optional, 'P' - Prohibited, 'R' - Required
+				form = 'U', -- Q - Qualified, U - Unqualified
+				generated_name = 'attr1'
+			},
+			type_handler = require("org.w3.2001.XMLSchema.int_handler")
+		},
+		["{}attr2"] = {
+			properties = {
+				q_name = { ns = '', ns_type = 'DECL', local_name = "attr2" },
+				schema_type = "{http://www.w3.org/2001/XMLSchema}string",
+				default = '',
+				fixed = '',
+				use = 'R', -- One of 'O' - Optional, 'P' - Prohibited, 'R' - Required
+				form = 'U', -- Q - Qualified, U - Unqualified
+				generated_name = 'attr2'
+			},
+			type_handler = require("org.w3.2001.XMLSchema.string_handler")
+		},
+	}
 };
 
 _basic_string_simple_content_handler.type_handler = require("org.w3.2001.XMLSchema.string_handler");
 
-function _basic_string_simple_content_handler:get_attributes(content)
-	local attributes = content._attr;
+function _basic_string_simple_content_handler:get_attributes(ns, content)
+	--local attributes = content._attr;
+	--return attributes;
+	local attributes = {};
+	if (self.properties.attr ~= nil) then
+		for n,v in pairs(self.properties.attr) do
+			if (nil ~= content._attr[v.properties.generated_name]) then
+				if (v.properties.form == 'U') then
+					attributes[v.properties.q_name.local_name] =
+									v.type_handler:to_schema_type(ns, content._attr[v.properties.generated_name]);
+				else
+					local ns_prefix = ns[v.properties.q_name.ns]
+					attributes[ns_prefix..":"..v.properties.q_name.local_name] =
+									v.type_handler:to_schema_type(ns, content._attr[v.properties.generated_name]);
+				end
+			end
+		end
+	end
 	return attributes;
 end
 
@@ -42,11 +83,11 @@ function _basic_string_simple_content_handler:to_xmlua(ns, s)
 		doc[1] = self.properties.q_name.local_name;
 		doc[2] = {};
 	end
-	local attr = self:get_attributes(s);
+	local attr = self:get_attributes(ns, s);
 	for n,v in pairs(attr) do
 		doc[2][n] = tostring(v);
 	end
-	doc[3]=self.type_handler:to_xmlua(s._contained_value);
+	doc[3]=self.type_handler:to_xmlua(ns, s._contained_value);
 	return doc;
 end
 

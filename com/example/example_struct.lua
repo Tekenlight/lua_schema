@@ -7,135 +7,159 @@ local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -
 						 };
 
 local _subelement_properties = {
-	['{}author'] = { q_name={ns='', ns_type='',  local_name='author'},
-					 element_type = 'S',
-					 content_type = 'S',
-					 schema_type = '{http://www.w3.org/2001/XMLSchema}string',
-				     generated_name = 'author',
-				     min_occurs = 1,
-				     max_occurs = 1,
-				     type_handler = require("org.w3.2001.XMLSchema.string_handler"),
-					 get_attributes = function(self, content) return {} end,
-					 is_valid = function (self, content)
-						if (not basic_stuff.is_simple_type(content)) then
-							return false;
-						end
-						if (not self.type_handler:is_valid(content)) then
-							return false;
-						end
-						return true;
-					 end,
-					 get_unique_namespaces_declared = function (self)
-						local namespaces = { [self.q_name.ns] = ""};
-						return namespaces;
-					 end,
-					 to_xmlua = function (self, ns, s)
-						local doc = {};
-						if (not basic_stuff.is_nil(self.q_name.ns)) then
-							local prefix = ns[self.q_name.ns];
-							doc[1]=prefix..":"..self.q_name.local_name;
-							doc[2] = {};
-							for n,v in pairs(ns) do
-								doc[2]["xmlns:"..prefix] = n;
-							end
-						else
-							doc[1] = self.q_name.local_name;
-							doc[2] = {};
-						end
-						local attr = self:get_attributes(content);
-						for n,v in pairs(attr) do
-							doc[2][n] = tostring(v);
-						end
-						doc[3]=self.type_handler:to_xmlua(ns, s);
-						return doc;
-					 end,
-				 },
-	['{}title'] = { q_name={ns='', ns_type='',  local_name='title'},
-					 element_type = 'S',
-					 content_type = 'S',
-					 schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
-				     generated_name = 'title',
-				     min_occurs = 1,
-				     max_occurs = 1,
-				     type_handler = require("org.w3.2001.XMLSchema.string_handler"),
-					 get_attributes = function(self, content) return {} end,
-					 is_valid = function (self, content)
-						if (not basic_stuff.is_simple_type(content)) then
-							return false;
-						end
-						if (not self.type_handler:is_valid(content)) then
-							return false;
-						end
-						return true;
-					 end,
-					 get_unique_namespaces_declared = function (self)
-						local namespaces = { [self.q_name.ns] = ""};
-						return namespaces;
-					 end,
-					 to_xmlua = function (self, ns, s)
-						local doc = {};
-						if (not basic_stuff.is_nil(self.q_name.ns)) then
-							local prefix = ns[self.q_name.ns];
-							doc[1]=prefix..":"..self.q_name.local_name;
-							doc[2] = {};
-							for n,v in pairs(ns) do
-								doc[2]["xmlns:"..prefix] = n;
-							end
-						else
-							doc[1] = self.q_name.local_name;
-							doc[2] = {};
-						end
-						local attr = self:get_attributes(content);
-						for n,v in pairs(attr) do
-							doc[2][n] = tostring(v);
-						end
-						doc[3]=self.type_handler:to_xmlua(ns, s);
-						return doc;
-					 end,
-				 },
-	['{}genre'] = { q_name={ns='', ns_type='',  local_name='genre'},
-					 element_type = 'S',
-					 content_type = 'S',
-					 schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
-				     generated_name = 'genre',
-				     min_occurs = 1,
-				     max_occurs = 1,
-				     type_handler = require("org.w3.2001.XMLSchema.string_handler"),
-					 get_attributes = function(self, content) return {} end,
-					 is_valid = function (self, content)
-						if (not basic_stuff.is_simple_type(content)) then
-							return false;
-						end
-						if (not self.type_handler:is_valid(content)) then
-							return false;
-						end
-						return true;
-					 end,
-					 get_unique_namespaces_declared = function (self)
-						local namespaces = { [self.q_name.ns] = ""};
-						return namespaces;
-					 end,
-					 to_xmlua = function (self, ns, s)
-						local doc = {};
-						if (not basic_stuff.is_nil(self.q_name.ns)) then
-							local prefix = ns[self.q_name.ns];
-							doc[1]=prefix..":"..self.q_name.local_name;
-							doc[2] = {};
-							for n,v in pairs(ns) do
-								doc[2]["xmlns:"..prefix] = n;
-							end
-						else
-							doc[1] = self.q_name.local_name;
-							doc[2] = {};
-						end
-						local attr = self:get_attributes(content);
-						for n,v in pairs(attr) do
-							doc[2][n] = tostring(v);
-						end
-						doc[3]=self.type_handler:to_xmlua(ns, s);
-						return doc;
-					 end,
-				 }
+	['{}author'] = {
+		properties = {
+			q_name={ns='', ns_type='',  local_name='author'},
+				element_type = 'S',
+				content_type = 'S',
+				schema_type = '{http://www.w3.org/2001/XMLSchema}string',
+				generated_name = 'author',
+				min_occurs = 1,
+				max_occurs = 1,
+		},
+		type_handler = require("org.w3.2001.XMLSchema.string_handler"),
+		get_attributes = function(self, ns, content) return {} end,
+			is_valid = function (self, content)
+			if (not basic_stuff.is_simple_type(content)) then
+				return false;
+			end
+			if (not self.type_handler:is_valid(content)) then
+				return false;
+			end
+			return true;
+		end,
+		get_unique_namespaces_declared = function (self)
+			local namespaces = nil;
+			if (not basic_stuff.is_nil(self.properties.q_name.ns)) then
+				namespaces = { [self.properties.q_name.ns] = ""};
+			else
+				namespaces = {}
+			end
+			return namespaces;
+		end,
+		to_xmlua = function (self, ns, s)
+			local doc = {};
+			if (not basic_stuff.is_nil(self.properties.q_name.ns)) then
+				local prefix = ns[self.properties.q_name.ns];
+				doc[1]=prefix..":"..self.properties.q_name.local_name;
+				doc[2] = {};
+				for n,v in pairs(ns) do
+					doc[2]["xmlns:"..prefix] = n;
+				end
+			else
+				doc[1] = self.properties.q_name.local_name;
+				doc[2] = {};
+			end
+			local attr = self:get_attributes(ns, content);
+			for n,v in pairs(attr) do
+				doc[2][n] = tostring(v);
+			end
+			doc[3]=self.type_handler:to_xmlua(ns, s);
+			return doc;
+		end,
+	},
+	['{}title'] = {
+		properties = {
+			q_name={ns='', ns_type='',  local_name='title'},
+			element_type = 'S',
+			content_type = 'S',
+			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
+			generated_name = 'title',
+			min_occurs = 1,
+			max_occurs = 1,
+		},
+		type_handler = require("org.w3.2001.XMLSchema.string_handler"),
+		get_attributes = function(self, ns, content) return {} end,
+		is_valid = function (self, content)
+			if (not basic_stuff.is_simple_type(content)) then
+				return false;
+			end
+			if (not self.type_handler:is_valid(content)) then
+				return false;
+			end
+			return true;
+		end,
+		get_unique_namespaces_declared = function (self)
+			local namespaces = nil;
+			if (not basic_stuff.is_nil(self.properties.q_name.ns)) then
+				namespaces = { [self.properties.q_name.ns] = ""};
+			else
+				namespaces = {}
+			end
+			return namespaces;
+		end,
+		to_xmlua = function (self, ns, s)
+			local doc = {};
+			if (not basic_stuff.is_nil(self.properties.q_name.ns)) then
+				local prefix = ns[self.properties.q_name.ns];
+				doc[1]=prefix..":"..self.properties.q_name.local_name;
+				doc[2] = {};
+				for n,v in pairs(ns) do
+					doc[2]["xmlns:"..prefix] = n;
+				end
+			else
+				doc[1] = self.properties.q_name.local_name;
+				doc[2] = {};
+			end
+			local attr = self:get_attributes(ns, content);
+			for n,v in pairs(attr) do
+				doc[2][n] = tostring(v);
+			end
+			doc[3]=self.type_handler:to_xmlua(ns, s);
+			return doc;
+		end,
+	},
+	['{}genre'] = {
+		properties = {
+			q_name= { ns='', ns_type='',  local_name='genre'},
+			element_type = 'S',
+			content_type = 'S',
+			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
+			generated_name = 'genre',
+			min_occurs = 1,
+			max_occurs = 1,
+		},
+		type_handler = require("org.w3.2001.XMLSchema.string_handler"),
+		get_attributes = function(self, ns, content) return {} end,
+		is_valid = function (self, content)
+			if (not basic_stuff.is_simple_type(content)) then
+				return false;
+			end
+			if (not self.type_handler:is_valid(content)) then
+				return false;
+			end
+			return true;
+		end,
+		get_unique_namespaces_declared = function (self)
+			local namespaces = nil;
+			if (not basic_stuff.is_nil(self.properties.q_name.ns)) then
+				namespaces = { [self.properties.q_name.ns] = ""};
+			else
+				namespaces = {}
+			end
+			return namespaces;
+		end,
+		to_xmlua = function (self, ns, s)
+			local doc = {};
+			if (not basic_stuff.is_nil(self.properties.q_name.ns)) then
+				local prefix = ns[self.properties.q_name.ns];
+				doc[1]=prefix..":"..self.properties.q_name.local_name;
+				doc[2] = {};
+				for n,v in pairs(ns) do
+					doc[2]["xmlns:"..prefix] = n;
+				end
+			else
+				doc[1] = self.properties.q_name.local_name;
+				doc[2] = {};
+			end
+			local attr = self:get_attributes(ns, content);
+			for n,v in pairs(attr) do
+				doc[2][n] = tostring(v);
+			end
+			doc[3]=self.type_handler:to_xmlua(ns, s);
+			return doc;
+		end,
+	}
 };
 
 local _generated_sub_elements = {
@@ -146,7 +170,7 @@ local _generated_sub_elements = {
 
 local _struct_handler = {};
 _struct_handler.properties = {
-	q_name={ns='http://example.com', ns_type='DECL',  local_name='struct_handler'},
+	q_name={ns='http://example.com', ns_type='DECL',  local_name='example_struct'},
 	element_type='C',
 	content_type='C',
 	schema_type = '{http://example.com}example_struct', --[[This is the name of the type
@@ -186,8 +210,22 @@ function _struct_handler:is_valid(s)
 	return true;
 end
 
-function _struct_handler:get_attributes(content)
+function _struct_handler:get_attributes(ns, content)
 	local attributes = {};
+	if (self.properties.attr ~= nil) then
+		for n,v in pairs(self.properties.attr) do
+			if (nil ~= content._attr[v.properties.generated_name]) then
+				if (v.properties.form == 'U') then
+					attributes[v.properties.q_name.local_name] =
+									v.type_handler:to_xml_string(ns, content._attr[v.properties.generated_name]);
+				else
+					local ns_prefix = ns[v.properties.q_name.ns]
+					attributes[ns_prefix..":"..v.properties.q_name.local_name] =
+									v.type_handler:to_xml_string(ns, content._attr[v.properties.generated_name]);
+				end
+			end
+		end
+	end
 	return attributes;
 end
 
@@ -204,13 +242,14 @@ function _struct_handler:to_xmlua(ns, content)
 		doc[1] = self.properties.q_name.local_name;
 		doc[2] = {};
 	end
-	local attr = self:get_attributes(content);
+	local attr = self:get_attributes(ns, content);
 	for n,v in pairs(attr) do
 		doc[2][n] = tostring(v);
 	end
 	local i = 3;
-	for _, v in pairs(self.properties.subelement_properties) do
-		doc[i] = v:to_xmlua(content[v.generated_name])
+	for _, v in ipairs(self.properties.declared_subelements) do
+		doc[i] = self.properties.subelement_properties[v]:to_xmlua(ns,
+					content[self.properties.subelement_properties[v].properties.generated_name])
 		i = i + 1;
 	end
 	return doc;
@@ -218,6 +257,13 @@ end
 
 function _struct_handler:get_unique_namespaces_declared(struct_handler)
 	local namespaces = { [self.properties.q_name.ns] = ""};
+	for _, v in ipairs(self.properties.declared_subelements) do
+			local child_ns = {};
+			child_ns = self.properties.subelement_properties[v]:get_unique_namespaces_declared();
+			for n,v in pairs(child_ns) do
+				namespaces[n] = v;
+			end
+	end
 	return namespaces;
 end
 

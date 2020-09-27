@@ -22,7 +22,7 @@ function _basic_string_handler:is_valid(content)
 	return true;
 end
 
-function _basic_string_handler:get_attributes(content)
+function _basic_string_handler:get_attributes(ns, content)
 	local attributes = {};
 	return attributes;
 end
@@ -40,11 +40,11 @@ function _basic_string_handler:to_xmlua(ns, s)
 		doc[1] = self.properties.q_name.local_name;
 		doc[2] = {};
 	end
-	local attr = self:get_attributes(content);
+	local attr = self:get_attributes(ns, content);
 	for n,v in pairs(attr) do
 		doc[2][n] = tostring(v);
 	end
-	doc[3]=self.type_handler:to_xmlua(s);
+	doc[3]=self.type_handler:to_xmlua(ns, s);
 	return doc;
 end
 

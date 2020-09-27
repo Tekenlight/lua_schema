@@ -20,11 +20,12 @@ end
 local gather_namespace_declarations = function(message_handler_instance)
 	local ns = message_handler_instance:get_unique_namespaces_declared();
 	local i = 1;
-	local nw_prefix = '';
+	local ns_prefix = '';
 	for n,v in pairs(ns) do
 		ns_prefix = "ns"..i;
 		ns[n] = ns_prefix;
 		i= i+1;
+		ns_prefix = nil
 	end
 	return ns;
 end
