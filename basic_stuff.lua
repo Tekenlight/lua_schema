@@ -108,26 +108,192 @@ basic_stuff.get_type_handler = function(ns, tn)
 end
 
 basic_stuff.attributes_are_valid = function(attrs_def, attrs)
-	if (attrs == nil) then return false end
+	local inp_attr = nil;
+	if (attrs == nil) then
+		inp_attr = {}
+	else
+		inp_attr = attrs
+	end
 	for n,v in pairs(attrs_def._attr_properties) do
-		if ((v.properties.use == 'R') and (attrs[v.properties.generated_name] == nil)) then
+		if ((v.properties.use == 'R') and (inp_attr[v.properties.generated_name] == nil)) then
 			return false;
-		elseif ((v.properties.use == 'P') and (attrs[v.properties.generated_name] ~= nil)) then
+		elseif ((v.properties.use == 'P') and (inp_attr[v.properties.generated_name] ~= nil)) then
 			return false;
 		elseif((not basic_stuff.is_nil(v.properties.fixed)) and
-						(tostring(attrs[v.properties.generated_name]) ~= v.properties.fixed)) then
+						(tostring(inp_attr[v.properties.generated_name]) ~= v.properties.fixed)) then
 			return false;
-		elseif ((attrs[v.properties.generated_name] ~= nil) and
-						(not v.type_handler:is_valid(attrs[v.properties.generated_name]))) then
+		elseif ((inp_attr[v.properties.generated_name] ~= nil) and
+						(not v.type_handler:is_valid(inp_attr[v.properties.generated_name]))) then
 			return false;
 		end
 	end
-	for n,v in pairs(attrs) do
+	for n,v in pairs(inp_attr) do
 		if (attrs_def._generated_attr[n] == nil) then
 			return false
 		end
 	end
 	return true;
+end
+
+basic_stuff.simple_is_valid = function(struct_handler, content)
+	if (not basic_stuff.is_simple_type(content)) then
+		return false;
+	end
+	if (not struct_handler.type_handler:is_valid(content)) then
+		return false;
+	end
+	return true;
+end
+
+basic_stuff.struct_is_valid = function(struct_handler, content)
+	if (type(content) ~= 'table') then
+		return false;
+	end
+
+	for n,v in pairs(content) do
+		if (struct_handler.properties.generated_subelments[n] == nil) then
+			return false;
+		end
+	end
+	
+	for n,v in pairs(struct_handler.properties.generated_subelments) do
+		if (basic_stuff.is_nil(content[n])) then
+			if (struct_handler.properties.generated_subelments[n].min_occurs > 0) then
+				return false;
+			end
+		else
+			if (not struct_handler.properties.generated_subelments[n].type_handler:is_valid(content[n])) then
+				return false;
+			end
+		end
+	end
+	if (not basic_stuff.attributes_are_valid(struct_handler.properties.attr, content._attr)) then
+		return false;
+	end
+
+	return true;
+end
+
+basic_stuff.complex_type_simple_content_is_valid = function(schema_tpype_handler, content)
+	if (not basic_stuff.is_simple_content(content)) then
+		return false;
+	end
+	if (not schema_tpype_handler.type_handler:is_valid(content._contained_value)) then
+		return false;
+	end
+	if (not basic_stuff.attributes_are_valid(schema_tpype_handler.properties.attr, content._attr)) then
+		return false;
+	end
+	return true;
+end
+
+basic_stuff.get_attributes = function(schema_type_handler, ns, content)
+	local attributes = {};
+	if (schema_type_handler.properties.attr ~= nil) then
+		for n,v in pairs(schema_type_handler.properties.attr._attr_properties) do
+			if (nil ~= content._attr[v.properties.generated_name]) then
+				if (v.properties.form == 'U') then
+					attributes[v.properties.q_name.local_name] =
+									v.type_handler:to_schema_type(ns, content._attr[v.properties.generated_name]);
+				else
+					local ns_prefix = ns[v.properties.q_name.ns]
+					attributes[ns_prefix..":"..v.properties.q_name.local_name] =
+									v.type_handler:to_schema_type(ns, content._attr[v.properties.generated_name]);
+				end
+			end
+		end
+	end
+	return attributes;
+end
+
+function basic_stuff.simple_to_xmlua(schema_type_handler, ns, content)
+	local doc = {};
+	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
+		local prefix = ns[schema_type_handler.properties.q_name.ns];
+		doc[1]=prefix..":"..schema_type_handler.properties.q_name.local_name;
+		doc[2] = {};
+		for n,v in pairs(ns) do
+			doc[2]["xmlns:"..prefix] = n;
+		end
+	else
+		doc[1] = schema_type_handler.properties.q_name.local_name;
+		doc[2] = {};
+	end
+	local attr = schema_type_handler:get_attributes(ns, content);
+	for n,v in pairs(attr) do
+		doc[2][n] = tostring(v);
+	end
+	doc[3]=schema_type_handler.type_handler:to_xmlua(ns, content);
+	return doc;
+end
+
+basic_stuff.complex_type_simple_content_to_xmlua = function(schema_type_handler, ns, content)
+	local doc = {};
+	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
+		local prefix = ns[schema_type_handler.properties.q_name.ns];
+		doc[1]=prefix..":"..schema_type_handler.properties.q_name.local_name;
+		doc[2] = {};
+		for n,v in pairs(ns) do
+			doc[2]["xmlns:"..prefix] = n;
+		end
+	else
+		doc[1] = schema_type_handler.properties.q_name.local_name;
+		doc[2] = {};
+	end
+	local attr = schema_type_handler:get_attributes(ns, content);
+	for n,v in pairs(attr) do
+		doc[2][n] = tostring(v);
+	end
+	doc[3]=schema_type_handler.type_handler:to_xmlua(ns, content._contained_value);
+	return doc;
+end
+
+basic_stuff.struct_to_xmlua = function(schema_type_handler, ns, content)
+	local doc = {};
+	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
+		local prefix = ns[schema_type_handler.properties.q_name.ns];
+		doc[1]=prefix..":"..schema_type_handler.properties.q_name.local_name;
+		doc[2] = {};
+		for n,v in pairs(ns) do
+			doc[2]["xmlns:"..prefix] = n;
+		end
+	else
+		doc[1] = schema_type_handler.properties.q_name.local_name;
+		doc[2] = {};
+	end
+	local attr = schema_type_handler:get_attributes(ns, content);
+	for n,v in pairs(attr) do
+		doc[2][n] = tostring(v);
+	end
+	local i = 3;
+	for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
+		doc[i] = schema_type_handler.properties.subelement_properties[v]:to_xmlua(ns,
+					content[schema_type_handler.properties.subelement_properties[v].properties.generated_name])
+		i = i + 1;
+	end
+	return doc;
+end
+
+basic_stuff.complex_get_unique_namespaces_declared = function(schema_type_handler)
+	local namespaces = { [schema_type_handler.properties.q_name.ns] = ""};
+	for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
+			local child_ns = {};
+			child_ns = schema_type_handler.properties.subelement_properties[v]:get_unique_namespaces_declared();
+			for n,v in pairs(child_ns) do
+				namespaces[n] = v;
+			end
+	end
+	return namespaces;
+end
+
+basic_stuff.simple_get_unique_namespaces_declared = function(schema_type_handler)
+	local namespaces = nil;
+	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
+		namespaces = { [schema_type_handler.properties.q_name.ns] = ""};
+	else
+		namespaces = {}
+	end
+	return namespaces;
 end
 
 return basic_stuff;

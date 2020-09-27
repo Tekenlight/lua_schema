@@ -42,66 +42,10 @@ _basic_string_simple_content_handler.properties = {
 };
 
 _basic_string_simple_content_handler.type_handler = require("org.w3.2001.XMLSchema.string_handler");
-
-function _basic_string_simple_content_handler:get_attributes(ns, content)
-	--local attributes = content._attr;
-	--return attributes;
-	local attributes = {};
-	if (self.properties.attr ~= nil) then
-		for n,v in pairs(self.properties.attr._attr_properties) do
-			if (nil ~= content._attr[v.properties.generated_name]) then
-				if (v.properties.form == 'U') then
-					attributes[v.properties.q_name.local_name] =
-									v.type_handler:to_schema_type(ns, content._attr[v.properties.generated_name]);
-				else
-					local ns_prefix = ns[v.properties.q_name.ns]
-					attributes[ns_prefix..":"..v.properties.q_name.local_name] =
-									v.type_handler:to_schema_type(ns, content._attr[v.properties.generated_name]);
-				end
-			end
-		end
-	end
-	return attributes;
-end
-
-function _basic_string_simple_content_handler:is_valid(content)
-	if (not basic_stuff.is_simple_content(content)) then
-		return false;
-	end
-	if (not self.type_handler:is_valid(content._contained_value)) then
-		return false;
-	end
-	if (not basic_stuff.attributes_are_valid(self.properties.attr, content._attr)) then
-		return false;
-	end
-	return true;
-end
-
-function _basic_string_simple_content_handler:to_xmlua(ns, s)
-	local doc = {};
-	if (not basic_stuff.is_nil(self.properties.q_name.ns)) then
-		local prefix = ns[self.properties.q_name.ns];
-		doc[1]=prefix..":"..self.properties.q_name.local_name;
-		doc[2] = {};
-		for n,v in pairs(ns) do
-			doc[2]["xmlns:"..prefix] = n;
-		end
-	else
-		doc[1] = self.properties.q_name.local_name;
-		doc[2] = {};
-	end
-	local attr = self:get_attributes(ns, s);
-	for n,v in pairs(attr) do
-		doc[2][n] = tostring(v);
-	end
-	doc[3]=self.type_handler:to_xmlua(ns, s._contained_value);
-	return doc;
-end
-
-function _basic_string_simple_content_handler:get_unique_namespaces_declared()
-	local namespaces = { [self.properties.q_name.ns] = ""};
-	return namespaces;
-end
+_basic_string_simple_content_handler.get_attributes = basic_stuff.get_attributes;
+_basic_string_simple_content_handler.is_valid = basic_stuff.complex_type_simple_content_is_valid;
+_basic_string_simple_content_handler.to_xmlua = basic_stuff.complex_type_simple_content_to_xmlua;
+_basic_string_simple_content_handler.get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
 
 local mt = { __index = _basic_string_simple_content_handler; } ;
 local _factory = {};

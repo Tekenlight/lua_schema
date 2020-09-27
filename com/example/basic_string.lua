@@ -11,47 +11,10 @@ _basic_string_handler.properties = {
 };
 
 _basic_string_handler.type_handler = require("org.w3.2001.XMLSchema.string_handler");
-
-function _basic_string_handler:is_valid(content)
-	if (not basic_stuff.is_simple_type(content)) then
-		return false;
-	end
-	if (not self.type_handler:is_valid(content)) then
-		return false;
-	end
-	return true;
-end
-
-function _basic_string_handler:get_attributes(ns, content)
-	local attributes = {};
-	return attributes;
-end
-
-function _basic_string_handler:to_xmlua(ns, s)
-	local doc = {};
-	if (not basic_stuff.is_nil(self.properties.q_name.ns)) then
-		local prefix = ns[self.properties.q_name.ns];
-		doc[1]=prefix..":"..self.properties.q_name.local_name;
-		doc[2] = {};
-		for n,v in pairs(ns) do
-			doc[2]["xmlns:"..prefix] = n;
-		end
-	else
-		doc[1] = self.properties.q_name.local_name;
-		doc[2] = {};
-	end
-	local attr = self:get_attributes(ns, content);
-	for n,v in pairs(attr) do
-		doc[2][n] = tostring(v);
-	end
-	doc[3]=self.type_handler:to_xmlua(ns, s);
-	return doc;
-end
-
-function _basic_string_handler:get_unique_namespaces_declared()
-	local namespaces = { [self.properties.q_name.ns] = ""};
-	return namespaces;
-end
+_basic_string_handler.is_valid = basic_stuff.simple_is_valid;
+_basic_string_handler.get_attributes = basic_stuff.get_attributes;
+_basic_string_handler.to_xmlua = basic_stuff.simple_to_xmlua;
+_basic_string_handler.get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
 
 local mt = { __index = _basic_string_handler; } ;
 local _factory = {};
