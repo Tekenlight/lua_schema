@@ -2,7 +2,6 @@
 	<xsd:element name="example_struct" type="bk:example_struct_type"/>
 	<xsd:complexType name ="example_struct_type">
 		<xsd:sequence>
-			<!--xsd:element name="restype"  type="bk:two"/-->
 			<xsd:element name="author"   type="xsd:string"/>
 			<xsd:element name="title"    type="xsd:string"/>
 			<xsd:element name="genre"    type="xsd:string"/>

@@ -18,7 +18,7 @@ local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -
 
 local _subelement_properties = {
 	['{}one_level_deeper'] = (require('com.example.struct2')):new_instance_as_element(
-						{ns='', local_name = 'one_level_deeper', generated_name = 'one_level_deeper', min_occurs = 1, max_occurs = 1}),
+						{ns='http://example1.com', local_name = 'one_level_deeper', generated_name = 'one_level_deeper', min_occurs = 1, max_occurs = 1}),
 	['{}author'] = {
 		properties = {
 			q_name={ns='', ns_type='',  local_name='author'},

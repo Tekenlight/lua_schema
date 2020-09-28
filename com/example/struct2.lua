@@ -97,6 +97,20 @@ _struct_handler.type_handler = _struct_handler;
 local mt = { __index = _struct_handler; } ;
 local _factory = {};
 
+function _factory:new_instance_as_root(local_element_properties)
+	local o = {};
+	o = setmetatable(o, mt);
+	o.properties = nil;
+	o.properties = basic_stuff.deepcopy(mt.properties);
+	o.properties.type_name = nil;
+	o.properties.q_name = {};
+	o.properties.q_name.ns = local_element_properties.ns;
+	o.properties.q_name.ns_type = 'DECL';
+	o.properties.q_name.local_name = local_element_properties.local_name;
+	o.properties.generated_name = local_element_properties.generated_name;
+	return o;
+end
+
 function _factory:new_instance_as_element(local_element_properties)
 	local o = {};
 	o = setmetatable(o, mt);
