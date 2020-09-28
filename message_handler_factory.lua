@@ -18,21 +18,22 @@ local get_jspon_tag = function(message_handler_instance)
 end
 
 local gather_namespace_declarations = function(message_handler_instance)
-	local ns = message_handler_instance:get_unique_namespaces_declared();
+	local lns = message_handler_instance:get_unique_namespaces_declared();
 	local i = 1;
 	local ns_prefix = '';
-	for n,v in pairs(ns) do
+	for n,v in pairs(lns) do
 		ns_prefix = "ns"..i;
-		ns[n] = ns_prefix;
+		lns[n] = ns_prefix;
 		i= i+1;
 		ns_prefix = nil
 	end
-	return ns;
+	local nns = { ns = lns, ns_decl_printed = false }
+	return nns;
 end
 
 local to_xml_string = function(message_handler_instance, content)
-	local ns = gather_namespace_declarations(message_handler_instance);
-	local doc = message_handler_instance:to_xmlua(ns, content);
+	local nns = gather_namespace_declarations(message_handler_instance);
+	local doc = message_handler_instance:to_xmlua(nns, content);
 	local document = xmlua.XML.build(doc);
 	local s = document:to_xml();
 	return s;
@@ -59,7 +60,7 @@ function _message_handler_factory:get_message_handler(type_name, name_space)
 			if (self.properties.content_type=='S') then
 				basic_stuff.assert_input_is_simple_content(content);
 			else
-				--return "THIS IS NOT YET SUPPORTED"; -- TBD
+				basic_stuff.assert_input_is_complex_content(content);
 			end
 		end
 		if (not self:is_valid(content)) then
@@ -76,7 +77,7 @@ function _message_handler_factory:get_message_handler(type_name, name_space)
 			if (self.properties.content_type=='S') then
 				basic_stuff.assert_input_is_simple_content(content);
 			else
-				--return "THIS IS NOT YET SUPPORTED"; -- TBD
+				basic_stuff.assert_input_is_complex_content(content);
 			end
 		end
 		if (not self:is_valid(content)) then

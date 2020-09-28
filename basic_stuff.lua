@@ -17,8 +17,22 @@ basic_stuff.is_simple_content = function(content)
 	return true;
 end
 
+basic_stuff.assert_input_is_complex_content = function(content)
+	if ((content == nil) or (type(content) ~= 'table')) then
+		error("Input is not a valid lua struture of simplecontent");
+		return false;
+	elseif ((content._attr ~= nil) and (type(content._attr) ~= 'table')) then
+		error("Input is not a valid lua struture of complex type");
+		return false;
+	end
+	return true;
+end
+
 basic_stuff.assert_input_is_simple_content = function(content)
-	if ((content._attr == nil) or (type(content._attr) ~= 'table')) then
+	if ((content == nil) or (type(content) ~= 'table')) then
+		error("Input is not a valid lua struture of simplecontent");
+		return false;
+	elseif ((content._attr ~= nil) and (type(content._attr) ~= 'table')) then
 		error("Input is not a valid lua struture of simplecontent");
 		return false;
 	elseif ((content._contained_value ~= nil) and (type(content._contained_value) ~= 'string') and
@@ -96,10 +110,10 @@ basic_stuff.package_name_from_uri = function(s)
 	return package_name;
 end
 
-basic_stuff.get_type_handler = function(ns, tn)
+basic_stuff.get_type_handler = function(namespace, tn)
 	local handler = nil;
-	if (ns ~= nil) then
-		local package = basic_stuff.package_name_from_uri(ns);
+	if (namespace ~= nil) then
+		local package = basic_stuff.package_name_from_uri(namespace);
 		handler = package.."."..tn
 	else
 		handler = tn;
@@ -187,18 +201,18 @@ basic_stuff.complex_type_simple_content_is_valid = function(schema_tpype_handler
 	return true;
 end
 
-basic_stuff.get_attributes = function(schema_type_handler, ns, content)
+basic_stuff.get_attributes = function(schema_type_handler, nns, content)
 	local attributes = {};
 	if (schema_type_handler.properties.attr ~= nil) then
 		for n,v in pairs(schema_type_handler.properties.attr._attr_properties) do
 			if (nil ~= content._attr[v.properties.generated_name]) then
 				if (v.properties.form == 'U') then
 					attributes[v.properties.q_name.local_name] =
-									v.type_handler:to_schema_type(ns, content._attr[v.properties.generated_name]);
+									v.type_handler:to_schema_type(nns, content._attr[v.properties.generated_name]);
 				else
-					local ns_prefix = ns[v.properties.q_name.ns]
+					local ns_prefix = nns.ns[v.properties.q_name.ns]
 					attributes[ns_prefix..":"..v.properties.q_name.local_name] =
-									v.type_handler:to_schema_type(ns, content._attr[v.properties.generated_name]);
+									v.type_handler:to_schema_type(nns, content._attr[v.properties.generated_name]);
 				end
 			end
 		end
@@ -206,68 +220,84 @@ basic_stuff.get_attributes = function(schema_type_handler, ns, content)
 	return attributes;
 end
 
-function basic_stuff.simple_to_xmlua(schema_type_handler, ns, content)
+function basic_stuff.simple_to_xmlua(schema_type_handler, nns, content)
 	local doc = {};
 	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
-		local prefix = ns[schema_type_handler.properties.q_name.ns];
+		local prefix = nns.ns[schema_type_handler.properties.q_name.ns];
 		doc[1]=prefix..":"..schema_type_handler.properties.q_name.local_name;
 		doc[2] = {};
-		for n,v in pairs(ns) do
-			doc[2]["xmlns:"..prefix] = n;
+		if (not nns.ns_decl_printed) then
+			nns.ns_decl_printed = true;
+			for n,v in pairs(nns.ns) do
+				if (not basic_stuff.is_nil(n)) then
+					local prefix = v;
+					doc[2]["xmlns:"..prefix] = n;
+				else
+					error("SHOULD NOT COME HERE NOW");
+				end
+			end
 		end
 	else
 		doc[1] = schema_type_handler.properties.q_name.local_name;
 		doc[2] = {};
 	end
-	local attr = schema_type_handler:get_attributes(ns, content);
+	local attr = schema_type_handler:get_attributes(nns, content);
 	for n,v in pairs(attr) do
 		doc[2][n] = tostring(v);
 	end
-	doc[3]=schema_type_handler.type_handler:to_xmlua(ns, content);
+	doc[3]=schema_type_handler.type_handler:to_xmlua(nns, content);
 	return doc;
 end
 
-basic_stuff.complex_type_simple_content_to_xmlua = function(schema_type_handler, ns, content)
+basic_stuff.complex_type_simple_content_to_xmlua = function(schema_type_handler, nns, content)
 	local doc = {};
 	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
-		local prefix = ns[schema_type_handler.properties.q_name.ns];
+		local prefix = nns.ns[schema_type_handler.properties.q_name.ns];
 		doc[1]=prefix..":"..schema_type_handler.properties.q_name.local_name;
 		doc[2] = {};
-		for n,v in pairs(ns) do
-			doc[2]["xmlns:"..prefix] = n;
+		if (not nns.ns_decl_printed) then
+			nns.ns_decl_printed = true;
+			for n,v in pairs(nns.ns) do
+				local prefix = v;
+				doc[2]["xmlns:"..prefix] = n;
+			end
 		end
 	else
 		doc[1] = schema_type_handler.properties.q_name.local_name;
 		doc[2] = {};
 	end
-	local attr = schema_type_handler:get_attributes(ns, content);
+	local attr = schema_type_handler:get_attributes(nns, content);
 	for n,v in pairs(attr) do
 		doc[2][n] = tostring(v);
 	end
-	doc[3]=schema_type_handler.type_handler:to_xmlua(ns, content._contained_value);
+	doc[3]=schema_type_handler.type_handler:to_xmlua(nns, content._contained_value);
 	return doc;
 end
 
-basic_stuff.struct_to_xmlua = function(schema_type_handler, ns, content)
+basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
 	local doc = {};
 	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
-		local prefix = ns[schema_type_handler.properties.q_name.ns];
+		local prefix = nns.ns[schema_type_handler.properties.q_name.ns];
 		doc[1]=prefix..":"..schema_type_handler.properties.q_name.local_name;
 		doc[2] = {};
-		for n,v in pairs(ns) do
-			doc[2]["xmlns:"..prefix] = n;
+		if (not nns.ns_decl_printed) then
+			nns.ns_decl_printed = true;
+			for n,v in pairs(nns.ns) do
+				local prefix = v;
+				doc[2]["xmlns:"..prefix] = n;
+			end
 		end
 	else
 		doc[1] = schema_type_handler.properties.q_name.local_name;
 		doc[2] = {};
 	end
-	local attr = schema_type_handler:get_attributes(ns, content);
+	local attr = schema_type_handler:get_attributes(nns, content);
 	for n,v in pairs(attr) do
 		doc[2][n] = tostring(v);
 	end
 	local i = 3;
 	for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
-		doc[i] = schema_type_handler.properties.subelement_properties[v]:to_xmlua(ns,
+		doc[i] = schema_type_handler.properties.subelement_properties[v]:to_xmlua(nns,
 					content[schema_type_handler.properties.subelement_properties[v].properties.generated_name])
 		i = i + 1;
 	end
@@ -275,7 +305,12 @@ basic_stuff.struct_to_xmlua = function(schema_type_handler, ns, content)
 end
 
 basic_stuff.complex_get_unique_namespaces_declared = function(schema_type_handler)
-	local namespaces = { [schema_type_handler.properties.q_name.ns] = ""};
+	local namespaces = nil
+	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
+		namespaces = { [schema_type_handler.properties.q_name.ns] = ""};
+	else
+		namespaces = {}
+	end
 	for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
 			local child_ns = {};
 			child_ns = schema_type_handler.properties.subelement_properties[v]:get_unique_namespaces_declared();
