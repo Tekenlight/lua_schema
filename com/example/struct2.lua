@@ -1,3 +1,7 @@
+--[[
+-- This is a complex type declaration
+--	Hence the properties contain the type name information and not element name information.
+-- ]]
 local basic_stuff = require("basic_stuff");
 
 local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
@@ -66,14 +70,13 @@ local _generated_sub_elements = {
 local _struct_handler = {};
 _struct_handler.properties = {
 	type_name={ns='http://example.com', ns_type='DECL',  local_name='struct2`'},
-	q_name={ns='', ns_type='',  local_name=''},
 	element_type='C',
 	content_type='C',
 	schema_type = '{http://example.com}struct2', --[[This is the name of the type
-														    can be implicit (in which case the
-															name is derived) or explicit in the
-															schema definition
-														]]--
+													can be implicit (in which case the
+													name is derived) or explicit in the
+													schema definition
+													]]
 	attr = {
 		_attr_properties = {
 		},
@@ -94,21 +97,19 @@ _struct_handler.type_handler = _struct_handler;
 local mt = { __index = _struct_handler; } ;
 local _factory = {};
 
-function _factory:new_instance()
+function _factory:new_instance_as_element(local_element_properties)
 	local o = {};
 	o = setmetatable(o, mt);
-	return o;
-end
-
-function _factory:new_element_instance(ns, name, generated_name, min_occurs, max_occurs)
-	local o = {};
-	o = setmetatable(o, mt);
-	o.properties.q_name.ns = ns;
+	o.properties = nil;
+	o.properties = basic_stuff.deepcopy(mt.properties);
+	o.properties.type_name = nil;
+	o.properties.q_name = {};
+	o.properties.q_name.ns = local_element_properties.ns;
 	o.properties.q_name.ns_type = 'DECL';
-	o.properties.q_name.local_name = name;
-	o.properties.generated_name = generated_name;
-	o.properties.min_occurs = min_occurs;
-	o.properties.max_occurs = max_occurs;
+	o.properties.q_name.local_name = local_element_properties.local_name;
+	o.properties.generated_name = local_element_properties.generated_name;
+	o.properties.min_occurs = local_element_properties.min_occurs;
+	o.properties.max_occurs = local_element_properties.max_occurs;
 	return o;
 end
 

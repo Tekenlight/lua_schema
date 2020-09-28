@@ -51,7 +51,7 @@ end
 
 function _message_handler_factory:get_message_handler(type_name, name_space)
 	local message_handler_base = basic_stuff.get_type_handler(name_space, type_name);
-	local message_handler = message_handler_base.new_instance();
+	local message_handler = message_handler_base.new_instance_as_root();
 	function message_handler:to_json(content)
 		if (self.properties.element_type == 'S') then
 			basic_stuff.assert_input_is_simple_type(content);

@@ -1,3 +1,8 @@
+--[[
+-- This is an element declaration of explicit type {http://www.w3.org/2001/XMLSchema}string
+-- Also this is a global element declaration, hence can be the root of a document and
+--	the occurence constraints dont appear in the declaration
+-- ]]
 _handlers = require("built_in_types.handlers");
 basic_stuff = require("basic_stuff");
 
@@ -19,9 +24,22 @@ _basic_string_handler.get_unique_namespaces_declared = basic_stuff.simple_get_un
 local mt = { __index = _basic_string_handler; } ;
 local _factory = {};
 
-function _factory:new_instance()
+function _factory:new_instance_as_root()
 	local o = {};
 	o = setmetatable(o, mt);
+	o.properties = nil;
+	o.properties = basic_stuff.deepcopy(mt.properties);
+	return o;
+end
+
+function _factory:new_instance_as_ref(element_ref_properties)
+	local o = {};
+	o = setmetatable(o, mt);
+	o.properties = nil;
+	o.properties = basic_stuff.deepcopy(mt.properties);
+	o.properties.generated_name = element_ref_properties.generated_name;
+	o.properties.min_occurs = element_ref_properties.min_occurs;
+	o.properties.max_occurs = element_ref_properties.max_occurs;
 	return o;
 end
 

@@ -249,7 +249,6 @@ basic_stuff.complex_type_simple_content_to_xmlua = function(schema_type_handler,
 end
 
 basic_stuff.struct_to_xmlua = function(schema_type_handler, ns, content)
-	print('from '..schema_type_handler.properties.q_name.local_name);
 	local doc = {};
 	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
 		local prefix = ns[schema_type_handler.properties.q_name.ns];
@@ -295,6 +294,21 @@ basic_stuff.simple_get_unique_namespaces_declared = function(schema_type_handler
 		namespaces = {}
 	end
 	return namespaces;
+end
+
+basic_stuff.deepcopy = function (orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in next, orig, nil do
+            copy[deepcopy(orig_key)] = deepcopy(orig_value)
+        end
+        setmetatable(copy, deepcopy(getmetatable(orig)))
+    else -- number, string, boolean, etc
+        copy = orig
+    end
+    return copy
 end
 
 return basic_stuff;
