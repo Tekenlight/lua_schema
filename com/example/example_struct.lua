@@ -10,15 +10,15 @@
 local basic_stuff = require("basic_stuff");
 
 local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-							 [1] = '{}one_deeper',
+							 [1] = '{}one_level_deeper',
 							 [2] = '{}author',
 							 [3] = '{}title',
 							 [4] = '{}genre'
 						 };
 
 local _subelement_properties = {
-	['{}one_deeper'] = (require('com.example.struct2')):new_instance_as_element(
-						{ns='', local_name = 'one_deeper', generated_name = 'one_deeper', min_occurs = 1, max_occurs = 1}),
+	['{}one_level_deeper'] = (require('com.example.struct2')):new_instance_as_element(
+						{ns='', local_name = 'one_level_deeper', generated_name = 'one_level_deeper', min_occurs = 1, max_occurs = 1}),
 	['{}author'] = {
 		properties = {
 			q_name={ns='', ns_type='',  local_name='author'},
@@ -70,7 +70,7 @@ local _subelement_properties = {
 };
 
 local _generated_sub_elements = {
-	['one_deeper'] = _subelement_properties['{}one_deeper'],
+	['one_level_deeper'] = _subelement_properties['{}one_level_deeper'],
 	['author'] = _subelement_properties['{}author'],
 	['title'] = _subelement_properties['{}title'],
 	['genre'] = _subelement_properties['{}genre']
