@@ -10,15 +10,15 @@
 local basic_stuff = require("basic_stuff");
 
 local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-							 [1] = '{}one_level_deeper',
+							 [1] = '{http://example1.com}element_struct2',
 							 [2] = '{}author',
 							 [3] = '{}title',
 							 [4] = '{}genre'
 						 };
 
 local _subelement_properties = {
-	['{}one_level_deeper'] = (require('com.example.struct2')):new_instance_as_element(
-						{ns='http://example1.com', local_name = 'one_level_deeper', generated_name = 'one_level_deeper', min_occurs = 1, max_occurs = 1}),
+	['{http://example1.com}element_struct2'] = (require('com.example1.element_struct2')):new_instance_as_ref(
+																				{ min_occurs = 1, max_occurs = 1}),
 	['{}author'] = {
 		properties = {
 			q_name={ns='', ns_type='',  local_name='author'},
@@ -70,7 +70,7 @@ local _subelement_properties = {
 };
 
 local _generated_sub_elements = {
-	['one_level_deeper'] = _subelement_properties['{}one_level_deeper'],
+	['element_struct2'] = _subelement_properties['{http://example1.com}element_struct2'],
 	['author'] = _subelement_properties['{}author'],
 	['title'] = _subelement_properties['{}title'],
 	['genre'] = _subelement_properties['{}genre']
@@ -107,22 +107,12 @@ local mt = { __index = _struct_handler; } ;
 local _factory = {};
 
 function _factory:new_instance_as_root()
-	local o = {};
-	o = setmetatable(o, mt);
-	o.properties = nil;
-	o.properties = basic_stuff.deepcopy(mt.properties);
-	return o;
+	return basic_stuff.instantiate_element_as_doc_root(mt);
 end
 
 function _factory:new_instance_as_ref(element_ref_properties)
-	local o = {};
-	o = setmetatable(o, mt);
-	o.properties = nil;
-	o.properties = basic_stuff.deepcopy(mt.properties);
-	o.properties.generated_name = element_ref_properties.generated_name;
-	o.properties.min_occurs = element_ref_properties.min_occurs;
-	o.properties.max_occurs = element_ref_properties.max_occurs;
-	return o;
+	return basic_stuff.instantiate_element_as_ref(mt, element_ref_properties);
 end
+
 
 return _factory;

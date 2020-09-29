@@ -25,22 +25,11 @@ local mt = { __index = _basic_string_handler; } ;
 local _factory = {};
 
 function _factory:new_instance_as_root()
-	local o = {};
-	o = setmetatable(o, mt);
-	o.properties = nil;
-	o.properties = basic_stuff.deepcopy(mt.properties);
-	return o;
+	return basic_stuff.instantiate_element_as_doc_root(mt);
 end
 
 function _factory:new_instance_as_ref(element_ref_properties)
-	local o = {};
-	o = setmetatable(o, mt);
-	o.properties = nil;
-	o.properties = basic_stuff.deepcopy(mt.properties);
-	o.properties.generated_name = element_ref_properties.generated_name;
-	o.properties.min_occurs = element_ref_properties.min_occurs;
-	o.properties.max_occurs = element_ref_properties.max_occurs;
-	return o;
+	return basic_stuff.instantiate_element_as_ref(mt, element_ref_properties);
 end
 
 return _factory;

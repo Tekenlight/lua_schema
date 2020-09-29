@@ -1,10 +1,13 @@
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://example.com" xmlns:bk="http://example.com">
-	<xsd:element name="example_struct" type="bk:example_struct_type"/>
-	<xsd:complexType name ="example_struct_type">
-		<xsd:sequence>
-			<xsd:element name="author"   type="xsd:string"/>
-			<xsd:element name="title"    type="xsd:string"/>
-			<xsd:element name="genre"    type="xsd:string"/>
-		</xsd:sequence>
-	</xsd:complexType>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://example.com" xmlns:ns1="http://example1.com">
+	<xsd:import namespace="http://example1.com" schemaLocation="struct2.xsd"/>
+	<xsd:element name="example_struct">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="ns1:element_struct2"/>
+				<xsd:element name="author"   type="xsd:string"/>
+				<xsd:element name="title"    type="xsd:string"/>
+				<xsd:element name="genre"    type="xsd:string"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
 </xsd:schema>

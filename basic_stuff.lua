@@ -346,4 +346,53 @@ basic_stuff.deepcopy = function (orig)
     return copy
 end
 
+basic_stuff.instantiate_element_as_doc_root = function(mt)
+	local o = {};
+	o = setmetatable(o, mt);
+	o.properties = nil;
+	o.properties = basic_stuff.deepcopy(mt.properties);
+	return o;
+end
+
+basic_stuff.instantiate_element_as_ref = function(mt, element_ref_properties)
+	local o = {};
+	o = setmetatable(o, mt);
+	o.properties = nil;
+	o.properties = basic_stuff.deepcopy(mt.properties);
+	o.properties.generated_name = element_ref_properties.generated_name;
+	o.properties.min_occurs = element_ref_properties.min_occurs;
+	o.properties.max_occurs = element_ref_properties.max_occurs;
+	return o;
+end
+
+basic_stuff.instantiate_type_as_doc_root = function(mt, root_element_properties)
+	local o = {};
+	o = setmetatable(o, mt);
+	o.properties = nil;
+	o.properties = basic_stuff.deepcopy(mt.properties);
+	o.properties.type_name = nil;
+	o.properties.q_name = {};
+	o.properties.q_name.ns = root_element_properties.ns;
+	o.properties.q_name.ns_type = 'DECL';
+	o.properties.q_name.local_name = root_element_properties.local_name;
+	o.properties.generated_name = root_element_properties.generated_name;
+	return o;
+end
+
+basic_stuff.instantiate_type_as_local_element = function(mt, local_element_properties)
+	local o = {};
+	o = setmetatable(o, mt);
+	o.properties = nil;
+	o.properties = basic_stuff.deepcopy(mt.properties);
+	o.properties.type_name = nil;
+	o.properties.q_name = {};
+	o.properties.q_name.ns = local_element_properties.ns;
+	o.properties.q_name.ns_type = 'DECL';
+	o.properties.q_name.local_name = local_element_properties.local_name;
+	o.properties.generated_name = local_element_properties.generated_name;
+	o.properties.min_occurs = local_element_properties.min_occurs;
+	o.properties.max_occurs = local_element_properties.max_occurs;
+	return o;
+end
+
 return basic_stuff;

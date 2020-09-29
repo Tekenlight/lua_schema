@@ -1,7 +1,7 @@
 mhf = require("message_handler_factory")
 unistd = require("posix.unistd");
 
-local content = { _attr = {}, author = "asdf", title = "adfas", genre = "as", one_level_deeper = {author = "123", title = "234", genre = "345"} };
+local content = { _attr = {}, author = "asdf", title = "adfas", genre = "as", element_struct2 = {author = "123", title = "234", genre = "345"} };
 --local content = { _attr = {}, author = "asdf", title = "adfas", genre = "as" }
 example_struct = mhf:get_message_handler("example_struct", "http://example.com");
 

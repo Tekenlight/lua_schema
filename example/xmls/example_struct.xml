@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:example_struct xmlns:ns1="http://example1.com" xmlns:ns2="http://example.com">
+  <ns1:element_struct2>
+    <author>123</author>
+    <title>234</title>
+    <genre>345</genre>
+  </ns1:element_struct2>
+  <author>asdf</author>
+  <title>adfas</title>
+  <genre>as</genre>
+</ns2:example_struct>
+
+
