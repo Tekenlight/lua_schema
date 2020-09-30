@@ -14,7 +14,7 @@ local get_jspon_tag = function(message_handler_instance)
 	end
 	return tag
 	]]--
-	return message_handler_instance.properties.q_name.local_name;
+	return message_handler_instance.instance_properties.q_name.local_name;
 end
 
 local gather_namespace_declarations = function(message_handler_instance)

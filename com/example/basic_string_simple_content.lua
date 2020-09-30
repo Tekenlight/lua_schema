@@ -8,7 +8,6 @@ basic_stuff = require("basic_stuff");
 
 local _basic_string_simple_content_handler = {};
 _basic_string_simple_content_handler.properties = {
-	q_name={ns="http://example.com", ns_type='DECL',  local_name="basic_string_simple_content"},
 	element_type="C",
 	content_type="S",
 	schema_type = "{http://www.w3.org/2001/XMLSchema}string",
@@ -16,24 +15,28 @@ _basic_string_simple_content_handler.properties = {
 		_attr_properties = {
 			["{}attr1"] = {
 				properties = {
-					q_name = { ns = '', ns_type = 'DECL', local_name = "attr1" },
 					schema_type = "{http://www.w3.org/2001/XMLSchema}int",
 					default = '',
 					fixed = '',
 					use = 'O', -- One of 'O' - Optional, 'P' - Prohibited, 'R' - Required
 					form = 'U', -- Q - Qualified, U - Unqualified
+				},
+				instance_properties = {
+					q_name = { ns = '', ns_type = 'DECL', local_name = "attr1" },
 					generated_name = 'attr1'
 				},
 				type_handler = require("org.w3.2001.XMLSchema.int_handler")
 			},
 			["{}attr2"] = {
 				properties = {
-					q_name = { ns = '', ns_type = 'DECL', local_name = "attr2" },
 					schema_type = "{http://www.w3.org/2001/XMLSchema}string",
 					default = '',
 					fixed = '',
 					use = 'R', -- One of 'O' - Optional, 'P' - Prohibited, 'R' - Required
 					form = 'U', -- Q - Qualified, U - Unqualified
+				},
+				instance_properties = {
+					q_name = { ns = '', ns_type = 'DECL', local_name = "attr2" },
 					generated_name = 'attr2'
 				},
 				type_handler = require("org.w3.2001.XMLSchema.string_handler")
@@ -44,6 +47,9 @@ _basic_string_simple_content_handler.properties = {
 			["attr2"] = "{}attr2"
 		}
 	}
+};
+_basic_string_simple_content_handler.instance_properties = {
+	q_name={ns="http://example.com", ns_type='DECL',  local_name="basic_string_simple_content"}
 };
 
 _basic_string_simple_content_handler.type_handler = require("org.w3.2001.XMLSchema.string_handler");

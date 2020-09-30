@@ -13,13 +13,15 @@ local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -
 local _subelement_properties = {
 	['{}author'] = {
 		properties = {
+			element_type = 'S',
+			content_type = 'S',
+			schema_type = '{http://www.w3.org/2001/XMLSchema}string',
+		},
+		instance_properties = {
 			q_name={ns='', ns_type='',  local_name='author'},
-				element_type = 'S',
-				content_type = 'S',
-				schema_type = '{http://www.w3.org/2001/XMLSchema}string',
-				generated_name = 'author',
-				min_occurs = 1,
-				max_occurs = 1,
+			generated_name = 'author',
+			min_occurs = 1,
+			max_occurs = 1,
 		},
 		type_handler = require("org.w3.2001.XMLSchema.string_handler"),
 		get_attributes = basic_stuff.get_attributes,
@@ -29,10 +31,12 @@ local _subelement_properties = {
 	},
 	['{}title'] = {
 		properties = {
-			q_name={ns='', ns_type='',  local_name='title'},
 			element_type = 'S',
 			content_type = 'S',
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
+		},
+		instance_properties = {
+			q_name={ns='', ns_type='',  local_name='title'},
 			generated_name = 'title',
 			min_occurs = 1,
 			max_occurs = 1,
@@ -45,10 +49,12 @@ local _subelement_properties = {
 	},
 	['{}genre'] = {
 		properties = {
-			q_name= { ns='', ns_type='',  local_name='genre'},
 			element_type = 'S',
 			content_type = 'S',
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
+		},
+		instance_properties = {
+			q_name= { ns='', ns_type='',  local_name='genre'},
 			generated_name = 'genre',
 			min_occurs = 1,
 			max_occurs = 1,
@@ -68,6 +74,7 @@ local _generated_sub_elements = {
 };
 
 local _struct_handler = {};
+
 _struct_handler.properties = {
 	type_name={ns='http://example.com', ns_type='DECL',  local_name='struct2`'},
 	element_type='C',

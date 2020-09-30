@@ -129,15 +129,15 @@ basic_stuff.attributes_are_valid = function(attrs_def, attrs)
 		inp_attr = attrs
 	end
 	for n,v in pairs(attrs_def._attr_properties) do
-		if ((v.properties.use == 'R') and (inp_attr[v.properties.generated_name] == nil)) then
+		if ((v.properties.use == 'R') and (inp_attr[v.instance_properties.generated_name] == nil)) then
 			return false;
-		elseif ((v.properties.use == 'P') and (inp_attr[v.properties.generated_name] ~= nil)) then
+		elseif ((v.properties.use == 'P') and (inp_attr[v.instance_properties.generated_name] ~= nil)) then
 			return false;
 		elseif((not basic_stuff.is_nil(v.properties.fixed)) and
-						(tostring(inp_attr[v.properties.generated_name]) ~= v.properties.fixed)) then
+						(tostring(inp_attr[v.instance_properties.generated_name]) ~= v.properties.fixed)) then
 			return false;
-		elseif ((inp_attr[v.properties.generated_name] ~= nil) and
-						(not v.type_handler:is_valid(inp_attr[v.properties.generated_name]))) then
+		elseif ((inp_attr[v.instance_properties.generated_name] ~= nil) and
+						(not v.type_handler:is_valid(inp_attr[v.instance_properties.generated_name]))) then
 			return false;
 		end
 	end
@@ -172,11 +172,12 @@ basic_stuff.struct_is_valid = function(struct_handler, content)
 	
 	for n,v in pairs(struct_handler.properties.generated_subelments) do
 		if (basic_stuff.is_nil(content[n])) then
-			if (struct_handler.properties.generated_subelments[n].properties.min_occurs > 0) then
+			if (v.instance_properties.min_occurs > 0) then
 				return false;
 			end
 		else
-			if (not struct_handler.properties.generated_subelments[n].type_handler:is_valid(content[n])) then
+			--if (not struct_handler.properties.generated_subelments[n].type_handler:is_valid(content[n])) then
+			if (not v.type_handler:is_valid(content[n])) then
 				return false;
 			end
 		end
@@ -205,14 +206,14 @@ basic_stuff.get_attributes = function(schema_type_handler, nns, content)
 	local attributes = {};
 	if (schema_type_handler.properties.attr ~= nil) then
 		for n,v in pairs(schema_type_handler.properties.attr._attr_properties) do
-			if (nil ~= content._attr[v.properties.generated_name]) then
+			if (nil ~= content._attr[v.instance_properties.generated_name]) then
 				if (v.properties.form == 'U') then
-					attributes[v.properties.q_name.local_name] =
-									v.type_handler:to_schema_type(nns, content._attr[v.properties.generated_name]);
+					attributes[v.instance_properties.q_name.local_name] =
+									v.type_handler:to_schema_type(nns, content._attr[v.instance_properties.generated_name]);
 				else
-					local ns_prefix = nns.ns[v.properties.q_name.ns]
-					attributes[ns_prefix..":"..v.properties.q_name.local_name] =
-									v.type_handler:to_schema_type(nns, content._attr[v.properties.generated_name]);
+					local ns_prefix = nns.ns[v.instance_properties.q_name.ns]
+					attributes[ns_prefix..":"..v.instance_properties.q_name.local_name] =
+									v.type_handler:to_schema_type(nns, content._attr[v.instance_properties.generated_name]);
 				end
 			end
 		end
@@ -222,9 +223,9 @@ end
 
 function basic_stuff.simple_to_xmlua(schema_type_handler, nns, content)
 	local doc = {};
-	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
-		local prefix = nns.ns[schema_type_handler.properties.q_name.ns];
-		doc[1]=prefix..":"..schema_type_handler.properties.q_name.local_name;
+	if (not basic_stuff.is_nil(schema_type_handler.instance_properties.q_name.ns)) then
+		local prefix = nns.ns[schema_type_handler.instance_properties.q_name.ns];
+		doc[1]=prefix..":"..schema_type_handler.instance_properties.q_name.local_name;
 		doc[2] = {};
 		if (not nns.ns_decl_printed) then
 			nns.ns_decl_printed = true;
@@ -238,7 +239,7 @@ function basic_stuff.simple_to_xmlua(schema_type_handler, nns, content)
 			end
 		end
 	else
-		doc[1] = schema_type_handler.properties.q_name.local_name;
+		doc[1] = schema_type_handler.instance_properties.q_name.local_name;
 		doc[2] = {};
 	end
 	local attr = schema_type_handler:get_attributes(nns, content);
@@ -251,9 +252,9 @@ end
 
 basic_stuff.complex_type_simple_content_to_xmlua = function(schema_type_handler, nns, content)
 	local doc = {};
-	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
-		local prefix = nns.ns[schema_type_handler.properties.q_name.ns];
-		doc[1]=prefix..":"..schema_type_handler.properties.q_name.local_name;
+	if (not basic_stuff.is_nil(schema_type_handler.instance_properties.q_name.ns)) then
+		local prefix = nns.ns[schema_type_handler.instance_properties.q_name.ns];
+		doc[1]=prefix..":"..schema_type_handler.instance_properties.q_name.local_name;
 		doc[2] = {};
 		if (not nns.ns_decl_printed) then
 			nns.ns_decl_printed = true;
@@ -263,7 +264,7 @@ basic_stuff.complex_type_simple_content_to_xmlua = function(schema_type_handler,
 			end
 		end
 	else
-		doc[1] = schema_type_handler.properties.q_name.local_name;
+		doc[1] = schema_type_handler.instance_properties.q_name.local_name;
 		doc[2] = {};
 	end
 	local attr = schema_type_handler:get_attributes(nns, content);
@@ -276,9 +277,9 @@ end
 
 basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
 	local doc = {};
-	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
-		local prefix = nns.ns[schema_type_handler.properties.q_name.ns];
-		doc[1]=prefix..":"..schema_type_handler.properties.q_name.local_name;
+	if (not basic_stuff.is_nil(schema_type_handler.instance_properties.q_name.ns)) then
+		local prefix = nns.ns[schema_type_handler.instance_properties.q_name.ns];
+		doc[1]=prefix..":"..schema_type_handler.instance_properties.q_name.local_name;
 		doc[2] = {};
 		if (not nns.ns_decl_printed) then
 			nns.ns_decl_printed = true;
@@ -288,7 +289,7 @@ basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
 			end
 		end
 	else
-		doc[1] = schema_type_handler.properties.q_name.local_name;
+		doc[1] = schema_type_handler.instance_properties.q_name.local_name;
 		doc[2] = {};
 	end
 	local attr = schema_type_handler:get_attributes(nns, content);
@@ -298,7 +299,7 @@ basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
 	local i = 3;
 	for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
 		doc[i] = schema_type_handler.properties.subelement_properties[v]:to_xmlua(nns,
-					content[schema_type_handler.properties.subelement_properties[v].properties.generated_name])
+					content[schema_type_handler.properties.subelement_properties[v].instance_properties.generated_name])
 		i = i + 1;
 	end
 	return doc;
@@ -306,13 +307,16 @@ end
 
 basic_stuff.complex_get_unique_namespaces_declared = function(schema_type_handler)
 	local namespaces = nil
-	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
-		namespaces = { [schema_type_handler.properties.q_name.ns] = ""};
+	if (not basic_stuff.is_nil(schema_type_handler.instance_properties.q_name.ns)) then
+		namespaces = { [schema_type_handler.instance_properties.q_name.ns] = ""};
 	else
 		namespaces = {}
 	end
+	--print(schema_type_handler.instance_properties.q_name.local_name);
+	--print("{",schema_type_handler.properties.declared_subelements, "}");
 	for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
 			local child_ns = {};
+			--print(schema_type_handler.instance_properties.q_name.local_name);
 			child_ns = schema_type_handler.properties.subelement_properties[v]:get_unique_namespaces_declared();
 			for n,v in pairs(child_ns) do
 				namespaces[n] = v;
@@ -323,75 +327,82 @@ end
 
 basic_stuff.simple_get_unique_namespaces_declared = function(schema_type_handler)
 	local namespaces = nil;
-	if (not basic_stuff.is_nil(schema_type_handler.properties.q_name.ns)) then
-		namespaces = { [schema_type_handler.properties.q_name.ns] = ""};
+	if (not basic_stuff.is_nil(schema_type_handler.instance_properties.q_name.ns)) then
+		namespaces = { [schema_type_handler.instance_properties.q_name.ns] = ""};
 	else
 		namespaces = {}
 	end
 	return namespaces;
 end
 
-basic_stuff.deepcopy = function (orig)
+basic_stuff.deepcopy = function (orig, debug)
+	if (debug == true) then print("<<<<<--------------------------"); end
     local orig_type = type(orig)
     local copy
     if orig_type == 'table' then
         copy = {}
         for orig_key, orig_value in next, orig, nil do
-            copy[deepcopy(orig_key)] = deepcopy(orig_value)
+			if (type(orig_key) == 'table') then error('key cannot be table') end
+			local lkey = orig_key;
+			if (debug == true) then print(orig_key, orig_value, debug); end
+			if (type(orig_value) == 'table') then
+				copy[lkey] = basic_stuff.deepcopy(orig_value, debug)
+			else
+				copy[lkey] = orig_value;
+			end
         end
-        setmetatable(copy, deepcopy(getmetatable(orig)))
+        --setmetatable(copy, deepcopy(getmetatable(orig)))
     else -- number, string, boolean, etc
         copy = orig
     end
+	if (debug == true) then print("-------------------------->>>>>"); end
     return copy
 end
 
 basic_stuff.instantiate_element_as_doc_root = function(mt)
 	local o = {};
 	o = setmetatable(o, mt);
-	o.properties = nil;
-	o.properties = basic_stuff.deepcopy(mt.properties);
 	return o;
 end
 
 basic_stuff.instantiate_element_as_ref = function(mt, element_ref_properties)
 	local o = {};
+	o.instance_properties = {};
 	o = setmetatable(o, mt);
-	o.properties = nil;
-	o.properties = basic_stuff.deepcopy(mt.properties);
-	o.properties.generated_name = element_ref_properties.generated_name;
-	o.properties.min_occurs = element_ref_properties.min_occurs;
-	o.properties.max_occurs = element_ref_properties.max_occurs;
+	--o.properties = basic_stuff.deepcopy(o.properties);
+	o.instance_properties.generated_name = element_ref_properties.generated_name;
+	o.instance_properties.min_occurs = element_ref_properties.min_occurs;
+	o.instance_properties.max_occurs = element_ref_properties.max_occurs;
 	return o;
 end
 
 basic_stuff.instantiate_type_as_doc_root = function(mt, root_element_properties)
 	local o = {};
+	o.instance_properties = {};
 	o = setmetatable(o, mt);
-	o.properties = nil;
-	o.properties = basic_stuff.deepcopy(mt.properties);
-	o.properties.type_name = nil;
-	o.properties.q_name = {};
-	o.properties.q_name.ns = root_element_properties.ns;
-	o.properties.q_name.ns_type = 'DECL';
-	o.properties.q_name.local_name = root_element_properties.local_name;
-	o.properties.generated_name = root_element_properties.generated_name;
+	--o.properties = basic_stuff.deepcopy(o.properties);
+	o.instance_properties.q_name = {};
+	o.instance_properties.q_name.ns = root_element_properties.ns;
+	o.instance_properties.q_name.ns_type = 'DECL';
+	o.instance_properties.q_name.local_name = root_element_properties.local_name;
+	o.instance_properties.generated_name = root_element_properties.generated_name;
 	return o;
 end
 
 basic_stuff.instantiate_type_as_local_element = function(mt, local_element_properties)
 	local o = {};
+	o.instance_properties = {};
 	o = setmetatable(o, mt);
-	o.properties = nil;
-	o.properties = basic_stuff.deepcopy(mt.properties);
-	o.properties.type_name = nil;
-	o.properties.q_name = {};
-	o.properties.q_name.ns = local_element_properties.ns;
-	o.properties.q_name.ns_type = 'DECL';
-	o.properties.q_name.local_name = local_element_properties.local_name;
-	o.properties.generated_name = local_element_properties.generated_name;
-	o.properties.min_occurs = local_element_properties.min_occurs;
-	o.properties.max_occurs = local_element_properties.max_occurs;
+	--o.properties = basic_stuff.deepcopy(o.properties);
+	o.instance_properties.q_name = {};
+	o.instance_properties.q_name.ns = local_element_properties.ns;
+	o.instance_properties.q_name.ns_type = 'DECL';
+	o.instance_properties.q_name.local_name = local_element_properties.local_name;
+	o.instance_properties.generated_name = local_element_properties.generated_name;
+	o.instance_properties.min_occurs = local_element_properties.min_occurs;
+	o.instance_properties.max_occurs = local_element_properties.max_occurs;
+	--print("{",o.instance_properties.q_name.local_name, o.properties.declared_subelements, "}");
+	--print("{",o.instance_properties.q_name.local_name, o.properties.subelement_properties, "}");
 	return o;
 end
 

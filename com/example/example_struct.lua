@@ -13,21 +13,35 @@ local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -
 							 [1] = '{http://example1.com}element_struct2',
 							 [2] = '{}author',
 							 [3] = '{}title',
-							 [4] = '{}genre'
+							 [4] = '{}genre',
+							 [5] = '{}s2'
 						 };
 
+local es_o = nil;
+local function debug(o)
+	es_o = o;
+	print("1111EDEBUG", o.type_handler, o.instance_properties.q_name.local_name);
+	return o;
+end
+local function debug2(o)
+	print("2222EDEBUG", es_o.type_handler, es_o.instance_properties.q_name.local_name);
+	print("2222SDEBUG", o.type_handler, o.instance_properties.q_name.local_name);
+	return o;
+end
 local _subelement_properties = {
 	['{http://example1.com}element_struct2'] = (require('com.example1.element_struct2')):new_instance_as_ref(
 																				{ min_occurs = 1, max_occurs = 1}),
 	['{}author'] = {
 		properties = {
+			element_type = 'S',
+			content_type = 'S',
+			schema_type = '{http://www.w3.org/2001/XMLSchema}string',
+		},
+		instance_properties = {
 			q_name={ns='', ns_type='',  local_name='author'},
-				element_type = 'S',
-				content_type = 'S',
-				schema_type = '{http://www.w3.org/2001/XMLSchema}string',
-				generated_name = 'author',
-				min_occurs = 1,
-				max_occurs = 1,
+			generated_name = 'author',
+			min_occurs = 1,
+			max_occurs = 1,
 		},
 		type_handler = require("org.w3.2001.XMLSchema.string_handler"),
 		get_attributes = basic_stuff.get_attributes,
@@ -37,10 +51,12 @@ local _subelement_properties = {
 	},
 	['{}title'] = {
 		properties = {
-			q_name={ns='', ns_type='',  local_name='title'},
 			element_type = 'S',
 			content_type = 'S',
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
+		},
+		instance_properties = {
+			q_name={ns='', ns_type='',  local_name='title'},
 			generated_name = 'title',
 			min_occurs = 1,
 			max_occurs = 1,
@@ -53,10 +69,12 @@ local _subelement_properties = {
 	},
 	['{}genre'] = {
 		properties = {
-			q_name= { ns='', ns_type='',  local_name='genre'},
 			element_type = 'S',
 			content_type = 'S',
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
+		},
+		instance_properties = {
+			q_name= { ns='', ns_type='',  local_name='genre'},
 			generated_name = 'genre',
 			min_occurs = 1,
 			max_occurs = 1,
@@ -66,19 +84,21 @@ local _subelement_properties = {
 		is_valid = basic_stuff.simple_is_valid,
 		get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared,
 		to_xmlua = basic_stuff.simple_to_xmlua
-	}
+	},
+	['{}s2'] = require("com.example1.struct2"):new_instance_as_local_element(
+						{ ns = '', ns_type = 'DECL', local_name = 's2', generated_name = 's2', min_occurs = 1, max_occurs = 1  } )
 };
 
 local _generated_sub_elements = {
 	['element_struct2'] = _subelement_properties['{http://example1.com}element_struct2'],
 	['author'] = _subelement_properties['{}author'],
 	['title'] = _subelement_properties['{}title'],
-	['genre'] = _subelement_properties['{}genre']
+	['genre'] = _subelement_properties['{}genre'],
+	['s2'] = _subelement_properties['{}s2']
 };
 
 local _struct_handler = {};
 _struct_handler.properties = {
-	q_name={ns='http://example.com', ns_type='DECL',  local_name='example_struct'},
 	element_type='C',
 	content_type='C',
 	schema_type = '{http://example.com}example_struct', --[[This is the name of the type
@@ -96,6 +116,9 @@ _struct_handler.properties = {
 	subelement_properties = _subelement_properties,
 	generated_subelments = _generated_sub_elements
 };
+_struct_handler.instance_properties = {
+	q_name={ns='http://example.com', ns_type='DECL',  local_name='example_struct'}
+};
 
 _struct_handler.is_valid = basic_stuff.struct_is_valid;
 _struct_handler.get_attributes = basic_stuff.get_attributes;
@@ -107,7 +130,8 @@ local mt = { __index = _struct_handler; } ;
 local _factory = {};
 
 function _factory:new_instance_as_root()
-	return basic_stuff.instantiate_element_as_doc_root(mt);
+	local o= basic_stuff.instantiate_element_as_doc_root(mt);
+	return o;
 end
 
 function _factory:new_instance_as_ref(element_ref_properties)
