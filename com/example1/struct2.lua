@@ -18,7 +18,7 @@ local _subelement_properties = {
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string',
 		},
 		instance_properties = {
-			q_name={ns='', ns_type='',  local_name='author'},
+			q_name={ns='', local_name='author'},
 			generated_name = 'author',
 			min_occurs = 1,
 			max_occurs = 1,
@@ -36,7 +36,7 @@ local _subelement_properties = {
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
 		},
 		instance_properties = {
-			q_name={ns='', ns_type='',  local_name='title'},
+			q_name={ns='', local_name='title'},
 			generated_name = 'title',
 			min_occurs = 1,
 			max_occurs = 1,
@@ -54,7 +54,7 @@ local _subelement_properties = {
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
 		},
 		instance_properties = {
-			q_name= { ns='', ns_type='',  local_name='genre'},
+			q_name= { ns='', local_name='genre'},
 			generated_name = 'genre',
 			min_occurs = 1,
 			max_occurs = 1,
@@ -76,7 +76,7 @@ local _generated_sub_elements = {
 local _struct_handler = {};
 
 _struct_handler.properties = {
-	type_name={ns='http://example.com', ns_type='DECL',  local_name='struct2`'},
+	type_name={ns='http://example.com', local_name='struct2`'},
 	element_type='C',
 	content_type='C',
 	schema_type = '{http://example.com}struct2', --[[This is the name of the type

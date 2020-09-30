@@ -14,7 +14,7 @@ _basic_string_handler.properties = {
 	attr = nil
 };
 _basic_string_handler.instance_properties = {
-	q_name={ns="http://example.com", ns_type='DECL',  local_name="basic_string"}
+	q_name={ns="http://example.com", local_name="basic_string"}
 }
 
 _basic_string_handler.type_handler = require("org.w3.2001.XMLSchema.string_handler");

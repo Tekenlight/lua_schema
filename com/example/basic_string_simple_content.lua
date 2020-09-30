@@ -22,7 +22,7 @@ _basic_string_simple_content_handler.properties = {
 					form = 'U', -- Q - Qualified, U - Unqualified
 				},
 				instance_properties = {
-					q_name = { ns = '', ns_type = 'DECL', local_name = "attr1" },
+					q_name = { ns = '', local_name = "attr1" },
 					generated_name = 'attr1'
 				},
 				type_handler = require("org.w3.2001.XMLSchema.int_handler")
@@ -36,7 +36,7 @@ _basic_string_simple_content_handler.properties = {
 					form = 'U', -- Q - Qualified, U - Unqualified
 				},
 				instance_properties = {
-					q_name = { ns = '', ns_type = 'DECL', local_name = "attr2" },
+					q_name = { ns = '', local_name = "attr2" },
 					generated_name = 'attr2'
 				},
 				type_handler = require("org.w3.2001.XMLSchema.string_handler")
@@ -49,7 +49,7 @@ _basic_string_simple_content_handler.properties = {
 	}
 };
 _basic_string_simple_content_handler.instance_properties = {
-	q_name={ns="http://example.com", ns_type='DECL',  local_name="basic_string_simple_content"}
+	q_name={ns="http://example.com", ocal_name="basic_string_simple_content"}
 };
 
 _basic_string_simple_content_handler.type_handler = require("org.w3.2001.XMLSchema.string_handler");

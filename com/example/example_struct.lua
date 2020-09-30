@@ -38,7 +38,7 @@ local _subelement_properties = {
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string',
 		},
 		instance_properties = {
-			q_name={ns='', ns_type='',  local_name='author'},
+			q_name={ns='', local_name='author'},
 			generated_name = 'author',
 			min_occurs = 1,
 			max_occurs = 1,
@@ -56,7 +56,7 @@ local _subelement_properties = {
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
 		},
 		instance_properties = {
-			q_name={ns='', ns_type='',  local_name='title'},
+			q_name={ns='', local_name='title'},
 			generated_name = 'title',
 			min_occurs = 1,
 			max_occurs = 1,
@@ -74,7 +74,7 @@ local _subelement_properties = {
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
 		},
 		instance_properties = {
-			q_name= { ns='', ns_type='',  local_name='genre'},
+			q_name= { ns='', local_name='genre'},
 			generated_name = 'genre',
 			min_occurs = 1,
 			max_occurs = 1,
@@ -86,7 +86,7 @@ local _subelement_properties = {
 		to_xmlua = basic_stuff.simple_to_xmlua
 	},
 	['{}s2'] = require("com.example1.struct2"):new_instance_as_local_element(
-						{ ns = '', ns_type = 'DECL', local_name = 's2', generated_name = 's2', min_occurs = 1, max_occurs = 1  } )
+						{ ns = '', local_name = 's2', generated_name = 's2', min_occurs = 1, max_occurs = 1  } )
 };
 
 local _generated_sub_elements = {
@@ -117,7 +117,7 @@ _struct_handler.properties = {
 	generated_subelments = _generated_sub_elements
 };
 _struct_handler.instance_properties = {
-	q_name={ns='http://example.com', ns_type='DECL',  local_name='example_struct'}
+	q_name={ns='http://example.com', local_name='example_struct'}
 };
 
 _struct_handler.is_valid = basic_stuff.struct_is_valid;
@@ -135,7 +135,11 @@ function _factory:new_instance_as_root()
 end
 
 function _factory:new_instance_as_ref(element_ref_properties)
-	return basic_stuff.instantiate_element_as_ref(mt, element_ref_properties);
+	return basic_stuff.instantiate_element_as_ref(mt, { ns='http://example.com',
+														local_name = 'example_struct',
+														generated_name = 'example_struct',
+														min_occurs = element_ref_properties.min_occurs,
+														max_occurs = element_ref_properties.max_occurs});
 end
 
 
