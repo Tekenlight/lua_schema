@@ -49,7 +49,7 @@ _basic_string_simple_content_handler.properties = {
 	}
 };
 _basic_string_simple_content_handler.instance_properties = {
-	q_name={ns="http://example.com", ocal_name="basic_string_simple_content"}
+	q_name={ns="http://example.com", local_name="basic_string_simple_content"}
 };
 
 _basic_string_simple_content_handler.type_handler = require("org.w3.2001.XMLSchema.string_handler");
