@@ -312,11 +312,8 @@ basic_stuff.complex_get_unique_namespaces_declared = function(schema_type_handle
 	else
 		namespaces = {}
 	end
-	--print(schema_type_handler.instance_properties.q_name.local_name);
-	--print("{",schema_type_handler.properties.declared_subelements, "}");
 	for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
 			local child_ns = {};
-			--print(schema_type_handler.instance_properties.q_name.local_name);
 			child_ns = schema_type_handler.properties.subelement_properties[v]:get_unique_namespaces_declared();
 			for n,v in pairs(child_ns) do
 				namespaces[n] = v;
@@ -351,7 +348,7 @@ basic_stuff.deepcopy = function (orig, debug)
 				copy[lkey] = orig_value;
 			end
         end
-        --setmetatable(copy, deepcopy(getmetatable(orig)))
+        setmetatable(copy, deepcopy(getmetatable(orig)))
     else -- number, string, boolean, etc
         copy = orig
     end
@@ -369,7 +366,6 @@ basic_stuff.instantiate_element_as_ref = function(mt, element_ref_properties)
 	local o = {};
 	o.instance_properties = {};
 	o = setmetatable(o, mt);
-	--o.properties = basic_stuff.deepcopy(o.properties);
 	o.instance_properties.generated_name = element_ref_properties.generated_name;
 	o.instance_properties.min_occurs = element_ref_properties.min_occurs;
 	o.instance_properties.max_occurs = element_ref_properties.max_occurs;
@@ -380,7 +376,6 @@ basic_stuff.instantiate_type_as_doc_root = function(mt, root_element_properties)
 	local o = {};
 	o.instance_properties = {};
 	o = setmetatable(o, mt);
-	--o.properties = basic_stuff.deepcopy(o.properties);
 	o.instance_properties.q_name = {};
 	o.instance_properties.q_name.ns = root_element_properties.ns;
 	o.instance_properties.q_name.ns_type = 'DECL';
@@ -393,7 +388,6 @@ basic_stuff.instantiate_type_as_local_element = function(mt, local_element_prope
 	local o = {};
 	o.instance_properties = {};
 	o = setmetatable(o, mt);
-	--o.properties = basic_stuff.deepcopy(o.properties);
 	o.instance_properties.q_name = {};
 	o.instance_properties.q_name.ns = local_element_properties.ns;
 	o.instance_properties.q_name.ns_type = 'DECL';
@@ -401,8 +395,6 @@ basic_stuff.instantiate_type_as_local_element = function(mt, local_element_prope
 	o.instance_properties.generated_name = local_element_properties.generated_name;
 	o.instance_properties.min_occurs = local_element_properties.min_occurs;
 	o.instance_properties.max_occurs = local_element_properties.max_occurs;
-	--print("{",o.instance_properties.q_name.local_name, o.properties.declared_subelements, "}");
-	--print("{",o.instance_properties.q_name.local_name, o.properties.subelement_properties, "}");
 	return o;
 end
 
