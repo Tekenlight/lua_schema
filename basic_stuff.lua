@@ -277,9 +277,10 @@ end
 
 basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
 	local doc = {};
-	if (not basic_stuff.is_nil(schema_type_handler.instance_properties.q_name.ns)) then
-		local prefix = nns.ns[schema_type_handler.instance_properties.q_name.ns];
-		doc[1]=prefix..":"..schema_type_handler.instance_properties.q_name.local_name;
+	local q_name = schema_type_handler.instance_properties.q_name;
+	if (not basic_stuff.is_nil(q_name.ns)) then
+		local prefix = nns.ns[q_name.ns];
+		doc[1]=prefix..":"..q_name.local_name;
 		doc[2] = {};
 		if (not nns.ns_decl_printed) then
 			nns.ns_decl_printed = true;
@@ -289,7 +290,7 @@ basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
 			end
 		end
 	else
-		doc[1] = schema_type_handler.instance_properties.q_name.local_name;
+		doc[1] = q_name.local_name;
 		doc[2] = {};
 	end
 	local attr = schema_type_handler:get_attributes(nns, content);
@@ -298,8 +299,8 @@ basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
 	end
 	local i = 3;
 	for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
-		doc[i] = schema_type_handler.properties.subelement_properties[v]:to_xmlua(nns,
-					content[schema_type_handler.properties.subelement_properties[v].instance_properties.generated_name])
+		local subelement = schema_type_handler.properties.subelement_properties[v];
+		doc[i] = subelement:to_xmlua(nns, content[subelement.instance_properties.generated_name])
 		i = i + 1;
 	end
 	return doc;
