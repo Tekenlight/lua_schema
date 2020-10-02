@@ -14,12 +14,14 @@ local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -
 							 [2] = '{}author',
 							 [3] = '{}title',
 							 [4] = '{}genre',
-							 [5] = '{}s2'
+							 [5] = '{}s2',
+							 [6] = '{http://example.com}basic_string_simple_content'
 						 };
 
 local es_o = nil;
 local function debug(o)
 	es_o = o;
+	print("INSTANTIATING");
 	print("1111EDEBUG", o.type_handler, o.instance_properties.q_name.local_name);
 	return o;
 end
@@ -86,7 +88,10 @@ local _subelement_properties = {
 		to_xmlua = basic_stuff.simple_to_xmlua
 	},
 	['{}s2'] = require("com.example1.struct2"):new_instance_as_local_element(
-						{ ns = '', local_name = 's2', generated_name = 's2', min_occurs = 1, max_occurs = 1  } )
+						{ ns = '', local_name = 's2', generated_name = 's2', min_occurs = 1, max_occurs = 1  } ),
+	['{http://example.com}basic_string_simple_content'] =
+				require("com.example.basic_string_simple_content"):new_instance_as_ref( {  min_occurs = 1, max_occurs = 1  } ),
+
 };
 
 local _generated_sub_elements = {
@@ -94,7 +99,8 @@ local _generated_sub_elements = {
 	['author'] = _subelement_properties['{}author'],
 	['title'] = _subelement_properties['{}title'],
 	['genre'] = _subelement_properties['{}genre'],
-	['s2'] = _subelement_properties['{}s2']
+	['s2'] = _subelement_properties['{}s2'],
+	['basic_string_simple_content'] = _subelement_properties['{http://example.com}basic_string_simple_content']
 };
 
 local _struct_handler = {};

@@ -31,7 +31,11 @@ function _factory:new_instance_as_root()
 end
 
 function _factory:new_instance_as_ref(element_ref_properties)
-	return basic_stuff.instantiate_element_as_ref(mt, element_ref_properties);
+	return basic_stuff.instantiate_element_as_ref(mt, { ns='',
+														local_name = 'basic_string_nons',
+														generated_name = 'basic_string_nons',
+														min_occurs = element_ref_properties.min_occurs,
+														max_occurs = element_ref_properties.max_occurs});
 end
 
 

@@ -177,7 +177,8 @@ basic_stuff.struct_is_valid = function(struct_handler, content)
 			end
 		else
 			--if (not struct_handler.properties.generated_subelments[n].type_handler:is_valid(content[n])) then
-			if (not v.type_handler:is_valid(content[n])) then
+			--if (not v.type_handler:is_valid(content[n])) then
+			if (not v:is_valid(content[n])) then
 				return false;
 			end
 		end
