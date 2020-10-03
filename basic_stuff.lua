@@ -360,7 +360,13 @@ end
 
 basic_stuff.instantiate_element_as_doc_root = function(mt)
 	local o = {};
+	local ip = { min_occurs = 1, max_occurs = 1 };
 	o = setmetatable(o, mt);
+	ip.q_name =  {};
+	ip.q_name.ns = o.instance_properties.q_name.ns;
+	ip.q_name.local_name = o.instance_properties.q_name.local_name;
+	ip.generated_name = o.instance_properties.generated_name;
+	o.instance_properties = ip;
 	return o;
 end
 
@@ -385,6 +391,8 @@ basic_stuff.instantiate_type_as_doc_root = function(mt, root_element_properties)
 	o.instance_properties.q_name.ns = root_element_properties.ns;
 	o.instance_properties.q_name.local_name = root_element_properties.local_name;
 	o.instance_properties.generated_name = root_element_properties.generated_name;
+	o.instance_properties.min_occurs = 1;
+	o.instance_properties.max_occurs = 1;
 	return o;
 end
 
