@@ -35,7 +35,8 @@ function _factory:new_instance_as_ref(element_ref_properties)
 														local_name = 'basic_string_nons',
 														generated_name = 'basic_string_nons',
 														min_occurs = element_ref_properties.min_occurs,
-														max_occurs = element_ref_properties.max_occurs});
+														max_occurs = element_ref_properties.max_occurs,
+														root_element = element_ref_properties.root_element});
 end
 
 

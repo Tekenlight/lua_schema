@@ -150,6 +150,9 @@ basic_stuff.attributes_are_valid = function(attrs_def, attrs)
 end
 
 basic_stuff.simple_is_valid = function(struct_handler, content)
+	if ((struct_handler.instance_properties.min_occurs > 0) and (content == nil)) then
+		return false;
+	end
 	if (not basic_stuff.is_simple_type(content)) then
 		return false;
 	end
@@ -160,6 +163,9 @@ basic_stuff.simple_is_valid = function(struct_handler, content)
 end
 
 basic_stuff.struct_is_valid = function(struct_handler, content)
+	if ((struct_handler.instance_properties.min_occurs > 0) and (content == nil)) then
+		return false;
+	end
 	if (type(content) ~= 'table') then
 		return false;
 	end
@@ -191,6 +197,9 @@ basic_stuff.struct_is_valid = function(struct_handler, content)
 end
 
 basic_stuff.complex_type_simple_content_is_valid = function(schema_tpype_handler, content)
+	if ((schema_tpype_handler.instance_properties.min_occurs > 0) and (content == nil)) then
+		return false;
+	end
 	if (not basic_stuff.is_simple_content(content)) then
 		return false;
 	end
@@ -223,6 +232,9 @@ basic_stuff.get_attributes = function(schema_type_handler, nns, content)
 end
 
 function basic_stuff.simple_to_xmlua(schema_type_handler, nns, content)
+	if ((nil == content) and (schema_type_handler.instance_properties.root_element == false)) then
+		return nil
+	end
 	local doc = {};
 	if (not basic_stuff.is_nil(schema_type_handler.instance_properties.q_name.ns)) then
 		local prefix = nns.ns[schema_type_handler.instance_properties.q_name.ns];
@@ -243,15 +255,27 @@ function basic_stuff.simple_to_xmlua(schema_type_handler, nns, content)
 		doc[1] = schema_type_handler.instance_properties.q_name.local_name;
 		doc[2] = {};
 	end
-	local attr = schema_type_handler:get_attributes(nns, content);
+	local attr =  nil;
+	if (nil ~= content) then
+		attr = schema_type_handler:get_attributes(nns, content);
+	else
+		attr = {}
+	end
 	for n,v in pairs(attr) do
 		doc[2][n] = tostring(v);
 	end
-	doc[3]=schema_type_handler.type_handler:to_xmlua(nns, content);
+	if (content == nil) then
+		doc[3]=nil;
+	else
+		doc[3]=schema_type_handler.type_handler:to_xmlua(nns, content);
+	end
 	return doc;
 end
 
 basic_stuff.complex_type_simple_content_to_xmlua = function(schema_type_handler, nns, content)
+	if ((nil == content) and (schema_type_handler.instance_properties.root_element == false)) then
+		return nil
+	end
 	local doc = {};
 	if (not basic_stuff.is_nil(schema_type_handler.instance_properties.q_name.ns)) then
 		local prefix = nns.ns[schema_type_handler.instance_properties.q_name.ns];
@@ -268,15 +292,27 @@ basic_stuff.complex_type_simple_content_to_xmlua = function(schema_type_handler,
 		doc[1] = schema_type_handler.instance_properties.q_name.local_name;
 		doc[2] = {};
 	end
-	local attr = schema_type_handler:get_attributes(nns, content);
+	local attr =  nil;
+	if (nil ~= content) then
+		attr = schema_type_handler:get_attributes(nns, content);
+	else
+		attr = {}
+	end
 	for n,v in pairs(attr) do
 		doc[2][n] = tostring(v);
 	end
-	doc[3]=schema_type_handler.type_handler:to_xmlua(nns, content._contained_value);
+	if (content == nil) then
+		doc[3]=nil;
+	else
+		doc[3]=schema_type_handler.type_handler:to_xmlua(nns, content._contained_value);
+	end
 	return doc;
 end
 
 basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
+	if ((nil == content) and (schema_type_handler.instance_properties.root_element == false)) then
+		return nil
+	end
 	local doc = {};
 	local q_name = schema_type_handler.instance_properties.q_name;
 	if (not basic_stuff.is_nil(q_name.ns)) then
@@ -294,15 +330,27 @@ basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
 		doc[1] = q_name.local_name;
 		doc[2] = {};
 	end
-	local attr = schema_type_handler:get_attributes(nns, content);
+	local attr =  nil;
+	if (nil ~= content) then
+		attr = schema_type_handler:get_attributes(nns, content);
+	else
+		attr = {}
+	end
 	for n,v in pairs(attr) do
 		doc[2][n] = tostring(v);
 	end
 	local i = 3;
-	for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
-		local subelement = schema_type_handler.properties.subelement_properties[v];
-		doc[i] = subelement:to_xmlua(nns, content[subelement.instance_properties.generated_name])
-		i = i + 1;
+	if (content ~= nil) then
+		for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
+			local subelement = schema_type_handler.properties.subelement_properties[v];
+			local xmlc = subelement:to_xmlua(nns, content[subelement.instance_properties.generated_name])
+			if (xmlc ~= nil) then
+				doc[i] = subelement:to_xmlua(nns, content[subelement.instance_properties.generated_name])
+				i = i + 1;
+			end
+		end
+	else
+		doc[3] = nil;
 	end
 	return doc;
 end
@@ -366,6 +414,7 @@ basic_stuff.instantiate_element_as_doc_root = function(mt)
 	ip.q_name.ns = o.instance_properties.q_name.ns;
 	ip.q_name.local_name = o.instance_properties.q_name.local_name;
 	ip.generated_name = o.instance_properties.generated_name;
+	ip.root_element = true;
 	o.instance_properties = ip;
 	return o;
 end
@@ -380,6 +429,7 @@ basic_stuff.instantiate_element_as_ref = function(mt, element_ref_properties)
 	o.instance_properties.generated_name = element_ref_properties.generated_name;
 	o.instance_properties.min_occurs = element_ref_properties.min_occurs;
 	o.instance_properties.max_occurs = element_ref_properties.max_occurs;
+	o.instance_properties.root_element = element_ref_properties.root_element;
 	return o;
 end
 
@@ -393,6 +443,7 @@ basic_stuff.instantiate_type_as_doc_root = function(mt, root_element_properties)
 	o.instance_properties.generated_name = root_element_properties.generated_name;
 	o.instance_properties.min_occurs = 1;
 	o.instance_properties.max_occurs = 1;
+	o.instance_properties.root_element = root_element_properties.root_element;
 	return o;
 end
 
@@ -406,6 +457,7 @@ basic_stuff.instantiate_type_as_local_element = function(mt, local_element_prope
 	o.instance_properties.generated_name = local_element_properties.generated_name;
 	o.instance_properties.min_occurs = local_element_properties.min_occurs;
 	o.instance_properties.max_occurs = local_element_properties.max_occurs;
+	o.instance_properties.root_element = local_element_properties.root_element;
 	return o;
 end
 

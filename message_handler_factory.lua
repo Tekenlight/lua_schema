@@ -34,6 +34,7 @@ end
 local to_xml_string = function(message_handler_instance, content)
 	local nns = gather_namespace_declarations(message_handler_instance);
 	local doc = message_handler_instance:to_xmlua(nns, content);
+	--require 'pl.pretty'.dump(doc);
 	local document = xmlua.XML.build(doc);
 	local s = document:to_xml();
 	return s;

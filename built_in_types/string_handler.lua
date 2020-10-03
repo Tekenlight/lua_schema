@@ -1,7 +1,8 @@
 local __string_handler_class = {}
 
 function __string_handler_class:is_valid(s)
-	if(type(s) ~= "string") then return false end
+	if((type(s) ~= nil) and (type(s) ~= "string")) then return false end
+	--if(type(s) ~= "string") then return false end
 	return true;
 end
 

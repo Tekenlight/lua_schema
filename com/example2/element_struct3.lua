@@ -41,6 +41,7 @@ local _subelement_properties = {
 			generated_name = 'author',
 			min_occurs = 1,
 			max_occurs = 1,
+			root_element = false,
 		},
 		type_handler = require("org.w3.2001.XMLSchema.string_handler"),
 		get_attributes = basic_stuff.get_attributes,
@@ -59,6 +60,7 @@ local _subelement_properties = {
 			generated_name = 'title',
 			min_occurs = 1,
 			max_occurs = 1,
+			root_element = false,
 		},
 		type_handler = require("org.w3.2001.XMLSchema.string_handler"),
 		get_attributes = basic_stuff.get_attributes,
@@ -77,6 +79,7 @@ local _subelement_properties = {
 			generated_name = 'genre',
 			min_occurs = 1,
 			max_occurs = 1,
+			root_element = false,
 		},
 		type_handler = require("org.w3.2001.XMLSchema.string_handler"),
 		get_attributes = basic_stuff.get_attributes,
@@ -85,10 +88,11 @@ local _subelement_properties = {
 		to_xmlua = basic_stuff.simple_to_xmlua
 	},
 	['{http://example.com}example_struct'] = (require('com.example.example_struct')):new_instance_as_ref(
-																				{ min_occurs = 1, max_occurs = 1}),
+																	{ root_element = false, min_occurs = 1, max_occurs = 1}),
 	['{http://example.com}basic_string'] = (require('com.example.basic_string')):new_instance_as_ref(
-																				{ min_occurs = 1, max_occurs = 1}),
-	['{}basic_string_nons'] = (require('basic_string_nons')):new_instance_as_ref( { min_occurs = 1, max_occurs = 1}),
+																	{ root_element = false, min_occurs = 1, max_occurs = 1} ),
+	['{}basic_string_nons'] = (require('basic_string_nons')):new_instance_as_ref(
+																	{ root_element = false, min_occurs = 1, max_occurs = 1}),
 };
 
 local _generated_sub_elements = {
@@ -142,7 +146,8 @@ function _factory:new_instance_as_ref(element_ref_properties)
 														local_name = 'element_struct3',
 														generated_name = 'element_struct3',
 														min_occurs = element_ref_properties.min_occurs,
-														max_occurs = element_ref_properties.max_occurs});
+														max_occurs = element_ref_properties.max_occurs,
+														root_element = element_ref_properties.root_element});
 end
 
 
