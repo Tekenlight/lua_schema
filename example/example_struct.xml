@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns1:example_struct xmlns:ns1="http://example.com" xmlns:ns2="http://example1.com">
+<ns1:example_struct xmlns:ns2="http://example1.com" xmlns:ns1="http://example.com">
   <ns2:element_struct2>
     <author>123</author>
     <title>234</title>

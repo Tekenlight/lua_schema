@@ -104,7 +104,7 @@ local _struct_handler = {};
 _struct_handler.properties = {
 	element_type='C',
 	content_type='C',
-	schema_type = '{http://example1.com}element_struct3', --[[This is the name of the type
+	schema_type = '{http://example2.com}element_struct3', --[[This is the name of the type
 														    can be implicit (in which case the
 															name is derived) or explicit in the
 															schema definition
@@ -120,7 +120,7 @@ _struct_handler.properties = {
 	generated_subelments = _generated_sub_elements
 };
 _struct_handler.instance_properties = {
-	q_name={ns='http://example1.com', local_name='element_struct3'}
+	q_name={ns='http://example2.com', local_name='element_struct3'}
 };
 
 _struct_handler.is_valid = basic_stuff.struct_is_valid;
@@ -138,7 +138,7 @@ function _factory:new_instance_as_root()
 end
 
 function _factory:new_instance_as_ref(element_ref_properties)
-	return basic_stuff.instantiate_element_as_ref(mt, { ns='http://example1.com',
+	return basic_stuff.instantiate_element_as_ref(mt, { ns='http://example2.com',
 														local_name = 'element_struct3',
 														generated_name = 'element_struct3',
 														min_occurs = element_ref_properties.min_occurs,

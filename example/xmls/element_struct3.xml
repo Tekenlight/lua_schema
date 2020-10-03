@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns3:element_struct3 xmlns:ns3="http://example2.com" xmlns:ns2="http://example.com" xmlns:ns1="http://example1.com">
+  <author>TA1</author>
+  <title>TT1</title>
+  <genre>TG1</genre>
+  <ns2:example_struct>
+    <ns1:element_struct2>
+      <author>123</author>
+      <title>234</title>
+      <genre>345</genre>
+    </ns1:element_struct2>
+    <author>asdf</author>
+    <title>adfas</title>
+    <genre>as</genre>
+    <s2>
+      <author>A43</author>
+      <title>A44</title>
+      <genre>A45</genre>
+    </s2>
+    <ns2:basic_string_simple_content attr1="123" attr2="CHA">GOWRI</ns2:basic_string_simple_content>
+  </ns2:example_struct>
+  <ns2:basic_string>BASICSTRING</ns2:basic_string>
+  <basic_string_nons>VERYBASICSTRING</basic_string_nons>
+</ns3:element_struct3>
+
+
