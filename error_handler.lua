@@ -16,9 +16,13 @@ error_handler.get_fieldpath = function()
 	if (_G.message_validation_context == nil) then
 		return ''
 	end
-	local path = "root";
+	local path = nil;
 	for i,v in ipairs(_G.message_validation_context.fieldpath.path) do
-		path = path.."."..v;
+		if (path ~= nil) then
+			path = path.."."..v;
+		else
+			path = v;
+		end
 	end
 	return path;
 end
