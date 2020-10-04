@@ -14,7 +14,8 @@ _basic_string_nons_handler.properties = {
 	attr = nil
 };
 _basic_string_nons_handler.instance_properties = {
-	q_name={ns='', local_name="basic_string_nons"}
+	q_name={ns='', local_name="basic_string_nons"},
+	generated_name = "basic_string_nons"
 }
 
 _basic_string_nons_handler.type_handler = require("org.w3.2001.XMLSchema.string_handler");

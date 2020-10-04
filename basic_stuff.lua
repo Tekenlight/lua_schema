@@ -1,8 +1,9 @@
+local error_handler = require("error_handler");
 local basic_stuff = {};
 local URI = require("uri");
 local stringx = require("pl.stringx");
 
-basic_stuff.is_simple_content = function(content)
+basic_stuff.is_complex_type_simple_content = function(content)
 	if ((content._attr == nil) or (type(content._attr) ~= 'table')) then
 		return false;
 	elseif ((content._contained_value ~= nil) and (type(content._contained_value) ~= 'string') and
@@ -28,7 +29,7 @@ basic_stuff.assert_input_is_complex_content = function(content)
 	return true;
 end
 
-basic_stuff.assert_input_is_simple_content = function(content)
+basic_stuff.assert_input_is_complex_type_simple_content = function(content)
 	if ((content == nil) or (type(content) ~= 'table')) then
 		error("Input is not a valid lua struture of simplecontent");
 		return false;
@@ -129,34 +130,47 @@ basic_stuff.attributes_are_valid = function(attrs_def, attrs)
 		inp_attr = attrs
 	end
 	for n,v in pairs(attrs_def._attr_properties) do
+		error_handler.push_element(v.instance_properties.generated_name);
 		if ((v.properties.use == 'R') and (inp_attr[v.instance_properties.generated_name] == nil)) then
+			error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} should be present");
 			return false;
 		elseif ((v.properties.use == 'P') and (inp_attr[v.instance_properties.generated_name] ~= nil)) then
+			error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} should not be present");
 			return false;
 		elseif((not basic_stuff.is_nil(v.properties.fixed)) and
 						(tostring(inp_attr[v.instance_properties.generated_name]) ~= v.properties.fixed)) then
+			error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} value should be "..v.properties.fixed);
 			return false;
 		elseif ((inp_attr[v.instance_properties.generated_name] ~= nil) and
-						(not v.type_handler:is_valid(inp_attr[v.instance_properties.generated_name]))) then
+				(not basic_stuff.perform_primitive_validation(v.type_handler, inp_attr[v.instance_properties.generated_name]))) then
 			return false;
 		end
+		error_handler.pop_element();
 	end
 	for n,v in pairs(inp_attr) do
+		error_handler.push_element(n);
 		if (attrs_def._generated_attr[n] == nil) then
+			error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} should not be present");
 			return false
 		end
+		error_handler.pop_element();
 	end
 	return true;
 end
 
 basic_stuff.simple_is_valid = function(struct_handler, content)
 	if ((struct_handler.instance_properties.min_occurs > 0) and (content == nil)) then
+		error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} should not be null");
 		return false;
+	elseif ((struct_handler.instance_properties.min_occurs == 0) and (content == nil)) then
+		return true;
 	end
 	if (not basic_stuff.is_simple_type(content)) then
+		error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} should be primitive");
 		return false;
 	end
-	if (not struct_handler.type_handler:is_valid(content)) then
+	--if (not struct_handler.type_handler:is_valid(content)) then
+	if (not basic_stuff.perform_primitive_validation(struct_handler.type_handler, content)) then
 		return false;
 	end
 	return true;
@@ -164,53 +178,84 @@ end
 
 basic_stuff.struct_is_valid = function(struct_handler, content)
 	if ((struct_handler.instance_properties.min_occurs > 0) and (content == nil)) then
+		error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} should not be null");
 		return false;
+	elseif ((struct_handler.instance_properties.min_occurs == 0) and (content == nil)) then
+		return true;
 	end
 	if (type(content) ~= 'table') then
+		error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} should be a lua table");
 		return false;
 	end
 
 	for n,v in pairs(content) do
 		if ((n ~= "_attr") and (struct_handler.properties.generated_subelments[n] == nil)) then
+			error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} should not be present");
 			return false;
 		end
 	end
-	
+
 	for n,v in pairs(struct_handler.properties.generated_subelments) do
+		--[[
 		if (basic_stuff.is_nil(content[n])) then
 			if (v.instance_properties.min_occurs > 0) then
 				return false;
 			end
 		else
-			--if (not struct_handler.properties.generated_subelments[n].type_handler:is_valid(content[n])) then
-			--if (not v.type_handler:is_valid(content[n])) then
-			if (not v:is_valid(content[n])) then
+			if (not basic_stuff.perform_validation(v, content[n])) then
 				return false;
 			end
 		end
+		--]]
+		if (not basic_stuff.perform_validation(v, content[n])) then
+			return false;
+		end
 	end
+	error_handler.push_element("_attr");
 	if (not basic_stuff.attributes_are_valid(struct_handler.properties.attr, content._attr)) then
 		return false;
 	end
+	error_handler.pop_element();
 
 	return true;
 end
 
 basic_stuff.complex_type_simple_content_is_valid = function(schema_tpype_handler, content)
 	if ((schema_tpype_handler.instance_properties.min_occurs > 0) and (content == nil)) then
+		error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} should not be null");
 		return false;
 	end
-	if (not basic_stuff.is_simple_content(content)) then
+	if ((schema_tpype_handler.instance_properties.min_occurs == 0) and (content == nil)) then
+		return true;
+	end
+	if (not basic_stuff.is_complex_type_simple_content(content)) then
+		error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} is not a complex type of simple comtent");
 		return false;
 	end
-	if (not schema_tpype_handler.type_handler:is_valid(content._contained_value)) then
+	error_handler.push_element("_contained_value");
+	if (not basic_stuff.perform_primitive_validation(schema_tpype_handler.type_handler, content._contained_value)) then
 		return false;
 	end
+	error_handler.pop_element();
+	error_handler.push_element("_attr");
 	if (not basic_stuff.attributes_are_valid(schema_tpype_handler.properties.attr, content._attr)) then
 		return false;
 	end
+	error_handler.pop_element();
 	return true;
 end
+
+basic_stuff.perform_primitive_validation = function(handler, content)
+	return handler:is_valid(content);
+end
+
+basic_stuff.perform_validation = function(handler, content)
+	error_handler.push_element(handler.instance_properties.generated_name);
+	local valid = handler:is_valid(content);
+	error_handler.pop_element();
+	return valid
+end
+
 
 basic_stuff.get_attributes = function(schema_type_handler, nns, content)
 	local attributes = {};

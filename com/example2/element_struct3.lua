@@ -124,7 +124,8 @@ _struct_handler.properties = {
 	generated_subelments = _generated_sub_elements
 };
 _struct_handler.instance_properties = {
-	q_name={ns='http://example2.com', local_name='element_struct3'}
+	q_name={ns='http://example2.com', local_name='element_struct3'},
+	generated_name = 'element_struct3'
 };
 
 _struct_handler.is_valid = basic_stuff.struct_is_valid;

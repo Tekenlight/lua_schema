@@ -1,8 +1,17 @@
+local error_handler = require("error_handler");
 local __int_handler_class = {}
 
 function __int_handler_class:is_valid(i)
-	if(type(i) ~= "number") then return false end
-	if (0 ~= (i%1)) then return false end
+	local valid = true;
+	if(type(i) ~= "number") then
+		valid =  false
+	elseif (0 ~= (i%1)) then
+		valid =  false
+	end
+	if (not valid) then
+		error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} is not a valid integer");
+		return false;
+	end
 	return true;
 end
 
@@ -22,3 +31,4 @@ function __int_handler_class:to_cjson_struct(ns, i)
 end
 
 return __int_handler_class;
+

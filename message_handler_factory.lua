@@ -1,10 +1,11 @@
 local xmlua = require("xmlua")
 local cjson = require('cjson.safe');
 local basic_stuff = require("basic_stuff");
+local error_handler = require("error_handler");
 
 local _message_handler_factory = {};
 
-local get_jspon_tag = function(message_handler_instance)
+local get_json_tag = function(message_handler_instance)
 	--[[
 	local tag = '';
 	if (not basic_stuff.is_nil(message_handler_instance.properties.q_name.ns)) then
@@ -42,13 +43,30 @@ end
 
 local to_json_string = function(message_handler_instance, content)
 	local json_parser = cjson.new();
-	local tag = get_jspon_tag(message_handler_instance);
+	local tag = get_json_tag(message_handler_instance);
 	local table_output = {[tag] = content}
 	local flg, json_output, err = pcall(json_parser.encode, table_output);
 	if (json_output == nil or json_output == '') then
 		json_output = '{}';
 	end
 	return json_output;
+end
+
+local validate_doc = function(message_handler_instance, content)
+	local result = nil;
+	local valid = nil;
+	error_handler.init()
+	result, valid = pcall(basic_stuff.perform_validation, message_handler_instance,  content);
+	local message_validation_context = error_handler.reset();
+	if (not result) then
+		print(valid);
+		valid = false;
+	end
+	if (not valid) then
+		error(message_validation_context.status.error_message);
+		return false;
+	end
+	return true, nil;
 end
 
 function _message_handler_factory:get_message_handler(type_name, name_space)
@@ -59,15 +77,12 @@ function _message_handler_factory:get_message_handler(type_name, name_space)
 			basic_stuff.assert_input_is_simple_type(content);
 		else
 			if (self.properties.content_type=='S') then
-				basic_stuff.assert_input_is_simple_content(content);
+				basic_stuff.assert_input_is_complex_type_simple_content(content);
 			else
 				basic_stuff.assert_input_is_complex_content(content);
 			end
 		end
-		if (not self:is_valid(content)) then
-			error("Passed content is not valid");
-			return false;
-		end
+		validate_doc(self, content);
 		return to_json_string(self, content);
 	end
 
@@ -76,15 +91,12 @@ function _message_handler_factory:get_message_handler(type_name, name_space)
 			basic_stuff.assert_input_is_simple_type(content);
 		else
 			if (self.properties.content_type=='S') then
-				basic_stuff.assert_input_is_simple_content(content);
+				basic_stuff.assert_input_is_complex_type_simple_content(content);
 			else
 				basic_stuff.assert_input_is_complex_content(content);
 			end
 		end
-		if (not self:is_valid(content)) then
-			error("Passed content is not valid");
-			return false;
-		end
+		validate_doc(self, content);
 		return to_xml_string(self, content);
 	end
 
