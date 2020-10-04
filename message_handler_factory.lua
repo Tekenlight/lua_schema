@@ -53,6 +53,15 @@ local to_json_string = function(message_handler_instance, content)
 end
 
 local validate_doc = function(message_handler_instance, content)
+	if (message_handler_instance.properties.element_type == 'S') then
+		basic_stuff.assert_input_is_simple_type(content);
+	else
+		if (message_handler_instance.properties.content_type=='S') then
+			basic_stuff.assert_input_is_complex_type_simple_content(content);
+		else
+			basic_stuff.assert_input_is_complex_content(content);
+		end
+	end
 	local result = nil;
 	local valid = nil;
 	error_handler.init()
@@ -63,8 +72,7 @@ local validate_doc = function(message_handler_instance, content)
 		valid = false;
 	end
 	if (not valid) then
-		error(message_validation_context.status.error_message);
-		return false;
+		return false, message_validation_context;
 	end
 	return true, nil;
 end
@@ -73,31 +81,21 @@ function _message_handler_factory:get_message_handler(type_name, name_space)
 	local message_handler_base = basic_stuff.get_type_handler(name_space, type_name);
 	local message_handler = message_handler_base.new_instance_as_root();
 	function message_handler:to_json(content)
-		if (self.properties.element_type == 'S') then
-			basic_stuff.assert_input_is_simple_type(content);
+		status, msg = validate_doc(self, content)
+		if (status) then return to_json_string(self, content);
 		else
-			if (self.properties.content_type=='S') then
-				basic_stuff.assert_input_is_complex_type_simple_content(content);
-			else
-				basic_stuff.assert_input_is_complex_content(content);
-			end
+			print(msg.status.error_message);
+			return nil, msg;
 		end
-		validate_doc(self, content);
-		return to_json_string(self, content);
 	end
 
 	function message_handler:to_xml(content)
-		if (self.properties.element_type == 'S') then
-			basic_stuff.assert_input_is_simple_type(content);
+		status, msg = validate_doc(self, content)
+		if (status) then return to_xml_string(self, content);
 		else
-			if (self.properties.content_type=='S') then
-				basic_stuff.assert_input_is_complex_type_simple_content(content);
-			else
-				basic_stuff.assert_input_is_complex_content(content);
-			end
+			print(msg.status.error_message);
+			return nil, msg;
 		end
-		validate_doc(self, content);
-		return to_xml_string(self, content);
 	end
 
 	return message_handler;
