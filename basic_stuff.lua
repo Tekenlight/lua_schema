@@ -158,7 +158,7 @@ basic_stuff.attributes_are_valid = function(attrs_def, attrs)
 	return true;
 end
 
-basic_stuff.execute_array_contents_validation = function(schema_tpype_handler, validation_func, content)
+basic_stuff.execute_validation_of_array_contents = function(schema_tpype_handler, validation_func, content)
 	local count = 0;
 	local max = 0;
 	for n, v in pairs(content) do
@@ -171,6 +171,9 @@ basic_stuff.execute_array_contents_validation = function(schema_tpype_handler, v
 		if (max < n) then
 			max = n;
 		end
+		if (not validation_func(schema_tpype_handler, v)) then
+			return false;
+		end
 		error_handler.pop_element();
 	end
 	if (max ~= count) then
@@ -180,13 +183,13 @@ basic_stuff.execute_array_contents_validation = function(schema_tpype_handler, v
 	return true;
 end
 
-basic_stuff.execute_array_validation= function(schema_tpype_handler, validation_func, content)
-	if (type(content) ~= table) then
+basic_stuff.execute_validation_of_array = function(schema_tpype_handler, validation_func, content)
+	if (type(content) ~= "table") then
 		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should be a lua table");
 		return false;
 	end
 
-	if (not basic_stuff.execute_array_contents_validation(schema_tpype_handler, validation_func, content)) then
+	if (not basic_stuff.execute_validation_of_array_contents(schema_tpype_handler, validation_func, content)) then
 		return false;
 	end
 
@@ -205,34 +208,7 @@ basic_stuff.execute_validation_for_simple = function(schema_tpype_handler, conte
 	return true;
 end
 
-basic_stuff.carryout_element_validation = function(schema_tpype_handler, val_func, content)
-	if ((schema_tpype_handler.instance_properties.min_occurs > 0) and (content == nil)) then
-		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be null");
-		return false;
-	elseif ((schema_tpype_handler.instance_properties.min_occurs == 0) and (content == nil)) then
-		return true;
-	end
-
-	if (schema_tpype_handler.instance_properties.max_occurs ~= 1) then
-		return basic_stuff.execute_array_validation(schema_tpype_handler, val_func, content);
-	else
-		return val_func(schema_tpype_handler, content);
-	end
-	return true;
-end
-
-basic_stuff.simple_is_valid = function(schema_tpype_handler, content)
-	return basic_stuff.carryout_element_validation(schema_tpype_handler,
-										basic_stuff.execute_validation_for_simple, content);
-end
-
-basic_stuff.struct_is_valid = function(schema_tpype_handler, content)
-	if ((schema_tpype_handler.instance_properties.min_occurs > 0) and (content == nil)) then
-		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be null");
-		return false;
-	elseif ((schema_tpype_handler.instance_properties.min_occurs == 0) and (content == nil)) then
-		return true;
-	end
+basic_stuff.execute_validation_for_struct = function(schema_tpype_handler, content)
 	if (type(content) ~= 'table') then
 		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should be a lua table");
 		return false;
@@ -261,29 +237,57 @@ basic_stuff.struct_is_valid = function(schema_tpype_handler, content)
 	return true;
 end
 
-basic_stuff.complex_type_simple_content_is_valid = function(schema_tpype_handler, content)
-	if ((schema_tpype_handler.instance_properties.min_occurs > 0) and (content == nil)) then
-		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be null");
-		return false;
-	end
-	if ((schema_tpype_handler.instance_properties.min_occurs == 0) and (content == nil)) then
-		return true;
-	end
+basic_stuff.execute_validation_for_complex_type_simple_content = function(schema_tpype_handler, content)
 	if (not basic_stuff.is_complex_type_simple_content(content)) then
 		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} is not a complex type of simple comtent");
 		return false;
 	end
+
 	error_handler.push_element("_contained_value");
 	if (not basic_stuff.execute_primitive_validation(schema_tpype_handler.type_handler, content._contained_value)) then
 		return false;
 	end
 	error_handler.pop_element();
+
 	error_handler.push_element("_attr");
 	if (not basic_stuff.attributes_are_valid(schema_tpype_handler.properties.attr, content._attr)) then
 		return false;
 	end
 	error_handler.pop_element();
+
 	return true;
+end
+
+basic_stuff.carryout_element_validation = function(schema_tpype_handler, val_func, content)
+	if ((schema_tpype_handler.instance_properties.min_occurs > 0) and (content == nil)) then
+		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be null");
+		return false;
+	elseif ((schema_tpype_handler.instance_properties.min_occurs == 0) and (content == nil)) then
+		return true;
+	end
+
+	if (schema_tpype_handler.instance_properties.max_occurs ~= 1) then
+		return basic_stuff.execute_validation_of_array(schema_tpype_handler, val_func, content);
+	else
+		return val_func(schema_tpype_handler, content);
+	end
+
+	return true;
+end
+
+basic_stuff.simple_is_valid = function(schema_tpype_handler, content)
+	return basic_stuff.carryout_element_validation(schema_tpype_handler,
+										basic_stuff.execute_validation_for_simple, content);
+end
+
+basic_stuff.struct_is_valid = function(schema_tpype_handler, content)
+	return basic_stuff.carryout_element_validation(schema_tpype_handler,
+										basic_stuff.execute_validation_for_struct, content);
+end
+
+basic_stuff.complex_type_simple_content_is_valid = function(schema_tpype_handler, content)
+	return basic_stuff.carryout_element_validation(schema_tpype_handler,
+				basic_stuff.execute_validation_for_complex_type_simple_content, content);
 end
 
 basic_stuff.execute_primitive_validation = function(handler, content)
@@ -318,9 +322,11 @@ basic_stuff.get_attributes = function(schema_type_handler, nns, content)
 end
 
 function basic_stuff.simple_to_xmlua(schema_type_handler, nns, content)
+
 	if ((nil == content) and (schema_type_handler.instance_properties.root_element == false)) then
 		return nil
 	end
+
 	local doc = {};
 	if (not basic_stuff.is_nil(schema_type_handler.instance_properties.q_name.ns)) then
 		local prefix = nns.ns[schema_type_handler.instance_properties.q_name.ns];
@@ -356,6 +362,33 @@ function basic_stuff.simple_to_xmlua(schema_type_handler, nns, content)
 		doc[3]=schema_type_handler.type_handler:to_xmlua(nns, content);
 	end
 	return doc;
+end
+
+basic_stuff.compose_content_to_xmlua = function(schema_type_handler, compose_func, nns, content)
+
+	if ((nil == content) and (schema_type_handler.instance_properties.root_element == false)) then
+		return nil
+	end
+
+	local doc = nil;
+	if (schema_type_handler.instance_properties.max_occurs ~= 1) then
+		doc = {};
+		local count = 0;
+		for i,v in ipairs(content) do
+			local one_doc_element = compose_func(schema_type_handler, nns, v);
+			count = count + 1;
+			doc[count] = one_doc_element;
+			one_doc_element = nil;
+		end
+	else
+		doc = compose_func(schema_type_handler, nns, content);
+	end
+	return doc;
+end
+
+function basic_stuff.trial_simple_to_xmlua(schema_type_handler, nns, content)
+	return basic_stuff.compose_content_to_xmlua(schema_type_handler,
+							basic_stuff.low_simple_to_xmlua, nns, content);
 end
 
 basic_stuff.complex_type_simple_content_to_xmlua = function(schema_type_handler, nns, content)
@@ -429,10 +462,22 @@ basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
 	if (content ~= nil) then
 		for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
 			local subelement = schema_type_handler.properties.subelement_properties[v];
-			local xmlc = subelement:to_xmlua(nns, content[subelement.instance_properties.generated_name])
-			if (xmlc ~= nil) then
-				doc[i] = subelement:to_xmlua(nns, content[subelement.instance_properties.generated_name])
-				i = i + 1;
+			if (subelement.instance_properties.max_occurs ~= 1) then
+				arr = content[subelement.instance_properties.generated_name];
+				print(subelement.instance_properties.q_name.local_name, subelement.instance_properties.max_occurs);
+				print(type(arr));
+				if (arr ~= nil) then
+					for j,v in ipairs(arr) do
+						doc[i] = subelement:to_xmlua(nns, v);
+						i = i + 1;
+					end
+				end
+			else
+				local xmlc = subelement:to_xmlua(nns, content[subelement.instance_properties.generated_name])
+				if (xmlc ~= nil) then
+					doc[i] = subelement:to_xmlua(nns, content[subelement.instance_properties.generated_name])
+					i = i + 1;
+				end
 			end
 		end
 	else
