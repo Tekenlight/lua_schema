@@ -381,33 +381,6 @@ function basic_stuff.simple_to_xmlua(schema_type_handler, nns, content)
 	return doc;
 end
 
-basic_stuff.compose_content_to_xmlua = function(schema_type_handler, compose_func, nns, content)
-
-	if ((nil == content) and (schema_type_handler.instance_properties.root_element == false)) then
-		return nil
-	end
-
-	local doc = nil;
-	if (schema_type_handler.instance_properties.max_occurs ~= 1) then
-		doc = {};
-		local count = 0;
-		for i,v in ipairs(content) do
-			local one_doc_element = compose_func(schema_type_handler, nns, v);
-			count = count + 1;
-			doc[count] = one_doc_element;
-			one_doc_element = nil;
-		end
-	else
-		doc = compose_func(schema_type_handler, nns, content);
-	end
-	return doc;
-end
-
-function basic_stuff.trial_simple_to_xmlua(schema_type_handler, nns, content)
-	return basic_stuff.compose_content_to_xmlua(schema_type_handler,
-							basic_stuff.low_simple_to_xmlua, nns, content);
-end
-
 basic_stuff.complex_type_simple_content_to_xmlua = function(schema_type_handler, nns, content)
 	if ((nil == content) and (schema_type_handler.instance_properties.root_element == false)) then
 		return nil
