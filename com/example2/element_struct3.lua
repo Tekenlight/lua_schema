@@ -10,12 +10,12 @@
 local basic_stuff = require("basic_stuff");
 
 local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-							 [1] = '{}author',
-							 [2] = '{}title',
-							 [3] = '{}genre',
-							 [4] = '{http://example.com}example_struct',
-							 [5] = '{http://example.com}basic_string',
-							 [6] = '{}basic_string_nons',
+							 '{}author',
+							 '{}title',
+							 '{}genre',
+							 '{http://example.com}example_struct',
+							 '{http://example.com}basic_string',
+							 '{}basic_string_nons',
 						 };
 
 local es_o = nil;

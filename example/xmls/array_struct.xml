@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:example_struct xmlns:ns1="http://example.com" xmlns:ns2="http://example1.com">
+  <author>asdf</author>
+  <author>asdf</author>
+  <author>asdf</author>
+  <author>asdf</author>
+  <title>adfas</title>
+  <genre>as</genre>
+  <ns1:basic_string_simple_content attr2="CHA" attr1="123">GOWRI</ns1:basic_string_simple_content>
+</ns1:example_struct>
+
+

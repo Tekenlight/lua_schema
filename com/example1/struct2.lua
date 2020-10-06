@@ -5,9 +5,9 @@
 local basic_stuff = require("basic_stuff");
 
 local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-							 [1] = '{}author',
-							 [2] = '{}title',
-							 [3] = '{}genre'
+							 '{}author',
+							 '{}title',
+							 '{}genre'
 						 };
 
 local _subelement_properties = {

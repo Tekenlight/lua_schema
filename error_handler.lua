@@ -19,7 +19,11 @@ error_handler.get_fieldpath = function()
 	local path = nil;
 	for i,v in ipairs(_G.message_validation_context.fieldpath.path) do
 		if (path ~= nil) then
-			path = path.."."..v;
+			if ('integer' == math.type(v)) then
+				path = path.."["..v.."]";
+			else
+				path = path.."."..v;
+			end
 		else
 			path = v;
 		end
@@ -34,6 +38,7 @@ error_handler.raise_validation_error = function(error_no, message)
 	else
 		error_handler.set_validation_error(error_no, message);
 		--print(debug.traceback("HH"));
+		error(message);
 		 return false;
 	end
 end
