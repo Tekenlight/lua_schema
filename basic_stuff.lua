@@ -161,6 +161,7 @@ end
 basic_stuff.execute_validation_of_array_contents = function(schema_tpype_handler, validation_func, content)
 	local count = 0;
 	local max = 0;
+
 	for n, v in pairs(content) do
 		error_handler.push_element(n);
 		if (('integer' ~= math.type(n)) or (n <= 0)) then
@@ -176,10 +177,26 @@ basic_stuff.execute_validation_of_array_contents = function(schema_tpype_handler
 		end
 		error_handler.pop_element();
 	end
+
 	if (max ~= count) then
 		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} does not have sequential indices");
 		return false;
 	end
+
+	if ((schema_tpype_handler.instance_properties.max_occurs > 0) and
+						(count > schema_tpype_handler.instance_properties.max_occurs)) then
+		error_handler.raise_validation_error(-1,
+				"Element: {"..error_handler.get_fieldpath().."} has more number of elements than {"
+										..schema_tpype_handler.instance_properties.max_occurs.."}");
+		return false;
+	end
+
+	if (schema_tpype_handler.instance_properties.min_occurs > count) then
+		error_handler.raise_validation_error(-1,
+				"Element: {"..error_handler.get_fieldpath().."} should have atleast "..
+							schema_tpype_handler.instance_properties.min_occurs.." elements");
+	end
+
 	return true;
 end
 
@@ -464,8 +481,6 @@ basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
 			local subelement = schema_type_handler.properties.subelement_properties[v];
 			if (subelement.instance_properties.max_occurs ~= 1) then
 				arr = content[subelement.instance_properties.generated_name];
-				print(subelement.instance_properties.q_name.local_name, subelement.instance_properties.max_occurs);
-				print(type(arr));
 				if (arr ~= nil) then
 					for j,v in ipairs(arr) do
 						doc[i] = subelement:to_xmlua(nns, v);
