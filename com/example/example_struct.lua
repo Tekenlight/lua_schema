@@ -101,7 +101,7 @@ local _subelement_properties = {
 		to_xmlua = basic_stuff.simple_to_xmlua
 	},
 	['{}s2'] = require("com.example1.struct2"):new_instance_as_local_element(
-						{ ns = '', local_name = 's2', generated_name = 's2', root_element = false,  min_occurs = 1, max_occurs = 1  } ),
+						{ ns = '', local_name = 's2', generated_name = 's2', root_element = false,  min_occurs = 1, max_occurs = -1  } ),
 	['{http://example.com}basic_string_simple_content'] =
 				require("com.example.basic_string_simple_content"):new_instance_as_ref( { root_element = false, min_occurs = 1, max_occurs = 1  } ),
 
