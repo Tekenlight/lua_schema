@@ -163,15 +163,17 @@ basic_stuff.execute_validation_of_array_contents = function(schema_tpype_handler
 	local max = 0;
 
 	for n, v in pairs(content) do
-		error_handler.push_element(n);
+		--error_handler.push_element(n);
 		if (('integer' ~= math.type(n)) or (n <= 0)) then
-			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."]} not allowed in the table");
+			--error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."]} not allowed in an array");
+			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."]} is not a valid array");
 			return false;
 		end
 		count = count + 1;
 		if (max < n) then
 			max = n;
 		end
+		error_handler.push_element(n);
 		if (not validation_func(schema_tpype_handler, v)) then
 			return false;
 		end
