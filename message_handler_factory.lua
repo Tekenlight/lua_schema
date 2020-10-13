@@ -15,7 +15,7 @@ local get_json_tag = function(message_handler_instance)
 	end
 	return tag
 	]]--
-	return message_handler_instance.instance_properties.q_name.local_name;
+	return message_handler_instance.particle_properties.q_name.local_name;
 end
 
 local gather_namespace_declarations = function(message_handler_instance)
@@ -65,7 +65,7 @@ local validate_doc = function(message_handler_instance, content)
 	local result = nil;
 	local valid = nil;
 	error_handler.init()
-	result, valid = pcall(basic_stuff.perform_validation, message_handler_instance,  content);
+	result, valid = pcall(basic_stuff.perform_element_validation, message_handler_instance,  content);
 	local message_validation_context = error_handler.reset();
 	if (not result) then
 		print(valid);

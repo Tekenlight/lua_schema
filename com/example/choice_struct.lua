@@ -9,36 +9,26 @@
 -- ]]
 local basic_stuff = require("basic_stuff");
 
---[[
-local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-							 [1] = '{http://example1.com}element_struct2',
-							 [2] = '{}author',
-							 [3] = '{}title',
-							 [4] = '{}genre',
-							 [5] = '{}s2',
-							 [6] = '{http://example.com}basic_string_simple_content'
-						 };
---]]
-local _declared_sub_elements = {
-	group_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-	'{http://example1.com}element_struct2',
-	'{}author',
-	'{}title',
-	'{}genre',
-	'{}s2',
-	'{http://example.com}basic_string_simple_content'
+local _declared_subelements = {
+	'{}one',
+	'{}two',
+	'{}three',
+	'{}four',
 };
 
+-- We use generated names in this index, to aid validation within a struct
 local _content_model = {
 	data_struture = 'struct',
-	group_type = 'A', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
+	group_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
 	min_occurs = 1, max_occurs = 1,
-	'element_struct2',
-	'author',
-	'title',
-	'genre',
-	's2',
-	'basic_string_simple_content',
+	'one',
+	'two',
+	{
+		group_type = 'C', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
+		min_occurs = 1, max_occurs = 1,
+		'three',
+		'four',
+	},
 };
 
 local es_o = nil;
@@ -54,17 +44,15 @@ local function debug2(o)
 	return o;
 end
 local _subelement_properties = {
-	['{http://example1.com}element_struct2'] = (require('com.example1.element_struct2')):new_instance_as_ref(
-																				{ root_element = false, min_occurs = 1, max_occurs = 1}),
-	['{}author'] = {
+	['{}one'] = {
 		properties = {
 			element_type = 'S',
 			content_type = 'S',
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string',
 		},
 		particle_properties = {
-			q_name={ns='', local_name='author'},
-			generated_name = 'author',
+			q_name={ns='', local_name='one'},
+			generated_name = 'one',
 			min_occurs = 1,
 			max_occurs = 1,
 			root_element = false,
@@ -75,15 +63,15 @@ local _subelement_properties = {
 		get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared,
 		to_xmlua = basic_stuff.simple_to_xmlua
 	},
-	['{}title'] = {
+	['{}two'] = {
 		properties = {
 			element_type = 'S',
 			content_type = 'S',
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
 		},
 		particle_properties = {
-			q_name={ns='', local_name='title'},
-			generated_name = 'title',
+			q_name={ns='', local_name='two'},
+			generated_name = 'two',
 			min_occurs = 1,
 			max_occurs = 1,
 			root_element = false,
@@ -94,15 +82,15 @@ local _subelement_properties = {
 		get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared,
 		to_xmlua = basic_stuff.simple_to_xmlua
 	},
-	['{}genre'] = {
+	['{}three'] = {
 		properties = {
 			element_type = 'S',
 			content_type = 'S',
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
 		},
 		particle_properties = {
-			q_name= { ns='', local_name='genre'},
-			generated_name = 'genre',
+			q_name= { ns='', local_name='three'},
+			generated_name = 'three',
 			min_occurs = 1,
 			max_occurs = 1,
 			root_element = false,
@@ -113,27 +101,40 @@ local _subelement_properties = {
 		get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared,
 		to_xmlua = basic_stuff.simple_to_xmlua
 	},
-	['{}s2'] = require("com.example1.struct2"):new_instance_as_local_element(
-						{ ns = '', local_name = 's2', generated_name = 's2', root_element = false,  min_occurs = 1, max_occurs = -1  } ),
-	['{http://example.com}basic_string_simple_content'] =
-				require("com.example.basic_string_simple_content"):new_instance_as_ref( { root_element = false, min_occurs = 1, max_occurs = 1  } ),
+	['{}four'] = {
+		properties = {
+			element_type = 'S',
+			content_type = 'S',
+			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
+		},
+		particle_properties = {
+			q_name= { ns='', local_name='four'},
+			generated_name = 'four',
+			min_occurs = 1,
+			max_occurs = 1,
+			root_element = false,
+		},
+		type_handler = require("org.w3.2001.XMLSchema.string_handler"),
+		get_attributes = basic_stuff.get_attributes,
+		is_valid = basic_stuff.simple_is_valid,
+		get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared,
+		to_xmlua = basic_stuff.simple_to_xmlua
+	},
 
 };
 
 local _generated_sub_elements = {
-	['element_struct2'] = _subelement_properties['{http://example1.com}element_struct2'],
-	['author'] = _subelement_properties['{}author'],
-	['title'] = _subelement_properties['{}title'],
-	['genre'] = _subelement_properties['{}genre'],
-	['s2'] = _subelement_properties['{}s2'],
-	['basic_string_simple_content'] = _subelement_properties['{http://example.com}basic_string_simple_content']
+	['one'] = _subelement_properties['{}one'],
+	['two'] = _subelement_properties['{}two'],
+	['three'] = _subelement_properties['{}three'],
+	['four'] = _subelement_properties['{}four'],
 };
 
 local _struct_handler = {};
 _struct_handler.properties = {
 	element_type='C',
 	content_type='C',
-	schema_type = '{http://example.com}example_struct', --[[This is the name of the type
+	schema_type = '{http://example.com}choice_struct', --[[This is the name of the type
 														    can be implicit (in which case the
 															name is derived) or explicit in the
 															schema definition
@@ -144,14 +145,14 @@ _struct_handler.properties = {
 		_generated_attr = {
 		}
 	},
-	declared_subelements = _declared_sub_elements,
+	declared_subelements = _declared_subelements,
 	content_model = _content_model,
 	subelement_properties = _subelement_properties,
 	generated_subelments = _generated_sub_elements
 };
 _struct_handler.particle_properties = {
-	q_name={ns='http://example.com', local_name='example_struct'},
-	generated_name = 'example_struct'
+	q_name={ns='http://example.com', local_name='choice_struct'},
+	generated_name = 'choice_struct'
 };
 
 _struct_handler.is_valid = basic_stuff.complex_type_is_valid;
@@ -170,8 +171,8 @@ end
 
 function _factory:new_instance_as_ref(element_ref_properties)
 	return basic_stuff.instantiate_element_as_ref(mt, { ns='http://example.com',
-														local_name = 'example_struct',
-														generated_name = 'example_struct',
+														local_name = 'choice_struct',
+														generated_name = 'choice_struct',
 														min_occurs = element_ref_properties.min_occurs,
 														max_occurs = element_ref_properties.max_occurs,
 														root_element = element_ref_properties.root_element});

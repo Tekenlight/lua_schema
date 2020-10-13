@@ -21,7 +21,7 @@ _basic_string_simple_content_handler.properties = {
 					use = 'O', -- One of 'O' - Optional, 'P' - Prohibited, 'R' - Required
 					form = 'U', -- Q - Qualified, U - Unqualified
 				},
-				instance_properties = {
+				particle_properties = {
 					q_name = { ns = '', local_name = "attr1" },
 					generated_name = 'attr1'
 				},
@@ -35,7 +35,7 @@ _basic_string_simple_content_handler.properties = {
 					use = 'R', -- One of 'O' - Optional, 'P' - Prohibited, 'R' - Required
 					form = 'U', -- Q - Qualified, U - Unqualified
 				},
-				instance_properties = {
+				particle_properties = {
 					q_name = { ns = '', local_name = "attr2" },
 					generated_name = 'attr2'
 				},
@@ -48,7 +48,7 @@ _basic_string_simple_content_handler.properties = {
 		}
 	}
 };
-_basic_string_simple_content_handler.instance_properties = {
+_basic_string_simple_content_handler.particle_properties = {
 	q_name={ns="http://example.com", local_name="basic_string_simple_content"},
 	generated_name = "basic_string_simple_content"
 };

@@ -4,11 +4,21 @@
 -- ]]
 local basic_stuff = require("basic_stuff");
 
-local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-							 '{}author',
-							 '{}title',
-							 '{}genre'
-						 };
+local _declared_sub_elements = {
+	group_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
+	'{}author',
+	'{}title',
+	'{}genre'
+};
+
+local _content_model = {
+	data_struture = 'struct',
+	group_type = 'A', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
+	min_occurs = 1, max_occurs = 1,
+	'author',
+	'title',
+	'genre',
+};
 
 local _subelement_properties = {
 	['{}author'] = {
@@ -17,7 +27,7 @@ local _subelement_properties = {
 			content_type = 'S',
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string',
 		},
-		instance_properties = {
+		particle_properties = {
 			q_name={ns='', local_name='author'},
 			generated_name = 'author',
 			min_occurs = 1,
@@ -36,7 +46,7 @@ local _subelement_properties = {
 			content_type = 'S',
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
 		},
-		instance_properties = {
+		particle_properties = {
 			q_name={ns='', local_name='title'},
 			generated_name = 'title',
 			min_occurs = 1,
@@ -55,7 +65,7 @@ local _subelement_properties = {
 			content_type = 'S',
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
 		},
-		instance_properties = {
+		particle_properties = {
 			q_name= { ns='', local_name='genre'},
 			generated_name = 'genre',
 			min_occurs = 1,
@@ -94,11 +104,12 @@ _struct_handler.properties = {
 		}
 	},
 	declared_subelements = _declared_sub_elements,
+	content_model = _content_model,
 	subelement_properties = _subelement_properties,
 	generated_subelments = _generated_sub_elements
 };
 
-_struct_handler.is_valid = basic_stuff.struct_is_valid;
+_struct_handler.is_valid = basic_stuff.complex_type_is_valid;
 _struct_handler.get_attributes = basic_stuff.get_attributes;
 _struct_handler.to_xmlua = basic_stuff.struct_to_xmlua;
 _struct_handler.get_unique_namespaces_declared = basic_stuff.complex_get_unique_namespaces_declared;

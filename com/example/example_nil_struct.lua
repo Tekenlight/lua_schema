@@ -9,25 +9,38 @@
 -- ]]
 local basic_stuff = require("basic_stuff");
 
-local _declared_sub_elements = { collection_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-							 '{http://example1.com}element_struct2',
-							 '{}author',
-							 '{}title',
-							 '{}genre',
-							 '{}s2',
-							 '{http://example.com}basic_string_simple_content'
-						 };
+local _declared_sub_elements = {
+	group_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
+	'{http://example1.com}element_struct2',
+	'{}author',
+	'{}title',
+	'{}genre',
+	'{}s2',
+	'{http://example.com}basic_string_simple_content'
+};
+
+local _content_model = {
+	data_struture = 'struct',
+	group_type = 'A', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
+	min_occurs = 1, max_occurs = 1,
+	'element_struct2',
+	'author',
+	'title',
+	'genre',
+	's2',
+	'basic_string_simple_content',
+};
 
 local es_o = nil;
 local function debug(o)
 	es_o = o;
 	print("INSTANTIATING");
-	print("1111EDEBUG", o.type_handler, o.instance_properties.q_name.local_name);
+	print("1111EDEBUG", o.type_handler, o.particle_properties.q_name.local_name);
 	return o;
 end
 local function debug2(o)
-	print("2222EDEBUG", es_o.type_handler, es_o.instance_properties.q_name.local_name);
-	print("2222SDEBUG", o.type_handler, o.instance_properties.q_name.local_name);
+	print("2222EDEBUG", es_o.type_handler, es_o.particle_properties.q_name.local_name);
+	print("2222SDEBUG", o.type_handler, o.particle_properties.q_name.local_name);
 	return o;
 end
 local _subelement_properties = {
@@ -39,7 +52,7 @@ local _subelement_properties = {
 			content_type = 'S',
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string',
 		},
-		instance_properties = {
+		particle_properties = {
 			q_name={ns='', local_name='author'},
 			generated_name = 'author',
 			min_occurs = 1,
@@ -58,7 +71,7 @@ local _subelement_properties = {
 			content_type = 'S',
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
 		},
-		instance_properties = {
+		particle_properties = {
 			q_name={ns='', local_name='title'},
 			generated_name = 'title',
 			min_occurs = 1,
@@ -77,7 +90,7 @@ local _subelement_properties = {
 			content_type = 'S',
 			schema_type = '{http://www.w3.org/2001/XMLSchema}string' ,
 		},
-		instance_properties = {
+		particle_properties = {
 			q_name= { ns='', local_name='genre'},
 			generated_name = 'genre',
 			min_occurs = 0,
@@ -122,15 +135,16 @@ _struct_handler.properties = {
 		}
 	},
 	declared_subelements = _declared_sub_elements,
+	content_model = _content_model,
 	subelement_properties = _subelement_properties,
 	generated_subelments = _generated_sub_elements
 };
-_struct_handler.instance_properties = {
+_struct_handler.particle_properties = {
 	q_name={ns='http://example.com', local_name='example_nil_struct'},
 	generated_name = 'example_nil_struct'
 };
 
-_struct_handler.is_valid = basic_stuff.struct_is_valid;
+_struct_handler.is_valid = basic_stuff.complex_type_is_valid;
 _struct_handler.get_attributes = basic_stuff.get_attributes;
 _struct_handler.to_xmlua = basic_stuff.struct_to_xmlua;
 _struct_handler.get_unique_namespaces_declared = basic_stuff.complex_get_unique_namespaces_declared;

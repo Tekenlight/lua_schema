@@ -13,7 +13,7 @@ _basic_string_nons_handler.properties = {
 	schema_type = "{http://www.w3.org/2001/XMLSchema}string",
 	attr = nil
 };
-_basic_string_nons_handler.instance_properties = {
+_basic_string_nons_handler.particle_properties = {
 	q_name={ns='', local_name="basic_string_nons"},
 	generated_name = "basic_string_nons"
 }
