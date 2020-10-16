@@ -12,7 +12,6 @@ local _declared_sub_elements = {
 };
 
 local _content_model = {
-	data_struture = 'struct',
 	group_type = 'A', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
 	min_occurs = 1, max_occurs = 1,
 	'author',
@@ -106,7 +105,7 @@ _struct_handler.properties = {
 	declared_subelements = _declared_sub_elements,
 	content_model = _content_model,
 	subelement_properties = _subelement_properties,
-	generated_subelments = _generated_sub_elements
+	generated_subelements = _generated_sub_elements
 };
 
 _struct_handler.is_valid = basic_stuff.complex_type_is_valid;

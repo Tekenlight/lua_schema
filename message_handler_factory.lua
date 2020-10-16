@@ -66,6 +66,7 @@ local validate_doc = function(message_handler_instance, content)
 	local valid = nil;
 	error_handler.init()
 	result, valid = pcall(basic_stuff.perform_element_validation, message_handler_instance,  content);
+
 	local message_validation_context = error_handler.reset();
 	if (not result) then
 		print(valid);

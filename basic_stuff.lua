@@ -158,7 +158,9 @@ basic_stuff.attributes_are_valid = function(attrs_def, attrs)
 	return true;
 end
 
-basic_stuff.execute_validation_of_array_contents = function(schema_tpype_handler, validation_func, content)
+
+
+basic_stuff.execute_validation_of_array_contents = function(schema_type_handler, validation_func, content, content_model, from_element)
 	local count = 0;
 	local max = 0;
 
@@ -174,7 +176,7 @@ basic_stuff.execute_validation_of_array_contents = function(schema_tpype_handler
 			max = n;
 		end
 		error_handler.push_element(n);
-		if (not validation_func(schema_tpype_handler, v)) then
+		if (not validation_func(schema_type_handler, v, content_model)) then
 			return false;
 		end
 		error_handler.pop_element();
@@ -185,115 +187,250 @@ basic_stuff.execute_validation_of_array_contents = function(schema_tpype_handler
 		return false;
 	end
 
-	if ((schema_tpype_handler.particle_properties.max_occurs > 0) and
-						(count > schema_tpype_handler.particle_properties.max_occurs)) then
+	local max_occurs = nil;
+	local min_occurs = nil;
+	if (from_element) then
+		max_occurs = schema_type_handler.particle_properties.max_occurs;
+		min_occurs = schema_type_handler.particle_properties.min_occurs;
+	else
+		max_occurs = content_model.max_occurs;
+		min_occurs = content_model.min_occurs;
+	end
+
+	if ((max_occurs > 0) and
+						(count > max_occurs)) then
 		error_handler.raise_validation_error(-1,
 				"Element: {"..error_handler.get_fieldpath().."} has more number of elements than {"
-										..schema_tpype_handler.particle_properties.max_occurs.."}");
+										..max_occurs.."}");
 		return false;
 	end
 
-	if (schema_tpype_handler.particle_properties.min_occurs > count) then
+	if (min_occurs > count) then
 		error_handler.raise_validation_error(-1,
 				"Element: {"..error_handler.get_fieldpath().."} should have atleast "..
-							schema_tpype_handler.particle_properties.min_occurs.." elements");
+							min_occurs.." elements");
 	end
 
 	return true;
 end
 
-basic_stuff.execute_validation_of_array = function(schema_tpype_handler, validation_func, content)
+basic_stuff.execute_validation_of_array = function(schema_type_handler, validation_func,
+															content, content_model, from_element)
 	if (type(content) ~= "table") then
-		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should be a lua table");
+		error_handler.raise_validation_error(-1,
+				"Element: {"..error_handler.get_fieldpath().."} should be a lua table");
 		return false;
 	end
 
-	if (not basic_stuff.execute_validation_of_array_contents(schema_tpype_handler, validation_func, content)) then
+	if (not basic_stuff.execute_validation_of_array_contents(schema_type_handler,
+							validation_func, content, content_model, from_element)) then
 		return false;
 	end
 
 	return true;
 end
 
-basic_stuff.execute_validation_for_simple = function(schema_tpype_handler, content)
+basic_stuff.execute_validation_for_simple = function(schema_type_handler, content)
 	if (not basic_stuff.is_simple_type(content)) then
 		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should be primitive");
 		return false;
 	end
-	--if (not schema_tpype_handler.type_handler:is_valid(content)) then
-	if (not basic_stuff.execute_primitive_validation(schema_tpype_handler.type_handler, content)) then
+	--if (not schema_type_handler.type_handler:is_valid(content)) then
+	if (not basic_stuff.execute_primitive_validation(schema_type_handler.type_handler, content)) then
 		return false;
 	end
 	return true;
 end
 
-basic_stuff.execute_validation_for_struct = function(schema_tpype_handler, content)
-
-	if (type(content) ~= 'table') then
-		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should be a lua table");
-		return false;
-	end
+basic_stuff.all_elements_part_of_declaration = function(schema_type_handler, content, content_model)
 
 	for n,v in pairs(content) do
 		error_handler.push_element(n);
-		if ((n ~= "_attr") and (schema_tpype_handler.properties.generated_subelments[n] == nil)) then
+		if ((n ~= "_attr") and (schema_type_handler.properties.generated_subelements[n] == nil)) then
 			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be present");
 			return false;
 		end
 		error_handler.pop_element();
 	end
 
-	for n,v in pairs(schema_tpype_handler.properties.generated_subelments) do
+	return true;
+end
+
+basic_stuff.execute_validation_for_struct = function(schema_type_handler, content, content_model)
+
+	if (not basic_stuff.all_elements_part_of_declaration(schema_type_handler, content, content_model)) then
+		return false;
+	end
+
+	for n,v in pairs(schema_type_handler.properties.generated_subelements) do
 		if (not basic_stuff.perform_element_validation(v, content[n])) then
 			return false;
 		end
 	end
 
-	error_handler.push_element("_attr");
-	if (not basic_stuff.attributes_are_valid(schema_tpype_handler.properties.attr, content._attr)) then
+	return true;
+end
+
+basic_stuff.execute_validation_for_complex_type_all = function(schema_type_handler, content, content_model)
+	return basic_stuff.execute_validation_for_struct(schema_type_handler, content, content_model);
+end
+
+basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_handler, content, content_model)
+
+	if (not basic_stuff.all_elements_part_of_declaration(schema_type_handler, content, content_model)) then
 		return false;
 	end
-	error_handler.pop_element();
+
+	local fields = nil;
+	local present_count = 0;
+	for _, v in ipairs(content_model) do
+		local t = type(v);
+		if (t == 'string') then
+			if (fields == nil) then
+				fields = v;
+			else
+				fields = fields..", "..v;
+			end
+			if (content[v] ~= nil) then
+				present_count = present_count + 1;
+				local subelement = schema_type_handler.properties.generated_subelements[v];
+				if (not basic_stuff.perform_element_validation(subelement, content[v])) then
+					return false;
+				end
+			end
+		elseif(t == 'table') then
+			local xmlc = nil;
+			if (nil == v.generated_subelement_name) then
+				-- No depth
+				xmlc = content;
+			else
+				-- One legel deep
+				if (fields == nil) then
+					fields = v.generated_subelement_name;
+				else
+					fields = fields..", "..v.generated_subelement_name;
+				end
+				xmlc = content[v.generated_subelement_name]
+			end
+			if (xmlc ~= nil) then
+				present_count = present_count + 1;
+				if (not basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, v)) then
+					return false;
+				end
+			end
+		else
+			error("INVALID DATATYPE IN CONTENT MODEL METADATA "..t);
+		end
+	end
+
+	if (present_count > 1) then
+		error_handler.raise_validation_error(-1,
+				"Element: {"..error_handler.get_fieldpath().."} only one of ("..fields..") should be there");
+		return false;
+	end
 
 	return true;
 end
 
-basic_stuff.execute_validation_for_complex_type_all = function(schema_tpype_handler, content)
-	return basic_stuff.execute_validation_for_struct(schema_tpype_handler, content);
+basic_stuff.execute_validation_for_complex_type_sequence = function(schema_type_handler, content, content_model)
+
+	if (not basic_stuff.all_elements_part_of_declaration(schema_type_handler, content, content_model)) then
+		return false;
+	end
+
+	for _, v in ipairs(content_model) do
+		local t = type(v);
+		if (t == 'string') then
+			local subelement = schema_type_handler.properties.generated_subelements[v];
+			if (not basic_stuff.perform_element_validation(subelement, content[v])) then
+				return false;
+			end
+		elseif(t == 'table') then
+			local xmlc = nil;
+			if (nil == v.generated_subelement_name) then
+				-- No depth
+				xmlc = content;
+			else
+				-- One legel deep
+				xmlc = content[v.generated_subelement_name]
+			end
+			if (not basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, v)) then
+				return false;
+			end
+		else
+			error("INVALID DATATYPE IN CONTENT MODEL METADATA "..t);
+		end
+	end
+
+	return true;
 end
 
-basic_stuff.execute_validation_for_complex_type_sequence = function(schema_tpype_handler, content)
-	return false;
+basic_stuff.execute_validation_for_complex_type_s_or_c = function(schema_type_handler, content, content_model)
+
+	if (content == nil) then
+		if (schema_type_handler.content_model.min_occurs > 0) then
+			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be null");
+			return false;
+		elseif (schema_type_handler.content_model.min_occurs == 0) then
+			return true;
+		else
+			error("INVALID valud of min_occurs "..schema_type_handler.content_model.min_occurs);
+		end
+	end
+
+	local val_func = nil;
+	if (content_model.group_type == 'S') then
+		val_func = basic_stuff.execute_validation_for_complex_type_sequence;
+	elseif (content_model.group_type == 'C') then
+		val_func = basic_stuff.execute_validation_for_complex_type_choice;
+	else
+		error("INVALID CONTENT GROUP TYPE "..content_model.group_type);
+	end
+
+	if (content_model.max_occurs ~= 1) then
+		return basic_stuff.execute_validation_of_array(schema_type_handler, val_func, content, content_model, false);
+	else
+		return val_func(schema_type_handler, content, content_model);
+	end
+
+	return true;
 end
 
-basic_stuff.execute_validation_for_complex_type_choice = function(schema_tpype_handler, content)
-	return false;
-end
+basic_stuff.execute_validation_for_complex_type = function(schema_type_handler, content, content_model)
 
-basic_stuff.execute_validation_for_complex_type = function(schema_tpype_handler, content)
-	if (schema_tpype_handler.properties.content_model.group_type == 'A') then
-		return basic_stuff.execute_validation_for_complex_type_all(schema_tpype_handler, content);
-	elseif (schema_tpype_handler.properties.content_model.group_type == 'S') then
-		return basic_stuff.execute_validation_for_complex_type_sequence(schema_tpype_handler, content);
-	elseif (schema_tpype_handler.properties.content_model.group_type == 'C') then
-		return basic_stuff.execute_validation_for_complex_type_choice(schema_tpype_handler, content);
+	if (type(content) ~= 'table') then
+		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should be a lua table");
+		return false;
+	end
+
+	error_handler.push_element("_attr");
+	if (not basic_stuff.attributes_are_valid(schema_type_handler.properties.attr, content._attr)) then
+		return false;
+	end
+	error_handler.pop_element();
+
+	if (schema_type_handler.properties.content_model.group_type == 'A') then
+		return basic_stuff.execute_validation_for_complex_type_all(schema_type_handler, content, content_model);
+	elseif (schema_type_handler.properties.content_model.group_type == 'S' or
+					schema_type_handler.properties.content_model.group_type == 'C') then
+		return basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, content, content_model);
 	end
 end
 
-basic_stuff.execute_validation_for_complex_type_simple_content = function(schema_tpype_handler, content)
+basic_stuff.execute_validation_for_complex_type_simple_content = function(schema_type_handler, content)
 	if (not basic_stuff.is_complex_type_simple_content(content)) then
 		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} is not a complex type of simple comtent");
 		return false;
 	end
 
 	error_handler.push_element("_contained_value");
-	if (not basic_stuff.execute_primitive_validation(schema_tpype_handler.type_handler, content._contained_value)) then
+	if (not basic_stuff.execute_primitive_validation(schema_type_handler.type_handler, content._contained_value)) then
 		return false;
 	end
 	error_handler.pop_element();
 
 	error_handler.push_element("_attr");
-	if (not basic_stuff.attributes_are_valid(schema_tpype_handler.properties.attr, content._attr)) then
+	if (not basic_stuff.attributes_are_valid(schema_type_handler.properties.attr, content._attr)) then
 		return false;
 	end
 	error_handler.pop_element();
@@ -301,36 +438,37 @@ basic_stuff.execute_validation_for_complex_type_simple_content = function(schema
 	return true;
 end
 
-basic_stuff.carryout_element_validation = function(schema_tpype_handler, val_func, content)
-	if ((schema_tpype_handler.particle_properties.min_occurs > 0) and (content == nil)) then
+basic_stuff.carryout_element_validation = function(schema_type_handler, val_func, content, content_model)
+	if ((schema_type_handler.particle_properties.min_occurs > 0) and (content == nil)) then
 		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be null");
 		return false;
-	elseif ((schema_tpype_handler.particle_properties.min_occurs == 0) and (content == nil)) then
+	elseif ((schema_type_handler.particle_properties.min_occurs == 0) and (content == nil)) then
 		return true;
 	end
 
-	if (schema_tpype_handler.particle_properties.max_occurs ~= 1) then
-		return basic_stuff.execute_validation_of_array(schema_tpype_handler, val_func, content);
+	if (schema_type_handler.particle_properties.max_occurs ~= 1) then
+		return basic_stuff.execute_validation_of_array(schema_type_handler, val_func, content, content_model, true);
 	else
-		return val_func(schema_tpype_handler, content);
+		return val_func(schema_type_handler, content, content_model);
 	end
 
 	return true;
 end
 
-basic_stuff.simple_is_valid = function(schema_tpype_handler, content)
-	return basic_stuff.carryout_element_validation(schema_tpype_handler,
-										basic_stuff.execute_validation_for_simple, content);
+basic_stuff.simple_is_valid = function(schema_type_handler, content)
+	return basic_stuff.carryout_element_validation(schema_type_handler,
+										basic_stuff.execute_validation_for_simple, content, nil);
 end
 
-basic_stuff.complex_type_is_valid = function(schema_tpype_handler, content)
-	return basic_stuff.carryout_element_validation(schema_tpype_handler,
-										basic_stuff.execute_validation_for_complex_type, content);
+basic_stuff.complex_type_is_valid = function(schema_type_handler, content)
+	return basic_stuff.carryout_element_validation(schema_type_handler,
+													basic_stuff.execute_validation_for_complex_type,
+													content, schema_type_handler.properties.content_model);
 end
 
-basic_stuff.complex_type_simple_content_is_valid = function(schema_tpype_handler, content)
-	return basic_stuff.carryout_element_validation(schema_tpype_handler,
-				basic_stuff.execute_validation_for_complex_type_simple_content, content);
+basic_stuff.complex_type_simple_content_is_valid = function(schema_type_handler, content)
+	return basic_stuff.carryout_element_validation(schema_type_handler,
+				basic_stuff.execute_validation_for_complex_type_simple_content, content, nil);
 end
 
 basic_stuff.execute_primitive_validation = function(handler, content)
@@ -444,12 +582,109 @@ basic_stuff.complex_type_simple_content_to_xmlua = function(schema_type_handler,
 	return doc;
 end
 
+basic_stuff.add_model_content_all = function(schema_type_handler, nns, doc, index, content, content_model)
+	local i = index;
+	for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
+		local subelement = schema_type_handler.properties.subelement_properties[v];
+		if (subelement.particle_properties.max_occurs ~= 1) then
+			arr = content[subelement.particle_properties.generated_name];
+			if (arr ~= nil) then
+				for j,w in ipairs(arr) do
+					doc[i] = subelement:to_xmlua(nns, w);
+					i = i + 1;
+				end
+			end
+		else
+			local xmlc = subelement:to_xmlua(nns, content[subelement.particle_properties.generated_name]);
+			if (xmlc ~= nil) then
+				doc[i] = xmlc;
+				i = i + 1;
+			end
+		end
+	end
+	return i;
+end
+
+basic_stuff.add_model_content_node = function(schema_type_handler, nns, doc, index, content, content_model)
+	local i = index;
+
+	for _, v in ipairs(content_model) do
+		local t = type(v);
+		if (t == 'string') then -- If a string an element 
+			local subelement = schema_type_handler.properties.generated_subelements[v];
+			if (subelement.particle_properties.max_occurs ~= 1) then
+				arr = content[subelement.particle_properties.generated_name];
+				if (arr ~= nil) then
+					for j,w in ipairs(arr) do
+						doc[i] = subelement:to_xmlua(nns, w);
+						i = i + 1;
+					end
+				end
+			else
+				local xmlc = subelement:to_xmlua(nns, content[subelement.particle_properties.generated_name]);
+				if (xmlc ~= nil) then
+					doc[i] = xmlc;
+					i = i + 1;
+				end
+			end
+		elseif (t == 'table') then -- If a table, another content model
+			local xmlc = nil;
+			if (nil == v.generated_subelement_name) then
+				-- No depth
+				xmlc = content;
+			else
+				-- One legel deep
+				xmlc = content[v.generated_subelement_name]
+			end
+			i = basic_stuff.add_model_content_s_or_c(schema_type_handler, nns, doc, i, xmlc, v);
+		else -- invalid
+			error("invalid content model");
+		end
+	end
+
+	return i;
+end
+
+basic_stuff.add_model_content_s_or_c = function(schema_type_handler, nns, doc, index, content, content_model)
+	local i = index;
+	local add_func = nil;
+
+	if (content_model.group_type == 'S') then
+		add_func = basic_stuff.add_model_content_node;
+	else
+		add_func = basic_stuff.add_model_content_node;
+	end
+
+	if (content_model.max_occurs ~= 1) then
+		for _, v in ipairs(content) do
+			i = add_func(schema_type_handler, nns, doc, i, v, content_model)
+		end
+	else
+		i = add_func(schema_type_handler, nns, doc, i, content, content_model)
+	end
+
+	return i;
+end
+
+basic_stuff.add_model_content = function(schema_type_handler, nns, doc, index, content, content_model)
+	if (content_model.group_type == 'A') then
+		return basic_stuff.add_model_content_all(schema_type_handler, nns, doc, index, content, content_model);
+	elseif (content_model.group_type == 'S' or content_model.group_type == 'C') then
+		return basic_stuff.add_model_content_s_or_c(schema_type_handler, nns, doc, index, content, content_model);
+	else
+		error("INVALID CONTENT MODEL TYPE ");
+	end
+end
+
 basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
+
 	if ((nil == content) and (schema_type_handler.particle_properties.root_element == false)) then
 		return nil
 	end
+
 	local doc = {};
 	local q_name = schema_type_handler.particle_properties.q_name;
+
 	if (not basic_stuff.is_nil(q_name.ns)) then
 		local prefix = nns.ns[q_name.ns];
 		doc[1]=prefix..":"..q_name.local_name;
@@ -465,48 +700,44 @@ basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
 		doc[1] = q_name.local_name;
 		doc[2] = {};
 	end
+
 	local attr =  nil;
+
 	if (nil ~= content) then
 		attr = schema_type_handler:get_attributes(nns, content);
 	else
 		attr = {}
 	end
+
 	for n,v in pairs(attr) do
 		doc[2][n] = tostring(v);
 	end
+
 	local i = 3;
 	if (content ~= nil) then
-		for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
-			local subelement = schema_type_handler.properties.subelement_properties[v];
-			if (subelement.particle_properties.max_occurs ~= 1) then
-				arr = content[subelement.particle_properties.generated_name];
-				if (arr ~= nil) then
-					for j,v in ipairs(arr) do
-						doc[i] = subelement:to_xmlua(nns, v);
-						i = i + 1;
-					end
-				end
-			else
-				local xmlc = subelement:to_xmlua(nns, content[subelement.particle_properties.generated_name]);
-				if (xmlc ~= nil) then
-					doc[i] = xmlc;
-					i = i + 1;
-				end
+		if (schema_type_handler.properties.content_model.max_occurs ~= 1) then
+			for _, v in ipairs(content) do
+				i = basic_stuff.add_model_content(schema_type_handler, nns,  doc, i, v, schema_type_handler.properties.content_model);
 			end
+		else
+			i = basic_stuff.add_model_content(schema_type_handler, nns,  doc, i, content, schema_type_handler.properties.content_model);
 		end
 	else
 		doc[3] = nil;
 	end
+
 	return doc;
 end
 
 basic_stuff.complex_get_unique_namespaces_declared = function(schema_type_handler)
 	local namespaces = nil
+
 	if (not basic_stuff.is_nil(schema_type_handler.particle_properties.q_name.ns)) then
 		namespaces = { [schema_type_handler.particle_properties.q_name.ns] = ""};
 	else
 		namespaces = {}
 	end
+
 	for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
 			local child_ns = {};
 			child_ns = schema_type_handler.properties.subelement_properties[v]:get_unique_namespaces_declared();
@@ -514,16 +745,19 @@ basic_stuff.complex_get_unique_namespaces_declared = function(schema_type_handle
 				namespaces[n] = v;
 			end
 	end
+
 	return namespaces;
 end
 
 basic_stuff.simple_get_unique_namespaces_declared = function(schema_type_handler)
 	local namespaces = nil;
+
 	if (not basic_stuff.is_nil(schema_type_handler.particle_properties.q_name.ns)) then
 		namespaces = { [schema_type_handler.particle_properties.q_name.ns] = ""};
 	else
 		namespaces = {}
 	end
+
 	return namespaces;
 end
 
