@@ -168,7 +168,7 @@ basic_stuff.execute_validation_of_array_contents = function(schema_type_handler,
 		--error_handler.push_element(n);
 		if (('integer' ~= math.type(n)) or (n <= 0)) then
 			--error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."]} not allowed in an array");
-			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."]} is not a valid array");
+			error_handler.raise_validation_error(-1, "Element: {["..error_handler.get_fieldpath().."]} is not a valid array");
 			return false;
 		end
 		count = count + 1;
@@ -417,13 +417,20 @@ basic_stuff.execute_validation_for_complex_type = function(schema_type_handler, 
 		return basic_stuff.execute_validation_for_complex_type_all(schema_type_handler, content, content_model);
 	elseif (schema_type_handler.properties.content_model.group_type == 'S' or
 					schema_type_handler.properties.content_model.group_type == 'C') then
-		return basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, content, content_model);
+		local xmlc = nil;
+		if (content_model.max_occurs ~= 1) then
+			xmlc = content[content_model.generated_subelement_name];
+		else
+			xmlc = content;
+		end
+		return basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, content_model);
 	end
 end
 
 basic_stuff.execute_validation_for_complex_type_simple_content = function(schema_type_handler, content)
 	if (not basic_stuff.is_complex_type_simple_content(content)) then
-		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} is not a complex type of simple comtent");
+		error_handler.raise_validation_error(-1,
+			"Element: {"..error_handler.get_fieldpath().."} is not a complex type of simple comtent");
 		return false;
 	end
 
@@ -674,7 +681,13 @@ basic_stuff.add_model_content = function(schema_type_handler, nns, doc, index, c
 	if (content_model.group_type == 'A') then
 		return basic_stuff.add_model_content_all(schema_type_handler, nns, doc, index, content, content_model);
 	elseif (content_model.group_type == 'S' or content_model.group_type == 'C') then
-		return basic_stuff.add_model_content_s_or_c(schema_type_handler, nns, doc, index, content, content_model);
+		local xmlc = nil;
+		if (content_model.max_occurs ~= 1) then
+			xmlc = content[content_model.generated_subelement_name];
+		else
+			xmlc = content;
+		end
+		return basic_stuff.add_model_content_s_or_c(schema_type_handler, nns, doc, index, xmlc, content_model);
 	else
 		error("INVALID CONTENT MODEL TYPE ");
 	end
@@ -719,13 +732,7 @@ basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
 
 	local i = 3;
 	if (content ~= nil) then
-		if (schema_type_handler.properties.content_model.max_occurs ~= 1) then
-			for _, v in ipairs(content) do
-				i = basic_stuff.add_model_content(schema_type_handler, nns,  doc, i, v, schema_type_handler.properties.content_model);
-			end
-		else
-			i = basic_stuff.add_model_content(schema_type_handler, nns,  doc, i, content, schema_type_handler.properties.content_model);
-		end
+		i = basic_stuff.add_model_content(schema_type_handler, nns,  doc, i, content, schema_type_handler.properties.content_model);
 	else
 		doc[3] = nil;
 	end
