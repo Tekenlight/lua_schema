@@ -304,7 +304,7 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 				-- No depth
 				xmlc = content;
 			else
-				-- One legel deep
+				-- One level deep
 				if (fields == nil) then
 					fields = v.generated_subelement_name;
 				else
@@ -325,7 +325,11 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 
 	if (present_count > 1) then
 		error_handler.raise_validation_error(-1,
-				"Element: {"..error_handler.get_fieldpath().."} only one of ("..fields..") should be there");
+				"Element: {"..error_handler.get_fieldpath().."} one and only one of ("..fields..") should be present");
+		return false;
+	elseif(present_count == 0) then
+		error_handler.raise_validation_error(-1,
+				"Element: {"..error_handler.get_fieldpath().."} one and only one of ("..fields..") should be present");
 		return false;
 	end
 
@@ -351,7 +355,7 @@ basic_stuff.execute_validation_for_complex_type_sequence = function(schema_type_
 				-- No depth
 				xmlc = content;
 			else
-				-- One legel deep
+				-- One level deep
 				xmlc = content[v.generated_subelement_name]
 			end
 			if (not basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, v)) then
@@ -368,7 +372,7 @@ end
 basic_stuff.execute_validation_for_complex_type_s_or_c = function(schema_type_handler, content, content_model)
 
 	if (content == nil) then
-		if (schema_type_handler.content_model.min_occurs > 0) then
+		if (content_model.min_occurs > 0) then
 			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be null");
 			return false;
 		elseif (schema_type_handler.content_model.min_occurs == 0) then
@@ -633,7 +637,7 @@ basic_stuff.add_model_content_node = function(schema_type_handler, nns, doc, ind
 				-- No depth
 				xmlc = content;
 			else
-				-- One legel deep
+				-- One level deep
 				xmlc = content[v.generated_subelement_name]
 			end
 			i = basic_stuff.add_model_content_s_or_c(schema_type_handler, nns, doc, i, xmlc, v);
