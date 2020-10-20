@@ -44,7 +44,15 @@ end
 local to_json_string = function(message_handler_instance, content)
 	local json_parser = cjson.new();
 	local tag = get_json_tag(message_handler_instance);
-	local table_output = {[tag] = content}
+	local table_output = nil;
+	if (message_handler_instance.properties.element_type == 'S') then
+		table_output = {[tag] = content};
+	else
+		table_output = content;
+	end
+	--[[
+	table_output = {[tag] = content};
+	]]--
 	local flg, json_output, err = pcall(json_parser.encode, table_output);
 	if (json_output == nil or json_output == '') then
 		json_output = '{}';
