@@ -24,4 +24,9 @@ function __string_handler_class:to_cjson_struct(ns, s)
 	return s;
 end
 
+function __string_handler_class:to_type(ns, i)
+	if (false == self:is_valid(i)) then error("Input not an int"); end
+	return i;
+end
+
 return __string_handler_class;

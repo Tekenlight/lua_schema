@@ -90,8 +90,7 @@ end
 local parse_xml = function(message_handler_instance, msg)
 	error_handler.init()
 
-	local valid, obj = pcall(message_handler_instance.parse_xml, message_handler_instance, xmlua, msg);
-	--print(valid);
+	local valid, obj = message_handler_instance.parse_xml(message_handler_instance, xmlua, msg);
 
 	local message_validation_context = error_handler.reset();
 	if (not obj) then
@@ -128,8 +127,8 @@ function _message_handler_factory:get_message_handler(type_name, name_space)
 	function message_handler:from_xml(msg)
 		status, obj = parse_xml(self, msg);
 		if (status ~= true) then
-			msg = obj;
-			print(obj.status.error_message);
+			msg = 'Parsing of XML unsuccessful';
+			print(msg);
 			return nil, msg;
 		end
 		return obj;

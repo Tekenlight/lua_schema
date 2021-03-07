@@ -30,5 +30,11 @@ function __int_handler_class:to_cjson_struct(ns, i)
 	return i;
 end
 
+function __int_handler_class:to_type(ns, i)
+	local c_i = tonumber(i);
+	if (false == self:is_valid(c_i)) then error("Input not an int"); end
+	return c_i;
+end
+
 return __int_handler_class;
 

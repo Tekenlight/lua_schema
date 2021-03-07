@@ -859,6 +859,22 @@ end
 -- ===========================================================================================
 --]]
 
+local function validate_content(sth, content)
+	local result = nil;
+	local valid = nil;
+	error_handler.init()
+	result, valid = pcall(basic_stuff.perform_element_validation, sth,  content);
+	local message_validation_context = error_handler.reset();
+	if (not result) then
+		valid = false;
+	end
+	if (not valid) then
+		local msg = message_validation_context.status.error_message
+		return false, msg;
+	end
+	return true, nil;
+end
+
 local function read_ahead(reader)
 	local s, ret = pcall(reader.read, reader);
 	if (s == false) then
@@ -916,25 +932,28 @@ local process_node = function(reader, sts, objs)
 		end
 		objs:push(obj);
 	elseif (typ == reader.node_types.XML_READER_TYPE_TEXT) then
+		local converted_value = schema_type_handler.type_handler:to_type('', value);
 		if (schema_type_handler.particle_properties.max_occurs ~= 1) then
 			if (top_obj.value == nil) then
 				top_obj.value = {}
 			end
-			top_obj.value[#top_obj.value+1] = value;
+			top_obj.value[#top_obj.value+1] = converted_value;
 		else
-			top_obj.value = value;
+			top_obj.value = converted_value;
 		end
 	elseif (typ == reader.node_types.XML_READER_TYPE_CDATA) then
+		local converted_value = schema_type_handler.type_handler:to_type('', value);
 		if (schema_type_handler.particle_properties.max_occurs ~= 1) then
 			if (top_obj.value == nil) then
 				top_obj.value = {}
 			end
-			top_obj.value[#top_obj.value+1] = value;
+			top_obj.value[#top_obj.value+1] = converted_value;
 		else
-			top_obj.value = value;
+			top_obj.value = converted_value;
 		end
 	elseif (typ == reader.node_types.XML_READER_TYPE_END_ELEMENT) then
 		local parsed_element = objs:pop();
+		sts:pop();
 		top_obj = objs:top();
 		top_obj[top_obj.element_being_parsed] = parsed_element.value;
 		top_obj.element_being_parsed = nil;
@@ -951,7 +970,7 @@ local parse_xml_to_obj = function(reader, sts, objs)
 	return;
 end
 
-basic_stuff.parse_xml = function(schema_type_handler, xmlua, xml)
+local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	local reader = xmlua.XMLReader.new(xml);
 	local obj = {};
 	local objs = (require('stack')).new();
@@ -964,7 +983,19 @@ basic_stuff.parse_xml = function(schema_type_handler, xmlua, xml)
 
 	local doc = objs:pop();
 
-	return doc[schema_type_handler.particle_properties.generated_name];
+	obj = doc[schema_type_handler.particle_properties.generated_name];
+
+	local valid, msg = validate_content(schema_type_handler, obj);
+	if (not valid) then
+		error('Content not valid:'..msg);
+	end
+	return obj;
+end
+
+basic_stuff.parse_xml = function(schema_type_handler, xmlua, xml)
+
+	local status, obj = pcall(low_parse_xml, schema_type_handler, xmlua, xml);
+	return status, obj;
 end
 
 return basic_stuff;
