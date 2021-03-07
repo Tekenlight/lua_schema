@@ -15,7 +15,8 @@ local get_json_tag = function(message_handler_instance)
 	end
 	return tag
 	]]--
-	return message_handler_instance.particle_properties.q_name.local_name;
+	--return message_handler_instance.particle_properties.q_name.local_name;
+	return message_handler_instance.particle_properties.generated_name;
 end
 
 local gather_namespace_declarations = function(message_handler_instance)
@@ -86,6 +87,23 @@ local validate_doc = function(message_handler_instance, content)
 	return true, nil;
 end
 
+local parse_xml = function(message_handler_instance, msg)
+	error_handler.init()
+
+	local valid, obj = pcall(message_handler_instance.parse_xml, message_handler_instance, xmlua, msg);
+	--print(valid);
+
+	local message_validation_context = error_handler.reset();
+	if (not obj) then
+		valid = false;
+	end
+	if (not valid) then
+		return false, message_validation_context;
+	end
+
+	return true, obj;
+end
+
 function _message_handler_factory:get_message_handler(type_name, name_space)
 	local message_handler_base = basic_stuff.get_type_handler(name_space, type_name);
 	local message_handler = message_handler_base.new_instance_as_root();
@@ -105,6 +123,19 @@ function _message_handler_factory:get_message_handler(type_name, name_space)
 			print(msg.status.error_message);
 			return nil, msg;
 		end
+	end
+
+	function message_handler:from_xml(msg)
+		status, obj = parse_xml(self, msg);
+		if (status ~= true) then
+			msg = obj;
+			print(obj.status.error_message);
+			return nil, msg;
+		end
+		return obj;
+	end
+
+	function message_handler:from_json(msg)
 	end
 
 	return message_handler;

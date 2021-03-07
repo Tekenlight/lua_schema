@@ -23,6 +23,7 @@ _basic_string_handler.is_valid = basic_stuff.simple_is_valid;
 _basic_string_handler.get_attributes = basic_stuff.get_attributes;
 _basic_string_handler.to_xmlua = basic_stuff.simple_to_xmlua;
 _basic_string_handler.get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+_basic_string_handler.parse_xml = basic_stuff.parse_xml;
 
 local mt = { __index = _basic_string_handler; } ;
 local _factory = {};

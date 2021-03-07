@@ -851,4 +851,120 @@ basic_stuff.instantiate_type_as_local_element = function(mt, local_element_prope
 	return o;
 end
 
+--[[
+-- ===========================================================================================
+--
+-- Parsing functions from here
+--
+-- ===========================================================================================
+--]]
+
+local function read_ahead(reader)
+	local s, ret = pcall(reader.read, reader);
+	if (s == false) then
+		error("Failed to parse document");
+	end
+	return ret;
+end
+
+local function get_uri(u)
+	local uri = u;
+	if (uri == nil) then
+		uri = '';
+	end
+	return uri;
+end
+
+local check_element_name_mathces = function(reader, sts)
+	local q_doc_element_name = '{'..get_uri(reader:const_namespace_uri())..'}'..reader:const_local_name()
+	local q_schema_element_name = '{'..sts:top().particle_properties.q_name.ns..'}'..sts:top().particle_properties.q_name.local_name
+	return (q_doc_element_name == q_schema_element_name);
+end
+
+local process_node = function(reader, sts, objs)
+	local name = reader:const_local_name()
+	local uri = reader:const_namespace_uri();
+	local value = reader:const_value();
+	local depth = reader:node_depth();
+	local typ = reader:node_type();
+	local is_empty = reader:node_is_empty_element();
+	local has_value = reader:node_reader_has_value();
+
+	local schema_type_handler = sts:top();
+	local top_obj = objs:top();
+	--print(depth, typ, name, is_empty, has_value, value);
+	if (typ == reader.node_types.XML_READER_TYPE_ELEMENT) then
+		local obj = {};
+		if (reader.started ~= nil and reader.started == true) then
+			-- While reading an element a new child element is encountered
+			-- We have to search through the declared elements and make sure it is valid
+			-- And start pasring this element
+		else
+			-- Boundary condition started == nil or false means this is the first element of the document
+			-- We have to make sure the element detected is the same as the one being expected
+			top_obj.element_being_parsed = schema_type_handler.particle_properties.generated_name;
+			reader.started = true;
+			if (true ~= check_element_name_mathces(reader, sts)) then
+				error('Invalid element found');
+			end
+		end
+		if ((sts:top()).properties.element_type == 'S') then
+		else
+			if((sts:top()).properties.content_type == 'S') then
+			else
+			end
+		end
+		objs:push(obj);
+	elseif (typ == reader.node_types.XML_READER_TYPE_TEXT) then
+		if (schema_type_handler.particle_properties.max_occurs ~= 1) then
+			if (top_obj.value == nil) then
+				top_obj.value = {}
+			end
+			top_obj.value[#top_obj.value+1] = value;
+		else
+			top_obj.value = value;
+		end
+	elseif (typ == reader.node_types.XML_READER_TYPE_CDATA) then
+		if (schema_type_handler.particle_properties.max_occurs ~= 1) then
+			if (top_obj.value == nil) then
+				top_obj.value = {}
+			end
+			top_obj.value[#top_obj.value+1] = value;
+		else
+			top_obj.value = value;
+		end
+	elseif (typ == reader.node_types.XML_READER_TYPE_END_ELEMENT) then
+		local parsed_element = objs:pop();
+		top_obj = objs:top();
+		top_obj[top_obj.element_being_parsed] = parsed_element.value;
+		top_obj.element_being_parsed = nil;
+	end
+	return;
+end
+
+local parse_xml_to_obj = function(reader, sts, objs)
+	local ret = read_ahead(reader);
+	while (ret == 1) do
+		process_node(reader, sts, objs);
+		ret = read_ahead(reader);
+	end
+	return;
+end
+
+basic_stuff.parse_xml = function(schema_type_handler, xmlua, xml)
+	local reader = xmlua.XMLReader.new(xml);
+	local obj = {};
+	local objs = (require('stack')).new();
+	local sts = (require('stack')).new();
+
+	objs:push(obj);
+	sts:push(schema_type_handler);
+
+	parse_xml_to_obj(reader, sts, objs);
+
+	local doc = objs:pop();
+
+	return doc[schema_type_handler.particle_properties.generated_name];
+end
+
 return basic_stuff;

@@ -99,7 +99,8 @@ local _subelement_properties = {
 		get_attributes = basic_stuff.get_attributes,
 		is_valid = basic_stuff.simple_is_valid,
 		get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared,
-		to_xmlua = basic_stuff.simple_to_xmlua
+		to_xmlua = basic_stuff.simple_to_xmlua,
+		generated_subelement_name = 'three_or_four'
 	},
 	['{}four'] = {
 		properties = {
@@ -118,7 +119,8 @@ local _subelement_properties = {
 		get_attributes = basic_stuff.get_attributes,
 		is_valid = basic_stuff.simple_is_valid,
 		get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared,
-		to_xmlua = basic_stuff.simple_to_xmlua
+		to_xmlua = basic_stuff.simple_to_xmlua,
+		generated_subelement_name = 'three_or_four'
 	},
 
 };
