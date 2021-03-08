@@ -858,6 +858,9 @@ end
 --
 -- ===========================================================================================
 --]]
+--
+
+local parsing_result_msg = nil;
 
 local function validate_content(sth, content)
 	local result = nil;
@@ -897,6 +900,38 @@ local check_element_name_mathces = function(reader, sts)
 	return (q_doc_element_name == q_schema_element_name);
 end
 
+local get_attributes = function(reader, schema_type_handler, obj)
+	obj._attr = nil;
+	local n = reader:get_attr_count();
+	if (n >0) then
+		obj._attr = {};
+		for i=0,n-1 do
+			reader:move_to_attr_no(i);
+			local attr_name = reader:const_local_name()
+			local attr_value = reader:const_value();
+			local attr_uri = reader:const_namespace_uri();
+			if attr_uri == nil then
+				attr_uri = ''
+			end
+			if (not reader:is_namespace_decl()) then
+				local q_attr_name = '{'..attr_uri..'}'..attr_name;
+				local attr_properties = schema_type_handler.properties.attr._attr_properties[q_attr_name];
+				error_handler.push_element(attr_name);
+				if (attr_properties == nil) then
+					error_handler.raise_validation_error(-1,
+								"Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element");
+					error_handler.pop_element();
+					return nil;
+				end
+				local converted_value = attr_properties.type_handler:to_type(attr_properties.particle_properties.q_name.ns, attr_value);
+				error_handler.pop_element();
+				obj._attr[attr_properties.particle_properties.generated_name] = converted_value;
+			end
+		end
+	end
+	return obj._attr;
+end
+
 local process_node = function(reader, sts, objs)
 	local name = reader:const_local_name()
 	local uri = reader:const_namespace_uri();
@@ -905,11 +940,13 @@ local process_node = function(reader, sts, objs)
 	local typ = reader:node_type();
 	local is_empty = reader:node_is_empty_element();
 	local has_value = reader:node_reader_has_value();
+	local q_name = get_uri(uri)..name;
 
 	local schema_type_handler = sts:top();
 	local top_obj = objs:top();
 	--print(depth, typ, name, is_empty, has_value, value);
 	if (typ == reader.node_types.XML_READER_TYPE_ELEMENT) then
+
 		local obj = {};
 		if (reader.started ~= nil and reader.started == true) then
 			-- While reading an element a new child element is encountered
@@ -921,17 +958,25 @@ local process_node = function(reader, sts, objs)
 			top_obj.element_being_parsed = schema_type_handler.particle_properties.generated_name;
 			reader.started = true;
 			if (true ~= check_element_name_mathces(reader, sts)) then
-				error('Invalid element found');
+				parsing_result_msg = 'Invalid element found '.. q_name;
+				error(parsing_result_msg);
 			end
 		end
-		if ((sts:top()).properties.element_type == 'S') then
+		local schema_type_handler = sts:top();
+		error_handler.push_element(q_name);
+		if (schema_type_handler.properties.element_type == 'S') then
 		else
-			if((sts:top()).properties.content_type == 'S') then
+			if(schema_type_handler.properties.content_type == 'S') then
+				-- The element is a complex type simple content.
+				get_attributes(reader, schema_type_handler, obj);
 			else
 			end
 		end
 		objs:push(obj);
-	elseif (typ == reader.node_types.XML_READER_TYPE_TEXT) then
+
+	elseif ((typ == reader.node_types.XML_READER_TYPE_TEXT) or
+			(typ == reader.node_types.XML_READER_TYPE_CDATA)) then
+
 		local converted_value = schema_type_handler.type_handler:to_type('', value);
 		if (schema_type_handler.particle_properties.max_occurs ~= 1) then
 			if (top_obj.value == nil) then
@@ -941,22 +986,37 @@ local process_node = function(reader, sts, objs)
 		else
 			top_obj.value = converted_value;
 		end
-	elseif (typ == reader.node_types.XML_READER_TYPE_CDATA) then
-		local converted_value = schema_type_handler.type_handler:to_type('', value);
-		if (schema_type_handler.particle_properties.max_occurs ~= 1) then
-			if (top_obj.value == nil) then
-				top_obj.value = {}
-			end
-			top_obj.value[#top_obj.value+1] = converted_value;
-		else
-			top_obj.value = converted_value;
-		end
+
 	elseif (typ == reader.node_types.XML_READER_TYPE_END_ELEMENT) then
+
+		error_handler.pop_element();
 		local parsed_element = objs:pop();
-		sts:pop();
 		top_obj = objs:top();
-		top_obj[top_obj.element_being_parsed] = parsed_element.value;
+		local parsed_sth = sts:pop();
+		local parsed_output = nil;
+		if (parsed_sth.properties.element_type == 'C') then
+			if (parsed_sth.properties.content_type == 'S') then
+				parsed_element._contained_value = parsed_element.value;
+				parsed_element.value = nil;
+			else
+			end
+			parsed_output = parsed_element;
+		else
+			parsed_output = parsed_element.value;
+		end
+		if (parsed_sth.particle_properties.max_occurs ~= 1) then
+			if (top_obj[top_obj.element_being_parsed] == nil) then
+				top_obj[top_obj.element_being_parsed] = {}
+			end
+			top_obj[top_obj.element_being_parsed][#(top_obj[element_being_parsed])+1] = parsed_output;
+		else
+			--(require 'pl.pretty').dump(top_obj);
+			--(require 'pl.pretty').dump(parsed_output);
+			--print(top_obj.element_being_parsed);
+			top_obj[top_obj.element_being_parsed] = parsed_output;
+		end
 		top_obj.element_being_parsed = nil;
+
 	end
 	return;
 end
@@ -979,7 +1039,12 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	objs:push(obj);
 	sts:push(schema_type_handler);
 
-	parse_xml_to_obj(reader, sts, objs);
+	error_handler.init()
+	local result, msg = pcall(parse_xml_to_obj, reader, sts, objs);
+	local message_validation_context = error_handler.reset();
+	if (not result) then
+		error(msg);
+	end
 
 	local doc = objs:pop();
 
@@ -987,15 +1052,23 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 
 	local valid, msg = validate_content(schema_type_handler, obj);
 	if (not valid) then
-		error('Content not valid:'..msg);
+		parsing_result_msg = 'Content not valid:'..msg;
+		error(parsing_result_msg);
 	end
 	return obj;
 end
 
 basic_stuff.parse_xml = function(schema_type_handler, xmlua, xml)
 
+	parsing_result_msg = nil;
 	local status, obj = pcall(low_parse_xml, schema_type_handler, xmlua, xml);
-	return status, obj;
+	if (not status) then
+		parsing_result_msg = obj;
+		obj = nil;
+	else
+		parsing_result_msg = nil;
+	end
+	return status, obj, parsing_result_msg;
 end
 
 return basic_stuff;

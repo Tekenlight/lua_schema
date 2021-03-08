@@ -78,7 +78,6 @@ local validate_doc = function(message_handler_instance, content)
 
 	local message_validation_context = error_handler.reset();
 	if (not result) then
-		print(valid);
 		valid = false;
 	end
 	if (not valid) then
@@ -88,19 +87,15 @@ local validate_doc = function(message_handler_instance, content)
 end
 
 local parse_xml = function(message_handler_instance, msg)
-	error_handler.init()
-
-	local valid, obj = message_handler_instance.parse_xml(message_handler_instance, xmlua, msg);
-
-	local message_validation_context = error_handler.reset();
+	local valid, obj, msg = message_handler_instance.parse_xml(message_handler_instance, xmlua, msg);
 	if (not obj) then
 		valid = false;
 	end
 	if (not valid) then
-		return false, message_validation_context;
+		return false, nil, msg;
 	end
 
-	return true, obj;
+	return true, obj, nil;
 end
 
 function _message_handler_factory:get_message_handler(type_name, name_space)
@@ -110,7 +105,6 @@ function _message_handler_factory:get_message_handler(type_name, name_space)
 		status, msg = validate_doc(self, content)
 		if (status) then return to_json_string(self, content);
 		else
-			print(msg.status.error_message);
 			return nil, msg;
 		end
 	end
@@ -119,19 +113,16 @@ function _message_handler_factory:get_message_handler(type_name, name_space)
 		status, msg = validate_doc(self, content)
 		if (status) then return to_xml_string(self, content);
 		else
-			print(msg.status.error_message);
 			return nil, msg;
 		end
 	end
 
 	function message_handler:from_xml(msg)
-		status, obj = parse_xml(self, msg);
+		local status, obj, msg = parse_xml(self, msg);
 		if (status ~= true) then
-			msg = 'Parsing of XML unsuccessful';
-			print(msg);
 			return nil, msg;
 		end
-		return obj;
+		return obj, msg;
 	end
 
 	function message_handler:from_json(msg)

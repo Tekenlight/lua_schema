@@ -28,6 +28,7 @@ error_handler.get_fieldpath = function()
 			path = v;
 		end
 	end
+	if (path == nil) then path = '' end
 	return path;
 end
 
