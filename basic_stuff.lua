@@ -1018,7 +1018,6 @@ local continue_cm_fsa = function(reader, sts, objs, pss)
 	local obj = {};
 	obj['___METADATA___'] = {};
 	obj['___DATA___'] = {};
-	--print("CONTINUING");
 	local top_obj = objs:top();
 
 	-- Before we parse new element, we should find the content model to which the current element should be added
@@ -1204,6 +1203,7 @@ local process_node = function(reader, sts, objs, pss)
 		pss:pop();
 
 	end
+
 	return;
 end
 
