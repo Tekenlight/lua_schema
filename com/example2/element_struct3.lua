@@ -21,6 +21,7 @@ local _declared_sub_elements = {
 
 local _content_model = {
 	group_type = 'A', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
+	generated_subelement_name = 'author_and_title',
 	min_occurs = 1, max_occurs = 1,
 	'author',
 	'title',

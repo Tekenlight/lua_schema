@@ -6,8 +6,8 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 
 basic_int = mhf:get_message_handler("basic_int_nons");
 
-local content = basic_int:from_xml(xml_string)
+local content, msg = basic_int:from_xml(xml_string)
 if (type(content) == 'table') then require 'pl.pretty'.dump(content);
-else print(content)
+else print(content, msg)
 end
 

@@ -8,14 +8,14 @@
 	<xsd:include schemaLocation="basic_string_simple_content.xsd"/>
 	<xsd:element name="example_struct">
 		<xsd:complexType>
-			<xsd:sequence>
+			<xsd:all>
 				<xsd:element ref="ns1:element_struct2"/>
 				<xsd:element name="author"	type="xsd:string"/>
 				<xsd:element name="title"	type="xsd:string"/>
 				<xsd:element name="genre"	type="xsd:string"/>
 				<xsd:element name="s2"		type="ns1:struct2"/>
 				<xsd:element xmlns:ns3="http://example.com" ref="ns3:basic_string_simple_content"/>
-			</xsd:sequence>
+			</xsd:all>
 		</xsd:complexType>
 	</xsd:element>
 </xsd:schema>

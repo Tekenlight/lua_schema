@@ -1,4 +1,4 @@
-for file in `find from_xml/`
+for file in `find from_xml`
 do
 	if [ -f $file ]
 	then

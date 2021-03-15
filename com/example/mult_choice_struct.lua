@@ -19,6 +19,7 @@ local _declared_subelements = {
 -- We use generated names in this index, to aid validation within a struct
 local _content_model = {
 	group_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
+	generated_subelement_name = 'one_and_two',
 	min_occurs = 1, max_occurs = 1,
 	'one',
 	'two',

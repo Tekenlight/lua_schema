@@ -6,10 +6,12 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 
 mhf = require("message_handler_factory")
 
-basic_string_simple_conten = mhf:get_message_handler("basic_string_simple_content", "http://example.com");
+basic_string_simple_content = mhf:get_message_handler("basic_string_simple_content", "http://example.com");
 
-local content = basic_string_simple_conten:from_xml(xml_string)
+local content, msg = basic_string_simple_content:from_xml(xml_string)
 if (type(content) == 'table') then require 'pl.pretty'.dump(content);
-else print(content)
+else print(content, msg)
 end
 
+--print(basic_string_simple_content:to_json(content))
+--print(basic_string_simple_content:to_xml(content))

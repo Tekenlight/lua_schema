@@ -11,8 +11,17 @@ local _declared_sub_elements = {
 	'{}genre'
 };
 
+local _content_fsa_properties = {
+	{symbol_type = 'cm_begin', symbol_name = 'author_title_and_genre', min_occurs = 1, max_occurs = 1, group_type = 'S'}
+	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'cm_end', symbol_name = 'author_title_and_genre', cm_begin_index=1}
+};
+
 local _content_model = {
-	group_type = 'A', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
+	group_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
+	generated_subelement_name = 'author_and_title',
 	min_occurs = 1, max_occurs = 1,
 	'author',
 	'title',
@@ -105,13 +114,15 @@ _struct_handler.properties = {
 	declared_subelements = _declared_sub_elements,
 	content_model = _content_model,
 	subelement_properties = _subelement_properties,
-	generated_subelements = _generated_sub_elements
+	generated_subelements = _generated_sub_elements,
+	content_fsa_properties = _content_fsa_properties
 };
 
 _struct_handler.is_valid = basic_stuff.complex_type_is_valid;
 _struct_handler.get_attributes = basic_stuff.get_attributes;
 _struct_handler.to_xmlua = basic_stuff.struct_to_xmlua;
 _struct_handler.get_unique_namespaces_declared = basic_stuff.complex_get_unique_namespaces_declared;
+_struct_handler.parse_xml = basic_stuff.parse_xml;
 
 _struct_handler.type_handler = _struct_handler;
 local mt = { __index = _struct_handler; } ;

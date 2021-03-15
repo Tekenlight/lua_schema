@@ -10,7 +10,7 @@
 local basic_stuff = require("basic_stuff");
 
 local _declared_sub_elements = {
-	group_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
+	group_type = 'A', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
 	'{http://example1.com}element_struct2',
 	'{}author',
 	'{}title',
@@ -21,6 +21,7 @@ local _declared_sub_elements = {
 
 local _content_model = {
 	group_type = 'A', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
+	generated_subelement_name = 'author_and_title',
 	min_occurs = 1, max_occurs = 1,
 	'element_struct2',
 	'author',
