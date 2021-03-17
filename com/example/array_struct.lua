@@ -17,6 +17,15 @@ local _declared_sub_elements = {
 	'{http://example.com}basic_string_simple_content'
 };
 
+local _content_fsa_properties = {
+	{symbol_type = 'cm_begin', symbol_name = 'author_and_title_', min_occurs = 1, max_occurs = 1, group_type = 'A'}
+	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'element', symbol_name = '{http://example.com}basic_string_simple_content', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'cm_end', symbol_name = 'author_and_title_', cm_begin_index=1}
+};
+
 local _content_model = {
 	group_type = 'A', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
 	generated_subelement_name = 'author_and_title_',
@@ -57,7 +66,7 @@ local _subelement_properties = {
 		get_attributes = basic_stuff.get_attributes,
 		is_valid = basic_stuff.simple_is_valid,
 		get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared,
-		to_xmlua = basic_stuff.simple_to_xmlua
+		to_xmlua = basic_stuff.simple_to_xmlua,
 	},
 	['{}title'] = {
 		properties = {
@@ -127,7 +136,8 @@ _struct_handler.properties = {
 	declared_subelements = _declared_sub_elements,
 	content_model = _content_model,
 	subelement_properties = _subelement_properties,
-	generated_subelements = _generated_sub_elements
+	generated_subelements = _generated_sub_elements,
+	content_fsa_properties = _content_fsa_properties
 };
 _struct_handler.particle_properties = {
 	q_name={ns='http://example.com', local_name='array_struct'},

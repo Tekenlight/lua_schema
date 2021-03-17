@@ -1,5 +1,9 @@
 local _stack = {}
 
+function _stack:height()
+	return #self;
+end
+
 function _stack:element_count()
 	return #self;
 end

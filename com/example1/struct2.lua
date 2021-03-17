@@ -12,11 +12,11 @@ local _declared_sub_elements = {
 };
 
 local _content_fsa_properties = {
-	{symbol_type = 'cm_begin', symbol_name = 'author_title_and_genre', min_occurs = 1, max_occurs = 1, group_type = 'S'}
+	{symbol_type = 'cm_begin', symbol_name = 'author_and_title', min_occurs = 1, max_occurs = 1, group_type = 'S'}
 	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = 1}
 	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 1}
 	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'cm_end', symbol_name = 'author_title_and_genre', cm_begin_index=1}
+	,{symbol_type = 'cm_end', symbol_name = 'author_and_title', cm_begin_index=1}
 };
 
 local _content_model = {

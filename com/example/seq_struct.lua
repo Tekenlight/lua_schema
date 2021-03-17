@@ -23,8 +23,8 @@ local _content_fsa_properties = {
 	,{symbol_type = 'cm_begin', symbol_name = 'three_and_four', min_occurs = 1, max_occurs = -1, group_type = 'S'}
 	,{symbol_type = 'element', symbol_name = '{}three', min_occurs = 1, max_occurs = 1}
 	,{symbol_type = 'element', symbol_name = '{}four', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'cm_end', symbol_name = 'three_and_four'}
-	,{symbol_type = 'cm_end', symbol_name = 'one_and_two'}
+	,{symbol_type = 'cm_end', symbol_name = 'three_and_four', cm_begin_index = 4}
+	,{symbol_type = 'cm_end', symbol_name = 'one_and_two', cm_begin_index = 1}
 };
 
 -- We use generated names in this index, to aid validation within a struct
@@ -176,6 +176,7 @@ _struct_handler.is_valid = basic_stuff.complex_type_is_valid;
 _struct_handler.get_attributes = basic_stuff.get_attributes;
 _struct_handler.to_xmlua = basic_stuff.struct_to_xmlua;
 _struct_handler.get_unique_namespaces_declared = basic_stuff.complex_get_unique_namespaces_declared;
+_struct_handler.parse_xml = basic_stuff.parse_xml;
 
 _struct_handler.type_handler = _struct_handler;
 local mt = { __index = _struct_handler; } ;

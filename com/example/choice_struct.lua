@@ -16,6 +16,17 @@ local _declared_subelements = {
 	'{}four',
 };
 
+local _content_fsa_properties = {
+	{symbol_type = 'cm_begin', symbol_name = 'one_and_two', min_occurs = 1, max_occurs = 1, group_type = 'S'}
+	,{symbol_type = 'element', symbol_name = '{}one', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'element', symbol_name = '{}two', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'cm_begin', symbol_name = 'three_or_four', min_occurs = 1, max_occurs = 1, group_type = 'C'}
+	,{symbol_type = 'element', symbol_name = '{}three', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'element', symbol_name = '{}four', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'cm_end', symbol_name = 'three_or_four', cm_begin_index = 4}
+	,{symbol_type = 'cm_end', symbol_name = 'one_and_two', cm_begin_index = 1}
+};
+
 -- We use generated names in this index, to aid validation within a struct
 local _content_model = {
 	group_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
@@ -24,9 +35,8 @@ local _content_model = {
 	'one',
 	'two',
 	{
-		generated_subelement_name = 'three_or_four',
 		group_type = 'C', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-		generated_subelement_name = three_or_four,
+		generated_subelement_name = 'three_or_four',
 		min_occurs = 1, max_occurs = 1,
 		'three',
 		'four',
@@ -150,7 +160,8 @@ _struct_handler.properties = {
 	declared_subelements = _declared_subelements,
 	content_model = _content_model,
 	subelement_properties = _subelement_properties,
-	generated_subelements = _generated_sub_elements
+	generated_subelements = _generated_sub_elements,
+	content_fsa_properties = _content_fsa_properties
 };
 _struct_handler.particle_properties = {
 	q_name={ns='http://example.com', local_name='choice_struct'},

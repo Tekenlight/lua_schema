@@ -19,6 +19,17 @@ local _declared_sub_elements = {
 	'{}basic_string_nons',
 };
 
+local _content_fsa_properties = {
+	{symbol_type = 'cm_begin', symbol_name = 'author_and_title', min_occurs = 1, max_occurs = 1, group_type = 'A'}
+	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'element', symbol_name = '{http://example.com}example_struct', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'element', symbol_name = '{http://example.com}basic_string', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'element', symbol_name = '{}basic_string_nons', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'cm_end', symbol_name = 'author_and_title', cm_begin_index=1}
+};
+
 local _content_model = {
 	group_type = 'A', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
 	generated_subelement_name = 'author_and_title',
@@ -135,7 +146,8 @@ _struct_handler.properties = {
 	declared_subelements = _declared_sub_elements,
 	content_model = _content_model,
 	subelement_properties = _subelement_properties,
-	generated_subelements = _generated_sub_elements
+	generated_subelements = _generated_sub_elements,
+	content_fsa_properties = _content_fsa_properties
 };
 _struct_handler.particle_properties = {
 	q_name={ns='http://example2.com', local_name='element_struct3'},
