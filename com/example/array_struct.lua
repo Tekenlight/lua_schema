@@ -19,10 +19,10 @@ local _declared_sub_elements = {
 
 local _content_fsa_properties = {
 	{symbol_type = 'cm_begin', symbol_name = 'author_and_title_', min_occurs = 1, max_occurs = 1, group_type = 'A'}
-	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{http://example.com}basic_string_simple_content', min_occurs = 1, max_occurs = 1}
+	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = -1}
+	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 3}
+	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 2, max_occurs = -1}
+	,{symbol_type = 'element', symbol_name = '{http://example.com}basic_string_simple_content', min_occurs = 1, max_occurs = -1}
 	,{symbol_type = 'cm_end', symbol_name = 'author_and_title_', cm_begin_index=1}
 };
 
@@ -148,6 +148,7 @@ _struct_handler.is_valid = basic_stuff.complex_type_is_valid;
 _struct_handler.get_attributes = basic_stuff.get_attributes;
 _struct_handler.to_xmlua = basic_stuff.struct_to_xmlua;
 _struct_handler.get_unique_namespaces_declared = basic_stuff.complex_get_unique_namespaces_declared;
+_struct_handler.parse_xml = basic_stuff.parse_xml;
 
 _struct_handler.type_handler = _struct_handler;
 local mt = { __index = _struct_handler; } ;

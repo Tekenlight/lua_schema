@@ -1189,14 +1189,19 @@ local process_node = function(reader, sts, objs, pss)
 		local top_obj = objs:top();
 
 		local converted_value = schema_type_handler.type_handler:to_type('', value);
-		if (schema_type_handler.particle_properties.max_occurs ~= 1) then
-			if (top_obj['___DATA___']._contained_value == nil) then
-				top_obj['___DATA___']._contained_value = {}
-			end
-			top_obj['___DATA___']._contained_value[#(top_obj['___DATA___']._contained_value)+1] = converted_value;
+		--[[
+		if ((schema_type_handler.particle_properties.max_occurs ~= 1) and
+			(schema_type_handler.properties.element_type == 'S')) then
+			--if (top_obj['___DATA___']._contained_value == nil) then
+				--top_obj['___DATA___']._contained_value = {}
+			--end
+			--top_obj['___DATA___']._contained_value[#(top_obj['___DATA___']._contained_value)+1] = converted_value;
+			top_obj['___DATA___']._contained_value = converted_value;
 		else
 			top_obj['___DATA___']._contained_value = converted_value;
 		end
+		]]--
+		top_obj['___DATA___']._contained_value = converted_value;
 		top_obj['___METADATA___'].empty = false;
 
 	elseif (typ == reader.node_types.XML_READER_TYPE_END_ELEMENT) then
@@ -1226,6 +1231,7 @@ local process_node = function(reader, sts, objs, pss)
 		else
 			if (not parsed_element['___METADATA___'].empty) then
 				parsed_output = parsed_element['___DATA___']._contained_value;
+				--require 'pl.pretty'.dump(parsed_element['___DATA___']._contained_value);
 			end
 		end
 		-- Essentially the variable parsed_output has the complete lua value of the element
@@ -1290,6 +1296,7 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	local doc = (objs:pop())['___DATA___'];
 
 	obj = doc[schema_type_handler.particle_properties.generated_name];
+	--(require 'pl.pretty').dump(obj);
 
 	local valid, msg = validate_content(schema_type_handler, obj);
 	if (not valid) then
