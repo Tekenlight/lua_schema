@@ -72,16 +72,21 @@ local validate_doc = function(message_handler_instance, content)
 		end
 	end
 	local result = nil;
+	local msg = nil;
 	local valid = nil;
 	error_handler.init()
 	result, valid = pcall(basic_stuff.perform_element_validation, message_handler_instance,  content);
 
+	--print(result, msg);
+	--require 'pl.pretty'.dump(valid);
+
 	local message_validation_context = error_handler.reset();
+	--require 'pl.pretty'.dump(message_validation_context);
 	if (not result) then
 		valid = false;
 	end
 	if (not valid) then
-		return false, message_validation_context;
+		return false, message_validation_context.status.error_message;
 	end
 	return true, nil;
 end

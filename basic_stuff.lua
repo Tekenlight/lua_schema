@@ -351,12 +351,20 @@ basic_stuff.execute_validation_for_complex_type_sequence = function(schema_type_
 			end
 		elseif(t == 'table') then
 			local xmlc = nil;
+			--print("REACHED HERE");
+			--require 'pl.pretty'.dump(v);
 			if (nil == v.generated_subelement_name) then
 				-- No depth
 				xmlc = content;
 			else
 				-- One level deep
 				xmlc = content[v.generated_subelement_name]
+				if (xmlc == nil) then
+					print("REACHED HERE");
+					error_handler.raise_validation_error(-1,
+						"Object field: {"..v.generated_subelement_name.."} should not be null");
+					return false;
+				end
 			end
 			if (not basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, v)) then
 				return false;
