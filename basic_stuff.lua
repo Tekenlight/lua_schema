@@ -1197,7 +1197,7 @@ local process_node = function(reader, sts, objs, pss)
 		if (reader.started ~= nil and reader.started == true) then
 			local new_schema_type_handler = schema_type_handler.properties.subelement_properties[q_name];
 			if (new_schema_type_handler == nil) then
-				print(debug.traceback());
+				--print(debug.traceback());
 				error_handler.raise_validation_error(-1,
 					q_name..' not a member in the schema definition of '..schema_type_handler.properties.schema_type);
 			end
@@ -1206,7 +1206,7 @@ local process_node = function(reader, sts, objs, pss)
 			else
 				element_found = continue_cm_fsa(reader, sts, objs, pss);
 				if (not element_found) then
-					print(debug.traceback());
+					--print(debug.traceback());
 					error_handler.raise_validation_error(-1,
 						q_name..' not a member in the schema definition of '..schema_type_handler.properties.schema_type);
 				end
