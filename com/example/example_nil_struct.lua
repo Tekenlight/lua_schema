@@ -19,17 +19,6 @@ local _declared_sub_elements = {
 	'{http://example.com}basic_string_simple_content'
 };
 
-local _content_fsa_properties = {
-	{symbol_type = 'cm_begin', symbol_name = 'author_and_title', min_occurs = 1, max_occurs = 1, group_type = 'S'}
-	,{symbol_type = 'element', symbol_name = '{http://example1.com}element_struct2', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}s2', min_occurs = 0, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{http://example.com}basic_string_simple_content', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'cm_end', symbol_name = 'author_and_title', cm_begin_index=1}
-};
-
 local _content_model = {
 	group_type = 'A', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
 	generated_subelement_name = 'author_and_title',
@@ -40,6 +29,17 @@ local _content_model = {
 	'genre',
 	's2',
 	'basic_string_simple_content',
+};
+
+local _content_fsa_properties = {
+	{symbol_type = 'cm_begin', symbol_name = 'author_and_title', min_occurs = 1, max_occurs = 1, group_type = 'S', cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{http://example1.com}element_struct2', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}s2', min_occurs = 0, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{http://example.com}basic_string_simple_content', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'cm_end', symbol_name = 'author_and_title', cm_begin_index=1, cm = _content_model}
 };
 
 local es_o = nil;

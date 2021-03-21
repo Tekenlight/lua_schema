@@ -7,7 +7,7 @@ local content = { one = "1", two = "2", three_or_four = {{four = "4"}, {three = 
 choice_struct = mhf:get_message_handler("mult_choice_struct", "http://example.com");
 
 print(choice_struct:to_xml(content))
-print(choice_struct:to_json(content))
+--print(choice_struct:to_json(content))
 
 --[[
 unistd.sleep(1);

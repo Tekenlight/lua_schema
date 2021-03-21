@@ -5,7 +5,8 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 <ns1:choice_struct xmlns:ns1="http://example.com">
   <one>1</one>
   <two>2</two>
-  <three>3</three>
+  <three>4</three>
+  <four>4</four>
 </ns1:choice_struct>]=]
 
 choice_struct = mhf:get_message_handler("choice_struct", "http://example.com");

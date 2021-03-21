@@ -16,31 +16,31 @@ local _declared_subelements = {
 	'{}four',
 };
 
-local _content_fsa_properties = {
-	{symbol_type = 'cm_begin', symbol_name = 'one_and_two', min_occurs = 1, max_occurs = -1, group_type = 'S'}
-	,{symbol_type = 'element', symbol_name = '{}one', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}two', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'cm_begin', symbol_name = 'three_and_four', min_occurs = 1, max_occurs = -1, group_type = 'S'}
-	,{symbol_type = 'element', symbol_name = '{}three', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}four', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'cm_end', symbol_name = 'three_and_four', cm_begin_index = 4}
-	,{symbol_type = 'cm_end', symbol_name = 'one_and_two', cm_begin_index = 1}
-};
-
 -- We use generated names in this index, to aid validation within a struct
 local _content_model = {
-	generated_subelement_name = _content_fsa_properties[1].symbol_name,
-	group_type = _content_fsa_properties[1].group_type, -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-	min_occurs = _content_fsa_properties[1].min_occurs, max_occurs = _content_fsa_properties[1].max_occurs,
+	generated_subelement_name = 'one_and_two',
+	group_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
+	min_occurs = 1, max_occurs = -1,
 	'one',
 	'two',
 	{
-		generated_subelement_name = _content_fsa_properties[4].symbol_name,
-		group_type = _content_fsa_properties[4].group_type, -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-		min_occurs = _content_fsa_properties[4].min_occurs, max_occurs = _content_fsa_properties[4].max_occurs,
+		generated_subelement_name = 'three_and_four',
+		group_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
+		min_occurs = 1, max_occurs = -1,
 		'three',
 		'four',
 	},
+};
+
+local _content_fsa_properties = {
+	{symbol_type = 'cm_begin', symbol_name = 'one_and_two', min_occurs = 1, max_occurs = -1, group_type = 'S', cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}one', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}two', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'cm_begin', symbol_name = 'three_and_four', min_occurs = 1, max_occurs = -1, group_type = 'S', cm = _content_model[3]}
+	,{symbol_type = 'element', symbol_name = '{}three', min_occurs = 1, max_occurs = 1, cm = _content_model[3]}
+	,{symbol_type = 'element', symbol_name = '{}four', min_occurs = 1, max_occurs = 1, cm = _content_model[3]}
+	,{symbol_type = 'cm_end', symbol_name = 'three_and_four', cm_begin_index = 4, cm = _content_model[3]}
+	,{symbol_type = 'cm_end', symbol_name = 'one_and_two', cm_begin_index = 1, cm = _content_model}
 };
 
 local es_o = nil;

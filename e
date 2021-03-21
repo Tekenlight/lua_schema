@@ -1,4 +1,4 @@
-for file in test_cases/*.lua
+for file in to_xml/*.lua
 do
 lua $file
 echo $file

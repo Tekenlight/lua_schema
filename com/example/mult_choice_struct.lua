@@ -16,15 +16,13 @@ local _declared_subelements = {
 	'{}four',
 };
 
-local _content_fsa_properties = {
-	{symbol_type = 'cm_begin', symbol_name = 'one_and_two', min_occurs = 1, max_occurs = 1, group_type = 'S'}
-	,{symbol_type = 'element', symbol_name = '{}one', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}two', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'cm_begin', symbol_name = 'three_or_four', min_occurs = 1, max_occurs = -1, group_type = 'C'}
-	,{symbol_type = 'element', symbol_name = '{}three', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}four', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'cm_end', symbol_name = 'three_or_four', cm_begin_index = 4}
-	,{symbol_type = 'cm_end', symbol_name = 'one_and_two', cm_begin_index = 1}
+local _all_generated_names = {
+	['one_and_two'] = 1,
+	['one'] = 1,
+	['two'] = 1,
+	['three_or_four'] = 1,
+	['three'] = 1,
+	['four'] = 1,
 };
 
 -- We use generated names in this index, to aid validation within a struct
@@ -41,6 +39,17 @@ local _content_model = {
 		'three',
 		'four',
 	},
+};
+
+local _content_fsa_properties = {
+	{symbol_type = 'cm_begin', symbol_name = 'one_and_two', min_occurs = 1, max_occurs = 1, group_type = 'S', cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}one', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}two', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'cm_begin', symbol_name = 'three_or_four', min_occurs = 1, max_occurs = -1, group_type = 'C', cm = _content_model[3]}
+	,{symbol_type = 'element', symbol_name = '{}three', min_occurs = 1, max_occurs = 1, cm = _content_model[3]}
+	,{symbol_type = 'element', symbol_name = '{}four', min_occurs = 1, max_occurs = 1, cm = _content_model[3]}
+	,{symbol_type = 'cm_end', symbol_name = 'three_or_four', cm_begin_index = 4, cm = _content_model[3]}
+	,{symbol_type = 'cm_end', symbol_name = 'one_and_two', cm_begin_index = 1, cm = _content_model}
 };
 
 local es_o = nil;
@@ -142,7 +151,8 @@ local _generated_sub_elements = {
 	['two'] = _subelement_properties['{}two'],
 	['three'] = _subelement_properties['{}three'],
 	['four'] = _subelement_properties['{}four'],
-	['three_or_four'] = {},
+	['three_or_four'] = {}, -- If schematype_handler.properties.generated_sub_elements[name].properties is nil
+							-- it means it is a dummy name generated for handling a repeated content model.
 };
 
 local _struct_handler = {};
@@ -161,6 +171,7 @@ _struct_handler.properties = {
 		}
 	},
 	declared_subelements = _declared_subelements,
+	all_generated_names = _all_generated_names,
 	content_model = _content_model,
 	subelement_properties = _subelement_properties,
 	generated_subelements = _generated_sub_elements,
@@ -175,6 +186,7 @@ _struct_handler.is_valid = basic_stuff.complex_type_is_valid;
 _struct_handler.get_attributes = basic_stuff.get_attributes;
 _struct_handler.to_xmlua = basic_stuff.struct_to_xmlua;
 _struct_handler.get_unique_namespaces_declared = basic_stuff.complex_get_unique_namespaces_declared;
+_struct_handler.parse_xml = basic_stuff.parse_xml;
 
 _struct_handler.type_handler = _struct_handler;
 local mt = { __index = _struct_handler; } ;

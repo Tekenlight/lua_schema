@@ -29,15 +29,14 @@ local _declared_sub_elements = {
 	'{http://example.com}basic_string_simple_content'
 };
 
-local _content_fsa_properties = {
-	{symbol_type = 'cm_begin', symbol_name = 'author_title_and_genre', min_occurs = 1, max_occurs = 1, group_type = 'S'}
-	,{symbol_type = 'element', symbol_name = '{http://example1.com}element_struct2', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}s2', min_occurs = 1, max_occurs = -1}
-	,{symbol_type = 'element', symbol_name = '{http://example.com}basic_string_simple_content', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'cm_end', symbol_name = 'author_title_and_genre', cm_begin_index=1}
+local _all_generated_names = {
+	['author_and_title'] = 1,
+	['element_struct2'] = '{http://example1.com}element_struct2',
+	['author'] = '{}author',
+	['title'] = '{}title',
+	['genre'] = '{}genre',
+	['s2'] = '{}s2',
+	['basic_string_simple_content'] = '{http://example.com}basic_string_simple_content'
 };
 
 local _content_model = {
@@ -50,6 +49,17 @@ local _content_model = {
 	'genre',
 	's2',
 	'basic_string_simple_content',
+};
+
+local _content_fsa_properties = {
+	{symbol_type = 'cm_begin', symbol_name = 'author_title_and_genre', min_occurs = 1, max_occurs = 1, group_type = 'S', cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{http://example1.com}element_struct2', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}s2', min_occurs = 1, max_occurs = -1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{http://example.com}basic_string_simple_content', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'cm_end', symbol_name = 'author_title_and_genre', cm_begin_index=1, cm = _content_model}
 };
 
 local es_o = nil;
@@ -156,6 +166,7 @@ _struct_handler.properties = {
 		}
 	},
 	declared_subelements = _declared_sub_elements,
+	all_generated_names = _all_generated_names,
 	content_model = _content_model,
 	subelement_properties = _subelement_properties,
 	generated_subelements = _generated_sub_elements,

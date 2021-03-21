@@ -16,21 +16,21 @@ local _declared_sub_elements = {
 	'{}genre',
 };
 
-local _content_fsa_properties = {
-	{symbol_type = 'cm_begin', symbol_name = 'author_title_and_genre', min_occurs = 1, max_occurs = 1, group_type = 'S'}
-	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 1, max_occurs = 1}
-	,{symbol_type = 'cm_end', symbol_name = 'author_title_and_genre', cm_begin_index=1}
-};
-
 local _content_model = {
 	group_type = 'S', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-	generated_subelement_name = _content_fsa_properties[1].symbol_name,
-	min_occurs = _content_fsa_properties[1].min_occurs, max_occurs = _content_fsa_properties[1].max_occurs,
+	generated_subelement_name = 'author_title_and_genre',
+	min_occurs = 1, max_occurs = 1,
 	'author',
 	'title',
 	'genre'
+};
+
+local _content_fsa_properties = {
+	{symbol_type = 'cm_begin', symbol_name = 'author_title_and_genre', min_occurs = 1, max_occurs = 1, group_type = 'S', cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'cm_end', symbol_name = 'author_title_and_genre', cm_begin_index=1, cm = _content_model}
 };
 
 local es_o = nil;

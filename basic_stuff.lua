@@ -973,6 +973,7 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 
 	local obj = {};
 	obj['___METADATA___'] = {empty = true};
+	obj['___METADATA___'].cms = (require('stack')).new();
 	obj['___DATA___'] = {};
 
 	local top_obj = objs:top();
@@ -988,13 +989,18 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 	elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
 		if (schema_type_handler.properties.content_fsa_properties[i].max_occurs ~= 1) then
 			top_obj['___METADATA___'].element_being_parsed = schema_type_handler.properties.content_fsa_properties[i].symbol_name;
+			obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
 			objs:push(obj);
 			top_obj = objs:top();
 			--require 'pl.pretty'.dump(objs);
 			--print('77777777777777777777777777777777777');
 			obj = {};
 			obj['___METADATA___'] = {empty = true};
+			obj['___METADATA___'].cms = (require('stack')).new();
 			obj['___DATA___'] = {};
+		else
+			top_obj['___METADATA___'].cms:push(obj['___METADATA___'].cm);
+			top_obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
 		end
 	elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_end') then
 		local end_node = schema_type_handler.properties.content_fsa_properties[i]
@@ -1015,6 +1021,8 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 			--require 'pl.pretty'.dump(objs);
 			--print('77777777777777777777777777777777777');
 			top_obj = objs:top();
+		else
+			top_obj['___METADATA___'].cm = top_obj['___METADATA___'].cms:pop();
 		end
 	end
 	return false;
@@ -1027,6 +1035,7 @@ local windup_fsa = function(reader, sts, objs, pss)
 	local ps_obj = pss:top();
 	local obj = {};
 	obj['___METADATA___'] = {empty = true};
+	obj['___METADATA___'].cms = (require('stack')).new();
 	obj['___DATA___'] = {};
 
 	local i = ps_obj.position;
@@ -1035,13 +1044,18 @@ local windup_fsa = function(reader, sts, objs, pss)
 		if (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
 			if (schema_type_handler.properties.content_fsa_properties[i].max_occurs ~= 1) then
 				top_obj['___METADATA___'].element_being_parsed = schema_type_handler.properties.content_fsa_properties[i].symbol_name;
+				obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
 				objs:push(obj);
 				top_obj = objs:top();
 				--require 'pl.pretty'.dump(objs);
 				--print('77777777777777777777777777777777777');
 				obj = {};
 				obj['___METADATA___'] = {empty = true};
+				obj['___METADATA___'].cms = (require('stack')).new();
 				obj['___DATA___'] = {};
+			else
+				top_obj['___METADATA___'].cms:push(obj['___METADATA___'].cm);
+				top_obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
 			end
 		elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_end') then
 			local end_node = schema_type_handler.properties.content_fsa_properties[i]
@@ -1062,10 +1076,52 @@ local windup_fsa = function(reader, sts, objs, pss)
 				--require 'pl.pretty'.dump(objs);
 				--print('77777777777777777777777777777777777');
 				top_obj = objs:top();
+			else
+				top_obj['___METADATA___'].cm = top_obj['___METADATA___'].cms:pop();
 			end
 		end
 		i = i + 1;
 	end
+end
+
+local move_fsa_to_end_of_cm = function(reader, sts, objs, pss)
+	local schema_type_handler = sts:top();
+	local top_obj = objs:top();
+	local ps_obj = pss:top();
+
+	--print("HHHHHH", ps_obj.position);
+	local i = ps_obj.position;
+
+	local begin_end = 0;;
+	local j = 1;
+	while (j < i) do
+		if (schema_type_handler.properties.content_fsa_properties[j].symbol_type == 'cm_begin') then
+			begin_end = begin_end + 1;
+		elseif (schema_type_handler.properties.content_fsa_properties[j].symbol_type == 'cm_end') then
+			begin_end = begin_end - 1;
+		end
+		j = j + 1;
+	end
+	--print("HHHHHH", ps_obj.position, "j = ", j, "i = ", i, "ref_begin_count = ", begin_end);
+
+	local ref_begin_end = begin_end;
+	while (schema_type_handler.properties.content_fsa_properties[i].symbol_type ~= 'cm_end') do
+		if (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
+			begin_end = begin_end + 1;
+		elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_end') then
+			begin_end = begin_end - 1;
+			if (begin_end == ref_begin_end) then
+				break;
+			end
+		end
+		--print(begin_end, ref_begin_end);
+		i = i + 1;
+	end
+	--print("HHHHHH", ps_obj.position, "j = ", j, "i = ", i, "ref_begin_count = ", ref_begin_end, "begin_end = ", begin_end);
+
+	ps_obj.position = i;
+	--print("HHHHHH", ps_obj.position);
+
 end
 
 local continue_cm_fsa = function(reader, sts, objs, pss)
@@ -1073,6 +1129,7 @@ local continue_cm_fsa = function(reader, sts, objs, pss)
 
 	local obj = {};
 	obj['___METADATA___'] = {empty = true};
+	obj['___METADATA___'].cms = (require('stack')).new();
 	obj['___DATA___'] = {};
 	local top_obj = objs:top();
 
@@ -1140,6 +1197,7 @@ local process_node = function(reader, sts, objs, pss)
 		if (reader.started ~= nil and reader.started == true) then
 			local new_schema_type_handler = schema_type_handler.properties.subelement_properties[q_name];
 			if (new_schema_type_handler == nil) then
+				print(debug.traceback());
 				error_handler.raise_validation_error(-1,
 					q_name..' not a member in the schema definition of '..schema_type_handler.properties.schema_type);
 			end
@@ -1148,6 +1206,7 @@ local process_node = function(reader, sts, objs, pss)
 			else
 				element_found = continue_cm_fsa(reader, sts, objs, pss);
 				if (not element_found) then
+					print(debug.traceback());
 					error_handler.raise_validation_error(-1,
 						q_name..' not a member in the schema definition of '..schema_type_handler.properties.schema_type);
 				end
@@ -1171,6 +1230,7 @@ local process_node = function(reader, sts, objs, pss)
 		local sth = sts:top();
 		local obj = {};
 		obj['___METADATA___'] = {empty = true};
+		obj['___METADATA___'].cms = (require('stack')).new();
 		obj['___DATA___'] = {};
 		error_handler.push_element(q_name);
 		if (sth.properties.element_type == 'S') then
@@ -1267,7 +1327,19 @@ local process_node = function(reader, sts, objs, pss)
 			top_obj['___METADATA___'].empty = false;
 		end
 		pss:pop();
-
+		--[[
+			If the element is completed is part of a choice content model, the choice content model
+			is to be treated as completely read.
+		]]
+		if ((not top_obj['___METADATA___'].empty) and
+			(top_obj['___METADATA___'].cm ~= nil)) then
+			--print('----------------------------------------------------------------');
+			--(require 'pl.pretty').dump(top_obj);
+			--print('----------------------------------------------------------------');
+			if (top_obj['___METADATA___'].cm.group_type == 'C') then
+				move_fsa_to_end_of_cm(reader, sts, objs, pss)
+			end
+		end
 	end
 
 	return;
@@ -1286,6 +1358,7 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	local reader = xmlua.XMLReader.new(xml);
 	local obj = {};
 	obj['___METADATA___'] = {empty = true;};
+	obj['___METADATA___'].cms = (require('stack')).new();
 	obj['___DATA___'] = {};
 	local objs = (require('stack')).new();
 	local sts = (require('stack')).new();

@@ -4,6 +4,8 @@ do
 	then
 		echo $file
 		lua $file
+		echo $file
 		echo -------------------------
+		read
 	fi
 done
