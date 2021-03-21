@@ -360,7 +360,7 @@ basic_stuff.execute_validation_for_complex_type_sequence = function(schema_type_
 				-- One level deep
 				xmlc = content[v.generated_subelement_name]
 				if (xmlc == nil) then
-					print("REACHED HERE");
+					--print("REACHED HERE");
 					error_handler.raise_validation_error(-1,
 						"Object field: {"..v.generated_subelement_name.."} should not be null");
 					return false;
