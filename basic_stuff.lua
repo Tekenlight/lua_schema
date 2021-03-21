@@ -1089,7 +1089,6 @@ local move_fsa_to_end_of_cm = function(reader, sts, objs, pss)
 	local top_obj = objs:top();
 	local ps_obj = pss:top();
 
-	--print("HHHHHH", ps_obj.position);
 	local i = ps_obj.position;
 
 	local begin_end = 0;;
@@ -1102,10 +1101,10 @@ local move_fsa_to_end_of_cm = function(reader, sts, objs, pss)
 		end
 		j = j + 1;
 	end
-	--print("HHHHHH", ps_obj.position, "j = ", j, "i = ", i, "ref_begin_count = ", begin_end);
 
-	local ref_begin_end = begin_end;
-	while (schema_type_handler.properties.content_fsa_properties[i].symbol_type ~= 'cm_end') do
+	local ref_begin_end = begin_end-1;
+	while ( ref_begin_end ~= begin_end) do
+		--print(ref_begin_end, begin_end);
 		if (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
 			begin_end = begin_end + 1;
 		elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_end') then
@@ -1114,13 +1113,12 @@ local move_fsa_to_end_of_cm = function(reader, sts, objs, pss)
 				break;
 			end
 		end
-		--print(begin_end, ref_begin_end);
 		i = i + 1;
 	end
-	--print("HHHHHH", ps_obj.position, "j = ", j, "i = ", i, "ref_begin_count = ", ref_begin_end, "begin_end = ", begin_end);
+	--print(ref_begin_end, begin_end);
+	--print("------------------------");
 
 	ps_obj.position = i;
-	--print("HHHHHH", ps_obj.position);
 
 end
 
