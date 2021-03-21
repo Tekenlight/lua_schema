@@ -918,6 +918,7 @@ end
 local check_element_name_matches = function(reader, sts)
 	local q_doc_element_name = '{'..get_uri(reader:const_namespace_uri())..'}'..reader:const_local_name()
 	local q_schema_element_name = '{'..sts:top().particle_properties.q_name.ns..'}'..sts:top().particle_properties.q_name.local_name
+	--print(q_doc_element_name, q_schema_element_name);
 	return (q_doc_element_name == q_schema_element_name);
 end
 
@@ -1202,6 +1203,38 @@ local process_node = function(reader, sts, objs, pss)
 			local element_found = false;
 			if (schema_type_handler.properties.content_model.group_type == 'A') then
 			else
+				local l_sth = sts:top();
+				local l_top_obj = objs:top();
+				local cm = l_top_obj['___METADATA___'].cm;
+				--print(l_sth.properties.content_model);
+				if (cm == nil) then
+					cm = l_sth.properties.content_model;
+				end
+				--[[
+				print("STARTSTART");
+				print(l_top_obj['___METADATA___'].element_being_parsed);
+				print(new_schema_type_handler.particle_properties.generated_name);
+				print(l_top_obj['___METADATA___'].empty);
+				print(cm);
+				print(cm.group_type);
+				]]
+				if ((l_top_obj['___METADATA___'].element_being_parsed ~= nil) and
+					(l_top_obj['___METADATA___'].element_being_parsed ~=
+							new_schema_type_handler.particle_properties.generated_name)) then 
+					if ((not l_top_obj['___METADATA___'].empty) and
+						(cm ~= nil) and
+						(cm.group_type == 'C') ) then
+						--print("REACHED HERE");
+						move_fsa_to_end_of_cm(reader, sts, objs, pss)
+						--[[element_found = continue_cm_fsa(reader, sts, objs, pss);
+						if (not element_found) then
+							--print(debug.traceback());
+							error_handler.raise_validation_error(-1,
+								q_name..' not a member in the schema definition of '..schema_type_handler.properties.schema_type);
+						end
+						]]
+					end
+				end
 				element_found = continue_cm_fsa(reader, sts, objs, pss);
 				if (not element_found) then
 					--print(debug.traceback());
@@ -1330,12 +1363,20 @@ local process_node = function(reader, sts, objs, pss)
 			is to be treated as completely read.
 		]]
 		if ((not top_obj['___METADATA___'].empty) and
-			(top_obj['___METADATA___'].cm ~= nil)) then
+			(top_obj['___METADATA___'].cm ~= nil) and
+			(top_obj['___METADATA___'].cm.group_type == 'C')) then
 			--print('----------------------------------------------------------------');
 			--(require 'pl.pretty').dump(top_obj);
 			--print('----------------------------------------------------------------');
-			if (top_obj['___METADATA___'].cm.group_type == 'C') then
+			if (parsed_sth.particle_properties.max_occurs == 1) then
 				move_fsa_to_end_of_cm(reader, sts, objs, pss)
+			elseif (parsed_sth.particle_properties.max_occurs ~= -1) then
+				local ebp = top_obj['___METADATA___'].element_being_parsed
+				local count = #(top_obj['___DATA___'][ebp])
+				if (count == parsed_sth.particle_properties.max_occurs) then
+					--print("AHA HERE");
+					move_fsa_to_end_of_cm(reader, sts, objs, pss)
+				end
 			end
 		end
 	end
@@ -1357,6 +1398,8 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	local obj = {};
 	obj['___METADATA___'] = {empty = true;};
 	obj['___METADATA___'].cms = (require('stack')).new();
+	-- We dont populate cm, simce cm is that of the parent and this is the root
+	-- element
 	obj['___DATA___'] = {};
 	local objs = (require('stack')).new();
 	local sts = (require('stack')).new();
