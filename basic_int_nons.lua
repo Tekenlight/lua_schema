@@ -3,7 +3,6 @@
 -- Also this is a global element declaration, hence can be the root of a document and
 --	the occurence constraints dont appear in the declaration
 -- ]]
-_handlers = require("built_in_types.handlers");
 basic_stuff = require("basic_stuff");
 
 local _basic_int_nons_handler = {};
@@ -24,6 +23,7 @@ _basic_int_nons_handler.get_attributes = basic_stuff.get_attributes;
 _basic_int_nons_handler.to_xmlua = basic_stuff.simple_to_xmlua;
 _basic_int_nons_handler.get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
 _basic_int_nons_handler.parse_xml = basic_stuff.parse_xml;
+_basic_int_nons_handler.parse_json = basic_stuff.parse_json;
 
 local mt = { __index = _basic_int_nons_handler; } ;
 local _factory = {};

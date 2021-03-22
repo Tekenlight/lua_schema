@@ -28,9 +28,19 @@ mhf = require("message_handler_factory")
 example_struct = mhf:get_message_handler("example_struct", "http://example.com");
 
 
+print("from XML");
 local content, msg = example_struct:from_xml(xml_string)
 if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
 
-print(example_struct:to_xml(content))
+--print(example_struct:to_xml(content))
+local json_str = example_struct:to_json(content);
+
+local lua_obj = example_struct:from_json(json_str);
+
+
+print("from JSON");
+print(json_str);
+(require 'pl.pretty').dump(lua_obj);
+

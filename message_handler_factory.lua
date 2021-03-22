@@ -61,6 +61,30 @@ local to_json_string = function(message_handler_instance, content)
 	return json_output;
 end
 
+local from_json_string = function(schema_type_handler, xmlua, json_input)
+
+	local cjson = require('cjson.safe');
+	local json_parser = cjson.new();
+	local parsing_result_msg = nil;
+	local status = nil;
+	local table_input = nil;
+	local err = nil;
+	local obj = nil;
+	if (json_input == nil or type(json_input) ~= 'string') then
+		parsing_result_msg = "Invalid input"
+	else
+		status, obj, err =  pcall(json_parser.decode, json_input);
+	end
+	if (not status) then
+		print(err);
+		parsing_result_msg = "Could not parse json ".. json_input;
+		obj = nil;
+	else
+		parsing_result_msg = nil;
+	end
+	return status, obj, parsing_result_msg;
+end
+
 local validate_doc = function(message_handler_instance, content)
 	if (message_handler_instance.properties.element_type == 'S') then
 		basic_stuff.assert_input_is_simple_type(content);
@@ -103,6 +127,18 @@ local parse_xml = function(message_handler_instance, msg)
 	return true, obj, nil;
 end
 
+local parse_json = function(message_handler_instance, msg)
+	local valid, obj, msg = from_json_string(message_handler_instance, xmlua, msg);
+	if (not obj) then
+		valid = false;
+	end
+	if (not valid) then
+		return false, nil, msg;
+	end
+
+	return true, obj, nil;
+end
+
 function _message_handler_factory:get_message_handler(type_name, name_space)
 	local message_handler_base = basic_stuff.get_type_handler(name_space, type_name);
 	local message_handler = message_handler_base.new_instance_as_root();
@@ -131,6 +167,11 @@ function _message_handler_factory:get_message_handler(type_name, name_space)
 	end
 
 	function message_handler:from_json(msg)
+		local status, obj, msg = parse_json(self, msg);
+		if (status ~= true) then
+			return nil, msg;
+		end
+		return obj, msg;
 	end
 
 	return message_handler;

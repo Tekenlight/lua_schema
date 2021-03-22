@@ -59,6 +59,7 @@ _basic_string_simple_content_handler.is_valid = basic_stuff.complex_type_simple_
 _basic_string_simple_content_handler.to_xmlua = basic_stuff.complex_type_simple_content_to_xmlua;
 _basic_string_simple_content_handler.get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
 _basic_string_simple_content_handler.parse_xml = basic_stuff.parse_xml;
+--_basic_string_simple_content_handler.parse_json = basic_stuff.parse_json;
 
 local mt = { __index = _basic_string_simple_content_handler; } ;
 local _factory = {};

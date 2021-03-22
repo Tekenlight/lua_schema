@@ -1483,7 +1483,7 @@ end
 
 basic_stuff.parse_xml = function(schema_type_handler, xmlua, xml)
 
-	parsing_result_msg = nil;
+	local parsing_result_msg = nil;
 	local status, obj = pcall(low_parse_xml, schema_type_handler, xmlua, xml);
 	if (not status) then
 		parsing_result_msg = obj;

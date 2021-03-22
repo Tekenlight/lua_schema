@@ -148,6 +148,7 @@ _struct_handler.get_attributes = basic_stuff.get_attributes;
 _struct_handler.to_xmlua = basic_stuff.struct_to_xmlua;
 _struct_handler.get_unique_namespaces_declared = basic_stuff.complex_get_unique_namespaces_declared;
 _struct_handler.parse_xml = basic_stuff.parse_xml;
+--_struct_handler.parse_json = basic_stuff.parse_json;
 
 _struct_handler.type_handler = _struct_handler;
 local mt = { __index = _struct_handler; } ;
