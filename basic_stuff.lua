@@ -360,11 +360,12 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 				local count = 0;
 				]]
 				if (basic_stuff.data_present_within_model(v, xmlc)) then
-					present_count = present_coount + 1;
+					present_count = present_count + 1;
+					print(present_count);
 					if (present_count > 1) then
 						error_handler.raise_validation_error(-1,
 							"Element: {"..error_handler.get_fieldpath()..
-									"} one and only one of the fields in the model  should be present");
+									"} one and only one of the fields in the model should be present");
 						return false;
 					else
 						if (not basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, v)) then
@@ -496,6 +497,7 @@ basic_stuff.execute_validation_for_complex_type = function(schema_type_handler, 
 		end
 		return basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, content_model);
 	end
+	return true;
 end
 
 basic_stuff.execute_validation_for_complex_type_simple_content = function(schema_type_handler, content)
@@ -1473,6 +1475,7 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	local valid, msg = validate_content(schema_type_handler, obj);
 	if (not valid) then
 		parsing_result_msg = 'Content not valid:'..msg;
+		print(debug.traceback());
 		error(parsing_result_msg);
 	end
 	return obj;

@@ -34,6 +34,7 @@ end
 
 error_handler.raise_validation_error = function(error_no, message)
 	if (_G.message_validation_context == nil) then
+		print(debug.traceback("HH"));
 		error(message);
 		return false;
 	else
