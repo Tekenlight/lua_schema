@@ -1288,7 +1288,7 @@ local process_node = function(reader, sts, objs, pss)
 				if (not element_found) then
 					--print(debug.traceback());
 					error_handler.raise_validation_error(-1,
-						q_name..' not a member in the schema definition of '..schema_type_handler.properties.schema_type);
+						"unable to fit "..q_name..' as a member in the schema '..schema_type_handler.properties.schema_type);
 				end
 			end
 			local top_obj = objs:top();
@@ -1471,7 +1471,6 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	--(require 'pl.pretty').dump(obj);
 
 	local valid, msg = validate_content(schema_type_handler, obj);
-	valid = true;
 	if (not valid) then
 		parsing_result_msg = 'Content not valid:'..msg;
 		error(parsing_result_msg);
