@@ -1268,14 +1268,6 @@ local process_node = function(reader, sts, objs, pss)
 				if (cm == nil) then
 					cm = l_sth.properties.content_model;
 				end
-				--[[
-				print("STARTSTART");
-				print(l_top_obj['___METADATA___'].element_being_parsed);
-				print(new_schema_type_handler.particle_properties.generated_name);
-				print(l_top_obj['___METADATA___'].empty);
-				print(cm);
-				print(cm.group_type);
-				]]
 				if ((l_top_obj['___METADATA___'].element_being_parsed ~= nil) and
 					(l_top_obj['___METADATA___'].element_being_parsed ~=
 							new_schema_type_handler.particle_properties.generated_name)) then 

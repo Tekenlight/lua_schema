@@ -16,5 +16,6 @@ local json_str = basic_string:to_json(content);
 local lua_obj = basic_string:from_json(json_str);
 
 
+print(json_str);
 (require 'pl.pretty').dump(lua_obj);
 
