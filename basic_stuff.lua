@@ -275,6 +275,33 @@ basic_stuff.execute_validation_for_complex_type_all = function(schema_type_handl
 	return basic_stuff.execute_validation_for_struct(schema_type_handler, content, content_model);
 end
 
+basic_stuff.data_present_within_model = function(content_model, content)
+	local count = 0;
+	for _, field_name in ipairs(content_model) do
+		if ('string' == type(field_name)) then
+			if (content[field_name] ~= nil) then
+				return true;
+			end
+		else
+			if (type(field_name) ~= 'table') then
+				error("INVALID CONTENTS IN CONTENT_MODEL");
+				return false;
+			end
+			if (field_name.max_occurs ~= 1) then
+				local items = content[field_name.generated_subelement_name];
+				if (#items > 0) then
+					return true;
+				end
+			else
+				if(basic_stuff.data_present_within_model(field_name, content)) then 
+					return true;
+				end
+			end
+		end
+	end
+	return false;
+end
+
 basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_handler, content, content_model)
 
 	if (not basic_stuff.all_elements_part_of_declaration(schema_type_handler, content, content_model)) then
@@ -304,6 +331,7 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 				-- No depth
 				xmlc = content;
 			else
+				local count = 0;
 				-- One level deep
 				if (fields == nil) then
 					fields = v.generated_subelement_name;
@@ -311,11 +339,38 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 					fields = fields..", "..v.generated_subelement_name;
 				end
 				xmlc = content[v.generated_subelement_name]
+				if (#xmlc > 0) then
+					-- Treat the n elements as 1 item present in the content model.
+					count = 1;
+				end
+				if (count ~= 0) then
+					present_count = present_count + count;
+					if (present_count > 1) then
+						error_handler.raise_validation_error(-1,
+							"Element: {"..error_handler.get_fieldpath()..
+									"} one and only one of the fields in the model  should be present");
+						return false;
+					end
+				end
 			end
 			if (xmlc ~= nil) then
-				present_count = present_count + 1;
-				if (not basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, v)) then
-					return false;
+				--[[
+					Here we have to check if the sequence is present or nor somehow.
+					If it is present, then only we should get into the validation.
+				local count = 0;
+				]]
+				if (basic_stuff.data_present_within_model(v, xmlc)) then
+					present_count = present_coount + 1;
+					if (present_count > 1) then
+						error_handler.raise_validation_error(-1,
+							"Element: {"..error_handler.get_fieldpath()..
+									"} one and only one of the fields in the model  should be present");
+						return false;
+					else
+						if (not basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, v)) then
+							return false;
+						end
+					end
 				end
 			end
 		else
@@ -883,6 +938,7 @@ local function validate_content(sth, content)
 	local valid = nil;
 	error_handler.init()
 	result, valid = pcall(basic_stuff.perform_element_validation, sth,  content);
+	--result, valid = basic_stuff.perform_element_validation( sth,  content);
 	local message_validation_context = error_handler.reset();
 	if (not result) then
 		valid = false;
@@ -1226,13 +1282,6 @@ local process_node = function(reader, sts, objs, pss)
 						(cm.group_type == 'C') ) then
 						--print("REACHED HERE");
 						move_fsa_to_end_of_cm(reader, sts, objs, pss)
-						--[[element_found = continue_cm_fsa(reader, sts, objs, pss);
-						if (not element_found) then
-							--print(debug.traceback());
-							error_handler.raise_validation_error(-1,
-								q_name..' not a member in the schema definition of '..schema_type_handler.properties.schema_type);
-						end
-						]]
 					end
 				end
 				element_found = continue_cm_fsa(reader, sts, objs, pss);
@@ -1369,6 +1418,7 @@ local process_node = function(reader, sts, objs, pss)
 			--(require 'pl.pretty').dump(top_obj);
 			--print('----------------------------------------------------------------');
 			if (parsed_sth.particle_properties.max_occurs == 1) then
+				--print("REACHED HERE INSTEAD");
 				move_fsa_to_end_of_cm(reader, sts, objs, pss)
 			elseif (parsed_sth.particle_properties.max_occurs ~= -1) then
 				local ebp = top_obj['___METADATA___'].element_being_parsed
@@ -1421,6 +1471,7 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	--(require 'pl.pretty').dump(obj);
 
 	local valid, msg = validate_content(schema_type_handler, obj);
+	valid = true;
 	if (not valid) then
 		parsing_result_msg = 'Content not valid:'..msg;
 		error(parsing_result_msg);
