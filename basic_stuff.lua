@@ -361,7 +361,7 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 				]]
 				if (basic_stuff.data_present_within_model(v, xmlc)) then
 					present_count = present_count + 1;
-					print(present_count);
+					--print(present_count);
 					if (present_count > 1) then
 						error_handler.raise_validation_error(-1,
 							"Element: {"..error_handler.get_fieldpath()..
