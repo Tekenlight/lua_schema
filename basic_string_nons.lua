@@ -3,7 +3,7 @@
 -- Also this is a global element declaration, hence can be the root of a document and
 --	the occurence constraints dont appear in the declaration
 -- ]]
-basic_stuff = require("basic_stuff");
+local basic_stuff = require("basic_stuff");
 
 local _basic_string_nons_handler = {};
 _basic_string_nons_handler.properties = {

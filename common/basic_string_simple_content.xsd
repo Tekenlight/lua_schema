@@ -1,0 +1,11 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"  targetNamespace="http://example.com" xmlns:ns="http://example.com">
+	<xsd:complexType name="basic_string_simple_content_type">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="attr1" type="xsd:int"/>
+				<xsd:attribute name="attr2" type="xsd:string"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:element name="basic_string_simple_content" type="ns:basic_string_simple_content_type"/>
+</xsd:schema>

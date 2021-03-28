@@ -1255,8 +1255,10 @@ local process_node = function(reader, sts, objs, pss)
 			local new_schema_type_handler = schema_type_handler.properties.subelement_properties[q_name];
 			if (new_schema_type_handler == nil) then
 				--print(debug.traceback());
+				local st = '';
+				if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
 				error_handler.raise_validation_error(-1,
-					q_name..' not a member in the schema definition of '..schema_type_handler.properties.schema_type);
+					q_name..' not a member in the schema definition of '..st);
 			end
 			local element_found = false;
 			if (schema_type_handler.properties.content_model.group_type == 'A') then
@@ -1281,8 +1283,10 @@ local process_node = function(reader, sts, objs, pss)
 				element_found = continue_cm_fsa(reader, sts, objs, pss);
 				if (not element_found) then
 					--print(debug.traceback());
+					local st = '';
+					if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
 					error_handler.raise_validation_error(-1,
-						"unable to fit "..q_name..' as a member in the schema '..schema_type_handler.properties.schema_type);
+						"unable to fit "..q_name..' as a member in the schema '..st);
 				end
 			end
 			local top_obj = objs:top();

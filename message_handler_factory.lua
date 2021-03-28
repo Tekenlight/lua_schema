@@ -139,9 +139,7 @@ local parse_json = function(message_handler_instance, msg)
 	return true, obj, nil;
 end
 
-function _message_handler_factory:get_message_handler(type_name, name_space)
-	local message_handler_base = basic_stuff.get_type_handler(name_space, type_name);
-	local message_handler = message_handler_base.new_instance_as_root();
+local function form_complete_message_handler(message_handler)
 	function message_handler:to_json(content)
 		status, msg = validate_doc(self, content)
 		if (status) then return to_json_string(self, content);
@@ -173,8 +171,43 @@ function _message_handler_factory:get_message_handler(type_name, name_space)
 		end
 		return obj, msg;
 	end
-
 	return message_handler;
+end
+
+function _message_handler_factory:get_message_handler_using_xsd(xsd_name, element_name)
+
+	local ffi = require("ffi");
+
+	if (xsd_name == nil or xsd_name == '') then
+		error("XSD name must not be empty");
+	end
+	if (element_name == nil or element_name == '') then
+		error("Element name must not be empty");
+	end
+
+	local xsd = xmlua.XSD.new();
+	local schema = xsd:parse(xsd_name);
+	if (schema._ptr == ffi.NULL) then
+		error("Unable to parse schema");
+	end
+
+	local tns = schema:get_target_ns();
+	local element = schema:get_element_decl(element_name, tns);
+	if (element == nil) then
+		error("Element: "..element_name.." not found in "..xsd_name);
+	end
+
+	local code_generator = require("code_generator");
+	local mh_base = code_generator.gen_lua_schema(element);
+	message_handler = mh_base.new_instance_as_root();
+	return form_complete_message_handler(message_handler);
+end
+
+function _message_handler_factory:get_message_handler(type_name, name_space)
+	local message_handler_base = basic_stuff.get_type_handler(name_space, type_name);
+	local message_handler = message_handler_base.new_instance_as_root();
+
+	return form_complete_message_handler(message_handler);
 end
 
 return _message_handler_factory;

@@ -1,0 +1,8 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://example.com"  targetNamespace="http://example.com">
+	<xsd:simpleType name="new_basic_string">
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="7"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="basic_string" type="ns:new_basic_string"/>
+</xsd:schema>
