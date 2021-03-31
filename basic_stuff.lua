@@ -71,6 +71,9 @@ basic_stuff.package_name_from_uri = function(s)
 	local h = u:host();
 	local p = u:path();
 	local hp = nil;
+	--require 'pl.pretty'.dump(u);
+	--print("h = "..h);
+	--print("p = "..p);
 	if (h ~= nil) then
 		hp = stringx.split(h, '.');
 	else
@@ -108,10 +111,10 @@ basic_stuff.package_name_from_uri = function(s)
 			package_name = package_name.."."..__;
 		end
 	end
-	return package_name;
+	return package_name, up;
 end
 
-basic_stuff.get_type_handler = function(namespace, tn)
+basic_stuff.get_type_handler_str = function(namespace, tn)
 	local handler = nil;
 	if (namespace ~= nil) then
 		local package = basic_stuff.package_name_from_uri(namespace);
@@ -119,7 +122,11 @@ basic_stuff.get_type_handler = function(namespace, tn)
 	else
 		handler = tn;
 	end
-	return require(handler);
+	return handler;
+end
+
+basic_stuff.get_type_handler = function(namespace, tn)
+	return require(basic_stuff.get_type_handler_str(namespace, tn));
 end
 
 basic_stuff.attributes_are_valid = function(attrs_def, attrs)
@@ -137,9 +144,10 @@ basic_stuff.attributes_are_valid = function(attrs_def, attrs)
 		elseif ((v.properties.use == 'P') and (inp_attr[v.particle_properties.generated_name] ~= nil)) then
 			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be present");
 			return false;
-		elseif((not basic_stuff.is_nil(v.properties.fixed)) and
-						(tostring(inp_attr[v.particle_properties.generated_name]) ~= v.properties.fixed)) then
-			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} value should be "..v.properties.fixed);
+		--elseif((not basic_stuff.is_nil(v.properties.fixed)) and (v.properties.default ~= nil and v.properties.default ~= '')
+		elseif((v.properties.fixed) and
+						(tostring(inp_attr[v.particle_properties.generated_name]) ~= v.properties.default)) then
+			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} value should be "..v.properties.default);
 			return false;
 		elseif ((inp_attr[v.particle_properties.generated_name] ~= nil) and
 				(not basic_stuff.execute_primitive_validation(v.type_handler, inp_attr[v.particle_properties.generated_name]))) then
@@ -995,6 +1003,12 @@ local get_attributes = function(reader, schema_type_handler, obj)
 				attr_uri = ''
 			end
 			if (not reader:is_namespace_decl()) then
+				if (nil == schema_type_handler.properties.attr) then
+					error_handler.raise_validation_error(-1,
+								"Field: {"..error_handler.get_fieldpath().."} is not valid, attributes not allowed in the model");
+					error_handler.pop_element();
+					return nil;
+				end
 				local q_attr_name = '{'..attr_uri..'}'..attr_name;
 				local attr_properties = schema_type_handler.properties.attr._attr_properties[q_attr_name];
 				error_handler.push_element(attr_name);

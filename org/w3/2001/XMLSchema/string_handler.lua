@@ -1,3 +1,4 @@
+local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __string_handler_class = {}
 

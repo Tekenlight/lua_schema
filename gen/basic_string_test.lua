@@ -5,7 +5,7 @@ basic_string = mhf:get_message_handler_using_xsd("gen/xsd/basic_string.xsd", "ba
 --require 'pl.pretty'.dump(basic_string.properties);
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
-<ns1:basic_string xmlns:ns1="http://example.com">hello hello</ns1:basic_string>]=]
+<ns1:basic_string xmlns:ns1="http://test_example.com">hello hello</ns1:basic_string>]=]
 
 local content, msg = basic_string:from_xml(xml_string)
 if (type(content) == 'table') then require 'pl.pretty'.dump(content);

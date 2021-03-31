@@ -17,7 +17,7 @@ _basic_string_simple_content_handler.properties = {
 				properties = {
 					schema_type = "{http://www.w3.org/2001/XMLSchema}int",
 					default = '',
-					fixed = '',
+					fixed = false,
 					use = 'O', -- One of 'O' - Optional, 'P' - Prohibited, 'R' - Required
 					form = 'U', -- Q - Qualified, U - Unqualified
 				},
@@ -31,7 +31,7 @@ _basic_string_simple_content_handler.properties = {
 				properties = {
 					schema_type = "{http://www.w3.org/2001/XMLSchema}string",
 					default = '',
-					fixed = '',
+					fixed = false,
 					use = 'R', -- One of 'O' - Optional, 'P' - Prohibited, 'R' - Required
 					form = 'U', -- Q - Qualified, U - Unqualified
 				},
