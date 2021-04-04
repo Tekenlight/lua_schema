@@ -33,10 +33,6 @@ local get_named_schema_type = function(elem)
 	return '';
 end
 
-local get_generated_name = function(elem, i) -- generated_name
-	return elem:get_name();
-end
-
 local get_generated_attr_name = function(names, name, ns, i) -- generated_name
 	return name;
 end
@@ -145,11 +141,27 @@ local get_type_handler_code = function(elem, content_type)
 	return ths;
 end
 
+local function add_and_get_name(generated_names, name)
+	local new_name = nil;
+	if (generated_names[name] == nil) then
+		generated_names[name] = 1;
+		new_name = name;
+	else
+		local i = generated_names[name];
+		new_name = name..'_'..i
+		i = i + 1;
+		generated_names[name] = i;
+	end
+	return new_name;
+end
+
 local get_attr_decls = function(elem)
 	local o_attrs = {};
 	o_attrs._generated_attr = {};
 	local attrs = elem:get_attr_decls();
 	local decls = {};
+	local g_names = {};
+
 	if (attrs ~= nil) then
 		for i,v in ipairs(attrs) do
 			local attr = {};
@@ -172,7 +184,7 @@ local get_attr_decls = function(elem)
 			particle_properties.q_name = {};
 			particle_properties.q_name.ns = v.ns;
 			particle_properties.q_name.local_name = v.name;
-			particle_properties.generated_name = get_generated_attr_name({}, v.name, v.ns, 0); -- generated_name
+			particle_properties.generated_name = add_and_get_name(g_names, v.name); -- generated_name
 			attr.particle_properties = particle_properties;
 
 			attr.type_handler = basic_stuff.get_type_handler(v.type.ns, v.type.name..'_handler');
@@ -196,7 +208,10 @@ end
 
 code_generator.get_subelement_properties= function(elem, model)
 	local _subelement_properties = {};
+
 	for i, item in ipairs(model) do
+		--if (item.symbol_type == 'cm_begin') then
+		--elseif (item.symbol_type == 'cm_end') then
 		if (item.symbol_type == 'element') then
 			local item_q_name = ''
 			if (item.ref) then
@@ -205,27 +220,29 @@ code_generator.get_subelement_properties= function(elem, model)
 				item_q_name = get_q_name(item.ns, item.name);
 			end
 
+			local gn = item.generated_name; -- generated_name
 			if (item.ref) then
 				--print(item.ref_name, item.ref_ns);
 				local ths = basic_stuff.get_type_handler_str(item.ref_ns, item.ref_name);
 				_subelement_properties[item_q_name] = (require(ths)):new_instance_as_ref( {root_element=false, 
-														min_occurs = item.min_occurs, max_occurs = item.max_occurs });
+											generated_name = gn, min_occurs = item.min_occurs, max_occurs = item.max_occurs });
 			elseif (item.content_type == 'S') then
-				_subelement_properties[item_q_name] = code_generator.get_element_handler(item.element);
+				_subelement_properties[item_q_name] = code_generator.get_element_handler(item.element, generated_names);
 				_subelement_properties[item_q_name].particle_properties.min_occurs = item.min_occurs;
 				_subelement_properties[item_q_name].particle_properties.max_occurs = item.max_occurs;
+				_subelement_properties[item_q_name].particle_properties.generated_name = gn;
 			else
 				if (item.explicit_type) then
 					local type_name = basic_stuff.get_type_handler_str(item.named_type_ns, item.named_type);
-					local gn = item.name; -- generated_name
 					_subelement_properties[item_q_name] = (require(type_name)):new_instance_as_local_element(
-								{ ns = item.ns, local_name = item.name, generated_name = gn,
-									root_element = false,  -- generated_name
+								{ ns = item.ns, local_name = item.name, generated_name = gn,  -- generated_name
+									root_element = false,
 									min_occurs = item.min_occurs, max_occurs = item.max_occurs });
 				else
-					_subelement_properties[item_q_name] = code_generator.get_element_handler(item.element);
+					_subelement_properties[item_q_name] = code_generator.get_element_handler(item.element, generated_names);
 					_subelement_properties[item_q_name].particle_properties.min_occurs = item.min_occurs;
 					_subelement_properties[item_q_name].particle_properties.max_occurs = item.max_occurs;
+					_subelement_properties[item_q_name].particle_properties.generated_name = gn;
 				end
 			end
 		end
@@ -249,26 +266,6 @@ code_generator.get_declared_subelements = function(elem, model)
 	return _declared_subelments;
 end
 
---[[
-code_generator.get_all_generated_names = function(props, model)
-	local _all_generated_names = {};
-	for i, item in ipairs(model) do
-		if (item.symbol_type == 'element') then
-			local item_q_name = ''
-			if (item.ref) then
-				item_q_name = get_q_name(item.ref_ns, item.ref_name);
-			else
-				item_q_name = get_q_name(item.ns, item.name);
-			end
-			_all_generated_names[props.subelement_properties[item_q_name].generated_name] = item_q_name;
-		else
-			_all_generated_names[item.symbol_name] = 1;
-		end
-	end
-	return _all_generated_names;
-end
-]]
-
 local function low_get_content_model(model, i)
 	local _content_model = {};
 	if (model[i].symbol_type ~= 'cm_begin') then
@@ -277,12 +274,12 @@ local function low_get_content_model(model, i)
 	_content_model.group_type = model[i].group_type;
 	_content_model.min_occurs = model[i].min_occurs;
 	_content_model.max_occurs = model[i].max_occurs;
-	_content_model.generated_subelement_name = model[i].symbol_name; -- generated_name
+	_content_model.generated_subelement_name = model[i].generated_name; -- generated_name
 	i = i + 1;
 	while (model[i].symbol_type ~= 'cm_end') do
 		local cm_index = #_content_model+1;
 		if (model[i].symbol_type == 'element') then
-			_content_model[cm_index] = model[i].symbol_name; -- generated_name
+			_content_model[cm_index] = model[i].generated_name; -- generated_name
 		else
 			_content_model[cm_index], i = low_get_content_model(model, i);
 		end
@@ -295,21 +292,8 @@ end
 
 code_generator.get_content_model = function(elem, model)
 	local _content_model = low_get_content_model(model, 1);
-	--print("-------------------------------------");
-	--require 'pl.pretty'.dump(_content_model);
 	return _content_model;
 end
-
---[[
-	{symbol_type = 'cm_begin', symbol_name = 'author_title_and_genre', min_occurs = 1, max_occurs = 1, group_type = 'S', cm = _content_model}
-	,{symbol_type = 'element', symbol_name = '{http://example1.com}element_struct2', min_occurs = 1, max_occurs = 1, cm = _content_model}
-	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = 1, cm = _content_model}
-	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 1, cm = _content_model}
-	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 1, max_occurs = 1, cm = _content_model}
-	,{symbol_type = 'element', symbol_name = '{}s2', min_occurs = 1, max_occurs = -1, cm = _content_model}
-	,{symbol_type = 'element', symbol_name = '{http://example.com}basic_string_simple_content', min_occurs = 1, max_occurs = 1, cm = _content_model}
-	,{symbol_type = 'cm_end', symbol_name = 'author_title_and_genre', cm_begin_index=1, cm = _content_model}
-]]
 
 code_generator.get_content_fsa_properties = function(elem, model, content_model)
 	local _content_fsa_properties = {};
@@ -325,12 +309,8 @@ code_generator.get_content_fsa_properties = function(elem, model, content_model)
 			bis:push(index);
 			if (cmi == 0) then
 				cmps:push(content_model);
-				--print("boundary", cmi);
-				--require 'pl.pretty'.dump(content_model);
 			else
 				cmps:push(content_model[cmi]);
-				--print("usual", cmi);
-				--require 'pl.pretty'.dump(content_model[cmi]);
 			end
 			_content_fsa_properties[index].min_occurs = item.min_occurs;
 			_content_fsa_properties[index].max_occurs = item.max_occurs;
@@ -350,8 +330,6 @@ code_generator.get_content_fsa_properties = function(elem, model, content_model)
 			cmi = cmi + 1;
 		end
 	end
-	--print("-------------------------------------");
-	--require 'pl.pretty'.dump(_content_fsa_properties);
 	return _content_fsa_properties;
 end
 
@@ -363,7 +341,33 @@ code_generator.get_generated_subelements = function(props)
 	return _generated_subelements;
 end
 
-code_generator.get_element_handler = function(elem)
+local get_generated_name = function(elem) -- generated_name
+	return elem:get_name();
+end
+
+local function prepare_generated_names(model)
+	local generated_names = {};
+	local bis = (require('stack')).new();
+
+	for i, item in ipairs(model) do
+		if (item.symbol_type == 'cm_begin') then
+			bis:push(i);
+			item.generated_name = add_and_get_name(generated_names, item.symbol_name);
+		elseif (item.symbol_type == 'cm_end') then
+			local begin_index = bis:pop();
+			item.generated_name = model[begin_index].generated_name;
+		else
+			item.generated_name = add_and_get_name(generated_names, item.symbol_name);
+		end
+	end
+	--require 'pl.pretty'.dump(generated_names);
+	--print("-------------------------------------");
+	--require 'pl.pretty'.dump(model);
+	--print("-------------------------------------");
+	return generated_names;
+end
+
+code_generator.get_element_handler = function(elem, to_generate_names)
 	local element_handler = {};
 
 	local content_type = elem:get_content_type();
@@ -383,7 +387,9 @@ code_generator.get_element_handler = function(elem)
 		particle_properties.q_name = {};
 		particle_properties.q_name.ns = elem:get_target_name_space();;
 		particle_properties.q_name.local_name = elem:get_name();
-		particle_properties.generated_name = get_generated_name(elem, 0); -- generated_name
+		if (to_generate_names) then
+			particle_properties.generated_name = get_generated_name(elem); -- generated_name
+		end
 		element_handler.particle_properties = particle_properties;
 	end
 
@@ -397,6 +403,7 @@ code_generator.get_element_handler = function(elem)
 			local model = elem:get_content_model();
 			--require 'pl.pretty'.dump(model);
 			--print("-------------------------------------");
+			prepare_generated_names(model);
 			props.subelement_properties = code_generator.get_subelement_properties(elem, model);
 			props.generated_subelements = code_generator.get_generated_subelements(props)
 			props.declared_subelements = code_generator.get_declared_subelements(elem, model);
@@ -413,7 +420,7 @@ end
 
 code_generator.gen_lua_schema = function(elem)
 
-	local element_handler = code_generator.get_element_handler(elem);
+	local element_handler = code_generator.get_element_handler(elem, true);
 
 	local basic_stuff = require("basic_stuff");
 
@@ -427,7 +434,7 @@ code_generator.gen_lua_schema = function(elem)
 	_factory.new_instance_as_ref = function(self, element_ref_properties)
 		return basic_stuff.instantiate_element_as_ref(mt, { ns = elem:get_target_name_space(),
 															local_name = elem:get_name(),
-															generated_name = get_generated_name(elem, 0), -- generated_name
+															generated_name = element_ref_properties.generated_name,
 															min_occurs = element_ref_properties.min_occurs,
 															max_occurs = element_ref_properties.max_occurs,
 															root_element = element_ref_properties.root_element});

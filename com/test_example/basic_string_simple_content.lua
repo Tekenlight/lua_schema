@@ -12,24 +12,6 @@ do
     properties.attr = {};
     _attr_properties = {};
     do
-        _attr_properties['{}attr1'] = {};
-
-        _attr_properties['{}attr1'].properties = {};
-        _attr_properties['{}attr1'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}int';
-        _attr_properties['{}attr1'].properties.default = '';
-        _attr_properties['{}attr1'].properties.fixed = false;
-        _attr_properties['{}attr1'].properties.use = 'O';
-        _attr_properties['{}attr1'].properties.form = 'U';
-
-        _attr_properties['{}attr1'].particle_properties = {};
-        _attr_properties['{}attr1'].particle_properties.q_name = {};
-        _attr_properties['{}attr1'].particle_properties.q_name.ns = '';
-        _attr_properties['{}attr1'].particle_properties.q_name.local_name = 'attr1';
-        _attr_properties['{}attr1'].particle_properties.generated_name = 'attr1';
-
-        _attr_properties['{}attr1'].type_handler = require('org.w3.2001.XMLSchema.int_handler');
-    end
-    do
         _attr_properties['{}attr2'] = {};
 
         _attr_properties['{}attr2'].properties = {};
@@ -46,6 +28,24 @@ do
         _attr_properties['{}attr2'].particle_properties.generated_name = 'attr2';
 
         _attr_properties['{}attr2'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
+    end
+    do
+        _attr_properties['{}attr1'] = {};
+
+        _attr_properties['{}attr1'].properties = {};
+        _attr_properties['{}attr1'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}int';
+        _attr_properties['{}attr1'].properties.default = '';
+        _attr_properties['{}attr1'].properties.fixed = false;
+        _attr_properties['{}attr1'].properties.use = 'O';
+        _attr_properties['{}attr1'].properties.form = 'U';
+
+        _attr_properties['{}attr1'].particle_properties = {};
+        _attr_properties['{}attr1'].particle_properties.q_name = {};
+        _attr_properties['{}attr1'].particle_properties.q_name.ns = '';
+        _attr_properties['{}attr1'].particle_properties.q_name.local_name = 'attr1';
+        _attr_properties['{}attr1'].particle_properties.generated_name = 'attr1';
+
+        _attr_properties['{}attr1'].type_handler = require('org.w3.2001.XMLSchema.int_handler');
     end
     _generated_attr = {};
     _generated_attr['attr1'] = '{}attr1';
