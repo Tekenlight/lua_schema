@@ -223,7 +223,7 @@ code_generator.get_subelement_properties= function(elem, model)
 				_subelement_properties[item_q_name] = (require(ths)):new_instance_as_ref( {root_element=false, 
 											generated_name = gn, min_occurs = item.min_occurs, max_occurs = item.max_occurs });
 			elseif (item.content_type == 'S') then
-				_subelement_properties[item_q_name] = code_generator.get_element_handler(item.element, generated_names);
+				_subelement_properties[item_q_name] = code_generator.get_element_handler(item.element, false);
 				_subelement_properties[item_q_name].particle_properties.min_occurs = item.min_occurs;
 				_subelement_properties[item_q_name].particle_properties.max_occurs = item.max_occurs;
 				_subelement_properties[item_q_name].particle_properties.generated_name = gn;
@@ -235,7 +235,7 @@ code_generator.get_subelement_properties= function(elem, model)
 									root_element = false,
 									min_occurs = item.min_occurs, max_occurs = item.max_occurs });
 				else
-					_subelement_properties[item_q_name] = code_generator.get_element_handler(item.element, generated_names);
+					_subelement_properties[item_q_name] = code_generator.get_element_handler(item.element, false);
 					_subelement_properties[item_q_name].particle_properties.min_occurs = item.min_occurs;
 					_subelement_properties[item_q_name].particle_properties.max_occurs = item.max_occurs;
 					_subelement_properties[item_q_name].particle_properties.generated_name = gn;
