@@ -1268,7 +1268,6 @@ local process_node = function(reader, sts, objs, pss)
 		if (reader.started ~= nil and reader.started == true) then
 			local new_schema_type_handler = schema_type_handler.properties.subelement_properties[q_name];
 			if (new_schema_type_handler == nil) then
-				--print(debug.traceback());
 				local st = '';
 				if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
 				error_handler.raise_validation_error(-1,
@@ -1280,7 +1279,6 @@ local process_node = function(reader, sts, objs, pss)
 				local l_sth = sts:top();
 				local l_top_obj = objs:top();
 				local cm = l_top_obj['___METADATA___'].cm;
-				--print(l_sth.properties.content_model);
 				if (cm == nil) then
 					cm = l_sth.properties.content_model;
 				end
@@ -1290,13 +1288,11 @@ local process_node = function(reader, sts, objs, pss)
 					if ((not l_top_obj['___METADATA___'].empty) and
 						(cm ~= nil) and
 						(cm.group_type == 'C') ) then
-						--print("REACHED HERE");
 						move_fsa_to_end_of_cm(reader, sts, objs, pss)
 					end
 				end
 				element_found = continue_cm_fsa(reader, sts, objs, pss);
 				if (not element_found) then
-					--print(debug.traceback());
 					local st = '';
 					if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
 					error_handler.raise_validation_error(-1,
@@ -1307,7 +1303,6 @@ local process_node = function(reader, sts, objs, pss)
 			(objs:top())['___METADATA___'].element_being_parsed = new_schema_type_handler.particle_properties.generated_name;
 			sts:push(new_schema_type_handler);
 		else
-			--print("STARTING");
 			local top_obj = objs:top();
 			-- Boundary condition started == nil or false means this is the first element of the document
 			-- We have to make sure the element detected is the same as the one being expected
@@ -1339,9 +1334,6 @@ local process_node = function(reader, sts, objs, pss)
 			end
 		end
 		objs:push(obj);
-		--print('999999999999999999999999999');
-		--require 'pl.pretty'.dump(objs);
-		--print('999999999999999999999999999');
 
 	elseif ((typ == reader.node_types.XML_READER_TYPE_TEXT) or
 			(typ == reader.node_types.XML_READER_TYPE_CDATA)) then
@@ -1349,18 +1341,6 @@ local process_node = function(reader, sts, objs, pss)
 		local top_obj = objs:top();
 
 		local converted_value = schema_type_handler.type_handler:to_type('', value);
-		--[[
-		if ((schema_type_handler.particle_properties.max_occurs ~= 1) and
-			(schema_type_handler.properties.element_type == 'S')) then
-			--if (top_obj['___DATA___']._contained_value == nil) then
-				--top_obj['___DATA___']._contained_value = {}
-			--end
-			--top_obj['___DATA___']._contained_value[#(top_obj['___DATA___']._contained_value)+1] = converted_value;
-			top_obj['___DATA___']._contained_value = converted_value;
-		else
-			top_obj['___DATA___']._contained_value = converted_value;
-		end
-		]]--
 		top_obj['___DATA___']._contained_value = converted_value;
 		top_obj['___METADATA___'].empty = false;
 
@@ -1373,16 +1353,11 @@ local process_node = function(reader, sts, objs, pss)
 			(sts:top().properties.content_model.group_type ~= 'A')) then
 			windup_fsa(reader, sts, objs, pss);
 		end
-		--print(sts:height(), sts:top().properties.content_model);
-		--print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-		--(require 'pl.pretty').dump(objs);
-		--print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
 		error_handler.pop_element();
 
 		local parsed_element = objs:pop();
 		top_obj = objs:top();
 		local parsed_sth = sts:pop();
-		--print(sts:height(), sts:top().properties.content_model);
 		local parsed_output = nil;
 		if (parsed_sth.properties.element_type == 'C') then
 			if (not parsed_element['___METADATA___'].empty) then
@@ -1391,16 +1366,12 @@ local process_node = function(reader, sts, objs, pss)
 		else
 			if (not parsed_element['___METADATA___'].empty) then
 				parsed_output = parsed_element['___DATA___']._contained_value;
-				--require 'pl.pretty'.dump(parsed_element['___DATA___']._contained_value);
 			end
 		end
 		-- Essentially the variable parsed_output has the complete lua value of the element
 		-- at this stage.
 		top_obj = objs:top();
 		top_sth = sts:top();
-		--(require 'pl.pretty').dump(objs);
-		--(require 'pl.pretty').dump(parsed_output);
-		--print(top_sth);
 		if (parsed_sth.particle_properties.max_occurs ~= 1) then
 			if (parsed_output ~= nil) then
 				if (top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] == nil) then
@@ -1412,7 +1383,6 @@ local process_node = function(reader, sts, objs, pss)
 			end
 		else
 			if (top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] ~= nil) then
-				--print("TWO");
 				error("TWO: "..get_qname(parsed_sth)..' must not repeat');
 			end
 			top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] = parsed_output;
@@ -1426,17 +1396,12 @@ local process_node = function(reader, sts, objs, pss)
 		if ((not top_obj['___METADATA___'].empty) and
 			(top_obj['___METADATA___'].cm ~= nil) and
 			(top_obj['___METADATA___'].cm.group_type == 'C')) then
-			--print('----------------------------------------------------------------');
-			--(require 'pl.pretty').dump(top_obj);
-			--print('----------------------------------------------------------------');
 			if (parsed_sth.particle_properties.max_occurs == 1) then
-				--print("REACHED HERE INSTEAD");
 				move_fsa_to_end_of_cm(reader, sts, objs, pss)
 			elseif (parsed_sth.particle_properties.max_occurs ~= -1) then
 				local ebp = top_obj['___METADATA___'].element_being_parsed
 				local count = #(top_obj['___DATA___'][ebp])
 				if (count == parsed_sth.particle_properties.max_occurs) then
-					--print("AHA HERE");
 					move_fsa_to_end_of_cm(reader, sts, objs, pss)
 				end
 			end
