@@ -47,7 +47,7 @@ end
 _factory.new_instance_as_ref = function(self, element_ref_properties)
     return basic_stuff.instantiate_element_as_ref(mt, { ns = 'http://test_example.com',
                                                         local_name = 'basic_string',
-                                                        generated_name = 'basic_string',
+                                                        generated_name = element_ref_properties.generated_name,
                                                         min_occurs = element_ref_properties.min_occurs,
                                                         max_occurs = element_ref_properties.max_occurs,
                                                         root_element = element_ref_properties.root_element});

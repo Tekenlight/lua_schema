@@ -33,10 +33,6 @@ local get_named_schema_type = function(elem)
 	return '';
 end
 
-local get_generated_attr_name = function(names, name, ns, i) -- generated_name
-	return name;
-end
-
 local get_is_valid_func = function(elem)
 	if (elem:get_element_type() == 'S') then
 		return basic_stuff.simple_is_valid;
@@ -503,7 +499,7 @@ end
 
 code_generator.gen_lua_schema_code = function(elem)
 	local code = '';
-	local element_handler = code_generator.get_element_handler(elem);
+	local element_handler = code_generator.get_element_handler(elem, true);
 	--require 'pl.pretty'.dump(element_handler);
 
 	code = 'local basic_stuff = require("basic_stuff");\n\n';
@@ -554,7 +550,7 @@ code_generator.gen_lua_schema_code = function(elem)
 	code = code..'\n\n_factory.new_instance_as_ref = function(self, element_ref_properties)\n';
 	code = code..'    return basic_stuff.instantiate_element_as_ref(mt, { ns = \''..particle_properties.q_name.ns..'\',\n';
 	code = code..'                                                        local_name = \''..particle_properties.q_name.local_name..'\',\n';
-	code = code..'                                                        generated_name = \''..particle_properties.generated_name..'\',\n'; -- generated_name
+	code = code..'                                                        generated_name = element_ref_properties.generated_name,\n'; -- generated_name
 	code = code..'                                                        min_occurs = element_ref_properties.min_occurs,\n';
 	code = code..'                                                        max_occurs = element_ref_properties.max_occurs,\n';
 	code = code..'                                                        root_element = element_ref_properties.root_element});\n';
