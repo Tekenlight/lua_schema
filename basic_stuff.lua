@@ -335,10 +335,14 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 			end
 		elseif(t == 'table') then
 			local xmlc = nil;
-			if (nil == v.generated_subelement_name) then
+			--if (nil == v.generated_subelement_name) then
+			if (1 == v.max_occurs) then
 				-- No depth
 				xmlc = content;
 			else
+				if (nil == v.generated_subelement_name) then
+					error("The model group should contain a generated name");
+				end
 				local count = 0;
 				-- One level deep
 				if (fields == nil) then
@@ -417,11 +421,15 @@ basic_stuff.execute_validation_for_complex_type_sequence = function(schema_type_
 			local xmlc = nil;
 			--print("REACHED HERE");
 			--require 'pl.pretty'.dump(v);
-			if (nil == v.generated_subelement_name) then
+			--if (nil == v.generated_subelement_name) then
+			if (1 == v.max_occurs) then
 				-- No depth
 				xmlc = content;
 			else
 				-- One level deep
+				if (nil == v.generated_subelement_name) then
+					error("The model group should contain a generated name");
+				end
 				xmlc = content[v.generated_subelement_name]
 				if (xmlc == nil) then
 					--print("REACHED HERE");
@@ -721,11 +729,15 @@ basic_stuff.add_model_content_node = function(schema_type_handler, nns, doc, ind
 			end
 		elseif (t == 'table') then -- If a table, another content model
 			local xmlc = nil;
-			if (nil == v.generated_subelement_name) then
+			--if (nil == v.generated_subelement_name) then
+			if (1 == v.max_occurs) then
 				-- No depth
 				xmlc = content;
 			else
 				-- One level deep
+				if (nil == v.generated_subelement_name) then
+					error("The model group should contain a generated name");
+				end
 				xmlc = content[v.generated_subelement_name]
 			end
 			i = basic_stuff.add_model_content_s_or_c(schema_type_handler, nns, doc, i, xmlc, v);
