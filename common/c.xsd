@@ -1,0 +1,17 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="element_struct2" type="xsd:string"/>
+	<xsd:element name="basic_string_simple_content" type="xsd:string"/>
+	<xsd:element name="example_struct">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="element_struct2"/>
+				<xsd:element name="author"	type="xsd:string"/>
+				<xsd:element name="title"	type="xsd:string"/>
+				<xsd:element name="genre"	type="xsd:string"/>
+				<!--xsd:element name="s2"		type="struct2"/-->
+				<xsd:element ref="basic_string_simple_content"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

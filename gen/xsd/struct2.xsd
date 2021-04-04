@@ -1,0 +1,10 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://test_example1.com" xmlns:ns1="http://test_example1.com">
+	<xsd:complexType name ="struct2">
+		<xsd:sequence>
+			<xsd:element name="author"   type="xsd:string"/>
+			<xsd:element name="title"    type="xsd:string"/>
+			<xsd:element name="genre"    type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="element_struct2" type="ns1:struct2"/>
+</xsd:schema>

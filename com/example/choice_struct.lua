@@ -25,7 +25,7 @@ local _content_model = {
 	'two',
 	{
 		group_type = 'C', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-		--generated_subelement_name = 'three_or_four',
+		generated_subelement_name = 'three_or_four',
 		min_occurs = 1, max_occurs = 1,
 		'three',
 		'four',

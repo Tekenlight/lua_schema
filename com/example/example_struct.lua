@@ -189,6 +189,7 @@ local mt = { __index = _struct_handler; } ;
 local _factory = {};
 
 function _factory:new_instance_as_root()
+	--require 'pl.pretty'.dump(_struct_handler);
 	local o= basic_stuff.instantiate_element_as_doc_root(mt);
 	return o;
 end

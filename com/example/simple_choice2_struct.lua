@@ -22,7 +22,7 @@ local _content_model = {
 	min_occurs = 1, max_occurs = 1,
 	{
 		group_type = 'C', -- 'S' ->Sequence, 'C' -> Choice, 'A' -> All
-		--generated_subelement_name = 'author_title_and_genre',
+		generated_subelement_name = 'author_title_and_genre',
 		min_occurs = 1, max_occurs = 1,
 		'author',
 		'title',

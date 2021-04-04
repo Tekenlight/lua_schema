@@ -1,0 +1,16 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://test_example.com"
+			xmlns:ns1="http://test_example.com"
+			ns2="http://example.com">
+
+	<!--xsd:include namespace="http://test_example.com" schemaLocation="a.xsd"/-->
+	<xsd:include schemaLocation="a.xsd"/>
+
+	<xsd:element name="s3">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="ns1:s1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

@@ -35,6 +35,9 @@ if (elems_ptr == ffi.NULL or elems_ptr == nil) then
 	print("NO ELEMENTS");
 	return;
 end
+--local v = schema:get_element_decl("example_struct", "http://test_example.com");
+--local v = schema:get_element_decl("basic_string_simple_content", "http://test_example.com");
+local v = schema:get_element_decl("s3", "http://test_example.com");
 for _, v in ipairs(elems_ptr) do
 	elem = v._ptr;
 	local tns = nil;

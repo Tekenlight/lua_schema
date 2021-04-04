@@ -539,6 +539,13 @@ basic_stuff.execute_validation_for_complex_type_simple_content = function(schema
 end
 
 basic_stuff.carryout_element_validation = function(schema_type_handler, val_func, content, content_model)
+	--print("STH", schema_type_handler);
+	--print("STH.PP", schema_type_handler.particle_properties);
+	--print("STH.PP.MI", schema_type_handler.particle_properties.min_occurs);
+	--if (schema_type_handler.particle_properties.min_occurs == nil) then
+		--require 'pl.pretty'.dump(schema_type_handler);
+	--end
+	--print("C", content);
 	if ((schema_type_handler.particle_properties.min_occurs > 0) and (content == nil)) then
 		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be null");
 		return false;
@@ -576,6 +583,10 @@ basic_stuff.execute_primitive_validation = function(handler, content)
 end
 
 basic_stuff.perform_element_validation = function(handler, content)
+	--require 'pl.pretty'.dump(handler);
+	--require 'pl.pretty'.dump(handler.particle_properties);
+	--print("HHHHHHHHHH");
+	--require 'pl.pretty'.dump(handler.particle_properties.generated_name);
 	error_handler.push_element(handler.particle_properties.generated_name);
 	local valid = handler:is_valid(content);
 	error_handler.pop_element();
@@ -960,7 +971,8 @@ local function validate_content(sth, content)
 	local valid = nil;
 	error_handler.init()
 	result, valid = pcall(basic_stuff.perform_element_validation, sth,  content);
-	--result, valid = basic_stuff.perform_element_validation( sth,  content);
+	--valid = basic_stuff.perform_element_validation( sth,  content);
+	--result = false;
 	local message_validation_context = error_handler.reset();
 	if (not result) then
 		valid = false;

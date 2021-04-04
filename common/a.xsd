@@ -1,0 +1,13 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://test_example.com"
+			xmlns:ns1="http://test_example1.com"
+			ns2="http://example.com">
+
+	<xsd:import namespace="http://test_example1.com" schemaLocation="struct2.xsd"/>
+
+	<xsd:element name="s2"		type="ns1:struct2"/>
+	<xsd:element name="s1">
+		<xsd:complexType>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
