@@ -17,7 +17,7 @@ end
 
 function __int_handler_class:to_xmlua(ns, i)
 	if (false == self:is_valid(i)) then error("Input not an int"); end
-	return i;
+	return tostring(i);
 end
 
 function __int_handler_class:to_schema_type(ns, i)

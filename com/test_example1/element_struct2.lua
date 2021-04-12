@@ -9,7 +9,7 @@ local _factory = {}
 
 function _factory:new_instance_as_root()
 	return (require('com.example1.struct2')):new_instance_as_global_element(
-															{ns='http://example1.com',
+															{ns='http://test_example1.com',
 															local_name = 'element_struct2',
 															generated_name = 'element_struct2',
 															root_element = true,
@@ -18,7 +18,7 @@ function _factory:new_instance_as_root()
 end
 
 function _factory:new_instance_as_ref(element_ref_properties)
-	local o =  (require('com.example1.struct2')):new_instance_as_local_element({ns='http://example1.com',
+	local o =  (require('com.example1.struct2')):new_instance_as_local_element({ns='http://test_example1.com',
 																		local_name = 'element_struct2',
 																		generated_name = 'element_struct2',
 																		min_occurs = element_ref_properties.min_occurs,

@@ -17,3 +17,5 @@ if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
 
+
+print(simple_sequence_struct:to_xml(content));

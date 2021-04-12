@@ -32,14 +32,14 @@ local _content_model = {
 };
 
 local _content_fsa_properties = {
-	{symbol_type = 'cm_begin', symbol_name = 'one_top', min_occurs = 1, max_occurs = 1, group_type = 'S', cm = _content_model}
-	,{symbol_type = 'cm_begin', symbol_name = 'author_title_and_genre', min_occurs = 1, max_occurs = 1, group_type = 'C', cm = _content_model[1]}
-	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = 2, cm = _content_model[1]}
-	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 1, cm = _content_model[1]}
-	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 1, max_occurs = 1, cm = _content_model[1]}
-	,{symbol_type = 'cm_end', symbol_name = 'author_title_and_genre', cm_begin_index=1, cm = _content_model[1]}
-	,{symbol_type = 'element', symbol_name = '{}one', min_occurs = 1, max_occurs = 1, cm = _content_model}
-	,{symbol_type = 'cm_end', symbol_name = 'one_top', cm_begin_index=1, cm = _content_model}
+	{symbol_type = 'cm_begin', symbol_name = 'one_top', generated_symbol_name = 'one_top', min_occurs = 1, max_occurs = 1, group_type = 'S', cm = _content_model}
+	,{symbol_type = 'cm_begin', symbol_name = 'author_title_and_genre', generated_symbol_name = 'author_title_and_genre', min_occurs = 1, max_occurs = 1, group_type = 'C', cm = _content_model[1]}
+	,{symbol_type = 'element', symbol_name = '{}author', generated_symbol_name = '{}author', min_occurs = 1, max_occurs = 2, cm = _content_model[1]}
+	,{symbol_type = 'element', symbol_name = '{}title', generated_symbol_name = '{}title', min_occurs = 1, max_occurs = 1, cm = _content_model[1]}
+	,{symbol_type = 'element', symbol_name = '{}genre', generated_symbol_name = '{}genre', min_occurs = 1, max_occurs = 1, cm = _content_model[1]}
+	,{symbol_type = 'cm_end', symbol_name = 'author_title_and_genre', generated_symbol_name = 'author_title_and_genre', cm_begin_index=1, cm = _content_model[1]}
+	,{symbol_type = 'element', symbol_name = '{}one', generated_symbol_name = '{}one', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'cm_end', symbol_name = 'one_top', generated_symbol_name = 'one_top', cm_begin_index=1, cm = _content_model}
 };
 
 local es_o = nil;

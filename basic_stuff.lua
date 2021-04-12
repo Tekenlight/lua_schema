@@ -316,6 +316,16 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 		return false;
 	end
 
+	if (type(content) ~= 'table') then
+		error("Passed input is not a complex type data structure");
+	end
+
+	if (content_model.min_occurs == 0 and content_model.max_occurs ==1) then
+		if (basic_stuff.is_obj_empty(content)) then
+			return true;
+		end
+	end
+
 	local fields = nil;
 	local present_count = 0;
 	for _, v in ipairs(content_model) do
@@ -404,10 +414,32 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 	return true;
 end
 
+basic_stuff.is_obj_empty = function(obj)
+	if (type(obj) ~= 'table') then
+		error("Passed input is not a complex type data structure");
+	end
+	local empty = true;
+	for _, __ in pairs(obj) do
+		empty = false;
+		break;
+	end
+	return empty;
+end
+
 basic_stuff.execute_validation_for_complex_type_sequence = function(schema_type_handler, content, content_model)
 
 	if (not basic_stuff.all_elements_part_of_declaration(schema_type_handler, content, content_model)) then
 		return false;
+	end
+
+	if (type(content) ~= 'table') then
+		error("Passed input is not a complex type data structure");
+	end
+
+	if (content_model.min_occurs == 0 and content_model.max_occurs ==1) then
+		if (basic_stuff.is_obj_empty(content)) then
+			return true;
+		end
 	end
 
 	for _, v in ipairs(content_model) do
@@ -1071,16 +1103,36 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 	local obj = {};
 	obj['___METADATA___'] = {empty = true};
 	obj['___METADATA___'].cms = (require('stack')).new();
+	obj['___METADATA___'].covering_object = false;
 	obj['___DATA___'] = {};
 
 	local top_obj = objs:top();
 
 	local ps_obj = pss:top();
-	--require 'pl.pretty'.dump(schema_type_handler.properties);
-	--pss:push({parses = {}, position = 1, group_stack = (require('stack')).new(), element_found = false});
-	if (schema_type_handler.properties.content_fsa_properties[i].symbol_name == q_name) then
-		element_found = true;
+	--pss:push({position = 1, next_position = 1, group_stack = (require('stack')).new()});
+	--print(q_name, schema_type_handler.properties.content_fsa_properties[i].symbol_name);
+	if ((schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'element') and
+		(schema_type_handler.properties.content_fsa_properties[i].symbol_name == q_name)) then
 		ps_obj.position = i;
+		if (schema_type_handler.properties.content_fsa_properties[i].max_occurs ~= 1) then
+			local sep_key = schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
+			local sep = schema_type_handler.properties.subelement_properties[sep_key];
+			--print(sep.particle_properties.generated_name);
+			local count = 0;
+			if (nil ~= top_obj['___DATA___'][sep.particle_properties.generated_name]) then
+				count = #(top_obj['___DATA___'][sep.particle_properties.generated_name]);
+			end
+			--print("COUNT=",count);
+			if (count == schema_type_handler.properties.content_fsa_properties[i].max_occurs) then
+				ps_obj.next_position = i + 1;
+				--ps_obj.position = i;
+				return false;
+			else
+				ps_obj.next_position = i;
+			end
+		else
+			ps_obj.next_position = i+1;
+		end
 		pss:top().group_stack:top().element_found = true;
 		return true;
 	elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
@@ -1088,23 +1140,28 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 			top_obj['___METADATA___'].element_being_parsed = schema_type_handler.properties.content_fsa_properties[i].symbol_name;
 			obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
 			objs:push(obj);
+			--print("~~~~~~~~~~~~~~~~~~~~~~~~");
+			--(require 'pl.pretty').dump(objs);
+			--print("~~~~~~~~~~~~~~~~~~~~~~~~");
 			top_obj = objs:top();
-			--require 'pl.pretty'.dump(objs);
-			--print('77777777777777777777777777777777777');
 			obj = {};
 			obj['___METADATA___'] = {empty = true};
 			obj['___METADATA___'].cms = (require('stack')).new();
+			obj['___METADATA___'].covering_object = false;
 			obj['___DATA___'] = {};
 		else
+			--print("~~~~~~~~~~~~~~~~~~~~~~~~");
+			--(require 'pl.pretty').dump(objs);
 			top_obj['___METADATA___'].cms:push(obj['___METADATA___'].cm);
 			top_obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
+			--print(schema_type_handler.properties.content_fsa_properties[i].cm);
+			--(require 'pl.pretty').dump(objs);
+			--print("~~~~~~~~~~~~~~~~~~~~~~~~");
 		end
 	elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_end') then
 		local end_node = schema_type_handler.properties.content_fsa_properties[i]
 		local begin_node = schema_type_handler.properties.content_fsa_properties[end_node.cm_begin_index];
 		if (begin_node.max_occurs ~= 1) then
-			--print('77777777777777777777777777777777777');
-			--require 'pl.pretty'.dump(objs);
 			local parsed_element = objs:pop();
 			local top_element = objs:top();
 			local ebp = top_element['___METADATA___'].element_being_parsed;
@@ -1115,8 +1172,6 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 				top_element['___DATA___'][ebp][#(top_element['___DATA___'][ebp])+1] = parsed_element['___DATA___'];
 				top_element['___METADATA___'].empty = false;
 			end
-			--require 'pl.pretty'.dump(objs);
-			--print('77777777777777777777777777777777777');
 			top_obj = objs:top();
 		else
 			top_obj['___METADATA___'].cm = top_obj['___METADATA___'].cms:pop();
@@ -1133,9 +1188,11 @@ local windup_fsa = function(reader, sts, objs, pss)
 	local obj = {};
 	obj['___METADATA___'] = {empty = true};
 	obj['___METADATA___'].cms = (require('stack')).new();
+	obj['___METADATA___'].covering_object = false;
 	obj['___DATA___'] = {};
 
 	local i = ps_obj.position;
+	--local i = ps_obj.next_position;
 
 	while (i <= (#schema_type_handler.properties.content_fsa_properties)) do
 		if (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
@@ -1144,11 +1201,10 @@ local windup_fsa = function(reader, sts, objs, pss)
 				obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
 				objs:push(obj);
 				top_obj = objs:top();
-				--require 'pl.pretty'.dump(objs);
-				--print('77777777777777777777777777777777777');
 				obj = {};
 				obj['___METADATA___'] = {empty = true};
 				obj['___METADATA___'].cms = (require('stack')).new();
+				obj['___METADATA___'].covering_object = false;
 				obj['___DATA___'] = {};
 			else
 				top_obj['___METADATA___'].cms:push(obj['___METADATA___'].cm);
@@ -1158,8 +1214,6 @@ local windup_fsa = function(reader, sts, objs, pss)
 			local end_node = schema_type_handler.properties.content_fsa_properties[i]
 			local begin_node = schema_type_handler.properties.content_fsa_properties[end_node.cm_begin_index];
 			if (begin_node.max_occurs ~= 1) then
-				--print('77777777777777777777777777777777777');
-				--require 'pl.pretty'.dump(objs);
 				local parsed_element = objs:pop();
 				local top_element = objs:top();
 				local ebp = top_element['___METADATA___'].element_being_parsed;
@@ -1170,8 +1224,6 @@ local windup_fsa = function(reader, sts, objs, pss)
 					top_element['___DATA___'][ebp][#(top_element['___DATA___'][ebp])+1] = parsed_element['___DATA___'];
 					top_element['___METADATA___'].empty = false;
 				end
-				--require 'pl.pretty'.dump(objs);
-				--print('77777777777777777777777777777777777');
 				top_obj = objs:top();
 			else
 				top_obj['___METADATA___'].cm = top_obj['___METADATA___'].cms:pop();
@@ -1186,7 +1238,8 @@ local move_fsa_to_end_of_cm = function(reader, sts, objs, pss)
 	local top_obj = objs:top();
 	local ps_obj = pss:top();
 
-	local i = ps_obj.position;
+	--local i = ps_obj.position;
+	local i = ps_obj.next_position;
 
 	local begin_end = 0;;
 	local j = 1;
@@ -1201,7 +1254,6 @@ local move_fsa_to_end_of_cm = function(reader, sts, objs, pss)
 
 	local ref_begin_end = begin_end-1;
 	while ( ref_begin_end ~= begin_end) do
-		--print(ref_begin_end, begin_end);
 		if (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
 			begin_end = begin_end + 1;
 		elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_end') then
@@ -1212,10 +1264,9 @@ local move_fsa_to_end_of_cm = function(reader, sts, objs, pss)
 		end
 		i = i + 1;
 	end
-	--print(ref_begin_end, begin_end);
-	--print("------------------------");
 
 	ps_obj.position = i;
+	ps_obj.next_position = i;
 
 end
 
@@ -1238,7 +1289,8 @@ local continue_cm_fsa = function(reader, sts, objs, pss)
 	-- 			another content model.
 	-- 4. Closure of a content model and continuation of the parent content model.
 	local ps_obj = pss:top();
-	local i = ps_obj.position;
+	--local i = ps_obj.position;
+	local i = ps_obj.next_position;
 	local element_found = false;
 	local symbol = nil;
 	local continue_loop = true;
@@ -1251,7 +1303,7 @@ local continue_cm_fsa = function(reader, sts, objs, pss)
 		end
 		symbol = schema_type_handler.properties.content_fsa_properties[i].symbol_type;
 		if (symbol == 'cm_begin') then
-			local group_obj = { begin_index = i; element_found = false; }
+			local group_obj = { begin_index = i; element_found = false }
 			pss:top().group_stack:push(group_obj);
 		end
 		if (symbol == 'cm_end') then
@@ -1275,7 +1327,107 @@ local continue_cm_fsa = function(reader, sts, objs, pss)
 	return element_found;
 end
 
-local process_node = function(reader, sts, objs, pss)
+local process_start_of_element = function(reader, sts, objs, pss)
+	local name = reader:const_local_name()
+	local uri = reader:const_namespace_uri();
+	local value = reader:const_value();
+	local depth = reader:node_depth();
+	local typ = reader:node_type();
+	local is_empty = reader:node_is_empty_element();
+	local has_value = reader:node_reader_has_value();
+	local q_name = '{'..get_uri(uri)..'}'..name;
+
+	local schema_type_handler = sts:top();
+	if (reader.started ~= nil and reader.started == true) then
+		local new_schema_type_handler;
+		local generated_q_name;
+		if (schema_type_handler.properties.content_model.group_type == 'A') then
+			generated_q_name = q_name;
+			new_schema_type_handler = schema_type_handler.properties.subelement_properties[generated_q_name];
+			if (new_schema_type_handler == nil) then
+				local st = '';
+				if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
+				error_handler.raise_validation_error(-1,
+					q_name..' not a member in the schema definition of '..st);
+			end
+		else
+			local element_found = false;
+			local l_sth = sts:top();
+			local l_top_obj = objs:top();
+			local cm = l_top_obj['___METADATA___'].cm;
+			if (cm == nil) then
+				cm = l_sth.properties.content_model;
+			end
+			--(require 'pl.pretty').dump(objs);
+			element_found = continue_cm_fsa(reader, sts, objs, pss);
+			if (not element_found) then
+				local st = '';
+				if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
+				error_handler.raise_validation_error(-1,
+					"unable to fit "..q_name..' as a member in the schema '..st);
+			end
+			local content_fsa_item = schema_type_handler.properties.content_fsa_properties[pss:top().position];
+			local generated_q_name = content_fsa_item.generated_symbol_name;
+			--print(generated_q_name, tostring(element_found));
+			--(require 'pl.pretty').dump(objs);
+			new_schema_type_handler = schema_type_handler.properties.subelement_properties[generated_q_name];
+			if ((not l_top_obj['___METADATA___'].empty) and
+				(cm ~= nil) and
+				(cm.group_type == 'C') ) then
+
+				if ((l_top_obj['___METADATA___'].element_gqn_being_parsed ~= nil) and
+					(l_top_obj['___METADATA___'].element_gqn_being_parsed ~= generated_q_name)) then 
+						move_fsa_to_end_of_cm(reader, sts, objs, pss)
+				end
+			end
+		end
+		local top_obj = objs:top();
+		(objs:top())['___METADATA___'].element_being_parsed = new_schema_type_handler.particle_properties.generated_name;
+		(objs:top())['___METADATA___'].element_gqn_being_parsed = generated_q_name;
+		sts:push(new_schema_type_handler);
+	else
+		local top_obj = objs:top();
+		-- Boundary condition started == nil or false means this is the first element of the document
+		-- We have to make sure the element detected is the same as the one being expected
+		reader.started = true;
+		if (true ~= check_element_name_matches(reader, sts)) then
+			parsing_result_msg = 'Invalid element found '.. q_name;
+			error(parsing_result_msg);
+		end
+		(objs:top())['___METADATA___'].element_being_parsed = schema_type_handler.particle_properties.generated_name;
+		(objs:top())['___METADATA___'].element_gqn_being_parsed = schema_type_handler.particle_properties.generated_name;
+	end
+	pss:push({position = 1, next_position = 1, group_stack = (require('stack')).new()});
+	local sth = sts:top();
+	local obj = {};
+	obj['___METADATA___'] = {empty = true};
+	obj['___METADATA___'].cms = (require('stack')).new();
+	obj['___METADATA___'].covering_object = false;
+	obj['___DATA___'] = {};
+	error_handler.push_element(q_name);
+	if (sth.properties.element_type == 'S') then
+		obj['___METADATA___'].content_model_type = 'SS';
+	else
+		get_attributes(reader, sth, obj);
+		if(sth.properties.content_type == 'C') then
+			local ps_obj = pss:top();
+			obj['___METADATA___'].cm = sth.properties.content_model;
+			obj['___METADATA___'].content_model_type = 'CC';
+		else
+			-- The element is a complex type simple content.
+			obj['___METADATA___'].content_model_type = 'CS';
+		end
+	end
+	objs:push(obj);
+	--print("----------------------------------");
+	--(require 'pl.pretty').dump(objs);
+	--print("----------------------------------");
+
+
+	return;
+end
+
+local process_text = function(reader, sts, objs, pss)
 	local name = reader:const_local_name()
 	local uri = reader:const_namespace_uri();
 	local value = reader:const_value();
@@ -1287,139 +1439,87 @@ local process_node = function(reader, sts, objs, pss)
 
 	local schema_type_handler = sts:top();
 	--print(depth, typ, name, is_empty, has_value, value);
-	if (typ == reader.node_types.XML_READER_TYPE_ELEMENT) then
 
-		if (reader.started ~= nil and reader.started == true) then
-			local new_schema_type_handler = schema_type_handler.properties.subelement_properties[q_name];
-			if (new_schema_type_handler == nil) then
-				local st = '';
-				if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
-				error_handler.raise_validation_error(-1,
-					q_name..' not a member in the schema definition of '..st);
-			end
-			local element_found = false;
-			if (schema_type_handler.properties.content_model.group_type == 'A') then
-			else
-				local l_sth = sts:top();
-				local l_top_obj = objs:top();
-				local cm = l_top_obj['___METADATA___'].cm;
-				if (cm == nil) then
-					cm = l_sth.properties.content_model;
-				end
-				if ((l_top_obj['___METADATA___'].element_being_parsed ~= nil) and
-					(l_top_obj['___METADATA___'].element_being_parsed ~=
-							new_schema_type_handler.particle_properties.generated_name)) then 
-					if ((not l_top_obj['___METADATA___'].empty) and
-						(cm ~= nil) and
-						(cm.group_type == 'C') ) then
-						move_fsa_to_end_of_cm(reader, sts, objs, pss)
-					end
-				end
-				element_found = continue_cm_fsa(reader, sts, objs, pss);
-				if (not element_found) then
-					local st = '';
-					if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
-					error_handler.raise_validation_error(-1,
-						"unable to fit "..q_name..' as a member in the schema '..st);
-				end
-			end
-			local top_obj = objs:top();
-			(objs:top())['___METADATA___'].element_being_parsed = new_schema_type_handler.particle_properties.generated_name;
-			sts:push(new_schema_type_handler);
-		else
-			local top_obj = objs:top();
-			-- Boundary condition started == nil or false means this is the first element of the document
-			-- We have to make sure the element detected is the same as the one being expected
-			reader.started = true;
-			if (true ~= check_element_name_matches(reader, sts)) then
-				parsing_result_msg = 'Invalid element found '.. q_name;
-				error(parsing_result_msg);
-			end
-			(objs:top())['___METADATA___'].element_being_parsed = schema_type_handler.particle_properties.generated_name;
+	local top_obj = objs:top();
+
+	local converted_value = schema_type_handler.type_handler:to_type('', value);
+	top_obj['___DATA___']._contained_value = converted_value;
+	top_obj['___METADATA___'].empty = false;
+
+	return;
+end
+
+local process_end_of_element = function(reader, sts, objs, pss)
+	local name = reader:const_local_name()
+	local uri = reader:const_namespace_uri();
+	local value = reader:const_value();
+	local depth = reader:node_depth();
+	local typ = reader:node_type();
+	local is_empty = reader:node_is_empty_element();
+	local has_value = reader:node_reader_has_value();
+	local q_name = '{'..get_uri(uri)..'}'..name;
+
+	local schema_type_handler = sts:top();
+	--print(depth, typ, name, is_empty, has_value, value);
+
+	local top_obj = objs:top();
+
+	if ((sts:top().properties.element_type == 'C') and
+		(sts:top().properties.content_type == 'C') and
+		(sts:top().properties.content_model.group_type ~= 'A')) then
+		windup_fsa(reader, sts, objs, pss);
+	end
+	error_handler.pop_element();
+	--print("##################################");
+	--(require 'pl.pretty').dump(objs);
+	--print("##################################");
+
+	local parsed_element = objs:pop();
+	top_obj = objs:top();
+	local parsed_sth = sts:pop();
+	local parsed_output = nil;
+	if (parsed_sth.properties.element_type == 'C') then
+		if ((not parsed_element['___METADATA___'].empty) or (top_obj['___METADATA___'].covering_object) ) then
+			parsed_output = parsed_element['___DATA___'];
 		end
-		pss:push({parses = {}, position = 1, group_stack = (require('stack')).new(), element_found = false});
-		local sth = sts:top();
-		local obj = {};
-		obj['___METADATA___'] = {empty = true};
-		obj['___METADATA___'].cms = (require('stack')).new();
-		obj['___DATA___'] = {};
-		error_handler.push_element(q_name);
-		if (sth.properties.element_type == 'S') then
-			obj['___METADATA___'].content_model_type = 'SS';
-		else
-			get_attributes(reader, sth, obj);
-			if(sth.properties.content_type == 'C') then
-				local ps_obj = pss:top();
-				obj['___METADATA___'].cm = sth.properties.content_model;
-				obj['___METADATA___'].content_model_type = 'CC';
-			else
-				-- The element is a complex type simple content.
-				obj['___METADATA___'].content_model_type = 'CS';
-			end
+	else
+		if (not parsed_element['___METADATA___'].empty) then
+			parsed_output = parsed_element['___DATA___']._contained_value;
 		end
-		objs:push(obj);
-
-	elseif ((typ == reader.node_types.XML_READER_TYPE_TEXT) or
-			(typ == reader.node_types.XML_READER_TYPE_CDATA)) then
-
-		local top_obj = objs:top();
-
-		local converted_value = schema_type_handler.type_handler:to_type('', value);
-		top_obj['___DATA___']._contained_value = converted_value;
-		top_obj['___METADATA___'].empty = false;
-
-	elseif (typ == reader.node_types.XML_READER_TYPE_END_ELEMENT) then
-
-		local top_obj = objs:top();
-
-		if ((sts:top().properties.element_type == 'C') and
-			(sts:top().properties.content_type == 'C') and
-			(sts:top().properties.content_model.group_type ~= 'A')) then
-			windup_fsa(reader, sts, objs, pss);
-		end
-		error_handler.pop_element();
-
-		local parsed_element = objs:pop();
-		top_obj = objs:top();
-		local parsed_sth = sts:pop();
-		local parsed_output = nil;
-		if (parsed_sth.properties.element_type == 'C') then
-			if (not parsed_element['___METADATA___'].empty) then
-				parsed_output = parsed_element['___DATA___'];
+	end
+	--(require 'pl.pretty').dump(parsed_output);
+	-- Essentially the variable parsed_output has the complete lua value of the element
+	-- at this stage.
+	top_obj = objs:top();
+	top_sth = sts:top();
+	if (parsed_sth.particle_properties.max_occurs ~= 1) then
+		if (parsed_output ~= nil) then
+			if (top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] == nil) then
+				top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] = {}
 			end
-		else
-			if (not parsed_element['___METADATA___'].empty) then
-				parsed_output = parsed_element['___DATA___']._contained_value;
-			end
-		end
-		-- Essentially the variable parsed_output has the complete lua value of the element
-		-- at this stage.
-		top_obj = objs:top();
-		top_sth = sts:top();
-		if (parsed_sth.particle_properties.max_occurs ~= 1) then
-			if (parsed_output ~= nil) then
-				if (top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] == nil) then
-					top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] = {}
-				end
-				local ebp = top_obj['___METADATA___'].element_being_parsed
-				top_obj['___DATA___'][ebp][#(top_obj['___DATA___'][ebp])+1] = parsed_output;
-				top_obj['___METADATA___'].empty = false;
-			end
-		else
-			if (top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] ~= nil) then
-				error("TWO: "..get_qname(parsed_sth)..' must not repeat');
-			end
-			top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] = parsed_output;
+			local ebp = top_obj['___METADATA___'].element_being_parsed
+			top_obj['___DATA___'][ebp][#(top_obj['___DATA___'][ebp])+1] = parsed_output;
 			top_obj['___METADATA___'].empty = false;
 		end
-		pss:pop();
-		--[[
-			If the element is completed is part of a choice content model, the choice content model
-			is to be treated as completely read.
-		]]
-		if ((not top_obj['___METADATA___'].empty) and
-			(top_obj['___METADATA___'].cm ~= nil) and
-			(top_obj['___METADATA___'].cm.group_type == 'C')) then
+	else
+		if (top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] ~= nil) then
+			error("TWO: "..get_qname(parsed_sth)..' must not repeat');
+		end
+		top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] = parsed_output;
+		top_obj['___METADATA___'].empty = false;
+	end
+	pss:pop();
+	--[[
+		If the element is completed is part of a choice content model, the choice content model
+		is to be treated as completely read.
+	]]
+	--print("1455", top_obj['___METADATA___'].element_being_parsed, top_obj['___METADATA___'].cm);
+	--(require 'pl.pretty').dump(objs);
+	if ((not top_obj['___METADATA___'].empty) and
+		(top_obj['___METADATA___'].cm ~= nil)) then -- cm will not be null only in case of repeating content models.
+
+		if (top_obj['___METADATA___'].cm.group_type == 'C') then
+
 			if (parsed_sth.particle_properties.max_occurs == 1) then
 				move_fsa_to_end_of_cm(reader, sts, objs, pss)
 			elseif (parsed_sth.particle_properties.max_occurs ~= -1) then
@@ -1429,7 +1529,53 @@ local process_node = function(reader, sts, objs, pss)
 					move_fsa_to_end_of_cm(reader, sts, objs, pss)
 				end
 			end
+		elseif (top_obj['___METADATA___'].cm.group_type == 'S') then
+			-- Case of max_occurs == 1 is handled in continue_cm_fsa_i
+			if (parsed_sth.particle_properties.max_occurs == 1) then
+			elseif (parsed_sth.particle_properties.max_occurs ~= -1) then
+			--if (parsed_sth.particle_properties.max_occurs ~= 1) then
+				local ebp = top_obj['___METADATA___'].element_being_parsed
+				--print(ebp);
+				--(require 'pl.pretty').dump(parsed_sth);
+				local count = #(top_obj['___DATA___'][ebp])
+				if (count == parsed_sth.particle_properties.max_occurs) then
+					--[[
+					print("1477", top_obj['___METADATA___'].cm.group_type,
+					top_obj['___METADATA___'].element_being_parsed, parsed_sth.particle_properties.max_occurs);
+					]]
+					local i = pss:top().next_position;
+					pss:top().next_position = i+1;
+				end
+			end
 		end
+	end
+
+	return;
+end
+
+local process_node = function(reader, sts, objs, pss)
+	local name = reader:const_local_name()
+	local uri = reader:const_namespace_uri();
+	local value = reader:const_value();
+	local typ = reader:node_type();
+	local q_name = '{'..get_uri(uri)..'}'..name;
+
+	local schema_type_handler = sts:top();
+	if (typ == reader.node_types.XML_READER_TYPE_ELEMENT) then
+		process_start_of_element(reader, sts, objs, pss);
+		if (reader:node_is_empty_element(reader)) then
+			process_end_of_element(reader, sts, objs, pss);
+		end
+	elseif ((typ == reader.node_types.XML_READER_TYPE_TEXT) or
+			(typ == reader.node_types.XML_READER_TYPE_CDATA)) then
+		process_text(reader, sts, objs, pss);
+	elseif (typ == reader.node_types.XML_READER_TYPE_END_ELEMENT) then
+		process_end_of_element(reader, sts, objs, pss);
+	elseif (typ == reader.node_types.XML_READER_TYPE_SIGNIFICANT_WHITESPACE) then
+		--print("SIGNIFICANT WHITESPACE HANDLED", typ, q_name);
+	else
+		print("UNKNOWN HANDLED", typ, q_name);
+		error("Unhandled reader event:".. typ..":"..q_name);
 	end
 
 	return;
@@ -1449,6 +1595,7 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	local obj = {};
 	obj['___METADATA___'] = {empty = true;};
 	obj['___METADATA___'].cms = (require('stack')).new();
+	obj['___METADATA___'].covering_object = true;
 	-- We dont populate cm, simce cm is that of the parent and this is the root
 	-- element
 	obj['___DATA___'] = {};
@@ -1457,19 +1604,24 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	local pss = (require('stack')).new();
 
 	objs:push(obj);
+	--sts:push(schema_type_handler);
 	sts:push(schema_type_handler);
 
 	error_handler.init()
+	--local msg = parse_xml_to_obj (reader, sts, objs, pss);
+	--local result = false;
 	local result, msg = pcall(parse_xml_to_obj, reader, sts, objs, pss);
 	local message_validation_context = error_handler.reset();
 	if (not result) then
+		print(debug.traceback());
 		error(msg);
 	end
 
 	local doc = (objs:pop())['___DATA___'];
 
 	obj = doc[schema_type_handler.particle_properties.generated_name];
-	--(require 'pl.pretty').dump(obj);
+	(require 'pl.pretty').dump(obj);
+	print(obj);
 
 	local valid, msg = validate_content(schema_type_handler, obj);
 	if (not valid) then

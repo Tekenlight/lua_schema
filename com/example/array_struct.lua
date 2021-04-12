@@ -28,12 +28,12 @@ local _content_model = {
 };
 
 local _content_fsa_properties = {
-	{symbol_type = 'cm_begin', symbol_name = 'author_and_title_', min_occurs = 1, max_occurs = 1, group_type = 'A', cm = _content_model}
-	,{symbol_type = 'element', symbol_name = '{}author', min_occurs = 1, max_occurs = -1, cm = _content_model}
-	,{symbol_type = 'element', symbol_name = '{}title', min_occurs = 1, max_occurs = 3, cm = _content_model}
-	,{symbol_type = 'element', symbol_name = '{}genre', min_occurs = 2, max_occurs = -1, cm = _content_model}
-	,{symbol_type = 'element', symbol_name = '{http://example.com}basic_string_simple_content', min_occurs = 1, max_occurs = -1, cm = _content_model}
-	,{symbol_type = 'cm_end', symbol_name = 'author_and_title_', cm_begin_index=1, cm = _content_model}
+	{symbol_type = 'cm_begin', symbol_name = 'author_and_title_', generated_symbol_name= 'author_and_title_',  min_occurs = 1, max_occurs = 1, group_type = 'A', cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}author', generated_symbol_name= '{}author',  min_occurs = 1, max_occurs = -1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}title', generated_symbol_name= '{}title',  min_occurs = 1, max_occurs = 3, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}genre', generated_symbol_name= '{}genre',  min_occurs = 2, max_occurs = -1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{http://example.com}basic_string_simple_content', generated_symbol_name= '{http://example.com}basic_string_simple_content',  min_occurs = 1, max_occurs = -1, cm = _content_model}
+	,{symbol_type = 'cm_end', symbol_name = 'author_and_title_', generated_symbol_name= 'author_and_title_',  cm_begin_index=1, cm = _content_model}
 };
 
 local es_o = nil;

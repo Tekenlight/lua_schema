@@ -33,14 +33,14 @@ local _content_model = {
 };
 
 local _content_fsa_properties = {
-	{symbol_type = 'cm_begin', symbol_name = 'one_and_two', min_occurs = 1, max_occurs = -1, group_type = 'S', cm = _content_model}
-	,{symbol_type = 'element', symbol_name = '{}one', min_occurs = 1, max_occurs = 1, cm = _content_model}
-	,{symbol_type = 'element', symbol_name = '{}two', min_occurs = 1, max_occurs = 1, cm = _content_model}
-	,{symbol_type = 'cm_begin', symbol_name = 'three_and_four', min_occurs = 1, max_occurs = -1, group_type = 'S', cm = _content_model[3]}
-	,{symbol_type = 'element', symbol_name = '{}three', min_occurs = 1, max_occurs = 1, cm = _content_model[3]}
-	,{symbol_type = 'element', symbol_name = '{}four', min_occurs = 1, max_occurs = 1, cm = _content_model[3]}
-	,{symbol_type = 'cm_end', symbol_name = 'three_and_four', cm_begin_index = 4, cm = _content_model[3]}
-	,{symbol_type = 'cm_end', symbol_name = 'one_and_two', cm_begin_index = 1, cm = _content_model}
+	{symbol_type = 'cm_begin', symbol_name = 'one_and_two', generated_symbol_name = 'one_and_two', min_occurs = 1, max_occurs = -1, group_type = 'S', cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}one', generated_symbol_name = '{}one', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'element', symbol_name = '{}two', generated_symbol_name = '{}two', min_occurs = 1, max_occurs = 1, cm = _content_model}
+	,{symbol_type = 'cm_begin', symbol_name = 'three_and_four', generated_symbol_name = 'three_and_four', min_occurs = 1, max_occurs = -1, group_type = 'S', cm = _content_model[3]}
+	,{symbol_type = 'element', symbol_name = '{}three', generated_symbol_name = '{}three', min_occurs = 1, max_occurs = 1, cm = _content_model[3]}
+	,{symbol_type = 'element', symbol_name = '{}four', generated_symbol_name = '{}four', min_occurs = 1, max_occurs = 1, cm = _content_model[3]}
+	,{symbol_type = 'cm_end', symbol_name = 'three_and_four', generated_symbol_name = 'three_and_four', cm_begin_index = 4, cm = _content_model[3]}
+	,{symbol_type = 'cm_end', symbol_name = 'one_and_two', generated_symbol_name = 'one_and_two', cm_begin_index = 1, cm = _content_model}
 };
 
 local es_o = nil;

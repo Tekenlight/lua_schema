@@ -137,16 +137,16 @@ local get_type_handler_code = function(elem, content_type)
 	return ths;
 end
 
-local function add_and_get_name(generated_names, name)
+local function add_and_get_name(ns, name)
 	local new_name = nil;
-	if (generated_names[name] == nil) then
-		generated_names[name] = 1;
+	if (ns[name] == nil) then
+		ns[name] = 1;
 		new_name = name;
 	else
-		local i = generated_names[name];
+		local i = ns[name];
 		new_name = name..'_'..i
 		i = i + 1;
-		generated_names[name] = i;
+		ns[name] = i;
 	end
 	return new_name;
 end
@@ -209,36 +209,30 @@ code_generator.get_subelement_properties= function(elem, model)
 		--if (item.symbol_type == 'cm_begin') then
 		--elseif (item.symbol_type == 'cm_end') then
 		if (item.symbol_type == 'element') then
-			local item_q_name = ''
-			if (item.ref) then
-				item_q_name = get_q_name(item.ref_ns, item.ref_name);
-			else
-				item_q_name = get_q_name(item.ns, item.name);
-			end
-
+			--require 'pl.pretty'.dump(item);
 			local gn = item.generated_name; -- generated_name
 			if (item.ref) then
 				--print(item.ref_name, item.ref_ns);
 				local ths = basic_stuff.get_type_handler_str(item.ref_ns, item.ref_name);
-				_subelement_properties[item_q_name] = (require(ths)):new_instance_as_ref( {root_element=false, 
+				_subelement_properties[item.generated_q_name] = (require(ths)):new_instance_as_ref( {root_element=false, 
 											generated_name = gn, min_occurs = item.min_occurs, max_occurs = item.max_occurs });
 			elseif (item.content_type == 'S') then
-				_subelement_properties[item_q_name] = code_generator.get_element_handler(item.element, false);
-				_subelement_properties[item_q_name].particle_properties.min_occurs = item.min_occurs;
-				_subelement_properties[item_q_name].particle_properties.max_occurs = item.max_occurs;
-				_subelement_properties[item_q_name].particle_properties.generated_name = gn;
+				_subelement_properties[item.generated_q_name] = code_generator.get_element_handler(item.element, false);
+				_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
+				_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
+				_subelement_properties[item.generated_q_name].particle_properties.generated_name = gn;
 			else
 				if (item.explicit_type) then
 					local type_name = basic_stuff.get_type_handler_str(item.named_type_ns, item.named_type);
-					_subelement_properties[item_q_name] = (require(type_name)):new_instance_as_local_element(
+					_subelement_properties[item.generated_q_name] = (require(type_name)):new_instance_as_local_element(
 								{ ns = item.ns, local_name = item.name, generated_name = gn,  -- generated_name
 									root_element = false,
 									min_occurs = item.min_occurs, max_occurs = item.max_occurs });
 				else
-					_subelement_properties[item_q_name] = code_generator.get_element_handler(item.element, false);
-					_subelement_properties[item_q_name].particle_properties.min_occurs = item.min_occurs;
-					_subelement_properties[item_q_name].particle_properties.max_occurs = item.max_occurs;
-					_subelement_properties[item_q_name].particle_properties.generated_name = gn;
+					_subelement_properties[item.generated_q_name] = code_generator.get_element_handler(item.element, false);
+					_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
+					_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
+					_subelement_properties[item.generated_q_name].particle_properties.generated_name = gn;
 				end
 			end
 		end
@@ -250,13 +244,7 @@ code_generator.get_declared_subelements = function(elem, model)
 	local _declared_subelments = {};
 	for i, item in ipairs(model) do
 		if (item.symbol_type == 'element') then
-			local item_q_name = ''
-			if (item.ref) then
-				item_q_name = get_q_name(item.ref_ns, item.ref_name);
-			else
-				item_q_name = get_q_name(item.ns, item.name);
-			end
-			_declared_subelments[#_declared_subelments+1] = item_q_name;
+			_declared_subelments[#_declared_subelments+1] = item.generated_q_name;
 		end
 	end
 	return _declared_subelments;
@@ -311,18 +299,21 @@ code_generator.get_content_fsa_properties = function(elem, model, content_model)
 			_content_fsa_properties[index].min_occurs = item.min_occurs;
 			_content_fsa_properties[index].max_occurs = item.max_occurs;
 			_content_fsa_properties[index].symbol_name = item.symbol_name;
-			_content_fsa_properties[index].content_model = cmps:top();
+			_content_fsa_properties[index].cm = cmps:top();
+			_content_fsa_properties[index].generated_symbol_name = item.generated_q_name;
 			cmi = cmi + 1;
 		elseif (item.symbol_type == 'cm_end') then
 			_content_fsa_properties[index].symbol_name = item.symbol_name;
 			_content_fsa_properties[index].cm_begin_index = bis:pop();
-			_content_fsa_properties[index].content_model = cmps:top();
+			_content_fsa_properties[index].cm = cmps:top();
+			_content_fsa_properties[index].generated_symbol_name = item.generated_q_name;
 			cmps:pop();
 		else
 			_content_fsa_properties[index].min_occurs = item.min_occurs;
 			_content_fsa_properties[index].max_occurs = item.max_occurs;
 			_content_fsa_properties[index].symbol_name = get_q_name(item.ns, item.name);
-			_content_fsa_properties[index].content_model = cmps:top();
+			_content_fsa_properties[index].cm = cmps:top();
+			_content_fsa_properties[index].generated_symbol_name = item.generated_q_name;
 			cmi = cmi + 1;
 		end
 	end
@@ -343,17 +334,26 @@ end
 
 local function prepare_generated_names(model)
 	local generated_names = {};
+	local generated_q_names = {};
 	local bis = (require('stack')).new();
 
 	for i, item in ipairs(model) do
 		if (item.symbol_type == 'cm_begin') then
 			bis:push(i);
 			item.generated_name = add_and_get_name(generated_names, item.symbol_name);
+			item.generated_q_name = item.generated_name;
 		elseif (item.symbol_type == 'cm_end') then
 			local begin_index = bis:pop();
 			item.generated_name = model[begin_index].generated_name;
+			item.generated_q_name = item.generated_name;
 		else
+			if (item.ref) then
+				item_q_name = get_q_name(item.ref_ns, item.ref_name);
+			else
+				item_q_name = get_q_name(item.ns, item.name);
+			end
 			item.generated_name = add_and_get_name(generated_names, item.symbol_name);
+			item.generated_q_name = add_and_get_name(generated_q_names, item_q_name);
 		end
 	end
 	--require 'pl.pretty'.dump(generated_names);
@@ -400,11 +400,11 @@ code_generator.get_element_handler = function(elem, to_generate_names)
 			--require 'pl.pretty'.dump(model);
 			--print("-------------------------------------");
 			prepare_generated_names(model);
+			props.content_model = code_generator.get_content_model(elem, model);
+			props.content_fsa_properties = code_generator.get_content_fsa_properties(elem, model, props.content_model);
 			props.subelement_properties = code_generator.get_subelement_properties(elem, model);
 			props.generated_subelements = code_generator.get_generated_subelements(props)
 			props.declared_subelements = code_generator.get_declared_subelements(elem, model);
-			props.content_model = code_generator.get_content_model(elem, model);
-			props.content_fsa_properties = code_generator.get_content_fsa_properties(elem, model, props.content_model);
 		end
 		element_handler.properties = props;
 	end
@@ -497,7 +497,10 @@ local function get_attr_code(element_handler, indentation)
 	return code;
 end
 
-code_generator.gen_lua_schema_code = function(elem)
+code_generator.gen_lua_schema_code = function(elem, indent)
+	if (indent == nil) then
+		indent = ''
+	end
 	local code = '';
 	local element_handler = code_generator.get_element_handler(elem, true);
 	--require 'pl.pretty'.dump(element_handler);
@@ -506,55 +509,55 @@ code_generator.gen_lua_schema_code = function(elem)
 	code = code..'local element_handler = {};\n\n\n\n';
 
 	local properties = element_handler.properties;
-	code = code..'do\n';
-	code = code..'    local properties = {};\n';
-	code = code..'    properties.element_type = \''..properties.element_type..'\';\n';
-	code = code..'    properties.content_type = \''..properties.content_type..'\';\n';
-	code = code..'    properties.schema_type = \''..properties.schema_type..'\';\n';
+	code = code..indent..'do\n';
+	code = code..indent..'    local properties = {};\n';
+	code = code..indent..'    properties.element_type = \''..properties.element_type..'\';\n';
+	code = code..indent..'    properties.content_type = \''..properties.content_type..'\';\n';
+	code = code..indent..'    properties.schema_type = \''..properties.schema_type..'\';\n';
 	if (properties.attr ~= nil) then
-		code = code..'    properties.attr = {};\n';
-		code = code..get_attr_code(element_handler, '    ');
-		code = code..'    properties.attr._attr_properties = _attr_properties;\n';
-		code = code..'    properties.attr._generated_attr = _generated_attr;\n\n'; -- generated_name
+		code = code..indent..'    properties.attr = {};\n';
+		code = code..get_attr_code(element_handler, indent..'    ');
+		code = code..indent..'    properties.attr._attr_properties = _attr_properties;\n';
+		code = code..indent..'    properties.attr._generated_attr = _generated_attr;\n\n'; -- generated_name
 	else
-		code = code..'    properties.attr = nil;\n';
+		code = code..indent..'    properties.attr = nil;\n';
 	end
-	code = code..'    element_handler.properties = properties;\n';
-	code = code..'end\n\n';
+	code = code..indent..'    element_handler.properties = properties;\n';
+	code = code..indent..'end\n\n';
 
 	local particle_properties = element_handler.particle_properties;
-	code = code..'do\n';
-	code = code..'    local particle_properties = {};\n'
-	code = code..'    particle_properties.q_name = {};\n'
-	code = code..'    particle_properties.q_name.ns = \''..particle_properties.q_name.ns..'\';\n';
-	code = code..'    particle_properties.q_name.local_name = \''..particle_properties.q_name.local_name..'\';\n';
-	code = code..'    particle_properties.generated_name = \''..particle_properties.generated_name..'\';\n'; -- generated_name
-	code = code..'    element_handler.particle_properties = particle_properties;\n';
-	code = code..'end\n\n';
+	code = code..indent..'do\n';
+	code = code..indent..'    local particle_properties = {};\n'
+	code = code..indent..'    particle_properties.q_name = {};\n'
+	code = code..indent..'    particle_properties.q_name.ns = \''..particle_properties.q_name.ns..'\';\n';
+	code = code..indent..'    particle_properties.q_name.local_name = \''..particle_properties.q_name.local_name..'\';\n';
+	code = code..indent..'    particle_properties.generated_name = \''..particle_properties.generated_name..'\';\n'; -- generated_name
+	code = code..indent..'    element_handler.particle_properties = particle_properties;\n';
+	code = code..indent..'end\n\n';
 
-	code = code..'do\n';
-	code = code..'    element_handler.type_handler = require(\''..get_type_handler_code(elem, properties.content_type)..'\');\n';
-	code = code..'    element_handler.get_attributes = basic_stuff.get_attributes;\n'
-	code = code..'    element_handler.is_valid = '..get_is_valid_func_name(elem)..';\n';
-	code = code..'    element_handler.to_xmlua = '..get_to_xmlua_func_name(elem)..';\n';
-	code = code..'    element_handler.get_unique_namespaces_declared = '..get_to_unsd_func_name(elem)..';\n';
-	code = code..'    element_handler.parse_xml = basic_stuff.parse_xml\n';
-	code = code..'end\n\n';
+	code = code..indent..'do\n';
+	code = code..indent..'    element_handler.type_handler = require(\''..get_type_handler_code(elem, properties.content_type)..'\');\n';
+	code = code..indent..'    element_handler.get_attributes = basic_stuff.get_attributes;\n'
+	code = code..indent..'    element_handler.is_valid = '..get_is_valid_func_name(elem)..';\n';
+	code = code..indent..'    element_handler.to_xmlua = '..get_to_xmlua_func_name(elem)..';\n';
+	code = code..indent..'    element_handler.get_unique_namespaces_declared = '..get_to_unsd_func_name(elem)..';\n';
+	code = code..indent..'    element_handler.parse_xml = basic_stuff.parse_xml\n';
+	code = code..indent..'end\n\n';
 
-	code = code..'local mt = { __index = element_handler; };\n';
-	code = code..'local _factory = {};';
-	code = code..'\n\n_factory.new_instance_as_root = function(self)\n';
-	code = code..'    return basic_stuff.instantiate_element_as_doc_root(mt);\n';
-	code = code..'end\n';
+	code = code..indent..'local mt = { __index = element_handler; };\n';
+	code = code..indent..'local _factory = {};';
+	code = code..indent..'\n\n_factory.new_instance_as_root = function(self)\n';
+	code = code..indent..'    return basic_stuff.instantiate_element_as_doc_root(mt);\n';
+	code = code..indent..'end\n';
 
 	code = code..'\n\n_factory.new_instance_as_ref = function(self, element_ref_properties)\n';
-	code = code..'    return basic_stuff.instantiate_element_as_ref(mt, { ns = \''..particle_properties.q_name.ns..'\',\n';
-	code = code..'                                                        local_name = \''..particle_properties.q_name.local_name..'\',\n';
-	code = code..'                                                        generated_name = element_ref_properties.generated_name,\n'; -- generated_name
-	code = code..'                                                        min_occurs = element_ref_properties.min_occurs,\n';
-	code = code..'                                                        max_occurs = element_ref_properties.max_occurs,\n';
-	code = code..'                                                        root_element = element_ref_properties.root_element});\n';
-	code = code..'end\n';
+	code = code..indent..'    return basic_stuff.instantiate_element_as_ref(mt, { ns = \''..particle_properties.q_name.ns..'\',\n';
+	code = code..indent..'                                                        local_name = \''..particle_properties.q_name.local_name..'\',\n';
+	code = code..indent..'                                                        generated_name = element_ref_properties.generated_name,\n'; -- generated_name
+	code = code..indent..'                                                        min_occurs = element_ref_properties.min_occurs,\n';
+	code = code..indent..'                                                        max_occurs = element_ref_properties.max_occurs,\n';
+	code = code..indent..'                                                        root_element = element_ref_properties.root_element});\n';
+	code = code..indent..'end\n';
 
 	code = code..'\n\nreturn _factory;\n';
 	--print(code);
