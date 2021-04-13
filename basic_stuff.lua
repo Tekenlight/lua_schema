@@ -280,6 +280,17 @@ basic_stuff.execute_validation_for_struct = function(schema_type_handler, conten
 end
 
 basic_stuff.execute_validation_for_complex_type_all = function(schema_type_handler, content, content_model)
+
+	if (type(content) ~= 'table') then
+		error("Passed input is not a complex type data structure");
+	end
+
+	if (content_model.min_occurs == 0 and content_model.max_occurs ==1) then
+		if (basic_stuff.is_obj_empty(content)) then
+			return true;
+		end
+	end
+
 	return basic_stuff.execute_validation_for_struct(schema_type_handler, content, content_model);
 end
 
@@ -1620,8 +1631,8 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	local doc = (objs:pop())['___DATA___'];
 
 	obj = doc[schema_type_handler.particle_properties.generated_name];
-	(require 'pl.pretty').dump(obj);
-	print(obj);
+	--(require 'pl.pretty').dump(obj);
+	--print(obj);
 
 	local valid, msg = validate_content(schema_type_handler, obj);
 	if (not valid) then
