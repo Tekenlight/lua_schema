@@ -5,64 +5,59 @@ local element_handler = {};
 
 
 do
-    local properties = {};
-    properties.element_type = 'C';
-    properties.content_type = 'S';
-    properties.schema_type = '{http://test_example.com}basic_string_simple_content_type';
-    properties.attr = {};
-    _attr_properties = {};
+    element_handler.properties = {};
+    element_handler.properties.element_type = 'C';
+    element_handler.properties.content_type = 'S';
+    element_handler.properties.schema_type = '{http://test_example.com}basic_string_simple_content_type';
+    element_handler.properties.attr = {};
+    element_handler.properties.attr._attr_properties = {};
     do
-        _attr_properties['{}attr2'] = {};
+        element_handler.properties.attr._attr_properties['{}attr1'] = {};
 
-        _attr_properties['{}attr2'].properties = {};
-        _attr_properties['{}attr2'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-        _attr_properties['{}attr2'].properties.default = '';
-        _attr_properties['{}attr2'].properties.fixed = false;
-        _attr_properties['{}attr2'].properties.use = 'R';
-        _attr_properties['{}attr2'].properties.form = 'U';
+        element_handler.properties.attr._attr_properties['{}attr1'].properties = {};
+        element_handler.properties.attr._attr_properties['{}attr1'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}int';
+        element_handler.properties.attr._attr_properties['{}attr1'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}attr1'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}attr1'].properties.use = 'O';
+        element_handler.properties.attr._attr_properties['{}attr1'].properties.form = 'U';
 
-        _attr_properties['{}attr2'].particle_properties = {};
-        _attr_properties['{}attr2'].particle_properties.q_name = {};
-        _attr_properties['{}attr2'].particle_properties.q_name.ns = '';
-        _attr_properties['{}attr2'].particle_properties.q_name.local_name = 'attr2';
-        _attr_properties['{}attr2'].particle_properties.generated_name = 'attr2';
+        element_handler.properties.attr._attr_properties['{}attr1'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}attr1'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}attr1'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}attr1'].particle_properties.q_name.local_name = 'attr1';
+        element_handler.properties.attr._attr_properties['{}attr1'].particle_properties.generated_name = 'attr1';
 
-        _attr_properties['{}attr2'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
+        element_handler.properties.attr._attr_properties['{}attr1'].type_handler = require('org.w3.2001.XMLSchema.int_handler');
     end
     do
-        _attr_properties['{}attr1'] = {};
+        element_handler.properties.attr._attr_properties['{}attr2'] = {};
 
-        _attr_properties['{}attr1'].properties = {};
-        _attr_properties['{}attr1'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}int';
-        _attr_properties['{}attr1'].properties.default = '';
-        _attr_properties['{}attr1'].properties.fixed = false;
-        _attr_properties['{}attr1'].properties.use = 'O';
-        _attr_properties['{}attr1'].properties.form = 'U';
+        element_handler.properties.attr._attr_properties['{}attr2'].properties = {};
+        element_handler.properties.attr._attr_properties['{}attr2'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+        element_handler.properties.attr._attr_properties['{}attr2'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}attr2'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}attr2'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}attr2'].properties.form = 'U';
 
-        _attr_properties['{}attr1'].particle_properties = {};
-        _attr_properties['{}attr1'].particle_properties.q_name = {};
-        _attr_properties['{}attr1'].particle_properties.q_name.ns = '';
-        _attr_properties['{}attr1'].particle_properties.q_name.local_name = 'attr1';
-        _attr_properties['{}attr1'].particle_properties.generated_name = 'attr1';
+        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties.q_name.local_name = 'attr2';
+        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties.generated_name = 'attr2';
 
-        _attr_properties['{}attr1'].type_handler = require('org.w3.2001.XMLSchema.int_handler');
+        element_handler.properties.attr._attr_properties['{}attr2'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
     end
-    _generated_attr = {};
-    _generated_attr['attr2'] = '{}attr2';
-    _generated_attr['attr1'] = '{}attr1';
-    properties.attr._attr_properties = _attr_properties;
-    properties.attr._generated_attr = _generated_attr;
-
-    element_handler.properties = properties;
+    element_handler.properties.attr._generated_attr = {};
+    element_handler.properties.attr._generated_attr['attr1'] = '{}attr1';
+    element_handler.properties.attr._generated_attr['attr2'] = '{}attr2';
 end
 
 do
-    local particle_properties = {};
-    particle_properties.q_name = {};
-    particle_properties.q_name.ns = 'http://test_example.com';
-    particle_properties.q_name.local_name = 'basic_string_simple_content';
-    particle_properties.generated_name = 'basic_string_simple_content';
-    element_handler.particle_properties = particle_properties;
+    element_handler.particle_properties = {};
+    element_handler.particle_properties.q_name = {};
+    element_handler.particle_properties.q_name.ns = 'http://test_example.com';
+    element_handler.particle_properties.q_name.local_name = 'basic_string_simple_content';
+    element_handler.particle_properties.generated_name = 'basic_string_simple_content';
 end
 
 do

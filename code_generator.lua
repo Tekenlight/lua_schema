@@ -45,11 +45,11 @@ local get_is_valid_func = function(elem)
 	end
 end
 
-local get_is_valid_func_name = function(elem)
-	if (elem:get_element_type() == 'S') then
+local get_is_valid_func_name = function(element_type, content_type)
+	if (element_type == 'S') then
 		return 'basic_stuff.simple_is_valid';
 	else
-		if (elem:get_content_type() == 'S') then
+		if (content_type == 'S') then
 			return 'basic_stuff.complex_type_simple_content_is_valid';
 		else
 			return 'basic_stuff.complex_type_is_valid';
@@ -69,11 +69,11 @@ local get_to_xmlua_func = function(elem)
 	end
 end
 
-local get_to_xmlua_func_name = function(elem)
-	if (elem:get_element_type() == 'S') then
+local get_to_xmlua_func_name = function(element_type, content_type)
+	if (element_type == 'S') then
 		return 'basic_stuff.simple_to_xmlua';
 	else
-		if (elem:get_content_type() == 'S') then
+		if (content_type == 'S') then
 			return 'basic_stuff.complex_type_simple_content_to_xmlua';
 		else
 			return 'basic_stuff.struct_to_xmlua';
@@ -89,8 +89,8 @@ local get_to_unsd_func = function(elem)
 	end
 end
 
-local get_to_unsd_func_name = function(elem)
-	if (elem:get_content_type() == 'S') then
+local get_to_unsd_func_name = function(content_type)
+	if (content_type == 'S') then
 		return 'basic_stuff.simple_get_unique_namespaces_declared';
 	else
 		return 'basic_stuff.complex_get_unique_namespaces_declared';
@@ -126,14 +126,8 @@ local get_package_name_parts = function(ns)
 	return parts;
 end
 
-local get_type_handler_code = function(elem, content_type)
-	if (content_type == 'C') then
-		return 'element_handler';
-	end
-
-	local s = elem:get_primary_bi_type();
-
-	local ths = basic_stuff.get_type_handler_str(s.ns, s.name..'_handler');
+local get_type_handler_code = function(ns, name)
+	local ths = basic_stuff.get_type_handler_str(ns, name..'_handler');
 	return ths;
 end
 
@@ -202,7 +196,7 @@ local get_attr_decls_code = function(elem)
 	return 'nil';
 end
 
-code_generator.get_subelement_properties= function(elem, model)
+code_generator.get_subelement_properties = function(elem, model)
 	local _subelement_properties = {};
 
 	for i, item in ipairs(model) do
@@ -216,11 +210,18 @@ code_generator.get_subelement_properties= function(elem, model)
 				local ths = basic_stuff.get_type_handler_str(item.ref_ns, item.ref_name);
 				_subelement_properties[item.generated_q_name] = (require(ths)):new_instance_as_ref( {root_element=false, 
 											generated_name = gn, min_occurs = item.min_occurs, max_occurs = item.max_occurs });
+				_subelement_properties[item.generated_q_name].decl_props = {};
+				_subelement_properties[item.generated_q_name].decl_props.type = 'ref';
+				_subelement_properties[item.generated_q_name].decl_props.def = ths;
 			elseif (item.content_type == 'S') then
 				_subelement_properties[item.generated_q_name] = code_generator.get_element_handler(item.element, false);
 				_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
 				_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
+				_subelement_properties[item.generated_q_name].particle_properties.root_element = false;
 				_subelement_properties[item.generated_q_name].particle_properties.generated_name = gn;
+				_subelement_properties[item.generated_q_name].decl_props = {};
+				_subelement_properties[item.generated_q_name].decl_props.type = 'simple_content';
+				_subelement_properties[item.generated_q_name].decl_props.def = 'implicit';
 			else
 				if (item.explicit_type) then
 					local type_name = basic_stuff.get_type_handler_str(item.named_type_ns, item.named_type);
@@ -228,11 +229,18 @@ code_generator.get_subelement_properties= function(elem, model)
 								{ ns = item.ns, local_name = item.name, generated_name = gn,  -- generated_name
 									root_element = false,
 									min_occurs = item.min_occurs, max_occurs = item.max_occurs });
+					_subelement_properties[item.generated_q_name].decl_props = {};
+					_subelement_properties[item.generated_q_name].decl_props.type = 'explicit_type';
+					_subelement_properties[item.generated_q_name].decl_props.def = type_name;
 				else
 					_subelement_properties[item.generated_q_name] = code_generator.get_element_handler(item.element, false);
 					_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
 					_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
+					_subelement_properties[item.generated_q_name].particle_properties.root_element = false;
 					_subelement_properties[item.generated_q_name].particle_properties.generated_name = gn;
+					_subelement_properties[item.generated_q_name].decl_props = {};
+					_subelement_properties[item.generated_q_name].decl_props.type = 'complex_content';
+					_subelement_properties[item.generated_q_name].decl_props.def = 'implicit';
 				end
 			end
 		end
@@ -283,6 +291,7 @@ code_generator.get_content_fsa_properties = function(elem, model, content_model)
 	local _content_fsa_properties = {};
 	local bis = (require('stack')).new();
 	local cmps = (require('stack')).new();
+	local cmis = (require('stack')).new();
 	local cmi = 0;
 
 	for i, item in ipairs(model) do
@@ -291,11 +300,13 @@ code_generator.get_content_fsa_properties = function(elem, model, content_model)
 		_content_fsa_properties[index].symbol_type = item.symbol_type;
 		if (item.symbol_type == 'cm_begin') then
 			bis:push(index);
+			cmis:push(cmi);
 			if (cmi == 0) then
 				cmps:push(content_model);
 			else
 				cmps:push(content_model[cmi]);
 			end
+			cmi = 0;
 			_content_fsa_properties[index].min_occurs = item.min_occurs;
 			_content_fsa_properties[index].max_occurs = item.max_occurs;
 			_content_fsa_properties[index].symbol_name = item.symbol_name;
@@ -308,6 +319,8 @@ code_generator.get_content_fsa_properties = function(elem, model, content_model)
 			_content_fsa_properties[index].cm = cmps:top();
 			_content_fsa_properties[index].generated_symbol_name = item.generated_q_name;
 			cmps:pop();
+			cmi = nil;
+			cmi = cmis:pop();
 		else
 			_content_fsa_properties[index].min_occurs = item.min_occurs;
 			_content_fsa_properties[index].max_occurs = item.max_occurs;
@@ -317,6 +330,8 @@ code_generator.get_content_fsa_properties = function(elem, model, content_model)
 			cmi = cmi + 1;
 		end
 	end
+	--require 'pl.pretty'.dump(_content_fsa_properties);
+
 	return _content_fsa_properties;
 end
 
@@ -405,6 +420,9 @@ code_generator.get_element_handler = function(elem, to_generate_names)
 			props.subelement_properties = code_generator.get_subelement_properties(elem, model);
 			props.generated_subelements = code_generator.get_generated_subelements(props)
 			props.declared_subelements = code_generator.get_declared_subelements(elem, model);
+			props.bi_type = {};
+		else
+			props.bi_type = elem:get_primary_bi_type();
 		end
 		element_handler.properties = props;
 	end
@@ -439,21 +457,22 @@ code_generator.gen_lua_schema = function(elem)
 	return _factory;
 end
 
-local function get_attr_code(element_handler, indentation)
+local function get_attr_code(eh_name, element_handler, indentation)
 	local code = '';
 
-	code = code..indentation..'_attr_properties = {};\n'
+	local attr_props_name = eh_name..'._attr_properties';
+	code = code..indentation..attr_props_name..' = {};\n'
 	for n,v in pairs(element_handler.properties.attr._attr_properties) do
 		local i_n = '\''..n..'\'';
 		code = code..indentation..'do\n';
 		do
-			code = code..indentation..'    '..'_attr_properties['..i_n..'] = {};\n\n';
-			code = code..indentation..'    '..'_attr_properties['..i_n..'].properties = {};\n'
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'] = {};\n\n';
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'].properties = {};\n'
 			code = code..indentation..'    '
-						..'_attr_properties['..i_n..'].properties.schema_type = \''..
+						..attr_props_name..'['..i_n..'].properties.schema_type = \''..
 						element_handler.properties.attr._attr_properties[n].properties.schema_type..'\';\n';
 			code = code..indentation..'    '
-						..'_attr_properties['..i_n..'].properties.default = \''..
+						..attr_props_name..'['..i_n..'].properties.default = \''..
 						element_handler.properties.attr._attr_properties[n].properties.default..'\';\n';
 			local loc_fixed_value = '';
 			if (element_handler.properties.attr._attr_properties[n].properties.fixed) then
@@ -462,38 +481,326 @@ local function get_attr_code(element_handler, indentation)
 				loc_fixed_value = 'false';
 			end
 			code = code..indentation..'    '
-						..'_attr_properties['..i_n..'].properties.fixed = '..loc_fixed_value..';\n';
+						..attr_props_name..'['..i_n..'].properties.fixed = '..loc_fixed_value..';\n';
 			code = code..indentation..'    '
-						..'_attr_properties['..i_n..'].properties.use = \''..
+						..attr_props_name..'['..i_n..'].properties.use = \''..
 						element_handler.properties.attr._attr_properties[n].properties.use..'\';\n';
 			code = code..indentation..'    '
-						..'_attr_properties['..i_n..'].properties.form = \''..
+						..attr_props_name..'['..i_n..'].properties.form = \''..
 						element_handler.properties.attr._attr_properties[n].properties.form..'\';\n';
 			code = code..'\n';
-			code = code..indentation..'    '..'_attr_properties['..i_n..'].particle_properties = {};\n'
-			code = code..indentation..'    '..'_attr_properties['..i_n..'].particle_properties.q_name = {};\n'
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'].particle_properties = {};\n'
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'].particle_properties.q_name = {};\n'
 			code = code..indentation..'    '
-						..'_attr_properties['..i_n..'].particle_properties.q_name.ns = \''..
+						..attr_props_name..'['..i_n..'].particle_properties.q_name.ns = \''..
 						element_handler.properties.attr._attr_properties[n].particle_properties.q_name.ns..'\';\n';
 			code = code..indentation..'    '
-						..'_attr_properties['..i_n..'].particle_properties.q_name.local_name = \''..
+						..attr_props_name..'['..i_n..'].particle_properties.q_name.local_name = \''..
 						element_handler.properties.attr._attr_properties[n].particle_properties.q_name.local_name..'\';\n';
 			code = code..indentation..'    '
-						..'_attr_properties['..i_n..'].particle_properties.generated_name = \''.. -- generated_name
+						..attr_props_name..'['..i_n..'].particle_properties.generated_name = \''.. -- generated_name
 						element_handler.properties.attr._attr_properties[n].particle_properties.generated_name..'\';\n'; -- generated_name
 			code = code..'\n';
-			code = code..indentation..'    '..'_attr_properties['..i_n..'].type_handler = '..
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'].type_handler = '..
 					'require(\''..basic_stuff.get_type_handler_str(element_handler.properties.attr._attr_properties[n].properties.type.ns,
 								element_handler.properties.attr._attr_properties[n].properties.type.name)..'_handler\');\n';
 		end
 		code = code..indentation..'end\n';
 	end
-	code = code..indentation..'_generated_attr = {};\n' -- generated_name
+	local gen_attr_name = eh_name..'._generated_attr';
+	code = code..indentation..gen_attr_name..' = {};\n' -- generated_name
 	for n,v in pairs(element_handler.properties.attr._generated_attr) do -- generated_name
 		local i_n = '\''..n..'\'';
-		code = code..indentation..'_generated_attr['..i_n..'] = \''.. -- generated_name
+		code = code..indentation..gen_attr_name..'['..i_n..'] = \''.. -- generated_name
 					element_handler.properties.attr._generated_attr[n]..'\';\n'; -- generated_name
 	end
+	return code;
+end
+
+local function put_content_model_code(content_model, indentation)
+	local code = '';
+	for n,v in pairs(content_model) do
+		if (type(n) ~= 'number') then
+			if (type(v) == 'number') then
+				code = code..indentation..'    '..n..' = '..v..',\n';
+			else
+				code = code..indentation..'    '..n..' = \''..v..'\',\n';
+			end
+		end
+	end
+	for i,v in ipairs(content_model) do
+		if (type(v) == 'table') then
+			code = code..indentation..'    {\n';
+			code = code..put_content_model_code(v, indentation..'    ');
+			code = code..indentation..'    },\n';
+		else
+			code = code..indentation..'    \''..v..'\',\n';
+		end
+	end
+	return code;
+end
+
+local get_cm_ref_str = function(cm_rval_arr)
+	local str = '';
+	for i,v in ipairs(cm_rval_arr) do
+		if (i == 1) then
+			str = cm_rval_arr[i];
+		else
+			str = str..'['..cm_rval_arr[i]..']';
+		end
+	end
+	return str;
+end
+
+local function put_content_fsa_properties_code(content_fsa_properties, content_model, indentation)
+	local code = '';
+	local cmi = 0;
+	local cmis = (require('stack')).new();
+	local content_model_rval = {};
+	local cm_ref = nil;
+	for i, item in ipairs(content_fsa_properties) do
+		if (item.symbol_type == 'cm_begin') then
+			cmis:push(cmi);
+			if (cmi == 0) then
+				content_model_rval[#content_model_rval+1] = 'element_handler.properties.content_model';
+			else
+				content_model_rval[#content_model_rval+1] = cmi;
+			end
+			cmi = 1;
+			cm_ref = get_cm_ref_str(content_model_rval);
+
+		elseif (item.symbol_type == 'cm_end') then
+			cm_ref = get_cm_ref_str(content_model_rval);
+
+			content_model_rval[#content_model_rval] = nil;
+			cmi = nil;
+			cmi = cmis:pop();
+		else
+			cm_ref = get_cm_ref_str(content_model_rval);
+
+			cmi = cmi + 1;
+		end
+		if (i == 1) then
+			code = code..indentation..'    ';
+		else
+			code = code..indentation..'    ,';
+		end
+		code = code..'{';
+		code = code..'symbol_type = \''..item.symbol_type..'\'';
+		code = code..', symbol_name = \''..item.symbol_name..'\'';
+		code = code..', generated_symbol_name = \''..item.generated_symbol_name..'\'';
+		if (item.symbol_type ~= 'cm_end') then
+			code = code..', min_occurs = '..item.min_occurs;
+			code = code..', max_occurs = '..item.max_occurs;
+		else
+			code = code..', cm_begin_index = '..item.cm_begin_index;
+		end
+		code = code..', cm = '..cm_ref;
+		code = code..'}\n';
+	end
+
+	return code;
+end
+
+local function put_subelement_properties_code(base_name, subelement_properties, indentation)
+	local code = '';
+	local indent = indentation;
+
+	for n, item in pairs(subelement_properties) do
+		local item_name = base_name..'[\''..n..'\']';
+		if (item.decl_props.type == 'ref') then
+			--[[
+			local ths = basic_stuff.get_type_handler_str(item.ref_ns, item.ref_name);
+			_subelement_properties[item.generated_q_name] = (require(ths)):new_instance_as_ref( {root_element=false, 
+										generated_name = gn, min_occurs = item.min_occurs, max_occurs = item.max_occurs });
+			_subelement_properties[item.generated_q_name].decl_props = {};
+			_subelement_properties[item.generated_q_name].decl_props.type = 'ref';
+			_subelement_properties[item.generated_q_name].decl_props.def = ths;
+			]]
+			code = code..indent..'do\n';
+			code = code..'    '..indent..item_name..' = \n'..indent..indent..'(require(\''..item.decl_props.def..'\'):\n'
+									..'    '..indent..indent..'new_instance_as_ref({root_element=false, generated_name = \''
+									..item.particle_properties.generated_name..'\',\n'
+									..'    '..indent..indent..indent..indent..'min_occurs = '
+									..item.particle_properties.min_occurs..', '
+									..'max_occurs = '..item.particle_properties.max_occurs..'}));\n';
+			code = code..indent..'end\n\n';
+		elseif (item.properties.content_type == 'S') then
+			--[[
+			_subelement_properties[item.generated_q_name] = code_generator.get_element_handler(item.element, false);
+			_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
+			_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
+			_subelement_properties[item.generated_q_name].particle_properties.root_element = false;
+			_subelement_properties[item.generated_q_name].particle_properties.generated_name = gn;
+			_subelement_properties[item.generated_q_name].decl_props = {};
+			_subelement_properties[item.generated_q_name].decl_props.type = 'simple_content';
+			_subelement_properties[item.generated_q_name].decl_props.def = 'implicit';
+			]]
+			code = code..indent..item_name..' = {};\n';
+			code = code..indent..'do\n';
+			code = code..code_generator.put_element_handler_code(item_name, item, indent..'    ');
+			code = code..indent..'    '..item_name..'.particle_properties.root_element = false;\n';
+			code = code..indent..'    '..item_name..'.particle_properties.min_occurs = '..item.particle_properties.min_occurs..';\n';
+			code = code..indent..'    '..item_name..'.particle_properties.max_occurs = '..item.particle_properties.max_occurs..';\n';
+			code = code..indent..'end\n';
+			code = code..'\n';
+		else
+			if (item.decl_props.type == 'explicit_type') then
+				--[[
+				local type_name = basic_stuff.get_type_handler_str(item.named_type_ns, item.named_type);
+				_subelement_properties[item.generated_q_name] = (require(type_name)):new_instance_as_local_element(
+							{ ns = item.ns, local_name = item.name, generated_name = gn,  -- generated_name
+								root_element = false,
+								min_occurs = item.min_occurs, max_occurs = item.max_occurs });
+				_subelement_properties[item.generated_q_name].decl_props = {};
+				_subelement_properties[item.generated_q_name].decl_props.type = 'explicit_type';
+				_subelement_properties[item.generated_q_name].decl_props.def = type_name;
+				]]
+				code = code..indent..'do\n';
+				code = code..'    '..indent..item_name..' = \n'..'    '..indent..indent..'(require(\''
+										..item.decl_props.def..'\'):\n'
+										..'    '..indent..indent..'new_instance_as_local_element({ns = \''
+										..item.particle_properties.q_name.ns..'\', local_name = \''
+										..item.particle_properties.q_name.local_name..'\', generated_name = \''
+										..item.particle_properties.generated_name..'\',\n'
+										..'    '..indent..indent..indent..indent
+										..'root_element = false, '
+										..'min_occurs = '..item.particle_properties.min_occurs..', '
+										..'max_occurs = '..item.particle_properties.max_occurs..'}));\n';
+				code = code..indent..'end\n\n';
+			else
+				--[[
+				_subelement_properties[item.generated_q_name] = code_generator.get_element_handler(item.element, false);
+				_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
+				_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
+				_subelement_properties[item.generated_q_name].particle_properties.root_element = false;
+				_subelement_properties[item.generated_q_name].particle_properties.generated_name = gn;
+				_subelement_properties[item.generated_q_name].decl_props = {};
+				_subelement_properties[item.generated_q_name].decl_props.type = 'complex_content';
+				_subelement_properties[item.generated_q_name].decl_props.def = 'implicit';
+				]]
+				code = code..indent..item_name..' = {},\n';
+				code = code..indent..'do\n';
+				code = code..code_generator.put_element_handler_code(item_name, item, indent..'    ');
+				code = code..indent..'    '..item_name..'.particle_properties.root_element = false;\n';
+				code = code..indent..'    '..item_name..'.particle_properties.min_occurs = '..item.particle_properties.min_occurs..';\n';
+				code = code..indent..'    '..item_name..'.particle_properties.max_occurs = '..item.particle_properties.max_occurs..';\n';
+				code = code..indent..'end\n';
+				code = code..'\n';
+			end
+		end
+	end
+
+	return code;
+end
+
+code_generator.put_element_handler_code = function(eh_name, element_handler, indent)
+	if (indent == nil) then
+		indent = ''
+	end
+	local code = '';
+
+	local properties = element_handler.properties;
+	code = code..indent..'do\n';
+	code = code..indent..'    '..eh_name..'.properties = {};\n';
+	code = code..indent..'    '..eh_name..'.properties.element_type = \''..properties.element_type..'\';\n';
+	code = code..indent..'    '..eh_name..'.properties.content_type = \''..properties.content_type..'\';\n';
+	code = code..indent..'    '..eh_name..'.properties.schema_type = \''..properties.schema_type..'\';\n';
+	if (properties.attr ~= nil) then
+		code = code..indent..'    '..eh_name..'.properties.attr = {};\n';
+		code = code..get_attr_code(eh_name..'.properties.attr', element_handler, indent..'    ');
+	else
+		code = code..indent..'    '..eh_name..'.properties.attr = nil;\n';
+	end
+	code = code..indent..'end\n\n';
+
+	local particle_properties = element_handler.particle_properties;
+	code = code..indent..'do\n';
+	code = code..indent..'    '..eh_name..'.particle_properties = {};\n'
+	code = code..indent..'    '..eh_name..'.particle_properties.q_name = {};\n'
+	code = code..indent..'    '..eh_name..'.particle_properties.q_name.ns = \''..particle_properties.q_name.ns..'\';\n';
+	code = code..indent..'    '..eh_name..'.particle_properties.q_name.local_name = \''..particle_properties.q_name.local_name..'\';\n';
+	code = code..indent..'    '..eh_name..'.particle_properties.generated_name = \''..particle_properties.generated_name..'\';\n'; -- generated_name
+	code = code..indent..'end\n\n';
+
+	if (element_handler.properties.content_type == 'C') then
+
+		-- Content model
+		local content_model = element_handler.properties.content_model;
+		code = code..'-- '..eh_name..'.properties.content_model\n';
+		code = code..indent..'do\n';
+		code = code..indent..'    '..eh_name..'.properties.content_model = {\n';
+		code = code..put_content_model_code(element_handler.properties.content_model, indent..'    ');
+		code = code..indent..'    };\n';
+		code = code..indent..'end\n\n';
+
+
+		-- Content FSA properties
+		local content_fsa_properties = element_handler.properties.content_fsa_properties;
+		code = code..'-- '..eh_name..'.properties.content_fsa_properties\n';
+		code = code..indent..'do\n';
+		code = code..indent..'    '..eh_name..'.properties.content_fsa_properties = {\n';
+		code = code..put_content_fsa_properties_code(content_fsa_properties, content_model, indent..'    ');
+		code = code..indent..'    };\n';
+		code = code..indent..'end\n\n';
+
+
+		-- Declared subelements
+		code = code..indent..'do\n';
+		code = code..indent..'    '..eh_name..'.properties.declared_subelements = {\n';
+		for i,v in ipairs(element_handler.properties.declared_subelements) do
+			if (i~=1) then code = code..indent..'        ,';
+			else code = code..indent..'        ';
+			end
+			code = code..'\''..v..'\'\n';
+		end
+		code = code..indent..'    };\n';
+		code = code..indent..'end\n\n';
+
+
+		-- Subelement properties
+		code = code..indent..'do\n';
+		code = code..indent..'    '..eh_name..'.properties.subelement_properties = {};\n';
+		code = code..put_subelement_properties_code(eh_name..'.properties.subelement_properties', properties.subelement_properties, indent..'    ');
+		code = code..indent..'end\n\n';
+
+
+		-- Generated subelements
+		code = code..indent..'do\n';
+		local sep_name = eh_name..'.properties.subelement_properties';
+		code = code..indent..'    '..eh_name..'.properties.generated_subelements = {\n';
+		local flg = true;
+		for n,item in pairs(element_handler.properties.subelement_properties) do
+			if (flg) then
+				code = code..indent..'        [\''..item.particle_properties.generated_name..'\'] = '
+							..sep_name..'[\''..n..'\']\n';
+				flg = false;
+			else
+				code = code..indent..'        ,[\''..item.particle_properties.generated_name..'\'] = '
+							..sep_name..'[\''..n..'\']\n';
+			end
+		end
+		code = code..indent..'    };\n';
+		code = code..indent..'end\n\n';
+
+
+	end
+
+	code = code..indent..'do\n';
+	if (properties.content_type == 'C') then
+		code = code..indent..'    '..eh_name..'.type_handler = '..eh_name..';\n';
+	else
+		local ns = properties.bi_type.ns;
+		local name = properties.bi_type.name;
+		code = code..indent..'    '..eh_name..'.type_handler = require(\''..get_type_handler_code(ns, name)..'\');\n';
+	end
+	code = code..indent..'    '..eh_name..'.get_attributes = basic_stuff.get_attributes;\n'
+	code = code..indent..'    '..eh_name..'.is_valid = '..get_is_valid_func_name(properties.element_type, properties.content_type)..';\n';
+	code = code..indent..'    '..eh_name..'.to_xmlua = '..get_to_xmlua_func_name(properties.element_type, properties.content_type)..';\n';
+	code = code..indent..'    '..eh_name..'.get_unique_namespaces_declared = '..get_to_unsd_func_name(properties.content_type)..';\n';
+	code = code..indent..'    '..eh_name..'.parse_xml = basic_stuff.parse_xml\n';
+	code = code..indent..'end\n\n';
+
 	return code;
 end
 
@@ -502,47 +809,18 @@ code_generator.gen_lua_schema_code = function(elem, indent)
 		indent = ''
 	end
 	local code = '';
+	local eh_name = 'element_handler';
 	local element_handler = code_generator.get_element_handler(elem, true);
 	--require 'pl.pretty'.dump(element_handler);
 
 	code = 'local basic_stuff = require("basic_stuff");\n\n';
-	code = code..'local element_handler = {};\n\n\n\n';
+	code = code..'local '..eh_name..' = {};\n\n\n\n';
 
-	local properties = element_handler.properties;
-	code = code..indent..'do\n';
-	code = code..indent..'    local properties = {};\n';
-	code = code..indent..'    properties.element_type = \''..properties.element_type..'\';\n';
-	code = code..indent..'    properties.content_type = \''..properties.content_type..'\';\n';
-	code = code..indent..'    properties.schema_type = \''..properties.schema_type..'\';\n';
-	if (properties.attr ~= nil) then
-		code = code..indent..'    properties.attr = {};\n';
-		code = code..get_attr_code(element_handler, indent..'    ');
-		code = code..indent..'    properties.attr._attr_properties = _attr_properties;\n';
-		code = code..indent..'    properties.attr._generated_attr = _generated_attr;\n\n'; -- generated_name
-	else
-		code = code..indent..'    properties.attr = nil;\n';
-	end
-	code = code..indent..'    element_handler.properties = properties;\n';
-	code = code..indent..'end\n\n';
+	-- This point onwards is where recursion starts
 
-	local particle_properties = element_handler.particle_properties;
-	code = code..indent..'do\n';
-	code = code..indent..'    local particle_properties = {};\n'
-	code = code..indent..'    particle_properties.q_name = {};\n'
-	code = code..indent..'    particle_properties.q_name.ns = \''..particle_properties.q_name.ns..'\';\n';
-	code = code..indent..'    particle_properties.q_name.local_name = \''..particle_properties.q_name.local_name..'\';\n';
-	code = code..indent..'    particle_properties.generated_name = \''..particle_properties.generated_name..'\';\n'; -- generated_name
-	code = code..indent..'    element_handler.particle_properties = particle_properties;\n';
-	code = code..indent..'end\n\n';
+	code = code..code_generator.put_element_handler_code(eh_name, element_handler, indent)
 
-	code = code..indent..'do\n';
-	code = code..indent..'    element_handler.type_handler = require(\''..get_type_handler_code(elem, properties.content_type)..'\');\n';
-	code = code..indent..'    element_handler.get_attributes = basic_stuff.get_attributes;\n'
-	code = code..indent..'    element_handler.is_valid = '..get_is_valid_func_name(elem)..';\n';
-	code = code..indent..'    element_handler.to_xmlua = '..get_to_xmlua_func_name(elem)..';\n';
-	code = code..indent..'    element_handler.get_unique_namespaces_declared = '..get_to_unsd_func_name(elem)..';\n';
-	code = code..indent..'    element_handler.parse_xml = basic_stuff.parse_xml\n';
-	code = code..indent..'end\n\n';
+	-- This point onwards the generated code will be only for the top level element
 
 	code = code..indent..'local mt = { __index = element_handler; };\n';
 	code = code..indent..'local _factory = {};';
@@ -550,6 +828,7 @@ code_generator.gen_lua_schema_code = function(elem, indent)
 	code = code..indent..'    return basic_stuff.instantiate_element_as_doc_root(mt);\n';
 	code = code..indent..'end\n';
 
+	local particle_properties = element_handler.particle_properties;
 	code = code..'\n\n_factory.new_instance_as_ref = function(self, element_ref_properties)\n';
 	code = code..indent..'    return basic_stuff.instantiate_element_as_ref(mt, { ns = \''..particle_properties.q_name.ns..'\',\n';
 	code = code..indent..'                                                        local_name = \''..particle_properties.q_name.local_name..'\',\n';

@@ -5,26 +5,21 @@ local element_handler = {};
 
 
 do
-    local properties = {};
-    properties.element_type = 'S';
-    properties.content_type = 'S';
-    properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-    properties.attr = {};
-    _attr_properties = {};
-    _generated_attr = {};
-    properties.attr._attr_properties = _attr_properties;
-    properties.attr._generated_attr = _generated_attr;
-
-    element_handler.properties = properties;
+    element_handler.properties = {};
+    element_handler.properties.element_type = 'S';
+    element_handler.properties.content_type = 'S';
+    element_handler.properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+    element_handler.properties.attr = {};
+    element_handler.properties.attr._attr_properties = {};
+    element_handler.properties.attr._generated_attr = {};
 end
 
 do
-    local particle_properties = {};
-    particle_properties.q_name = {};
-    particle_properties.q_name.ns = 'http://test_example.com';
-    particle_properties.q_name.local_name = 'basic_string';
-    particle_properties.generated_name = 'basic_string';
-    element_handler.particle_properties = particle_properties;
+    element_handler.particle_properties = {};
+    element_handler.particle_properties.q_name = {};
+    element_handler.particle_properties.q_name.ns = 'http://test_example.com';
+    element_handler.particle_properties.q_name.local_name = 'basic_string';
+    element_handler.particle_properties.generated_name = 'basic_string';
 end
 
 do

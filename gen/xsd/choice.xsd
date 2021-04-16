@@ -1,0 +1,38 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://test_example.com"
+			xmlns:ns="http://test_example.com"
+			xmlns:ns1="http://test_example1.com">
+
+<xsd:element name="choice">
+	<xsd:complexType>
+		<xsd:sequence>
+			<xsd:choice minOccurs="2" maxOccurs="2">
+				<xsd:element name="a" type="xsd:string"/>
+				<xsd:element name="b" type="xsd:string"/>
+			</xsd:choice>
+			<xsd:choice minOccurs="1" maxOccurs="1">
+				<xsd:element name="a" type="xsd:string"/>
+				<xsd:element name="b" type="xsd:string"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:element>
+
+<xsd:element name="choice1">
+	<xsd:complexType>
+		<xsd:sequence>
+			<xsd:choice minOccurs="2" maxOccurs="10">
+				<xsd:element name="a" type="xsd:string"/>
+				<xsd:element name="b" type="xsd:string"/>
+			</xsd:choice>
+			<!--
+			<xsd:choice minOccurs="1" maxOccurs="1">
+				<xsd:element name="a" type="xsd:string"/>
+				<xsd:element name="b" type="xsd:string"/>
+			</xsd:choice>
+			-->
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:element>
+
+</xsd:schema>

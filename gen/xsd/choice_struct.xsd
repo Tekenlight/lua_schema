@@ -1,0 +1,20 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://test_example.com"
+			xmlns:ns="http://test_example.com"
+			xmlns:ns1="http://test_example1.com">
+
+<xsd:element name="choice_struct">
+	<xsd:complexType>
+		<xsd:sequence>
+			<xsd:element name="one" type="xsd:string"/>
+			<xsd:element name="two" type="xsd:string"/>
+			<xsd:choice>
+				<xsd:element name="three" type="xsd:string"/>
+				<xsd:element name="four" type="xsd:string"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:element>
+
+
+</xsd:schema>

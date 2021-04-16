@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:illegal_upa xmlns:ns1="http://test_example.com">
+	<a>AA</a>
+	<b>AA</b>
+</ns1:illegal_upa>

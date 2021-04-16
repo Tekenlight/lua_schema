@@ -1,0 +1,14 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://test_example.com"
+			xmlns:ns="http://test_example.com">
+
+	<xsd:element name="all_s">
+		<xsd:complexType>
+			<xsd:all minOccurs="0" maxOccurs="1">
+				<xsd:element name="author"	type="xsd:string" minOccurs="1" maxOccurs="1"/>
+				<xsd:element name="title"	type="xsd:string"/>
+				<xsd:element name="genre"	type="xsd:string"/>
+			</xsd:all>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

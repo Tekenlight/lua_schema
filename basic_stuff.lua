@@ -158,6 +158,7 @@ basic_stuff.attributes_are_valid = function(attrs_def, attrs)
 	for n,v in pairs(inp_attr) do
 		error_handler.push_element(n);
 		if (attrs_def._generated_attr[n] == nil) then
+			print("ONE");
 			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be present");
 			return false
 		end
@@ -255,6 +256,7 @@ basic_stuff.all_elements_part_of_declaration = function(schema_type_handler, con
 	for n,v in pairs(content) do
 		error_handler.push_element(n);
 		if ((n ~= "_attr") and (schema_type_handler.properties.generated_subelements[n] == nil)) then
+			print("TWO", n);
 			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be present");
 			return false;
 		end
@@ -1573,9 +1575,11 @@ local process_node = function(reader, sts, objs, pss)
 
 	local schema_type_handler = sts:top();
 	if (typ == reader.node_types.XML_READER_TYPE_ELEMENT) then
-		process_start_of_element(reader, sts, objs, pss);
-		if (reader:node_is_empty_element(reader)) then
-			process_end_of_element(reader, sts, objs, pss);
+		--process_start_of_element(reader, sts, objs, pss);
+		--if (reader:node_is_empty_element(reader)) then
+		if (not reader:node_is_empty_element(reader)) then
+			process_start_of_element(reader, sts, objs, pss);
+			--process_end_of_element(reader, sts, objs, pss);
 		end
 	elseif ((typ == reader.node_types.XML_READER_TYPE_TEXT) or
 			(typ == reader.node_types.XML_READER_TYPE_CDATA)) then
