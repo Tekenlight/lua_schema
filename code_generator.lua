@@ -679,7 +679,7 @@ local function put_subelement_properties_code(base_name, subelement_properties, 
 				_subelement_properties[item.generated_q_name].decl_props.type = 'complex_content';
 				_subelement_properties[item.generated_q_name].decl_props.def = 'implicit';
 				]]
-				code = code..indent..item_name..' = {},\n';
+				code = code..indent..item_name..' = {};\n';
 				code = code..indent..'do\n';
 				code = code..code_generator.put_element_handler_code(item_name, item, indent..'    ');
 				code = code..indent..'    '..item_name..'.particle_properties.root_element = false;\n';

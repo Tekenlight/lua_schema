@@ -6,7 +6,7 @@
 	<xsd:import namespace="http://test_example1.com" schemaLocation="struct2.xsd"/>
 	<xsd:import schemaLocation="struct2.xsd"/>
 	<xsd:include schemaLocation="basic_string_simple_content.xsd"/>
-	<xsd:element name="xml">
+	<xsd:element name="xml_struct">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element ref="ns1:element_struct2"/>
