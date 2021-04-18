@@ -2,17 +2,16 @@
 			targetNamespace="http://test_example.com"
 			xmlns:ns="http://test_example.com">
 
-	<xsd:element name="mult_choice_struct">
-		<xsd:complexType>
-			<xsd:sequence>
-				<xsd:element name="one"		type="xsd:string"/>
-				<xsd:element name="two"		type="xsd:string"/>
-				<xsd:choice minOccurs="1" maxOccurs="unbounded">
-					<xsd:element name="three"	type="xsd:string"/>
-					<xsd:element name="four"	type="xsd:string"/>
-				</xsd:choice>
-			</xsd:sequence>
-		</xsd:complexType>
-	</xsd:element>
+	<xsd:complexType name="mult_choice_struct_type">
+		<xsd:sequence>
+			<xsd:element name="one"		type="xsd:string"/>
+			<xsd:element name="two"		type="xsd:string"/>
+			<xsd:choice minOccurs="1" maxOccurs="unbounded">
+				<xsd:element name="three"	type="xsd:string"/>
+				<xsd:element name="four"	type="xsd:string"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="mult_choice_struct" type="ns:mult_choice_struct_type"/>
 </xsd:schema>
 

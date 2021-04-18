@@ -101,20 +101,6 @@ local get_type_handler_code = function(ns, name)
 	return ths;
 end
 
-local function add_and_get_name(ns, name)
-	local new_name = nil;
-	if (ns[name] == nil) then
-		ns[name] = 1;
-		new_name = name;
-	else
-		local i = ns[name];
-		new_name = name..'_'..i
-		i = i + 1;
-		ns[name] = i;
-	end
-	return new_name;
-end
-
 local get_typedef_attr_decls = function(typedef)
 	local o_attrs = {};
 	o_attrs._generated_attr = {};
@@ -144,7 +130,7 @@ local get_typedef_attr_decls = function(typedef)
 			particle_properties.q_name = {};
 			particle_properties.q_name.ns = v.ns;
 			particle_properties.q_name.local_name = v.name;
-			particle_properties.generated_name = add_and_get_name(g_names, v.name); -- generated_name
+			particle_properties.generated_name = elem_code_generator.add_and_get_name(g_names, v.name); -- generated_name
 			attr.particle_properties = particle_properties;
 
 			attr.type_handler = basic_stuff.get_type_handler(v.type.ns, v.type.name..'_handler');
@@ -162,200 +148,8 @@ local get_typedef_attr_decls = function(typedef)
 	return o_attrs;
 end
 
-type_code_generator.get_subelement_properties = function(typedef, model)
-	local _subelement_properties = {};
-
-	for i, item in ipairs(model) do
-		--if (item.symbol_type == 'cm_begin') then
-		--elseif (item.symbol_type == 'cm_end') then
-		if (item.symbol_type == 'element') then
-			--require 'pl.pretty'.dump(item);
-			local gn = item.generated_name; -- generated_name
-			if (item.ref) then
-				local ths = basic_stuff.get_type_handler_str(item.ref_ns, item.ref_name);
-				--print(item.ref_name, item.ref_ns);
-				--[[
-				_subelement_properties[item.generated_q_name] = (require(ths)):new_instance_as_ref( {root_element=false, 
-											generated_name = gn, min_occurs = item.min_occurs, max_occurs = item.max_occurs });
-				]]
-				_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false);
-				_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
-				_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
-				_subelement_properties[item.generated_q_name].particle_properties.root_element = false;
-				_subelement_properties[item.generated_q_name].particle_properties.generated_name = gn;
-				_subelement_properties[item.generated_q_name].decl_props = {};
-				_subelement_properties[item.generated_q_name].decl_props.type = 'ref';
-				_subelement_properties[item.generated_q_name].decl_props.def = ths;
-			elseif (item.content_type == 'S') then
-				_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false);
-				_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
-				_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
-				_subelement_properties[item.generated_q_name].particle_properties.root_element = false;
-				_subelement_properties[item.generated_q_name].particle_properties.generated_name = gn;
-				_subelement_properties[item.generated_q_name].decl_props = {};
-				_subelement_properties[item.generated_q_name].decl_props.type = 'simple_content';
-				_subelement_properties[item.generated_q_name].decl_props.def = 'implicit';
-			else
-				if (item.explicit_type) then
-					local type_name = basic_stuff.get_type_handler_str(item.named_type_ns, item.named_type);
-					--[[
-					_subelement_properties[item.generated_q_name] = (require(type_name)):new_instance_as_local_element(
-								{ ns = item.ns, local_name = item.name, generated_name = gn,  -- generated_name
-									root_element = false,
-									min_occurs = item.min_occurs, max_occurs = item.max_occurs });
-					]]
-					_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false);
-					_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
-					_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
-					_subelement_properties[item.generated_q_name].particle_properties.root_element = false;
-					_subelement_properties[item.generated_q_name].particle_properties.generated_name = gn;
-					_subelement_properties[item.generated_q_name].decl_props = {};
-					_subelement_properties[item.generated_q_name].decl_props.type = 'explicit_type';
-					_subelement_properties[item.generated_q_name].decl_props.def = type_name;
-				else
-					_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false);
-					_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
-					_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
-					_subelement_properties[item.generated_q_name].particle_properties.root_element = false;
-					_subelement_properties[item.generated_q_name].particle_properties.generated_name = gn;
-					_subelement_properties[item.generated_q_name].decl_props = {};
-					_subelement_properties[item.generated_q_name].decl_props.type = 'complex_content';
-					_subelement_properties[item.generated_q_name].decl_props.def = 'implicit';
-				end
-			end
-		end
-	end
-	return _subelement_properties;
-end
-
-type_code_generator.get_declared_subelements = function(typedef, model)
-	local _declared_subelments = {};
-	for i, item in ipairs(model) do
-		if (item.symbol_type == 'element') then
-			_declared_subelments[#_declared_subelments+1] = item.generated_q_name;
-		end
-	end
-	return _declared_subelments;
-end
-
-local function low_get_content_model(model, i)
-	local _content_model = {};
-	if (model[i].symbol_type ~= 'cm_begin') then
-		error("cm_begin expected in the begining to be able to generate a content model");
-	end
-	_content_model.group_type = model[i].group_type;
-	_content_model.min_occurs = model[i].min_occurs;
-	_content_model.max_occurs = model[i].max_occurs;
-	_content_model.generated_subelement_name = model[i].generated_name; -- generated_name
-	i = i + 1;
-	while (model[i].symbol_type ~= 'cm_end') do
-		local cm_index = #_content_model+1;
-		if (model[i].symbol_type == 'element') then
-			_content_model[cm_index] = model[i].generated_name; -- generated_name
-		else
-			_content_model[cm_index], i = low_get_content_model(model, i);
-		end
-		i = i + 1;
-	end
-
-	return _content_model, i;
-	
-end
-
-type_code_generator.get_content_model = function(typedef, model)
-	local _content_model = low_get_content_model(model, 1);
-	return _content_model;
-end
-
-type_code_generator.get_content_fsa_properties = function(typedef, model, content_model)
-	local _content_fsa_properties = {};
-	local bis = (require('stack')).new();
-	local cmps = (require('stack')).new();
-	local cmis = (require('stack')).new();
-	local cmi = 0;
-
-	for i, item in ipairs(model) do
-		local index = #_content_fsa_properties+1;
-		_content_fsa_properties[index] = {};
-		_content_fsa_properties[index].symbol_type = item.symbol_type;
-		if (item.symbol_type == 'cm_begin') then
-			bis:push(index);
-			cmis:push(cmi);
-			if (cmi == 0) then
-				cmps:push(content_model);
-			else
-				cmps:push(content_model[cmi]);
-			end
-			cmi = 0;
-			_content_fsa_properties[index].min_occurs = item.min_occurs;
-			_content_fsa_properties[index].max_occurs = item.max_occurs;
-			_content_fsa_properties[index].symbol_name = item.symbol_name;
-			_content_fsa_properties[index].cm = cmps:top();
-			_content_fsa_properties[index].generated_symbol_name = item.generated_q_name;
-			cmi = cmi + 1;
-		elseif (item.symbol_type == 'cm_end') then
-			_content_fsa_properties[index].symbol_name = item.symbol_name;
-			_content_fsa_properties[index].cm_begin_index = bis:pop();
-			_content_fsa_properties[index].cm = cmps:top();
-			_content_fsa_properties[index].generated_symbol_name = item.generated_q_name;
-			cmps:pop();
-			cmi = nil;
-			cmi = cmis:pop();
-		else
-			_content_fsa_properties[index].min_occurs = item.min_occurs;
-			_content_fsa_properties[index].max_occurs = item.max_occurs;
-			_content_fsa_properties[index].symbol_name = get_q_name(item.ns, item.name);
-			_content_fsa_properties[index].cm = cmps:top();
-			_content_fsa_properties[index].generated_symbol_name = item.generated_q_name;
-			cmi = cmi + 1;
-		end
-	end
-	--require 'pl.pretty'.dump(_content_fsa_properties);
-
-	return _content_fsa_properties;
-end
-
-type_code_generator.get_generated_subelements = function(props)
-	local _generated_subelements = {};
-	for n,v in pairs(props.subelement_properties) do
-		_generated_subelements[v.particle_properties.generated_name] = props.subelement_properties[n];
-	end
-	return _generated_subelements;
-end
-
 local get_generated_name = function(typedef) -- generated_name
 	return typedef:get_name();
-end
-
-local function prepare_generated_names(model)
-	local generated_names = {};
-	local generated_q_names = {};
-	local bis = (require('stack')).new();
-
-	for i, item in ipairs(model) do
-		if (item.symbol_type == 'cm_begin') then
-			bis:push(i);
-			item.generated_name = add_and_get_name(generated_names, item.symbol_name);
-			item.generated_q_name = item.generated_name;
-		elseif (item.symbol_type == 'cm_end') then
-			local begin_index = bis:pop();
-			item.generated_name = model[begin_index].generated_name;
-			item.generated_q_name = item.generated_name;
-		else
-			if (item.ref) then
-				item_q_name = get_q_name(item.ref_ns, item.ref_name);
-			else
-				item_q_name = get_q_name(item.ns, item.name);
-			end
-			item.generated_name = add_and_get_name(generated_names, item.symbol_name);
-			item.generated_q_name = add_and_get_name(generated_q_names, item_q_name);
-		end
-	end
-	--require 'pl.pretty'.dump(generated_names);
-	--print("-------------------------------------");
-	--require 'pl.pretty'.dump(model);
-	--print("-------------------------------------");
-	return generated_names;
 end
 
 type_code_generator.get_element_handler = function(typedef, to_generate_names)
@@ -397,14 +191,12 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names)
 		props.attr = get_typedef_attr_decls(typedef);
 		if (content_type == 'C') then
 			local model = typedef:get_typedef_content_model();
-			--require 'pl.pretty'.dump(model);
-			--print("-------------------------------------");
-			prepare_generated_names(model);
-			props.content_model = type_code_generator.get_content_model(typedef, model);
-			props.content_fsa_properties = type_code_generator.get_content_fsa_properties(typedef, model, props.content_model);
-			props.subelement_properties = type_code_generator.get_subelement_properties(typedef, model);
-			props.generated_subelements = type_code_generator.get_generated_subelements(props)
-			props.declared_subelements = type_code_generator.get_declared_subelements(typedef, model);
+			elem_code_generator.prepare_generated_names(model);
+			props.content_model = elem_code_generator.get_content_model(model);
+			props.content_fsa_properties = elem_code_generator.get_content_fsa_properties(model, props.content_model);
+			props.subelement_properties = elem_code_generator.get_subelement_properties(model);
+			props.generated_subelements = elem_code_generator.get_generated_subelements(props)
+			props.declared_subelements = elem_code_generator.get_declared_subelements(model);
 			props.bi_type = {};
 		else
 			props.bi_type = typedef:get_typedef_primary_bi_type();
@@ -694,14 +486,30 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 		local sep_name = eh_name..'.properties.subelement_properties';
 		code = code..indent..'    '..eh_name..'.properties.generated_subelements = {\n';
 		local flg = true;
-		for n,item in pairs(element_handler.properties.subelement_properties) do
-			if (flg) then
-				code = code..indent..'        [\''..item.particle_properties.generated_name..'\'] = '
-							..sep_name..'[\''..n..'\']\n';
-				flg = false;
-			else
-				code = code..indent..'        ,[\''..item.particle_properties.generated_name..'\'] = '
-							..sep_name..'[\''..n..'\']\n';
+		local lhs = '';
+		local rhs = '';
+		local generated_name = '';
+		for i,v in ipairs(element_handler.properties.content_fsa_properties) do
+			if (v.symbol_type == 'element') then
+				generated_name =
+					element_handler.properties.subelement_properties[v.generated_symbol_name].particle_properties.generated_name;
+				lhs = '[\''..generated_name..'\']';
+				rhs = sep_name..'[\''..v.generated_symbol_name..'\']';
+				if (flg) then
+					code = code..indent..'        '..lhs..' = '..rhs..'\n';
+					flg = false;
+				else
+					code = code..indent..'        ,'..lhs..' = '..rhs..'\n';
+				end
+			elseif (v.symbol_type == 'cm_begin' and v.max_occurs ~= 1) then
+				generated_name = v.generated_symbol_name;
+				lhs = '[\''..generated_name..'\']';
+				if (flg) then
+					code = code..indent..'        '..lhs..' = '..'{}'..'\n';
+					flg = false;
+				else
+					code = code..indent..'        ,'..lhs..' = '..'{}'..'\n';
+				end
 			end
 		end
 		code = code..indent..'    };\n';
