@@ -1,0 +1,20 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://test_example2.com"
+			xmlns:ns1="http://test_example1.com"
+			xmlns:ns2="http://test_example.com">
+
+	<xsd:import schemaLocation="basic_string_nons.xsd"/>
+	<xsd:import namespace="http://test_example.com" schemaLocation="master_include.xsd"/>
+	<xsd:element name="element_struct3">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="author" type="xsd:string"/>
+				<xsd:element name="title" type="xsd:string"/>
+				<xsd:element name="genre" type="xsd:string"/>
+				<xsd:element ref="ns2:example_struct"/>
+				<xsd:element ref="ns2:basic_string"/>
+				<xsd:element ref="basic_string_nons"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

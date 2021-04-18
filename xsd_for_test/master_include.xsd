@@ -1,0 +1,5 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://test_example.com">
+
+	<xsd:include schemaLocation="example_struct.xsd"/>
+	<xsd:include schemaLocation="basic_string.xsd"/>
+</xsd:schema>

@@ -1,0 +1,17 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://test_example.com"
+			xmlns:ns1="http://test_example1.com"
+			xmlns:ns2="http://test_example.com">
+
+	<xsd:include schemaLocation="basic_string_simple_content.xsd"/>
+	<xsd:element name="array_struct">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="author"	type="xsd:string" maxOccurs="unbounded"/>
+				<xsd:element name="title"	type="xsd:string" maxOccurs="3"/>
+				<xsd:element name="genre"	type="xsd:string" maxOccurs="unbounded"/>
+				<xsd:element xmlns:ns3="http://test_example.com" ref="ns3:basic_string_simple_content" maxOccurs="unbounded"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

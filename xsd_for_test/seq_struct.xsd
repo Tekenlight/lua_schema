@@ -1,0 +1,16 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+targetNamespace="http://test_example.com">
+
+	<xsd:element name="seq_struct">
+		<xsd:complexType>
+			<xsd:sequence maxOccurs="unbounded">
+				<xsd:element name="one"	type="xsd:string"/>
+				<xsd:element name="two"	type="xsd:string"/>
+				<xsd:sequence maxOccurs="unbounded">
+					<xsd:element name="three"	type="xsd:string"/>
+					<xsd:element name="four"	type="xsd:string"/>
+				</xsd:sequence>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

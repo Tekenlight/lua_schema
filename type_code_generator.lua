@@ -155,9 +155,6 @@ end
 type_code_generator.get_element_handler = function(typedef, to_generate_names)
 	local element_handler = {};
 
-	--print('Type name = ', require("ffi").string(typedef._ptr.name));
-	--print('Type type = ', typedef._ptr.type);
-	--print('Type Content type = ', typedef._ptr.contentType);
 	local content_type = typedef:get_typedef_content_type();
 	local element_type = typedef:get_typedef_type();
 
@@ -168,19 +165,6 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names)
 		element_handler.to_xmlua = get_to_xmlua_func(typedef);
 		element_handler.get_unique_namespaces_declared = get_to_unsd_func(typedef);
 		element_handler.parse_xml = basic_stuff.parse_xml;
-	end
-
-	do
-		--[[
-		local particle_properties = {};
-		particle_properties.q_name = {};
-		particle_properties.q_name.ns = typedef:get_target_name_space();
-		particle_properties.q_name.local_name = typedef:get_name();
-		if (to_generate_names) then
-			particle_properties.generated_name = get_generated_name(typedef); -- generated_name
-		end
-		element_handler.particle_properties = particle_properties;
-		]]
 	end
 
 	do
@@ -427,17 +411,6 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 		code = code..indent..'    '..eh_name..'.properties.attr = nil;\n';
 	end
 	code = code..indent..'end\n\n';
-
-	--[[
-	local particle_properties = element_handler.particle_properties;
-	code = code..indent..'do\n';
-	code = code..indent..'    '..eh_name..'.particle_properties = {};\n'
-	code = code..indent..'    '..eh_name..'.particle_properties.q_name = {};\n'
-	code = code..indent..'    '..eh_name..'.particle_properties.q_name.ns = \''..particle_properties.q_name.ns..'\';\n';
-	code = code..indent..'    '..eh_name..'.particle_properties.q_name.local_name = \''..particle_properties.q_name.local_name..'\';\n';
-	code = code..indent..'    '..eh_name..'.particle_properties.generated_name = \''..particle_properties.generated_name..'\';\n'; -- generated_name
-	code = code..indent..'end\n\n';
-	]]
 
 	if (element_handler.properties.content_type == 'C') then
 

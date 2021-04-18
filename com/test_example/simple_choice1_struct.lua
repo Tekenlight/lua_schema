@@ -8,7 +8,7 @@ do
     element_handler.properties = {};
     element_handler.properties.element_type = 'C';
     element_handler.properties.content_type = 'C';
-    element_handler.properties.schema_type = '{http://test_example2.com}element_struct3';
+    element_handler.properties.schema_type = '{http://test_example.com}simple_choice1_struct';
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     element_handler.properties.attr._generated_attr = {};
@@ -17,38 +17,32 @@ end
 do
     element_handler.particle_properties = {};
     element_handler.particle_properties.q_name = {};
-    element_handler.particle_properties.q_name.ns = 'http://test_example2.com';
-    element_handler.particle_properties.q_name.local_name = 'element_struct3';
-    element_handler.particle_properties.generated_name = 'element_struct3';
+    element_handler.particle_properties.q_name.ns = 'http://test_example.com';
+    element_handler.particle_properties.q_name.local_name = 'simple_choice1_struct';
+    element_handler.particle_properties.generated_name = 'simple_choice1_struct';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        group_type = 'S',
         max_occurs = 1,
         min_occurs = 1,
-        generated_subelement_name = '_sequence_group',
+        generated_subelement_name = '_choice_group',
+        group_type = 'C',
         'author',
         'title',
         'genre',
-        'example_struct',
-        'basic_string',
-        'basic_string_nons',
     };
 end
 
 -- element_handler.properties.content_fsa_properties
 do
     element_handler.properties.content_fsa_properties = {
-        {symbol_type = 'cm_begin', symbol_name = '_sequence_group', generated_symbol_name = '_sequence_group', min_occurs = 1, max_occurs = 1, cm = element_handler.properties.content_model}
-        ,{symbol_type = 'element', symbol_name = '{}author', generated_symbol_name = '{}author', min_occurs = 1, max_occurs = 1, cm = element_handler.properties.content_model}
+        {symbol_type = 'cm_begin', symbol_name = '_choice_group', generated_symbol_name = '_choice_group', min_occurs = 1, max_occurs = 1, cm = element_handler.properties.content_model}
+        ,{symbol_type = 'element', symbol_name = '{}author', generated_symbol_name = '{}author', min_occurs = 1, max_occurs = -1, cm = element_handler.properties.content_model}
         ,{symbol_type = 'element', symbol_name = '{}title', generated_symbol_name = '{}title', min_occurs = 1, max_occurs = 1, cm = element_handler.properties.content_model}
         ,{symbol_type = 'element', symbol_name = '{}genre', generated_symbol_name = '{}genre', min_occurs = 1, max_occurs = 1, cm = element_handler.properties.content_model}
-        ,{symbol_type = 'element', symbol_name = '{http://test_example.com}example_struct', generated_symbol_name = '{http://test_example.com}example_struct', min_occurs = 1, max_occurs = 1, cm = element_handler.properties.content_model}
-        ,{symbol_type = 'element', symbol_name = '{http://test_example.com}basic_string', generated_symbol_name = '{http://test_example.com}basic_string', min_occurs = 1, max_occurs = 1, cm = element_handler.properties.content_model}
-        ,{symbol_type = 'element', symbol_name = '{}basic_string_nons', generated_symbol_name = '{}basic_string_nons', min_occurs = 1, max_occurs = 1, cm = element_handler.properties.content_model}
-        ,{symbol_type = 'cm_end', symbol_name = '_sequence_group', generated_symbol_name = '_sequence_group', cm_begin_index = 1, cm = element_handler.properties.content_model}
+        ,{symbol_type = 'cm_end', symbol_name = '_choice_group', generated_symbol_name = '_choice_group', cm_begin_index = 1, cm = element_handler.properties.content_model}
     };
 end
 
@@ -57,21 +51,11 @@ do
         '{}author'
         ,'{}title'
         ,'{}genre'
-        ,'{http://test_example.com}example_struct'
-        ,'{http://test_example.com}basic_string'
-        ,'{}basic_string_nons'
     };
 end
 
 do
     element_handler.properties.subelement_properties = {};
-    do
-        element_handler.properties.subelement_properties['{}basic_string_nons'] = 
-        (require('.basic_string_nons'):
-            new_instance_as_ref({root_element=false, generated_name = 'basic_string_nons',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
     element_handler.properties.subelement_properties['{}genre'] = {};
     do
         do
@@ -137,7 +121,7 @@ do
 
         element_handler.properties.subelement_properties['{}author'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}author'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}author'].particle_properties.max_occurs = 1;
+        element_handler.properties.subelement_properties['{}author'].particle_properties.max_occurs = -1;
     end
 
     element_handler.properties.subelement_properties['{}title'] = {};
@@ -174,20 +158,6 @@ do
         element_handler.properties.subelement_properties['{}title'].particle_properties.max_occurs = 1;
     end
 
-    do
-        element_handler.properties.subelement_properties['{http://test_example.com}example_struct'] = 
-        (require('com.test_example.example_struct'):
-            new_instance_as_ref({root_element=false, generated_name = 'example_struct',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://test_example.com}basic_string'] = 
-        (require('com.test_example.basic_string'):
-            new_instance_as_ref({root_element=false, generated_name = 'basic_string',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
 end
 
 do
@@ -195,9 +165,6 @@ do
         ['author'] = element_handler.properties.subelement_properties['{}author']
         ,['title'] = element_handler.properties.subelement_properties['{}title']
         ,['genre'] = element_handler.properties.subelement_properties['{}genre']
-        ,['example_struct'] = element_handler.properties.subelement_properties['{http://test_example.com}example_struct']
-        ,['basic_string'] = element_handler.properties.subelement_properties['{http://test_example.com}basic_string']
-        ,['basic_string_nons'] = element_handler.properties.subelement_properties['{}basic_string_nons']
     };
 end
 
@@ -219,8 +186,8 @@ end
 
 
 _factory.new_instance_as_ref = function(self, element_ref_properties)
-    return basic_stuff.instantiate_element_as_ref(mt, { ns = 'http://test_example2.com',
-                                                        local_name = 'element_struct3',
+    return basic_stuff.instantiate_element_as_ref(mt, { ns = 'http://test_example.com',
+                                                        local_name = 'simple_choice1_struct',
                                                         generated_name = element_ref_properties.generated_name,
                                                         min_occurs = element_ref_properties.min_occurs,
                                                         max_occurs = element_ref_properties.max_occurs,

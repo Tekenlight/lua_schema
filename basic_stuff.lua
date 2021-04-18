@@ -1136,8 +1136,8 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 	local top_obj = objs:top();
 
 	local ps_obj = pss:top();
-	--pss:push({position = 1, next_position = 1, group_stack = (require('stack')).new()});
 	--print(q_name, schema_type_handler.properties.content_fsa_properties[i].symbol_name);
+	--print("++++++++++++++++++", schema_type_handler.properties.content_fsa_properties[i].symbol_name, "+++++++++++++++", i);
 	if ((schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'element') and
 		(schema_type_handler.properties.content_fsa_properties[i].symbol_name == q_name)) then
 		ps_obj.position = i;
@@ -1164,7 +1164,9 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 		return true;
 	elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
 		if (schema_type_handler.properties.content_fsa_properties[i].max_occurs ~= 1) then
-			top_obj['___METADATA___'].element_being_parsed = schema_type_handler.properties.content_fsa_properties[i].symbol_name;
+			--top_obj['___METADATA___'].element_being_parsed = schema_type_handler.properties.content_fsa_properties[i].symbol_name;
+			top_obj['___METADATA___'].element_being_parsed =
+					schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
 			obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
 			objs:push(obj);
 			--print("~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -1224,7 +1226,9 @@ local windup_fsa = function(reader, sts, objs, pss)
 	while (i <= (#schema_type_handler.properties.content_fsa_properties)) do
 		if (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
 			if (schema_type_handler.properties.content_fsa_properties[i].max_occurs ~= 1) then
-				top_obj['___METADATA___'].element_being_parsed = schema_type_handler.properties.content_fsa_properties[i].symbol_name;
+				--top_obj['___METADATA___'].element_being_parsed = schema_type_handler.properties.content_fsa_properties[i].symbol_name;
+				top_obj['___METADATA___'].element_being_parsed =
+						schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
 				obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
 				objs:push(obj);
 				top_obj = objs:top();
@@ -1536,12 +1540,6 @@ local process_end_of_element = function(reader, sts, objs, pss)
 		top_obj['___METADATA___'].empty = false;
 	end
 	pss:pop();
-	--[[
-		If the element is completed is part of a choice content model, the choice content model
-		is to be treated as completely read.
-	]]
-	--print("1455", top_obj['___METADATA___'].element_being_parsed, top_obj['___METADATA___'].cm);
-	--(require 'pl.pretty').dump(objs);
 	if ((not top_obj['___METADATA___'].empty) and
 		(top_obj['___METADATA___'].cm ~= nil)) then -- cm will not be null only in case of repeating content models.
 
@@ -1557,19 +1555,11 @@ local process_end_of_element = function(reader, sts, objs, pss)
 				end
 			end
 		elseif (top_obj['___METADATA___'].cm.group_type == 'S') then
-			-- Case of max_occurs == 1 is handled in continue_cm_fsa_i
 			if (parsed_sth.particle_properties.max_occurs == 1) then
 			elseif (parsed_sth.particle_properties.max_occurs ~= -1) then
-			--if (parsed_sth.particle_properties.max_occurs ~= 1) then
 				local ebp = top_obj['___METADATA___'].element_being_parsed
-				--print(ebp);
-				--(require 'pl.pretty').dump(parsed_sth);
 				local count = #(top_obj['___DATA___'][ebp])
 				if (count == parsed_sth.particle_properties.max_occurs) then
-					--[[
-					print("1477", top_obj['___METADATA___'].cm.group_type,
-					top_obj['___METADATA___'].element_being_parsed, parsed_sth.particle_properties.max_occurs);
-					]]
 					local i = pss:top().next_position;
 					pss:top().next_position = i+1;
 				end
