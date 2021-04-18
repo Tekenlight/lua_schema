@@ -131,7 +131,7 @@ local get_type_handler_code = function(ns, name)
 	return ths;
 end
 
-local function add_and_get_name(ns, name)
+function elem_code_generator.add_and_get_name(ns, name)
 	local new_name = nil;
 	if (ns[name] == nil) then
 		ns[name] = 1;
@@ -174,7 +174,7 @@ local get_element_attr_decls = function(elem)
 			particle_properties.q_name = {};
 			particle_properties.q_name.ns = v.ns;
 			particle_properties.q_name.local_name = v.name;
-			particle_properties.generated_name = add_and_get_name(g_names, v.name); -- generated_name
+			particle_properties.generated_name = elem_code_generator.add_and_get_name(g_names, v.name); -- generated_name
 			attr.particle_properties = particle_properties;
 
 			attr.type_handler = basic_stuff.get_type_handler(v.type.ns, v.type.name..'_handler');
@@ -196,7 +196,7 @@ local get_attr_decls_code = function(elem)
 	return 'nil';
 end
 
-elem_code_generator.get_subelement_properties = function(elem, model)
+elem_code_generator.get_subelement_properties = function(model)
 	local _subelement_properties = {};
 
 	for i, item in ipairs(model) do
@@ -262,7 +262,7 @@ elem_code_generator.get_subelement_properties = function(elem, model)
 	return _subelement_properties;
 end
 
-elem_code_generator.get_declared_subelements = function(elem, model)
+elem_code_generator.get_declared_subelements = function(model)
 	local _declared_subelments = {};
 	for i, item in ipairs(model) do
 		if (item.symbol_type == 'element') then
@@ -296,12 +296,12 @@ local function low_get_content_model(model, i)
 	
 end
 
-elem_code_generator.get_content_model = function(elem, model)
+elem_code_generator.get_content_model = function(model)
 	local _content_model = low_get_content_model(model, 1);
 	return _content_model;
 end
 
-elem_code_generator.get_content_fsa_properties = function(elem, model, content_model)
+elem_code_generator.get_content_fsa_properties = function(model, content_model)
 	local _content_fsa_properties = {};
 	local bis = (require('stack')).new();
 	local cmps = (require('stack')).new();
@@ -351,9 +351,19 @@ end
 
 elem_code_generator.get_generated_subelements = function(props)
 	local _generated_subelements = {};
-	for n,v in pairs(props.subelement_properties) do
-		_generated_subelements[v.particle_properties.generated_name] = props.subelement_properties[n];
+	for i,v in ipairs(props.content_fsa_properties) do
+		local generated_name = '';
+		if (v.symbol_type == 'element') then
+			generated_name = props.subelement_properties[v.generated_symbol_name].particle_properties.generated_name;
+			--print("+++++++++++++", tostring(generated_name), "++++++++++++");
+			_generated_subelements[generated_name] = props.subelement_properties[v.generated_symbol_name];
+		elseif (v.symbol_type == 'cm_begin' and v.max_occurs ~= 1) then
+			generated_name = v.generated_symbol_name;
+			--print("+++++++++++++", tostring(generated_name), "++++++++++++");
+			_generated_subelements[generated_name] = {};
+		end
 	end
+	--require 'pl.pretty'.dump(_generated_subelements);
 	return _generated_subelements;
 end
 
@@ -361,7 +371,7 @@ local get_generated_name = function(elem) -- generated_name
 	return elem:get_name();
 end
 
-local function prepare_generated_names(model)
+function elem_code_generator.prepare_generated_names(model)
 	local generated_names = {};
 	local generated_q_names = {};
 	local bis = (require('stack')).new();
@@ -369,7 +379,7 @@ local function prepare_generated_names(model)
 	for i, item in ipairs(model) do
 		if (item.symbol_type == 'cm_begin') then
 			bis:push(i);
-			item.generated_name = add_and_get_name(generated_names, item.symbol_name);
+			item.generated_name = elem_code_generator.add_and_get_name(generated_names, item.symbol_name);
 			item.generated_q_name = item.generated_name;
 		elseif (item.symbol_type == 'cm_end') then
 			local begin_index = bis:pop();
@@ -381,8 +391,8 @@ local function prepare_generated_names(model)
 			else
 				item_q_name = get_q_name(item.ns, item.name);
 			end
-			item.generated_name = add_and_get_name(generated_names, item.symbol_name);
-			item.generated_q_name = add_and_get_name(generated_q_names, item_q_name);
+			item.generated_name = elem_code_generator.add_and_get_name(generated_names, item.symbol_name);
+			item.generated_q_name = elem_code_generator.add_and_get_name(generated_q_names, item_q_name);
 		end
 	end
 	--require 'pl.pretty'.dump(generated_names);
@@ -426,14 +436,12 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 		props.attr = get_element_attr_decls(elem);
 		if (content_type == 'C') then
 			local model = elem:get_element_content_model();
-			--require 'pl.pretty'.dump(model);
-			--print("-------------------------------------");
-			prepare_generated_names(model);
-			props.content_model = elem_code_generator.get_content_model(elem, model);
-			props.content_fsa_properties = elem_code_generator.get_content_fsa_properties(elem, model, props.content_model);
-			props.subelement_properties = elem_code_generator.get_subelement_properties(elem, model);
+			elem_code_generator.prepare_generated_names(model);
+			props.content_model = elem_code_generator.get_content_model(model);
+			props.content_fsa_properties = elem_code_generator.get_content_fsa_properties(model, props.content_model);
+			props.subelement_properties = elem_code_generator.get_subelement_properties(model);
 			props.generated_subelements = elem_code_generator.get_generated_subelements(props)
-			props.declared_subelements = elem_code_generator.get_declared_subelements(elem, model);
+			props.declared_subelements = elem_code_generator.get_declared_subelements(model);
 			props.bi_type = {};
 		else
 			props.bi_type = elem:get_element_primary_bi_type();
@@ -746,14 +754,30 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 		local sep_name = eh_name..'.properties.subelement_properties';
 		code = code..indent..'    '..eh_name..'.properties.generated_subelements = {\n';
 		local flg = true;
-		for n,item in pairs(element_handler.properties.subelement_properties) do
-			if (flg) then
-				code = code..indent..'        [\''..item.particle_properties.generated_name..'\'] = '
-							..sep_name..'[\''..n..'\']\n';
-				flg = false;
-			else
-				code = code..indent..'        ,[\''..item.particle_properties.generated_name..'\'] = '
-							..sep_name..'[\''..n..'\']\n';
+		local lhs = '';
+		local rhs = '';
+		local generated_name = '';
+		for i,v in ipairs(element_handler.properties.content_fsa_properties) do
+			if (v.symbol_type == 'element') then
+				generated_name =
+					element_handler.properties.subelement_properties[v.generated_symbol_name].particle_properties.generated_name;
+				lhs = '[\''..generated_name..'\']';
+				rhs = sep_name..'[\''..v.generated_symbol_name..'\']';
+				if (flg) then
+					code = code..indent..'        '..lhs..' = '..rhs..'\n';
+					flg = false;
+				else
+					code = code..indent..'        ,'..lhs..' = '..rhs..'\n';
+				end
+			elseif (v.symbol_type == 'cm_begin' and v.max_occurs ~= 1) then
+				generated_name = v.generated_symbol_name;
+				lhs = '[\''..generated_name..'\']';
+				if (flg) then
+					code = code..indent..'        '..lhs..' = '..'{}'..'\n';
+					flg = false;
+				else
+					code = code..indent..'        ,'..lhs..' = '..'{}'..'\n';
+				end
 			end
 		end
 		code = code..indent..'    };\n';
