@@ -34,12 +34,12 @@ end
 
 error_handler.raise_validation_error = function(error_no, message)
 	if (_G.message_validation_context == nil) then
-		print(debug.traceback("HH"));
+		--print(debug.traceback("HH"));
 		error(message);
 		return false;
 	else
 		error_handler.set_validation_error(error_no, message);
-		print(debug.traceback("HH"));
+		--print(debug.traceback("HH"));
 		error(message);
 		return false;
 	end

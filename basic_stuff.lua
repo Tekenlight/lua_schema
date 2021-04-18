@@ -20,7 +20,8 @@ end
 
 basic_stuff.assert_input_is_complex_content = function(content)
 	if ((content == nil) or (type(content) ~= 'table')) then
-		error("Input is not a valid lua struture of simplecontent");
+		print(content);
+		error("Input is not a valid lua struture of complex type");
 		return false;
 	elseif ((content._attr ~= nil) and (type(content._attr) ~= 'table')) then
 		error("Input is not a valid lua struture of complex type");
@@ -517,9 +518,11 @@ basic_stuff.execute_validation_for_complex_type_s_or_c = function(schema_type_ha
 	end
 
 	if (content_model.max_occurs ~= 1) then
-		return basic_stuff.execute_validation_of_array(schema_type_handler, val_func, content, content_model, false);
+		local ret =  basic_stuff.execute_validation_of_array(schema_type_handler, val_func, content, content_model, false);
+		return ret;
 	else
-		return val_func(schema_type_handler, content, content_model);
+		local ret = val_func(schema_type_handler, content, content_model);
+		return ret;
 	end
 
 	return true;
@@ -556,7 +559,8 @@ basic_stuff.execute_validation_for_complex_type = function(schema_type_handler, 
 		else
 			xmlc = content;
 		end
-		return basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, content_model);
+		local ret = basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, content_model);
+		return ret;
 	end
 	return true;
 end
@@ -592,39 +596,47 @@ basic_stuff.carryout_element_validation = function(schema_type_handler, val_func
 	--end
 	--print("C", content);
 	if ((schema_type_handler.particle_properties.min_occurs > 0) and (content == nil)) then
+		local ret = false;
 		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be null");
-		return false;
+		return ret;
 	elseif ((schema_type_handler.particle_properties.min_occurs == 0) and (content == nil)) then
-		return true;
+		local ret = true;
+		return ret;
 	end
 
 	if (schema_type_handler.particle_properties.max_occurs ~= 1) then
-		return basic_stuff.execute_validation_of_array(schema_type_handler, val_func, content, content_model, true);
+		local ret =  basic_stuff.execute_validation_of_array(schema_type_handler, val_func, content, content_model, true);
+		return ret;
 	else
-		return val_func(schema_type_handler, content, content_model);
+		local ret = val_func(schema_type_handler, content, content_model);
+		return ret;
 	end
 
 	return true;
 end
 
 basic_stuff.simple_is_valid = function(schema_type_handler, content)
-	return basic_stuff.carryout_element_validation(schema_type_handler,
+	local ret =  basic_stuff.carryout_element_validation(schema_type_handler,
 										basic_stuff.execute_validation_for_simple, content, nil);
+	return ret;
 end
 
 basic_stuff.complex_type_is_valid = function(schema_type_handler, content)
-	return basic_stuff.carryout_element_validation(schema_type_handler,
+	local ret =  basic_stuff.carryout_element_validation(schema_type_handler,
 													basic_stuff.execute_validation_for_complex_type,
 													content, schema_type_handler.properties.content_model);
+	return ret;
 end
 
 basic_stuff.complex_type_simple_content_is_valid = function(schema_type_handler, content)
-	return basic_stuff.carryout_element_validation(schema_type_handler,
+	local ret =  basic_stuff.carryout_element_validation(schema_type_handler,
 				basic_stuff.execute_validation_for_complex_type_simple_content, content, nil);
+	return ret;
 end
 
 basic_stuff.execute_primitive_validation = function(handler, content)
-	return handler:is_valid(content);
+	local ret =  handler:is_valid(content);
+	return ret;
 end
 
 basic_stuff.perform_element_validation = function(handler, content)
@@ -1015,7 +1027,9 @@ local function validate_content(sth, content)
 	local result = nil;
 	local valid = nil;
 	error_handler.init()
-	result, valid = pcall(basic_stuff.perform_element_validation, sth,  content);
+	--result, valid = pcall(basic_stuff.perform_element_validation, sth,  content);
+	result = true;
+	valid = basic_stuff.perform_element_validation(sth,  content);
 	--valid = basic_stuff.perform_element_validation( sth,  content);
 	--result = false;
 	local message_validation_context = error_handler.reset();
@@ -1623,12 +1637,12 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	sts:push(schema_type_handler);
 
 	error_handler.init()
-	--local msg = parse_xml_to_obj (reader, sts, objs, pss);
-	--local result = false;
-	local result, msg = pcall(parse_xml_to_obj, reader, sts, objs, pss);
+	--local result, msg = pcall(parse_xml_to_obj, reader, sts, objs, pss);
+	local msg = parse_xml_to_obj (reader, sts, objs, pss);
+	local result = true;
 	local message_validation_context = error_handler.reset();
 	if (not result) then
-		print(debug.traceback());
+		--print(debug.traceback());
 		error(msg);
 	end
 
@@ -1641,7 +1655,7 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	local valid, msg = validate_content(schema_type_handler, obj);
 	if (not valid) then
 		parsing_result_msg = 'Content not valid:'..msg;
-		print(debug.traceback());
+		--print(debug.traceback());
 		error(parsing_result_msg);
 	end
 	return obj;
@@ -1650,7 +1664,9 @@ end
 basic_stuff.parse_xml = function(schema_type_handler, xmlua, xml)
 
 	local parsing_result_msg = nil;
-	local status, obj = pcall(low_parse_xml, schema_type_handler, xmlua, xml);
+	--local status, obj = pcall(low_parse_xml, schema_type_handler, xmlua, xml);
+	local status = true;
+	local obj = low_parse_xml(schema_type_handler, xmlua, xml);
 	if (not status) then
 		parsing_result_msg = obj;
 		obj = nil;

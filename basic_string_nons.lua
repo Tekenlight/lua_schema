@@ -5,26 +5,21 @@ local element_handler = {};
 
 
 do
-    local properties = {};
-    properties.element_type = 'S';
-    properties.content_type = 'S';
-    properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-    properties.attr = {};
-    _attr_properties = {};
-    _generated_attr = {};
-    properties.attr._attr_properties = _attr_properties;
-    properties.attr._generated_attr = _generated_attr;
-
-    element_handler.properties = properties;
+    element_handler.properties = {};
+    element_handler.properties.element_type = 'S';
+    element_handler.properties.content_type = 'S';
+    element_handler.properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+    element_handler.properties.attr = {};
+    element_handler.properties.attr._attr_properties = {};
+    element_handler.properties.attr._generated_attr = {};
 end
 
 do
-    local particle_properties = {};
-    particle_properties.q_name = {};
-    particle_properties.q_name.ns = '';
-    particle_properties.q_name.local_name = 'basic_string_nons';
-    particle_properties.generated_name = 'basic_string_nons';
-    element_handler.particle_properties = particle_properties;
+    element_handler.particle_properties = {};
+    element_handler.particle_properties.q_name = {};
+    element_handler.particle_properties.q_name.ns = '';
+    element_handler.particle_properties.q_name.local_name = 'basic_string_nons';
+    element_handler.particle_properties.generated_name = 'basic_string_nons';
 end
 
 do
@@ -47,7 +42,7 @@ end
 _factory.new_instance_as_ref = function(self, element_ref_properties)
     return basic_stuff.instantiate_element_as_ref(mt, { ns = '',
                                                         local_name = 'basic_string_nons',
-                                                        generated_name = 'basic_string_nons',
+                                                        generated_name = element_ref_properties.generated_name,
                                                         min_occurs = element_ref_properties.min_occurs,
                                                         max_occurs = element_ref_properties.max_occurs,
                                                         root_element = element_ref_properties.root_element});
