@@ -107,7 +107,7 @@ local _subelement_properties = {
 		to_xmlua = basic_stuff.simple_to_xmlua
 	},
 	['{http://example.com}basic_string_simple_content'] =
-				require("com.example.basic_string_simple_content"):new_instance_as_ref( { root_element = false, min_occurs = 1, max_occurs = -1  } ),
+				require("com.example.basic_string_simple_content"):new_instance_as_ref( { generated_name = 'basic_string_simple_content', root_element = false, min_occurs = 1, max_occurs = -1  } ),
 
 };
 

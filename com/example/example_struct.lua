@@ -76,7 +76,7 @@ local function debug2(o)
 end
 local _subelement_properties = {
 	['{http://example1.com}element_struct2'] = (require('com.example1.element_struct2')):new_instance_as_ref(
-																				{ root_element = false, min_occurs = 1, max_occurs = 1}),
+																				{ generated_name = 'element_struct2', root_element = false, min_occurs = 1, max_occurs = 1}),
 	['{}author'] = {
 		properties = {
 			element_type = 'S',
@@ -137,7 +137,7 @@ local _subelement_properties = {
 	['{}s2'] = require("com.example1.struct2"):new_instance_as_local_element(
 						{ ns = '', local_name = 's2', generated_name = 's2', root_element = false,  min_occurs = 1, max_occurs = -1  } ),
 	['{http://example.com}basic_string_simple_content'] =
-				require("com.example.basic_string_simple_content"):new_instance_as_ref( { root_element = false, min_occurs = 1, max_occurs = 1  } ),
+				require("com.example.basic_string_simple_content"):new_instance_as_ref( { generated_name = 'basic_string_simple_content', root_element = false, min_occurs = 1, max_occurs = 1  } ),
 
 };
 

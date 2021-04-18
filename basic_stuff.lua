@@ -1167,6 +1167,8 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 			--top_obj['___METADATA___'].element_being_parsed = schema_type_handler.properties.content_fsa_properties[i].symbol_name;
 			top_obj['___METADATA___'].element_being_parsed =
 					schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
+			top_obj['___METADATA___'].element_gqn_being_parsed =
+					schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
 			obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
 			objs:push(obj);
 			--print("~~~~~~~~~~~~~~~~~~~~~~~~");
@@ -1228,6 +1230,8 @@ local windup_fsa = function(reader, sts, objs, pss)
 			if (schema_type_handler.properties.content_fsa_properties[i].max_occurs ~= 1) then
 				--top_obj['___METADATA___'].element_being_parsed = schema_type_handler.properties.content_fsa_properties[i].symbol_name;
 				top_obj['___METADATA___'].element_being_parsed =
+						schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
+				top_obj['___METADATA___'].element_gqn_being_parsed =
 						schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
 				obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
 				objs:push(obj);
@@ -1398,7 +1402,8 @@ local process_start_of_element = function(reader, sts, objs, pss)
 					"unable to fit "..q_name..' as a member in the schema '..st);
 			end
 			local content_fsa_item = schema_type_handler.properties.content_fsa_properties[pss:top().position];
-			local generated_q_name = content_fsa_item.generated_symbol_name;
+			--local generated_q_name = content_fsa_item.generated_symbol_name;
+			generated_q_name = content_fsa_item.generated_symbol_name;
 			--print(generated_q_name, tostring(element_found));
 			--(require 'pl.pretty').dump(objs);
 			new_schema_type_handler = schema_type_handler.properties.subelement_properties[generated_q_name];
@@ -1414,6 +1419,7 @@ local process_start_of_element = function(reader, sts, objs, pss)
 		end
 		local top_obj = objs:top();
 		(objs:top())['___METADATA___'].element_being_parsed = new_schema_type_handler.particle_properties.generated_name;
+		--print("HERE", tostring(generated_q_name), "HERE", tostring((objs:top())['___METADATA___'].element_being_parsed));
 		(objs:top())['___METADATA___'].element_gqn_being_parsed = generated_q_name;
 		sts:push(new_schema_type_handler);
 	else
@@ -1536,6 +1542,7 @@ local process_end_of_element = function(reader, sts, objs, pss)
 		if (top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] ~= nil) then
 			error("TWO: "..get_qname(parsed_sth)..' must not repeat');
 		end
+		--(require 'pl.pretty').dump(top_obj);
 		top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] = parsed_output;
 		top_obj['___METADATA___'].empty = false;
 	end
