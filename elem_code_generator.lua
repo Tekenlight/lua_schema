@@ -45,7 +45,7 @@ local get_is_valid_func = function(elem)
 	end
 end
 
-local get_is_valid_func_name = function(element_type, content_type)
+elem_code_generator.get_is_valid_func_name = function(element_type, content_type)
 	if (element_type == 'S') then
 		return 'basic_stuff.simple_is_valid';
 	else
@@ -69,7 +69,7 @@ local get_to_xmlua_func = function(elem)
 	end
 end
 
-local get_to_xmlua_func_name = function(element_type, content_type)
+elem_code_generator.get_to_xmlua_func_name = function(element_type, content_type)
 	if (element_type == 'S') then
 		return 'basic_stuff.simple_to_xmlua';
 	else
@@ -89,7 +89,7 @@ local get_to_unsd_func = function(elem)
 	end
 end
 
-local get_to_unsd_func_name = function(content_type)
+elem_code_generator.get_to_unsd_func_name = function(content_type)
 	if (content_type == 'S') then
 		return 'basic_stuff.simple_get_unique_namespaces_declared';
 	else
@@ -121,12 +121,12 @@ local get_type_handler = function(elem, dh, content_type)
 	return th;
 end
 
-local get_package_name_parts = function(ns)
+elem_code_generator.get_package_name_parts = function(ns)
 	local _, parts = basic_stuff.package_name_from_uri(ns);
 	return parts;
 end
 
-local get_type_handler_code = function(ns, name)
+elem_code_generator.get_type_handler_code = function(ns, name)
 	local ths = basic_stuff.get_type_handler_str(ns, name..'_handler');
 	return ths;
 end
@@ -145,10 +145,9 @@ function elem_code_generator.add_and_get_name(ns, name)
 	return new_name;
 end
 
-local get_element_attr_decls = function(elem)
+elem_code_generator.get_attr_decls = function(attrs)
 	local o_attrs = {};
 	o_attrs._generated_attr = {};
-	local attrs = elem:get_element_attr_decls();
 	local decls = {};
 	local g_names = {};
 
@@ -190,6 +189,10 @@ local get_element_attr_decls = function(elem)
 	--require 'pl.pretty'.dump(o_attrs);
 
 	return o_attrs;
+end
+
+local get_element_attr_decls = function(elem)
+	return(elem_code_generator.get_attr_decls(elem:get_element_attr_decls()));
 end
 
 local get_attr_decls_code = function(elem)
@@ -479,7 +482,7 @@ elem_code_generator.gen_lua_schema = function(elem)
 	return _factory;
 end
 
-local function get_attr_code(eh_name, element_handler, indentation)
+function elem_code_generator.get_attr_code(eh_name, element_handler, indentation)
 	local code = '';
 
 	local attr_props_name = eh_name..'._attr_properties';
@@ -539,7 +542,7 @@ local function get_attr_code(eh_name, element_handler, indentation)
 	return code;
 end
 
-local function put_content_model_code(content_model, indentation)
+function elem_code_generator.put_content_model_code(content_model, indentation)
 	local code = '';
 	for n,v in pairs(content_model) do
 		if (type(n) ~= 'number') then
@@ -553,7 +556,7 @@ local function put_content_model_code(content_model, indentation)
 	for i,v in ipairs(content_model) do
 		if (type(v) == 'table') then
 			code = code..indentation..'    {\n';
-			code = code..put_content_model_code(v, indentation..'    ');
+			code = code..elem_code_generator.put_content_model_code(v, indentation..'    ');
 			code = code..indentation..'    },\n';
 		else
 			code = code..indentation..'    \''..v..'\',\n';
@@ -574,7 +577,7 @@ local get_cm_ref_str = function(cm_rval_arr)
 	return str;
 end
 
-local function put_content_fsa_properties_code(content_fsa_properties, content_model, indentation)
+function elem_code_generator.put_content_fsa_properties_code(content_fsa_properties, content_model, indentation)
 	local code = '';
 	local cmi = 0;
 	local cmis = (require('stack')).new();
@@ -624,7 +627,7 @@ local function put_content_fsa_properties_code(content_fsa_properties, content_m
 	return code;
 end
 
-local function put_subelement_properties_code(base_name, subelement_properties, indentation)
+function elem_code_generator.put_subelement_properties_code(base_name, subelement_properties, indentation)
 	local code = '';
 	local indent = indentation;
 
@@ -692,7 +695,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 	code = code..indent..'    '..eh_name..'.properties.schema_type = \''..properties.schema_type..'\';\n';
 	if (properties.attr ~= nil) then
 		code = code..indent..'    '..eh_name..'.properties.attr = {};\n';
-		code = code..get_attr_code(eh_name..'.properties.attr', element_handler, indent..'    ');
+		code = code..elem_code_generator.get_attr_code(eh_name..'.properties.attr', element_handler, indent..'    ');
 	else
 		code = code..indent..'    '..eh_name..'.properties.attr = nil;\n';
 	end
@@ -714,7 +717,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 		code = code..'-- '..eh_name..'.properties.content_model\n';
 		code = code..indent..'do\n';
 		code = code..indent..'    '..eh_name..'.properties.content_model = {\n';
-		code = code..put_content_model_code(element_handler.properties.content_model, indent..'    ');
+		code = code..elem_code_generator.put_content_model_code(element_handler.properties.content_model, indent..'    ');
 		code = code..indent..'    };\n';
 		code = code..indent..'end\n\n';
 
@@ -724,7 +727,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 		code = code..'-- '..eh_name..'.properties.content_fsa_properties\n';
 		code = code..indent..'do\n';
 		code = code..indent..'    '..eh_name..'.properties.content_fsa_properties = {\n';
-		code = code..put_content_fsa_properties_code(content_fsa_properties, content_model, indent..'    ');
+		code = code..elem_code_generator.put_content_fsa_properties_code(content_fsa_properties, content_model, indent..'    ');
 		code = code..indent..'    };\n';
 		code = code..indent..'end\n\n';
 
@@ -745,7 +748,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 		-- Subelement properties
 		code = code..indent..'do\n';
 		code = code..indent..'    '..eh_name..'.properties.subelement_properties = {};\n';
-		code = code..put_subelement_properties_code(eh_name..'.properties.subelement_properties', properties.subelement_properties, indent..'    ');
+		code = code..elem_code_generator.put_subelement_properties_code(eh_name..'.properties.subelement_properties', properties.subelement_properties, indent..'    ');
 		code = code..indent..'end\n\n';
 
 
@@ -790,12 +793,12 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 	else
 		local ns = properties.bi_type.ns;
 		local name = properties.bi_type.name;
-		code = code..indent..'    '..eh_name..'.type_handler = require(\''..get_type_handler_code(ns, name)..'\');\n';
+		code = code..indent..'    '..eh_name..'.type_handler = require(\''..elem_code_generator.get_type_handler_code(ns, name)..'\');\n';
 	end
 	code = code..indent..'    '..eh_name..'.get_attributes = basic_stuff.get_attributes;\n'
-	code = code..indent..'    '..eh_name..'.is_valid = '..get_is_valid_func_name(properties.element_type, properties.content_type)..';\n';
-	code = code..indent..'    '..eh_name..'.to_xmlua = '..get_to_xmlua_func_name(properties.element_type, properties.content_type)..';\n';
-	code = code..indent..'    '..eh_name..'.get_unique_namespaces_declared = '..get_to_unsd_func_name(properties.content_type)..';\n';
+	code = code..indent..'    '..eh_name..'.is_valid = '..elem_code_generator.get_is_valid_func_name(properties.element_type, properties.content_type)..';\n';
+	code = code..indent..'    '..eh_name..'.to_xmlua = '..elem_code_generator.get_to_xmlua_func_name(properties.element_type, properties.content_type)..';\n';
+	code = code..indent..'    '..eh_name..'.get_unique_namespaces_declared = '..elem_code_generator.get_to_unsd_func_name(properties.content_type)..';\n';
 	code = code..indent..'    '..eh_name..'.parse_xml = basic_stuff.parse_xml\n';
 	code = code..indent..'end\n\n';
 
@@ -841,7 +844,7 @@ elem_code_generator.gen_lua_schema_code_named_type = function(elem, indent)
 	code = code..'\n\nreturn _factory;\n';
 	--print(code);
 
-	local path_parts = get_package_name_parts(particle_properties.q_name.ns);
+	local path_parts = elem_code_generator.get_package_name_parts(particle_properties.q_name.ns);
 	--require 'pl.pretty'.dump(path_parts);
 	local local_path = '.';
 	for _, v in ipairs(path_parts) do
@@ -895,7 +898,7 @@ elem_code_generator.gen_lua_schema_code_implicit_type = function(elem, indent)
 	code = code..'\n\nreturn _factory;\n';
 	--print(code);
 
-	local path_parts = get_package_name_parts(particle_properties.q_name.ns);
+	local path_parts = elem_code_generator.get_package_name_parts(particle_properties.q_name.ns);
 	--require 'pl.pretty'.dump(path_parts);
 	local local_path = '.';
 	for _, v in ipairs(path_parts) do

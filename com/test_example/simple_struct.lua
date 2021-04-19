@@ -26,8 +26,8 @@ end
 do
     element_handler.properties.content_model = {
         max_occurs = 1,
-        group_type = 'A',
         min_occurs = 1,
+        group_type = 'A',
         generated_subelement_name = '_all_group',
         'author',
         'title',
@@ -56,38 +56,38 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
-    element_handler.properties.subelement_properties['{}author'] = {};
+    element_handler.properties.subelement_properties['{}genre'] = {};
     do
         do
-            element_handler.properties.subelement_properties['{}author'].properties = {};
-            element_handler.properties.subelement_properties['{}author'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}author'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}author'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{}author'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}author'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}author'].properties.attr._generated_attr = {};
+            element_handler.properties.subelement_properties['{}genre'].properties = {};
+            element_handler.properties.subelement_properties['{}genre'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}genre'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}genre'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{}genre'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}genre'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}genre'].properties.attr._generated_attr = {};
         end
 
         do
-            element_handler.properties.subelement_properties['{}author'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}author'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}author'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}author'].particle_properties.q_name.local_name = 'author';
-            element_handler.properties.subelement_properties['{}author'].particle_properties.generated_name = 'author';
+            element_handler.properties.subelement_properties['{}genre'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}genre'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}genre'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}genre'].particle_properties.q_name.local_name = 'genre';
+            element_handler.properties.subelement_properties['{}genre'].particle_properties.generated_name = 'genre';
         end
 
         do
-            element_handler.properties.subelement_properties['{}author'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
-            element_handler.properties.subelement_properties['{}author'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}author'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}author'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}author'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}author'].parse_xml = basic_stuff.parse_xml
+            element_handler.properties.subelement_properties['{}genre'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
+            element_handler.properties.subelement_properties['{}genre'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}genre'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}genre'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}genre'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}genre'].parse_xml = basic_stuff.parse_xml
         end
 
-        element_handler.properties.subelement_properties['{}author'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}author'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}author'].particle_properties.max_occurs = 1;
+        element_handler.properties.subelement_properties['{}genre'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}genre'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}genre'].particle_properties.max_occurs = 1;
     end
 
     element_handler.properties.subelement_properties['{}title'] = {};
@@ -124,38 +124,38 @@ do
         element_handler.properties.subelement_properties['{}title'].particle_properties.max_occurs = 1;
     end
 
-    element_handler.properties.subelement_properties['{}genre'] = {};
+    element_handler.properties.subelement_properties['{}author'] = {};
     do
         do
-            element_handler.properties.subelement_properties['{}genre'].properties = {};
-            element_handler.properties.subelement_properties['{}genre'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}genre'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}genre'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{}genre'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}genre'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}genre'].properties.attr._generated_attr = {};
+            element_handler.properties.subelement_properties['{}author'].properties = {};
+            element_handler.properties.subelement_properties['{}author'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}author'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}author'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{}author'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}author'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}author'].properties.attr._generated_attr = {};
         end
 
         do
-            element_handler.properties.subelement_properties['{}genre'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}genre'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}genre'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}genre'].particle_properties.q_name.local_name = 'genre';
-            element_handler.properties.subelement_properties['{}genre'].particle_properties.generated_name = 'genre';
+            element_handler.properties.subelement_properties['{}author'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}author'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}author'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}author'].particle_properties.q_name.local_name = 'author';
+            element_handler.properties.subelement_properties['{}author'].particle_properties.generated_name = 'author';
         end
 
         do
-            element_handler.properties.subelement_properties['{}genre'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
-            element_handler.properties.subelement_properties['{}genre'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}genre'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}genre'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}genre'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}genre'].parse_xml = basic_stuff.parse_xml
+            element_handler.properties.subelement_properties['{}author'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
+            element_handler.properties.subelement_properties['{}author'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}author'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}author'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}author'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}author'].parse_xml = basic_stuff.parse_xml
         end
 
-        element_handler.properties.subelement_properties['{}genre'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}genre'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}genre'].particle_properties.max_occurs = 1;
+        element_handler.properties.subelement_properties['{}author'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}author'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}author'].particle_properties.max_occurs = 1;
     end
 
 end
