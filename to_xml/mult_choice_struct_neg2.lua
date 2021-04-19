@@ -5,7 +5,7 @@ unistd = require("posix.unistd");
 --local content = { one = "1", two = "2", three = "3" };
 local content = { one = "1", two = "2", {{four = "4"}, {three = "3"}, {four = '44'}, {three = '33', four = '444'} } };
 local content = { one = "1", two = "2", {{four = "4"}, {three = "3"}, {four = '44'}, {three = '33', four = '444'} } };
-choice_struct = mhf:get_message_handler("mult_choice_struct", "http://example.com");
+choice_struct = mhf:get_message_handler("mult_choice_struct", "http://example.prototype");
 
 print(choice_struct:to_xml(content))
 print(choice_struct:to_json(content))

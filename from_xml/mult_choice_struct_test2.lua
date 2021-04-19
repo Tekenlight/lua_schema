@@ -2,7 +2,7 @@ mhf = require("message_handler_factory")
 unistd = require("posix.unistd");
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
-<ns1:mult_choice_struct xmlns:ns1="http://example.com">
+<ns1:mult_choice_struct xmlns:ns1="http://example.prototype">
   <one>1</one>
   <two>2</two>
   <four>4</four>
@@ -11,7 +11,7 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
   <three>33</three>
 </ns1:mult_choice_struct>]=]
 
-mult_choice_struct = mhf:get_message_handler("mult_choice_struct", "http://example.com");
+mult_choice_struct = mhf:get_message_handler("mult_choice_struct", "http://example.prototype");
 
 local content, msg = mult_choice_struct:from_xml(xml_string)
 if (type(content) == 'table') then require 'pl.pretty'.dump(content);

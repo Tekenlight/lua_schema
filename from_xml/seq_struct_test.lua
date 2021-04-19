@@ -3,7 +3,7 @@ unistd = require("posix.unistd");
 
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
-<ns1:seq_struct xmlns:ns1="http://example.com">
+<ns1:seq_struct xmlns:ns1="http://example.prototype">
   <one>1</one>
   <two>2</two>
   <three>3</three>
@@ -24,7 +24,7 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 
 
 mhf = require("message_handler_factory")
-seq_struct = mhf:get_message_handler("seq_struct", "http://example.com");
+seq_struct = mhf:get_message_handler("seq_struct", "http://example.prototype");
 
 
 local content, msg = seq_struct:from_xml(xml_string)

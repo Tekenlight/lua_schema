@@ -2,7 +2,7 @@ mhf = require("message_handler_factory")
 unistd = require("posix.unistd");
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
-<ns1:array_struct xmlns:ns1="http://example.com">
+<ns1:array_struct xmlns:ns1="http://example.prototype">
   <author>123</author>
   <author>456</author>
   <author>789</author>
@@ -18,7 +18,7 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 </ns1:array_struct>]=]
 
 mhf = require("message_handler_factory")
-array_struct = mhf:get_message_handler("array_struct", "http://example.com");
+array_struct = mhf:get_message_handler("array_struct", "http://example.prototype");
 
 
 local content, msg = array_struct:from_xml(xml_string)

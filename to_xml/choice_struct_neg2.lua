@@ -3,7 +3,7 @@ unistd = require("posix.unistd");
 
 --local content = { _attr = {}, author = "asdf", title = "adfas", genre = "as", element_struct2 = {author = "123", title = "234", genre = "345"} };
 local content = { one = "1", two = "2" };
-choice_struct = mhf:get_message_handler("choice_struct", "http://example.com");
+choice_struct = mhf:get_message_handler("choice_struct", "http://example.prototype");
 
 print(choice_struct:to_xml(content))
 print(choice_struct:to_json(content))

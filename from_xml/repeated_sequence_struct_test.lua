@@ -2,7 +2,7 @@ mhf = require("message_handler_factory")
 unistd = require("posix.unistd");
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>                                      
-<ns1:repeated_sequence_struct xmlns:ns1="http://example.com">
+<ns1:repeated_sequence_struct xmlns:ns1="http://example.prototype">
   <author>asdf</author>
   <title>adfas</title>
   <genre>as</genre>
@@ -12,7 +12,7 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 </ns1:repeated_sequence_struct>]=]
 
 mhf = require("message_handler_factory")
-repeated_sequence_struct = mhf:get_message_handler("repeated_sequence_struct", "http://example.com");
+repeated_sequence_struct = mhf:get_message_handler("repeated_sequence_struct", "http://example.prototype");
 
 
 local content, msg = repeated_sequence_struct:from_xml(xml_string)
