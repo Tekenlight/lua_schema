@@ -68,11 +68,38 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
+    element_handler.properties.subelement_properties['{}author_1'] = {};
     do
-        element_handler.properties.subelement_properties['{http://test_example.com}basic_string_simple_content'] = 
-        (require('com.test_example.basic_string_simple_content'):
-            new_instance_as_ref({root_element=false, generated_name = 'basic_string_simple_content',
-                    min_occurs = 1, max_occurs = 1}));
+        do
+            element_handler.properties.subelement_properties['{}author_1'].properties = {};
+            element_handler.properties.subelement_properties['{}author_1'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}author_1'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}author_1'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}int';
+            element_handler.properties.subelement_properties['{}author_1'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}author_1'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}author_1'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}author_1'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}author_1'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}author_1'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}author_1'].particle_properties.q_name.local_name = 'author';
+            element_handler.properties.subelement_properties['{}author_1'].particle_properties.generated_name = 'author_1';
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}author_1'].type_handler = require('org.w3.2001.XMLSchema.int_handler');
+            element_handler.properties.subelement_properties['{}author_1'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}author_1'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}author_1'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}author_1'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}author_1'].parse_xml = basic_stuff.parse_xml
+        end
+
+        element_handler.properties.subelement_properties['{}author_1'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}author_1'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}author_1'].particle_properties.max_occurs = 1;
     end
 
     do
@@ -82,10 +109,44 @@ do
                     root_element = false, min_occurs = 1, max_occurs = -1}));
     end
 
+    element_handler.properties.subelement_properties['{}author'] = {};
     do
-        element_handler.properties.subelement_properties['{http://test_example1.com}element_struct2'] = 
-        (require('com.test_example1.element_struct2'):
-            new_instance_as_ref({root_element=false, generated_name = 'element_struct2',
+        do
+            element_handler.properties.subelement_properties['{}author'].properties = {};
+            element_handler.properties.subelement_properties['{}author'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}author'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}author'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{}author'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}author'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}author'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}author'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}author'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}author'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}author'].particle_properties.q_name.local_name = 'author';
+            element_handler.properties.subelement_properties['{}author'].particle_properties.generated_name = 'author';
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}author'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
+            element_handler.properties.subelement_properties['{}author'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}author'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}author'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}author'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}author'].parse_xml = basic_stuff.parse_xml
+        end
+
+        element_handler.properties.subelement_properties['{}author'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}author'].particle_properties.min_occurs = 2;
+        element_handler.properties.subelement_properties['{}author'].particle_properties.max_occurs = 2;
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://test_example.com}basic_string_simple_content'] = 
+        (require('com.test_example.basic_string_simple_content'):
+            new_instance_as_ref({root_element=false, generated_name = 'basic_string_simple_content',
                     min_occurs = 1, max_occurs = 1}));
     end
 
@@ -123,38 +184,11 @@ do
         element_handler.properties.subelement_properties['{}genre'].particle_properties.max_occurs = 1;
     end
 
-    element_handler.properties.subelement_properties['{}author'] = {};
     do
-        do
-            element_handler.properties.subelement_properties['{}author'].properties = {};
-            element_handler.properties.subelement_properties['{}author'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}author'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}author'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{}author'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}author'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}author'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}author'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}author'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}author'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}author'].particle_properties.q_name.local_name = 'author';
-            element_handler.properties.subelement_properties['{}author'].particle_properties.generated_name = 'author';
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}author'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
-            element_handler.properties.subelement_properties['{}author'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}author'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}author'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}author'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}author'].parse_xml = basic_stuff.parse_xml
-        end
-
-        element_handler.properties.subelement_properties['{}author'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}author'].particle_properties.min_occurs = 2;
-        element_handler.properties.subelement_properties['{}author'].particle_properties.max_occurs = 2;
+        element_handler.properties.subelement_properties['{http://test_example1.com}element_struct2'] = 
+        (require('com.test_example1.element_struct2'):
+            new_instance_as_ref({root_element=false, generated_name = 'element_struct2',
+                    min_occurs = 1, max_occurs = 1}));
     end
 
     element_handler.properties.subelement_properties['{}title'] = {};
@@ -189,40 +223,6 @@ do
         element_handler.properties.subelement_properties['{}title'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}title'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{}title'].particle_properties.max_occurs = 1;
-    end
-
-    element_handler.properties.subelement_properties['{}author_1'] = {};
-    do
-        do
-            element_handler.properties.subelement_properties['{}author_1'].properties = {};
-            element_handler.properties.subelement_properties['{}author_1'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}author_1'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}author_1'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}int';
-            element_handler.properties.subelement_properties['{}author_1'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}author_1'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}author_1'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}author_1'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}author_1'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}author_1'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}author_1'].particle_properties.q_name.local_name = 'author';
-            element_handler.properties.subelement_properties['{}author_1'].particle_properties.generated_name = 'author_1';
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}author_1'].type_handler = require('org.w3.2001.XMLSchema.int_handler');
-            element_handler.properties.subelement_properties['{}author_1'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}author_1'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}author_1'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}author_1'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}author_1'].parse_xml = basic_stuff.parse_xml
-        end
-
-        element_handler.properties.subelement_properties['{}author_1'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}author_1'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}author_1'].particle_properties.max_occurs = 1;
     end
 
 end

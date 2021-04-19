@@ -15,24 +15,6 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
-        element_handler.properties.attr._attr_properties['{}attr2'] = {};
-
-        element_handler.properties.attr._attr_properties['{}attr2'].properties = {};
-        element_handler.properties.attr._attr_properties['{}attr2'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-        element_handler.properties.attr._attr_properties['{}attr2'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}attr2'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}attr2'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}attr2'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties.q_name.local_name = 'attr2';
-        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties.generated_name = 'attr2';
-
-        element_handler.properties.attr._attr_properties['{}attr2'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
-    end
-    do
         element_handler.properties.attr._attr_properties['{}attr1'] = {};
 
         element_handler.properties.attr._attr_properties['{}attr1'].properties = {};
@@ -49,6 +31,24 @@ do
         element_handler.properties.attr._attr_properties['{}attr1'].particle_properties.generated_name = 'attr1';
 
         element_handler.properties.attr._attr_properties['{}attr1'].type_handler = require('org.w3.2001.XMLSchema.int_handler');
+    end
+    do
+        element_handler.properties.attr._attr_properties['{}attr2'] = {};
+
+        element_handler.properties.attr._attr_properties['{}attr2'].properties = {};
+        element_handler.properties.attr._attr_properties['{}attr2'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+        element_handler.properties.attr._attr_properties['{}attr2'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}attr2'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}attr2'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}attr2'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties.q_name.local_name = 'attr2';
+        element_handler.properties.attr._attr_properties['{}attr2'].particle_properties.generated_name = 'attr2';
+
+        element_handler.properties.attr._attr_properties['{}attr2'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
     end
     element_handler.properties.attr._generated_attr = {};
     element_handler.properties.attr._generated_attr['attr1'] = '{}attr1';

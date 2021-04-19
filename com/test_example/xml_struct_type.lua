@@ -21,9 +21,9 @@ end
 do
     element_handler.properties.content_model = {
         generated_subelement_name = '_sequence_group',
-        group_type = 'S',
-        min_occurs = 1,
         max_occurs = 1,
+        min_occurs = 1,
+        group_type = 'S',
         'element_struct2',
         'author',
         'author_1',
@@ -69,47 +69,6 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
-    element_handler.properties.subelement_properties['{}genre'] = {};
-    do
-        do
-            element_handler.properties.subelement_properties['{}genre'].properties = {};
-            element_handler.properties.subelement_properties['{}genre'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}genre'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}genre'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{}genre'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}genre'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}genre'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}genre'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}genre'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}genre'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}genre'].particle_properties.q_name.local_name = 'genre';
-            element_handler.properties.subelement_properties['{}genre'].particle_properties.generated_name = 'genre';
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}genre'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
-            element_handler.properties.subelement_properties['{}genre'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}genre'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}genre'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}genre'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}genre'].parse_xml = basic_stuff.parse_xml
-        end
-
-        element_handler.properties.subelement_properties['{}genre'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}genre'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}genre'].particle_properties.max_occurs = 1;
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://test_example1.com}element_struct2'] = 
-        (require('com.test_example1.element_struct2'):
-            new_instance_as_ref({root_element=false, generated_name = 'element_struct2',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
     element_handler.properties.subelement_properties['{}author'] = {};
     do
         do
@@ -145,44 +104,10 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://test_example.com}basic_string_simple_content'] = 
-        (require('com.test_example.basic_string_simple_content'):
-            new_instance_as_ref({root_element=false, generated_name = 'basic_string_simple_content',
+        element_handler.properties.subelement_properties['{http://test_example1.com}element_struct2'] = 
+        (require('com.test_example1.element_struct2'):
+            new_instance_as_ref({root_element=false, generated_name = 'element_struct2',
                     min_occurs = 1, max_occurs = 1}));
-    end
-
-    element_handler.properties.subelement_properties['{}title'] = {};
-    do
-        do
-            element_handler.properties.subelement_properties['{}title'].properties = {};
-            element_handler.properties.subelement_properties['{}title'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}title'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}title'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{}title'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}title'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}title'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}title'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}title'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}title'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}title'].particle_properties.q_name.local_name = 'title';
-            element_handler.properties.subelement_properties['{}title'].particle_properties.generated_name = 'title';
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}title'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
-            element_handler.properties.subelement_properties['{}title'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}title'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}title'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}title'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}title'].parse_xml = basic_stuff.parse_xml
-        end
-
-        element_handler.properties.subelement_properties['{}title'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}title'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}title'].particle_properties.max_occurs = 1;
     end
 
     element_handler.properties.subelement_properties['{}included_struct'] = {};
@@ -209,9 +134,9 @@ do
         do
             element_handler.properties.subelement_properties['{}included_struct'].properties.content_model = {
                 generated_subelement_name = '_sequence_group',
-                group_type = 'S',
-                min_occurs = 1,
                 max_occurs = 1,
+                min_occurs = 1,
+                group_type = 'S',
                 'one',
                 'two',
                 'three',
@@ -239,38 +164,38 @@ do
 
         do
             element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties = {};
-            element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'] = {};
+            element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'] = {};
             do
                 do
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].properties = {};
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].properties.element_type = 'S';
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].properties.content_type = 'S';
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].properties.attr = {};
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].properties.attr._attr_properties = {};
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].properties.attr._generated_attr = {};
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].properties = {};
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].properties.element_type = 'S';
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].properties.content_type = 'S';
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].properties.attr = {};
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].properties.attr._attr_properties = {};
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].properties.attr._generated_attr = {};
                 end
 
                 do
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties = {};
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties.q_name = {};
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties.q_name.ns = '';
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties.q_name.local_name = 'two';
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties.generated_name = 'two';
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties = {};
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties.q_name = {};
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties.q_name.ns = '';
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties.q_name.local_name = 'one';
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties.generated_name = 'one';
                 end
 
                 do
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].get_attributes = basic_stuff.get_attributes;
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].is_valid = basic_stuff.simple_is_valid;
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].to_xmlua = basic_stuff.simple_to_xmlua;
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].parse_xml = basic_stuff.parse_xml
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].get_attributes = basic_stuff.get_attributes;
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].is_valid = basic_stuff.simple_is_valid;
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].to_xmlua = basic_stuff.simple_to_xmlua;
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].parse_xml = basic_stuff.parse_xml
                 end
 
-                element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties.root_element = false;
-                element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties.min_occurs = 1;
-                element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties.max_occurs = 1;
+                element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties.root_element = false;
+                element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties.min_occurs = 1;
+                element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties.max_occurs = 1;
             end
 
             element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}three'] = {};
@@ -307,38 +232,38 @@ do
                 element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}three'].particle_properties.max_occurs = 1;
             end
 
-            element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'] = {};
+            element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'] = {};
             do
                 do
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].properties = {};
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].properties.element_type = 'S';
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].properties.content_type = 'S';
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].properties.attr = {};
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].properties.attr._attr_properties = {};
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].properties.attr._generated_attr = {};
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].properties = {};
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].properties.element_type = 'S';
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].properties.content_type = 'S';
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].properties.attr = {};
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].properties.attr._attr_properties = {};
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].properties.attr._generated_attr = {};
                 end
 
                 do
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties = {};
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties.q_name = {};
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties.q_name.ns = '';
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties.q_name.local_name = 'one';
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties.generated_name = 'one';
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties = {};
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties.q_name = {};
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties.q_name.ns = '';
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties.q_name.local_name = 'two';
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties.generated_name = 'two';
                 end
 
                 do
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].get_attributes = basic_stuff.get_attributes;
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].is_valid = basic_stuff.simple_is_valid;
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].to_xmlua = basic_stuff.simple_to_xmlua;
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].parse_xml = basic_stuff.parse_xml
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].get_attributes = basic_stuff.get_attributes;
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].is_valid = basic_stuff.simple_is_valid;
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].to_xmlua = basic_stuff.simple_to_xmlua;
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+                    element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].parse_xml = basic_stuff.parse_xml
                 end
 
-                element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties.root_element = false;
-                element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties.min_occurs = 1;
-                element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}one'].particle_properties.max_occurs = 1;
+                element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties.root_element = false;
+                element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties.min_occurs = 1;
+                element_handler.properties.subelement_properties['{}included_struct'].properties.subelement_properties['{}two'].particle_properties.max_occurs = 1;
             end
 
         end
@@ -363,6 +288,81 @@ do
         element_handler.properties.subelement_properties['{}included_struct'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}included_struct'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{}included_struct'].particle_properties.max_occurs = 1;
+    end
+
+    element_handler.properties.subelement_properties['{}author_2'] = {};
+    do
+        do
+            element_handler.properties.subelement_properties['{}author_2'].properties = {};
+            element_handler.properties.subelement_properties['{}author_2'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}author_2'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}author_2'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{}author_2'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}author_2'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}author_2'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}author_2'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}author_2'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}author_2'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}author_2'].particle_properties.q_name.local_name = 'author';
+            element_handler.properties.subelement_properties['{}author_2'].particle_properties.generated_name = 'author_2';
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}author_2'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
+            element_handler.properties.subelement_properties['{}author_2'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}author_2'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}author_2'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}author_2'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}author_2'].parse_xml = basic_stuff.parse_xml
+        end
+
+        element_handler.properties.subelement_properties['{}author_2'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}author_2'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}author_2'].particle_properties.max_occurs = 1;
+    end
+
+    element_handler.properties.subelement_properties['{}title'] = {};
+    do
+        do
+            element_handler.properties.subelement_properties['{}title'].properties = {};
+            element_handler.properties.subelement_properties['{}title'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}title'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}title'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{}title'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}title'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}title'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}title'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}title'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}title'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}title'].particle_properties.q_name.local_name = 'title';
+            element_handler.properties.subelement_properties['{}title'].particle_properties.generated_name = 'title';
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}title'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
+            element_handler.properties.subelement_properties['{}title'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}title'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}title'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}title'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}title'].parse_xml = basic_stuff.parse_xml
+        end
+
+        element_handler.properties.subelement_properties['{}title'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}title'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}title'].particle_properties.max_occurs = 1;
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://test_example.com}basic_string_simple_content'] = 
+        (require('com.test_example.basic_string_simple_content'):
+            new_instance_as_ref({root_element=false, generated_name = 'basic_string_simple_content',
+                    min_occurs = 1, max_occurs = 1}));
     end
 
     do
@@ -406,38 +406,38 @@ do
         element_handler.properties.subelement_properties['{}author_1'].particle_properties.max_occurs = 1;
     end
 
-    element_handler.properties.subelement_properties['{}author_2'] = {};
+    element_handler.properties.subelement_properties['{}genre'] = {};
     do
         do
-            element_handler.properties.subelement_properties['{}author_2'].properties = {};
-            element_handler.properties.subelement_properties['{}author_2'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}author_2'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}author_2'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{}author_2'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}author_2'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}author_2'].properties.attr._generated_attr = {};
+            element_handler.properties.subelement_properties['{}genre'].properties = {};
+            element_handler.properties.subelement_properties['{}genre'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}genre'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}genre'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{}genre'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}genre'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}genre'].properties.attr._generated_attr = {};
         end
 
         do
-            element_handler.properties.subelement_properties['{}author_2'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}author_2'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}author_2'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}author_2'].particle_properties.q_name.local_name = 'author';
-            element_handler.properties.subelement_properties['{}author_2'].particle_properties.generated_name = 'author_2';
+            element_handler.properties.subelement_properties['{}genre'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}genre'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}genre'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}genre'].particle_properties.q_name.local_name = 'genre';
+            element_handler.properties.subelement_properties['{}genre'].particle_properties.generated_name = 'genre';
         end
 
         do
-            element_handler.properties.subelement_properties['{}author_2'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
-            element_handler.properties.subelement_properties['{}author_2'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}author_2'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}author_2'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}author_2'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}author_2'].parse_xml = basic_stuff.parse_xml
+            element_handler.properties.subelement_properties['{}genre'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
+            element_handler.properties.subelement_properties['{}genre'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}genre'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}genre'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}genre'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}genre'].parse_xml = basic_stuff.parse_xml
         end
 
-        element_handler.properties.subelement_properties['{}author_2'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}author_2'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}author_2'].particle_properties.max_occurs = 1;
+        element_handler.properties.subelement_properties['{}genre'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}genre'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}genre'].particle_properties.max_occurs = 1;
     end
 
 end
