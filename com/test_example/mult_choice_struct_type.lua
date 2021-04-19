@@ -20,16 +20,16 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        group_type = 'S',
-        generated_subelement_name = '_sequence_group',
         max_occurs = 1,
+        group_type = 'S',
         min_occurs = 1,
+        generated_subelement_name = '_sequence_group',
         'one',
         'two',
         {
+            max_occurs = -1,
             group_type = 'C',
             min_occurs = 1,
-            max_occurs = -1,
             generated_subelement_name = '_choice_group',
             'three',
             'four',
@@ -62,38 +62,38 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
-    element_handler.properties.subelement_properties['{}one'] = {};
+    element_handler.properties.subelement_properties['{}three'] = {};
     do
         do
-            element_handler.properties.subelement_properties['{}one'].properties = {};
-            element_handler.properties.subelement_properties['{}one'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}one'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}one'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{}one'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}one'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}one'].properties.attr._generated_attr = {};
+            element_handler.properties.subelement_properties['{}three'].properties = {};
+            element_handler.properties.subelement_properties['{}three'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}three'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}three'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{}three'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}three'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}three'].properties.attr._generated_attr = {};
         end
 
         do
-            element_handler.properties.subelement_properties['{}one'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}one'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}one'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}one'].particle_properties.q_name.local_name = 'one';
-            element_handler.properties.subelement_properties['{}one'].particle_properties.generated_name = 'one';
+            element_handler.properties.subelement_properties['{}three'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}three'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}three'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}three'].particle_properties.q_name.local_name = 'three';
+            element_handler.properties.subelement_properties['{}three'].particle_properties.generated_name = 'three';
         end
 
         do
-            element_handler.properties.subelement_properties['{}one'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
-            element_handler.properties.subelement_properties['{}one'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}one'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}one'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}one'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}one'].parse_xml = basic_stuff.parse_xml
+            element_handler.properties.subelement_properties['{}three'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
+            element_handler.properties.subelement_properties['{}three'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}three'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}three'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}three'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}three'].parse_xml = basic_stuff.parse_xml
         end
 
-        element_handler.properties.subelement_properties['{}one'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}one'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}one'].particle_properties.max_occurs = 1;
+        element_handler.properties.subelement_properties['{}three'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}three'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}three'].particle_properties.max_occurs = 1;
     end
 
     element_handler.properties.subelement_properties['{}two'] = {};
@@ -130,40 +130,6 @@ do
         element_handler.properties.subelement_properties['{}two'].particle_properties.max_occurs = 1;
     end
 
-    element_handler.properties.subelement_properties['{}three'] = {};
-    do
-        do
-            element_handler.properties.subelement_properties['{}three'].properties = {};
-            element_handler.properties.subelement_properties['{}three'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}three'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}three'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{}three'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}three'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}three'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}three'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}three'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}three'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}three'].particle_properties.q_name.local_name = 'three';
-            element_handler.properties.subelement_properties['{}three'].particle_properties.generated_name = 'three';
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}three'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
-            element_handler.properties.subelement_properties['{}three'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}three'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}three'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}three'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}three'].parse_xml = basic_stuff.parse_xml
-        end
-
-        element_handler.properties.subelement_properties['{}three'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}three'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}three'].particle_properties.max_occurs = 1;
-    end
-
     element_handler.properties.subelement_properties['{}four'] = {};
     do
         do
@@ -196,6 +162,40 @@ do
         element_handler.properties.subelement_properties['{}four'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}four'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{}four'].particle_properties.max_occurs = 1;
+    end
+
+    element_handler.properties.subelement_properties['{}one'] = {};
+    do
+        do
+            element_handler.properties.subelement_properties['{}one'].properties = {};
+            element_handler.properties.subelement_properties['{}one'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}one'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}one'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{}one'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}one'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}one'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}one'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}one'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}one'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}one'].particle_properties.q_name.local_name = 'one';
+            element_handler.properties.subelement_properties['{}one'].particle_properties.generated_name = 'one';
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}one'].type_handler = require('org.w3.2001.XMLSchema.string_handler');
+            element_handler.properties.subelement_properties['{}one'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}one'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}one'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}one'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}one'].parse_xml = basic_stuff.parse_xml
+        end
+
+        element_handler.properties.subelement_properties['{}one'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}one'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}one'].particle_properties.max_occurs = 1;
     end
 
 end
