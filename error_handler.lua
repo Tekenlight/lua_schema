@@ -1,14 +1,19 @@
 local error_handler = {};
 
 error_handler.init = function()
-	_G.message_validation_context = { fieldpath = { level = 0, path = {} },  status = { success = true, error_no = 0, error_message = '' } };
+	_G.message_validation_context = { fieldpath = { level = 0, path = {} },
+							status = { success = true,
+										error_no = 0,
+										error_message = '',
+										traceback = ''} };
 	return;
 end
 
-error_handler.set_validation_error = function(error_no, message)
+error_handler.set_validation_error = function(error_no, message, tb)
 	_G.message_validation_context.status.success = false;
 	_G.message_validation_context.status.error_no = error_no;
-	_G.message_validation_context.status.error_message = message
+	_G.message_validation_context.status.error_message = message;
+	_G.message_validation_context.status.traceback = tb;
 	return;
 end
 
@@ -33,14 +38,15 @@ error_handler.get_fieldpath = function()
 end
 
 error_handler.raise_validation_error = function(error_no, message)
+	local tb = debug.traceback("");
 	if (_G.message_validation_context == nil) then
-		--print(debug.traceback("HH"));
+		--print(tb);
 		error(message);
 		return false;
 	else
-		error_handler.set_validation_error(error_no, message);
+		error_handler.set_validation_error(error_no, message, tb);
 		--print(debug.traceback("HH"));
-		error(message);
+		--error(message);
 		return false;
 	end
 end

@@ -219,6 +219,7 @@ basic_stuff.execute_validation_of_array_contents = function(schema_type_handler,
 		error_handler.raise_validation_error(-1,
 				"Element: {"..error_handler.get_fieldpath().."} should have atleast "..
 							min_occurs.." elements");
+		return false;
 	end
 
 	return true;
@@ -1027,25 +1028,19 @@ local function validate_content(sth, content)
 	local result = nil;
 	local valid = nil;
 	error_handler.init()
-	--result, valid = pcall(basic_stuff.perform_element_validation, sth,  content);
-	result = true;
 	valid = basic_stuff.perform_element_validation(sth,  content);
-	--valid = basic_stuff.perform_element_validation( sth,  content);
-	--result = false;
 	local message_validation_context = error_handler.reset();
-	if (not result) then
-		valid = false;
-	end
 	if (not valid) then
 		local msg = message_validation_context.status.error_message
-		return false, msg;
+		return false, msg, message_validation_context.status.traceback;
 	end
-	return true, nil;
+	return true, nil, nil;
 end
 
 local function read_ahead(reader)
 	local s, ret = pcall(reader.read, reader);
 	if (s == false) then
+		error_handler.raise_validation_error(-1, "Failed to parse document");
 		error("Failed to parse document");
 	end
 	return ret;
@@ -1090,6 +1085,7 @@ local get_attributes = function(reader, schema_type_handler, obj)
 					error_handler.raise_validation_error(-1,
 								"Field: {"..error_handler.get_fieldpath().."} is not valid, attributes not allowed in the model");
 					error_handler.pop_element();
+					error("Field: {"..error_handler.get_fieldpath().."} is not valid, attributes not allowed in the model");
 					return nil;
 				end
 				local q_attr_name = '{'..attr_uri..'}'..attr_name;
@@ -1099,6 +1095,7 @@ local get_attributes = function(reader, schema_type_handler, obj)
 					error_handler.raise_validation_error(-1,
 								"Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element");
 					error_handler.pop_element();
+					error("Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element");
 					return nil;
 				end
 				local converted_value = attr_properties.type_handler:to_type(attr_properties.particle_properties.q_name.ns, attr_value);
@@ -1384,6 +1381,7 @@ local process_start_of_element = function(reader, sts, objs, pss)
 				if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
 				error_handler.raise_validation_error(-1,
 					q_name..' not a member in the schema definition of '..st);
+				error(q_name..' not a member in the schema definition of '..st);
 			end
 		else
 			local element_found = false;
@@ -1400,6 +1398,7 @@ local process_start_of_element = function(reader, sts, objs, pss)
 				if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
 				error_handler.raise_validation_error(-1,
 					"unable to fit "..q_name..' as a member in the schema '..st);
+				error("unable to fit "..q_name..' as a member in the schema '..st);
 			end
 			local content_fsa_item = schema_type_handler.properties.content_fsa_properties[pss:top().position];
 			--local generated_q_name = content_fsa_item.generated_symbol_name;
@@ -1429,6 +1428,7 @@ local process_start_of_element = function(reader, sts, objs, pss)
 		reader.started = true;
 		if (true ~= check_element_name_matches(reader, sts)) then
 			parsing_result_msg = 'Invalid element found '.. q_name;
+			error_handler.raise_validation_error(-1,parsing_result_msg);
 			error(parsing_result_msg);
 		end
 		(objs:top())['___METADATA___'].element_being_parsed = schema_type_handler.particle_properties.generated_name;
@@ -1540,6 +1540,7 @@ local process_end_of_element = function(reader, sts, objs, pss)
 		end
 	else
 		if (top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] ~= nil) then
+			error_handler.raise_validation_error(-1, "TWO: "..get_qname(parsed_sth)..' must not repeat');
 			error("TWO: "..get_qname(parsed_sth)..' must not repeat');
 		end
 		--(require 'pl.pretty').dump(top_obj);
@@ -1601,6 +1602,7 @@ local process_node = function(reader, sts, objs, pss)
 		--print("SIGNIFICANT WHITESPACE HANDLED", typ, q_name);
 	else
 		print("UNKNOWN HANDLED", typ, q_name);
+		error_handler.raise_validation_error(-1, "Unhandled reader event:".. typ..":"..q_name);
 		error("Unhandled reader event:".. typ..":"..q_name);
 	end
 
@@ -1630,29 +1632,24 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	local pss = (require('stack')).new();
 
 	objs:push(obj);
-	--sts:push(schema_type_handler);
 	sts:push(schema_type_handler);
 
 	error_handler.init()
-	--local result, msg = pcall(parse_xml_to_obj, reader, sts, objs, pss);
-	local msg = parse_xml_to_obj (reader, sts, objs, pss);
-	local result = true;
+	local result = pcall(parse_xml_to_obj, reader, sts, objs, pss);
 	local message_validation_context = error_handler.reset();
 	if (not result) then
-		--print(debug.traceback());
-		error(msg);
+		print(message_validation_context.status.traceback);
+		error(message_validation_context.status.error_message);
 	end
 
 	local doc = (objs:pop())['___DATA___'];
 
 	obj = doc[schema_type_handler.particle_properties.generated_name];
-	--(require 'pl.pretty').dump(obj);
-	--print(obj);
 
-	local valid, msg = validate_content(schema_type_handler, obj);
+	local valid, msg, tb = validate_content(schema_type_handler, obj);
 	if (not valid) then
 		parsing_result_msg = 'Content not valid:'..msg;
-		--print(debug.traceback());
+		print(tb);
 		error(parsing_result_msg);
 	end
 	return obj;
@@ -1661,9 +1658,9 @@ end
 basic_stuff.parse_xml = function(schema_type_handler, xmlua, xml)
 
 	local parsing_result_msg = nil;
-	--local status, obj = pcall(low_parse_xml, schema_type_handler, xmlua, xml);
-	local status = true;
-	local obj = low_parse_xml(schema_type_handler, xmlua, xml);
+	local status, obj = pcall(low_parse_xml, schema_type_handler, xmlua, xml);
+	--local status = true;
+	--local obj = low_parse_xml(schema_type_handler, xmlua, xml);
 	if (not status) then
 		parsing_result_msg = obj;
 		obj = nil;
