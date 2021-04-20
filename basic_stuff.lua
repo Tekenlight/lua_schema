@@ -72,9 +72,6 @@ basic_stuff.package_name_from_uri = function(s)
 	local h = u:host();
 	local p = u:path();
 	local hp = nil;
-	--require 'pl.pretty'.dump(u);
-	--print("h = "..h);
-	--print("p = "..p);
 	if (h ~= nil) then
 		hp = stringx.split(h, '.');
 	else
@@ -145,7 +142,6 @@ basic_stuff.attributes_are_valid = function(attrs_def, attrs)
 		elseif ((v.properties.use == 'P') and (inp_attr[v.particle_properties.generated_name] ~= nil)) then
 			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be present");
 			return false;
-		--elseif((not basic_stuff.is_nil(v.properties.fixed)) and (v.properties.default ~= nil and v.properties.default ~= '')
 		elseif((v.properties.fixed) and
 						(tostring(inp_attr[v.particle_properties.generated_name]) ~= v.properties.default)) then
 			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} value should be "..v.properties.default);
@@ -175,9 +171,7 @@ basic_stuff.execute_validation_of_array_contents = function(schema_type_handler,
 	local max = 0;
 
 	for n, v in pairs(content) do
-		--error_handler.push_element(n);
 		if (('integer' ~= math.type(n)) or (n <= 0)) then
-			--error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."]} not allowed in an array");
 			error_handler.raise_validation_error(-1, "Element: {["..error_handler.get_fieldpath().."]} is not a valid array");
 			return false;
 		end
@@ -466,9 +460,6 @@ basic_stuff.execute_validation_for_complex_type_sequence = function(schema_type_
 			end
 		elseif(t == 'table') then
 			local xmlc = nil;
-			--print("REACHED HERE");
-			--require 'pl.pretty'.dump(v);
-			--if (nil == v.generated_subelement_name) then
 			if (1 == v.max_occurs) then
 				-- No depth
 				xmlc = content;
@@ -589,13 +580,6 @@ basic_stuff.execute_validation_for_complex_type_simple_content = function(schema
 end
 
 basic_stuff.carryout_element_validation = function(schema_type_handler, val_func, content, content_model)
-	--print("STH", schema_type_handler);
-	--print("STH.PP", schema_type_handler.particle_properties);
-	--print("STH.PP.MI", schema_type_handler.particle_properties.min_occurs);
-	--if (schema_type_handler.particle_properties.min_occurs == nil) then
-		--require 'pl.pretty'.dump(schema_type_handler);
-	--end
-	--print("C", content);
 	if ((schema_type_handler.particle_properties.min_occurs > 0) and (content == nil)) then
 		local ret = false;
 		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be null");
@@ -650,7 +634,6 @@ basic_stuff.perform_element_validation = function(handler, content)
 	error_handler.pop_element();
 	return valid
 end
-
 
 basic_stuff.get_attributes = function(schema_type_handler, nns, content)
 	local attributes = {};
