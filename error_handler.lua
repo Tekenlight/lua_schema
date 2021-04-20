@@ -38,7 +38,7 @@ error_handler.get_fieldpath = function()
 end
 
 error_handler.raise_validation_error = function(error_no, message)
-	local tb = debug.traceback("");
+	local tb = debug.traceback();
 	if (_G.message_validation_context == nil) then
 		--print(tb);
 		error(message);
