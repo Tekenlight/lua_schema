@@ -1069,7 +1069,7 @@ local read_attributes = function(reader, schema_type_handler, obj)
 								"Field: {"..error_handler.get_fieldpath().."} is not valid, attributes not allowed in the model");
 					error_handler.pop_element();
 					--error("Field: {"..error_handler.get_fieldpath().."} is not valid, attributes not allowed in the model");
-					return nil;
+					return false;
 				end
 				local q_attr_name = '{'..attr_uri..'}'..attr_name;
 				local attr_properties = schema_type_handler.properties.attr._attr_properties[q_attr_name];
@@ -1079,7 +1079,7 @@ local read_attributes = function(reader, schema_type_handler, obj)
 								"Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element");
 					error_handler.pop_element();
 					--error("Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element");
-					return nil;
+					return false;
 				end
 				local converted_value = attr_properties.type_handler:to_type(attr_properties.particle_properties.q_name.ns, attr_value);
 				error_handler.pop_element();
@@ -1091,7 +1091,7 @@ local read_attributes = function(reader, schema_type_handler, obj)
 	if ((obj['___DATA___']._attr == nil) or count == 0) then
 		obj['___DATA___']._attr = nil;
 	end
-	return obj['___DATA___']._attr;
+	return true;
 end
 
 local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
@@ -1421,7 +1421,9 @@ local process_start_of_element = function(reader, sts, objs, pss)
 	if (sth.properties.element_type == 'S') then
 		obj['___METADATA___'].content_model_type = 'SS';
 	else
-		read_attributes(reader, sth, obj);
+		if (not read_attributes(reader, sth, obj)) then
+			return false;
+		end
 		if(sth.properties.content_type == 'C') then
 			obj['___METADATA___'].cm = sth.properties.content_model;
 			obj['___METADATA___'].content_model_type = 'CC';
@@ -1643,8 +1645,6 @@ basic_stuff.parse_xml = function(schema_type_handler, xmlua, xml)
 
 	local parsing_result_msg = nil;
 	local status, obj = pcall(low_parse_xml, schema_type_handler, xmlua, xml);
-	--local status = true;
-	--local obj = low_parse_xml(schema_type_handler, xmlua, xml);
 	if (not status) then
 		parsing_result_msg = obj;
 		obj = nil;
