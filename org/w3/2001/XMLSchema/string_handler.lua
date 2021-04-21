@@ -4,7 +4,8 @@ local __string_handler_class = {}
 
 function __string_handler_class:is_valid(s)
 	if((s ~= nil) and (type(s) ~= "string")) then
-		error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} is not a valid string");
+		error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} is not a valid string",
+												debug.getinfo(1).source, debug.getinfo(1).currentline);
 		return false
 	end
 	return true;
