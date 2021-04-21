@@ -1549,6 +1549,13 @@ local process_end_of_element = function(reader, sts, objs, pss)
 	return true;
 end
 
+--[[
+--Anything other than element begining, text or
+--element ending is not handled in this module
+--White space is ignored. Impact of this on mixed
+--content is still TBD handling of mixed content
+--itself is TBD
+--]]
 local process_node = function(reader, sts, objs, pss)
 	local name = reader:const_local_name()
 	local uri = reader:const_namespace_uri();
@@ -1580,6 +1587,10 @@ local process_node = function(reader, sts, objs, pss)
 	return ret;
 end
 
+--[[
+--Carryout depth first traversal of XML tree
+--and process each node
+--]]
 local parse_xml_to_obj = function(reader, sts, objs, pss)
 	local ret = read_ahead(reader);
 	while (ret == 1) do
