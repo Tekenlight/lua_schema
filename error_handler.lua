@@ -9,11 +9,13 @@ error_handler.init = function()
 	return;
 end
 
-error_handler.set_validation_error = function(error_no, message, tb)
+error_handler.set_validation_error = function(error_no, message, tb, s, ln)
 	_G.message_validation_context.status.success = false;
 	_G.message_validation_context.status.error_no = error_no;
 	_G.message_validation_context.status.error_message = message;
 	_G.message_validation_context.status.traceback = tb;
+	_G.message_validation_context.status.source_file = s;
+	_G.message_validation_context.status.line_no = ln;
 	return;
 end
 
@@ -37,14 +39,14 @@ error_handler.get_fieldpath = function()
 	return path;
 end
 
-error_handler.raise_validation_error = function(error_no, message)
+error_handler.raise_validation_error = function(error_no, message, d_info)
 	local tb = debug.traceback();
 	if (_G.message_validation_context == nil) then
 		print(tb);
 		error(message);
 		return false;
 	else
-		error_handler.set_validation_error(error_no, message, tb);
+		error_handler.set_validation_error(error_no, message, tb, d_info.source, d_info.currentline);
 		return false;
 	end
 end

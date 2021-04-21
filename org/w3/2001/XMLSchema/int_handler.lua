@@ -9,8 +9,8 @@ function __int_handler_class:is_valid(i)
 		valid =  false
 	end
 	if (not valid) then
-		error_handler.raise_validation_error(-1, "Field: {"..error_handler.get_fieldpath().."} is not a valid integer",
-												debug.getinfo(1).source, debug.getinfo(1).currentline);
+		error_handler.raise_validation_error(-1,
+						"Field: {"..error_handler.get_fieldpath().."} is not a valid integer", debug.getinfo(1));
 		return false;
 	end
 	return true;
