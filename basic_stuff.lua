@@ -137,18 +137,18 @@ basic_stuff.attributes_are_valid = function(attrs_def, attrs)
 	for n,v in pairs(attrs_def._attr_properties) do
 		error_handler.push_element(v.particle_properties.generated_name);
 		if ((v.properties.use == 'R') and (inp_attr[v.particle_properties.generated_name] == nil)) then
-			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should be present",
-															debug.getinfo(1).source, debug.getinfo(1).currentline);
+			error_handler.raise_validation_error(-1, " Attribute: {"..error_handler.get_fieldpath().."} should be present",
+													debug.getinfo(1));
 			return false;
 		elseif ((v.properties.use == 'P') and (inp_attr[v.particle_properties.generated_name] ~= nil)) then
-			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be present",
-													debug.getinfo(1).source, debug.getinfo(1).currentline);
+			error_handler.raise_validation_error(-1, " Attribute: {"..error_handler.get_fieldpath().."} should not be present",
+													debug.getinfo(1));
 			return false;
 		elseif((v.properties.fixed) and
 						(tostring(inp_attr[v.particle_properties.generated_name]) ~= v.properties.default)) then
 			error_handler.raise_validation_error(-1,
-						"Element: {"..error_handler.get_fieldpath().."} value should be "..v.properties.default,
-													debug.getinfo(1).source, debug.getinfo(1).currentline);
+						" Attribute: {"..error_handler.get_fieldpath().."} value should be "..v.properties.default,
+													debug.getinfo(1));
 			return false;
 		elseif ((inp_attr[v.particle_properties.generated_name] ~= nil) and
 				(not basic_stuff.execute_primitive_validation(v.type_handler, inp_attr[v.particle_properties.generated_name]))) then
@@ -160,8 +160,8 @@ basic_stuff.attributes_are_valid = function(attrs_def, attrs)
 		error_handler.push_element(n);
 		if (attrs_def._generated_attr[n] == nil) then
 			print("ONE");
-			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be present",
-													debug.getinfo(1).source, debug.getinfo(1).currentline);
+			error_handler.raise_validation_error(-1, " Attribute: {"..error_handler.get_fieldpath().."} should not be present",
+													debug.getinfo(1));
 			return false
 		end
 		error_handler.pop_element();
@@ -178,7 +178,7 @@ basic_stuff.execute_validation_of_array_contents = function(schema_type_handler,
 	for n, v in pairs(content) do
 		if (('integer' ~= math.type(n)) or (n <= 0)) then
 			error_handler.raise_validation_error(-1, "Element: {["..error_handler.get_fieldpath().."]} is not a valid array",
-													debug.getinfo(1).source, debug.getinfo(1).currentline);
+													debug.getinfo(1));
 			return false;
 		end
 		count = count + 1;
@@ -194,8 +194,7 @@ basic_stuff.execute_validation_of_array_contents = function(schema_type_handler,
 
 	if (max ~= count) then
 		error_handler.raise_validation_error(-1,
-					"Element: {"..error_handler.get_fieldpath().."} does not have sequential indices",
-								debug.getinfo(1).source, debug.getinfo(1).currentline);
+					"Element: {"..error_handler.get_fieldpath().."} does not have sequential indices", debug.getinfo(1));
 		return false;
 	end
 
@@ -212,16 +211,14 @@ basic_stuff.execute_validation_of_array_contents = function(schema_type_handler,
 	if ((max_occurs > 0) and
 						(count > max_occurs)) then
 		error_handler.raise_validation_error(-1,
-				"Element: {"..error_handler.get_fieldpath().."} has more number of elements than {"..max_occurs.."}" ,
-						debug.getinfo(1).source, debug.getinfo(1).currentline);
+				"Element: {"..error_handler.get_fieldpath().."} has more number of elements than {"..max_occurs.."}", debug.getinfo(1));
 		return false;
 	end
 
 	if (min_occurs > count) then
 		error_handler.raise_validation_error(-1,
 				"Element: {"..error_handler.get_fieldpath().."} should have atleast "..
-							min_occurs.." elements",
-				debug.getinfo(1).source, debug.getinfo(1).currentline);
+							min_occurs.." elements", debug.getinfo(1));
 		return false;
 	end
 
@@ -232,8 +229,7 @@ basic_stuff.execute_validation_of_array = function(schema_type_handler, validati
 															content, content_model, from_element)
 	if (type(content) ~= "table") then
 		error_handler.raise_validation_error(-1,
-				"Element: {"..error_handler.get_fieldpath().."} should be a lua table",
-				debug.getinfo(1).source, debug.getinfo(1).currentline);
+				"Element: {"..error_handler.get_fieldpath().."} should be a lua table", debug.getinfo(1));
 		return false;
 	end
 
@@ -248,8 +244,7 @@ end
 basic_stuff.execute_validation_for_simple = function(schema_type_handler, content)
 	if (not basic_stuff.is_simple_type(content)) then
 		error_handler.raise_validation_error(-1,
-				"Element: {"..error_handler.get_fieldpath().."} should be primitive",
-				debug.getinfo(1).source, debug.getinfo(1).currentline);
+				"Element: {"..error_handler.get_fieldpath().."} should be primitive", debug.getinfo(1));
 		return false;
 	end
 	--if (not schema_type_handler.type_handler:is_valid(content)) then
@@ -266,8 +261,7 @@ basic_stuff.all_elements_part_of_declaration = function(schema_type_handler, con
 		if ((n ~= "_attr") and (schema_type_handler.properties.generated_subelements[n] == nil)) then
 			print("TWO", n);
 			error_handler.raise_validation_error(-1,
-					"Element: {"..error_handler.get_fieldpath().."} should not be present",
-					debug.getinfo(1).source, debug.getinfo(1).currentline);
+					"Element: {"..error_handler.get_fieldpath().."} should not be present", debug.getinfo(1));
 			return false;
 		end
 		error_handler.pop_element();
@@ -393,8 +387,7 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 					if (present_count > 1) then
 						error_handler.raise_validation_error(-1,
 							"Element: {"..error_handler.get_fieldpath()..
-									"} one and only one of the fields in the model  should be present",
-							debug.getinfo(1).source, debug.getinfo(1).currentline);
+									"} one and only one of the fields in the model  should be present", debug.getinfo(1));
 						return false;
 					end
 				end
@@ -411,8 +404,7 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 					if (present_count > 1) then
 						error_handler.raise_validation_error(-1,
 							"Element: {"..error_handler.get_fieldpath()..
-									"} one and only one of the fields in the model should be present",
-									debug.getinfo(1).source, debug.getinfo(1).currentline);
+									"} one and only one of the fields in the model should be present", debug.getinfo(1));
 						return false;
 					else
 						if (not basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, v)) then
@@ -429,12 +421,12 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 	if (present_count > 1) then
 		error_handler.raise_validation_error(-1,
 				"Element: {"..error_handler.get_fieldpath().."} one and only one of ("..fields..") should be present",
-				debug.getinfo(1).source, debug.getinfo(1).currentline);
+				debug.getinfo(1));
 		return false;
 	elseif(present_count == 0) then
 		error_handler.raise_validation_error(-1,
 				"Element: {"..error_handler.get_fieldpath().."} one and only one of ("..fields..") should be present",
-				debug.getinfo(1).source, debug.getinfo(1).currentline);
+				debug.getinfo(1));
 		return false;
 	end
 
@@ -490,8 +482,7 @@ basic_stuff.execute_validation_for_complex_type_sequence = function(schema_type_
 				if (xmlc == nil) then
 					--print("REACHED HERE");
 					error_handler.raise_validation_error(-1,
-						"Object field: {"..v.generated_subelement_name.."} should not be null",
-						debug.getinfo(1).source, debug.getinfo(1).currentline);
+						"Object field: {"..v.generated_subelement_name.."} should not be null", debug.getinfo(1));
 					return false;
 				end
 			end
@@ -511,7 +502,7 @@ basic_stuff.execute_validation_for_complex_type_s_or_c = function(schema_type_ha
 	if (content == nil) then
 		if (content_model.min_occurs > 0) then
 			error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be null",
-			debug.getinfo(1).source, debug.getinfo(1).currentline);
+			debug.getinfo(1));
 			return false;
 		elseif (schema_type_handler.content_model.min_occurs == 0) then
 			return true;
@@ -544,7 +535,7 @@ basic_stuff.execute_validation_for_complex_type = function(schema_type_handler, 
 
 	if (type(content) ~= 'table') then
 		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should be a lua table",
-		debug.getinfo(1).source, debug.getinfo(1).currentline);
+		debug.getinfo(1));
 		return false;
 	end
 
@@ -566,8 +557,7 @@ basic_stuff.execute_validation_for_complex_type = function(schema_type_handler, 
 			xmlc = content[content_model.generated_subelement_name];
 			if (xmlc == nil) then
 				error_handler.raise_validation_error(-1,
-					"Element: {"..content_model.generated_subelement_name.."} not found in the object",
-					debug.getinfo(1).source, debug.getinfo(1).currentline);
+					"Element: {"..content_model.generated_subelement_name.."} not found in the object", debug.getinfo(1));
 				return false;
 			end
 		else
@@ -582,8 +572,7 @@ end
 basic_stuff.execute_validation_for_complex_type_simple_content = function(schema_type_handler, content)
 	if (not basic_stuff.is_complex_type_simple_content(content)) then
 		error_handler.raise_validation_error(-1,
-			"Element: {"..error_handler.get_fieldpath().."} is not a complex type of simple comtent",
-			debug.getinfo(1).source, debug.getinfo(1).currentline);
+			"Element: {"..error_handler.get_fieldpath().."} is not a complex type of simple comtent", debug.getinfo(1));
 		return false;
 	end
 
@@ -605,8 +594,7 @@ end
 basic_stuff.carryout_element_validation = function(schema_type_handler, val_func, content, content_model)
 	if ((schema_type_handler.particle_properties.min_occurs > 0) and (content == nil)) then
 		local ret = false;
-		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be null",
-											debug.getinfo(1).source, debug.getinfo(1).currentline);
+		error_handler.raise_validation_error(-1, "Element: {"..error_handler.get_fieldpath().."} should not be null", debug.getinfo(1));
 		return ret;
 	elseif ((schema_type_handler.particle_properties.min_occurs == 0) and (content == nil)) then
 		local ret = true;
@@ -1038,17 +1026,15 @@ local function validate_content(sth, content)
 	valid = basic_stuff.perform_element_validation(sth,  content);
 	local message_validation_context = error_handler.reset();
 	if (not valid) then
-		local msg = message_validation_context.status.error_message
-		return false, msg, message_validation_context.status.traceback;
+		return false, message_validation_context;
 	end
-	return true, nil, nil;
+	return true, nil;
 end
 
 local function read_ahead(reader)
 	local s, ret = pcall(reader.read, reader);
 	if (s == false) then
-		error_handler.raise_validation_error(-1, "Failed to parse document",
-											debug.getinfo(1).source, debug.getinfo(1).currentline);
+		error_handler.raise_validation_error(-1, "Failed to parse document", debug.getinfo(1));
 		error("Failed to parse document");
 	end
 	return ret;
@@ -1092,7 +1078,7 @@ local read_attributes = function(reader, schema_type_handler, obj)
 				if (nil == schema_type_handler.properties.attr) then
 					error_handler.raise_validation_error(-1,
 								"Field: {"..error_handler.get_fieldpath().."} is not valid, attributes not allowed in the model",
-								debug.getinfo(1).source, debug.getinfo(1).currentline);
+								debug.getinfo(1));
 					error_handler.pop_element();
 					--error("Field: {"..error_handler.get_fieldpath().."} is not valid, attributes not allowed in the model");
 					return false;
@@ -1103,7 +1089,7 @@ local read_attributes = function(reader, schema_type_handler, obj)
 				if (attr_properties == nil) then
 					error_handler.raise_validation_error(-1,
 								"Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element",
-								debug.getinfo(1).source, debug.getinfo(1).currentline);
+								debug.getinfo(1));
 					error_handler.pop_element();
 					--error("Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element");
 					return false;
@@ -1379,8 +1365,7 @@ local process_start_of_element = function(reader, sts, objs, pss)
 				local st = '';
 				if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
 				error_handler.raise_validation_error(-1,
-					q_name..' not a member in the schema definition of '..st,
-					debug.getinfo(1).source, debug.getinfo(1).currentline);
+					q_name..' not a member in the schema definition of '..st, debug.getinfo(1));
 				--error(q_name..' not a member in the schema definition of '..st);
 				return false;
 			end
@@ -1398,8 +1383,7 @@ local process_start_of_element = function(reader, sts, objs, pss)
 				local st = '';
 				if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
 				error_handler.raise_validation_error(-1,
-					"unable to fit "..q_name..' as a member in the schema '..st,
-					debug.getinfo(1).source, debug.getinfo(1).currentline);
+					"unable to fit "..q_name..' as a member in the schema '..st, debug.getinfo(1));
 				--error("unable to fit "..q_name..' as a member in the schema '..st);
 				return false;
 			end
@@ -1432,8 +1416,7 @@ local process_start_of_element = function(reader, sts, objs, pss)
 		reader.started = true;
 		if (true ~= check_element_name_matches(reader, sts)) then
 			parsing_result_msg = 'Invalid element found '.. q_name;
-			error_handler.raise_validation_error(-1,parsing_result_msg,
-			debug.getinfo(1).source, debug.getinfo(1).currentline);
+			error_handler.raise_validation_error(-1,parsing_result_msg, debug.getinfo(1));
 			--error(parsing_result_msg);
 			return false;
 		end
@@ -1542,8 +1525,7 @@ local process_end_of_element = function(reader, sts, objs, pss)
 		end
 	else
 		if (top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] ~= nil) then
-			error_handler.raise_validation_error(-1, "TWO: "..get_qname(parsed_sth)..' must not repeat',
-													debug.getinfo(1).source, debug.getinfo(1).currentline);
+			error_handler.raise_validation_error(-1, "TWO: "..get_qname(parsed_sth)..' must not repeat', debug.getinfo(1));
 			--error("TWO: "..get_qname(parsed_sth)..' must not repeat');
 			return false;
 		end
@@ -1612,8 +1594,7 @@ local process_node = function(reader, sts, objs, pss)
 		ret = true;
 	else
 		print("UNKNOWN HANDLED", typ, q_name);
-		error_handler.raise_validation_error(-1, "Unhandled reader event:".. typ..":"..q_name,
-											debug.getinfo(1).source, debug.getinfo(1).currentline);
+		error_handler.raise_validation_error(-1, "Unhandled reader event:".. typ..":"..q_name, debug.getinfo(1));
 		--error("Unhandled reader event:".. typ..":"..q_name);
 		ret = false;
 	end
@@ -1656,6 +1637,7 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	local status, result = pcall(parse_xml_to_obj, reader, sts, objs, pss);
 	local message_validation_context = error_handler.reset();
 	if ((not result) or (not status)) then
+		parsing_result_msg = 'Parsing failed: '..message_validation_context.status.error_message;
 		print(message_validation_context.status.source_file, message_validation_context.status.line_no);
 		print(message_validation_context.status.traceback);
 		error(message_validation_context.status.error_message);
@@ -1665,22 +1647,22 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 
 	obj = doc[schema_type_handler.particle_properties.generated_name];
 
-	local valid, msg, tb = validate_content(schema_type_handler, obj);
+	local valid, msv = validate_content(schema_type_handler, obj);
 	if (not valid) then
-		parsing_result_msg = 'Content not valid:'..msg;
-		print(message_validation_context.status.source_file, message_validation_context.status.line_no);
-		print(tb);
-		error(parsing_result_msg);
+		parsing_result_msg = 'Content not valid:'..msv.status.error_message;
+		print(msv.status.source_file, msv.status.line_no);
+		print(msv.status.traceback);
+		error(msv.status.error_message);
 	end
 	return obj;
 end
 
 basic_stuff.parse_xml = function(schema_type_handler, xmlua, xml)
 
-	local parsing_result_msg = nil;
+	parsing_result_msg = nil;
 	local status, obj = pcall(low_parse_xml, schema_type_handler, xmlua, xml);
 	if (not status) then
-		parsing_result_msg = obj;
+		--parsing_result_msg = obj;
 		obj = nil;
 	else
 		parsing_result_msg = nil;
