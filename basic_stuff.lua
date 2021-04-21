@@ -1049,7 +1049,7 @@ local check_element_name_matches = function(reader, sts)
 	return (q_doc_element_name == q_schema_element_name);
 end
 
-local get_attributes = function(reader, schema_type_handler, obj)
+local read_attributes = function(reader, schema_type_handler, obj)
 	obj['___DATA___']._attr = nil;
 	local count = 0;
 	local n = reader:get_attr_count();
@@ -1068,7 +1068,7 @@ local get_attributes = function(reader, schema_type_handler, obj)
 					error_handler.raise_validation_error(-1,
 								"Field: {"..error_handler.get_fieldpath().."} is not valid, attributes not allowed in the model");
 					error_handler.pop_element();
-					error("Field: {"..error_handler.get_fieldpath().."} is not valid, attributes not allowed in the model");
+					--error("Field: {"..error_handler.get_fieldpath().."} is not valid, attributes not allowed in the model");
 					return nil;
 				end
 				local q_attr_name = '{'..attr_uri..'}'..attr_name;
@@ -1078,7 +1078,7 @@ local get_attributes = function(reader, schema_type_handler, obj)
 					error_handler.raise_validation_error(-1,
 								"Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element");
 					error_handler.pop_element();
-					error("Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element");
+					--error("Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element");
 					return nil;
 				end
 				local converted_value = attr_properties.type_handler:to_type(attr_properties.particle_properties.q_name.ns, attr_value);
@@ -1116,23 +1116,18 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 	local top_obj = objs:top();
 
 	local ps_obj = pss:top();
-	--print(q_name, schema_type_handler.properties.content_fsa_properties[i].symbol_name);
-	--print("++++++++++++++++++", schema_type_handler.properties.content_fsa_properties[i].symbol_name, "+++++++++++++++", i);
 	if ((schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'element') and
 		(schema_type_handler.properties.content_fsa_properties[i].symbol_name == q_name)) then
 		ps_obj.position = i;
 		if (schema_type_handler.properties.content_fsa_properties[i].max_occurs ~= 1) then
 			local sep_key = schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
 			local sep = schema_type_handler.properties.subelement_properties[sep_key];
-			--print(sep.particle_properties.generated_name);
 			local count = 0;
 			if (nil ~= top_obj['___DATA___'][sep.particle_properties.generated_name]) then
 				count = #(top_obj['___DATA___'][sep.particle_properties.generated_name]);
 			end
-			--print("COUNT=",count);
 			if (count == schema_type_handler.properties.content_fsa_properties[i].max_occurs) then
 				ps_obj.next_position = i + 1;
-				--ps_obj.position = i;
 				return false;
 			else
 				ps_obj.next_position = i;
@@ -1144,7 +1139,6 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 		return true;
 	elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
 		if (schema_type_handler.properties.content_fsa_properties[i].max_occurs ~= 1) then
-			--top_obj['___METADATA___'].element_being_parsed = schema_type_handler.properties.content_fsa_properties[i].symbol_name;
 			top_obj['___METADATA___'].element_being_parsed =
 					schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
 			top_obj['___METADATA___'].element_gqn_being_parsed =
@@ -1161,13 +1155,8 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 			obj['___METADATA___'].covering_object = false;
 			obj['___DATA___'] = {};
 		else
-			--print("~~~~~~~~~~~~~~~~~~~~~~~~");
-			--(require 'pl.pretty').dump(objs);
 			top_obj['___METADATA___'].cms:push(obj['___METADATA___'].cm);
 			top_obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
-			--print(schema_type_handler.properties.content_fsa_properties[i].cm);
-			--(require 'pl.pretty').dump(objs);
-			--print("~~~~~~~~~~~~~~~~~~~~~~~~");
 		end
 	elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_end') then
 		local end_node = schema_type_handler.properties.content_fsa_properties[i]
@@ -1364,7 +1353,8 @@ local process_start_of_element = function(reader, sts, objs, pss)
 				if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
 				error_handler.raise_validation_error(-1,
 					q_name..' not a member in the schema definition of '..st);
-				error(q_name..' not a member in the schema definition of '..st);
+				--error(q_name..' not a member in the schema definition of '..st);
+				return false;
 			end
 		else
 			local element_found = false;
@@ -1381,7 +1371,8 @@ local process_start_of_element = function(reader, sts, objs, pss)
 				if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
 				error_handler.raise_validation_error(-1,
 					"unable to fit "..q_name..' as a member in the schema '..st);
-				error("unable to fit "..q_name..' as a member in the schema '..st);
+				--error("unable to fit "..q_name..' as a member in the schema '..st);
+				return false;
 			end
 			local content_fsa_item = schema_type_handler.properties.content_fsa_properties[pss:top().position];
 			--local generated_q_name = content_fsa_item.generated_symbol_name;
@@ -1395,7 +1386,8 @@ local process_start_of_element = function(reader, sts, objs, pss)
 
 				if ((l_top_obj['___METADATA___'].element_gqn_being_parsed ~= nil) and
 					(l_top_obj['___METADATA___'].element_gqn_being_parsed ~= generated_q_name)) then 
-						move_fsa_to_end_of_cm(reader, sts, objs, pss)
+
+					move_fsa_to_end_of_cm(reader, sts, objs, pss)
 				end
 			end
 		end
@@ -1412,7 +1404,8 @@ local process_start_of_element = function(reader, sts, objs, pss)
 		if (true ~= check_element_name_matches(reader, sts)) then
 			parsing_result_msg = 'Invalid element found '.. q_name;
 			error_handler.raise_validation_error(-1,parsing_result_msg);
-			error(parsing_result_msg);
+			--error(parsing_result_msg);
+			return false;
 		end
 		(objs:top())['___METADATA___'].element_being_parsed = schema_type_handler.particle_properties.generated_name;
 		(objs:top())['___METADATA___'].element_gqn_being_parsed = schema_type_handler.particle_properties.generated_name;
@@ -1428,9 +1421,8 @@ local process_start_of_element = function(reader, sts, objs, pss)
 	if (sth.properties.element_type == 'S') then
 		obj['___METADATA___'].content_model_type = 'SS';
 	else
-		get_attributes(reader, sth, obj);
+		read_attributes(reader, sth, obj);
 		if(sth.properties.content_type == 'C') then
-			local ps_obj = pss:top();
 			obj['___METADATA___'].cm = sth.properties.content_model;
 			obj['___METADATA___'].content_model_type = 'CC';
 		else
@@ -1443,8 +1435,7 @@ local process_start_of_element = function(reader, sts, objs, pss)
 	--(require 'pl.pretty').dump(objs);
 	--print("----------------------------------");
 
-
-	return;
+	return true;
 end
 
 local process_text = function(reader, sts, objs, pss)
@@ -1466,7 +1457,7 @@ local process_text = function(reader, sts, objs, pss)
 	top_obj['___DATA___']._contained_value = converted_value;
 	top_obj['___METADATA___'].empty = false;
 
-	return;
+	return true;
 end
 
 local process_end_of_element = function(reader, sts, objs, pss)
@@ -1490,9 +1481,6 @@ local process_end_of_element = function(reader, sts, objs, pss)
 		windup_fsa(reader, sts, objs, pss);
 	end
 	error_handler.pop_element();
-	--print("##################################");
-	--(require 'pl.pretty').dump(objs);
-	--print("##################################");
 
 	local parsed_element = objs:pop();
 	top_obj = objs:top();
@@ -1507,7 +1495,6 @@ local process_end_of_element = function(reader, sts, objs, pss)
 			parsed_output = parsed_element['___DATA___']._contained_value;
 		end
 	end
-	--(require 'pl.pretty').dump(parsed_output);
 	-- Essentially the variable parsed_output has the complete lua value of the element
 	-- at this stage.
 	top_obj = objs:top();
@@ -1524,7 +1511,8 @@ local process_end_of_element = function(reader, sts, objs, pss)
 	else
 		if (top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] ~= nil) then
 			error_handler.raise_validation_error(-1, "TWO: "..get_qname(parsed_sth)..' must not repeat');
-			error("TWO: "..get_qname(parsed_sth)..' must not repeat');
+			--error("TWO: "..get_qname(parsed_sth)..' must not repeat');
+			return false;
 		end
 		--(require 'pl.pretty').dump(top_obj);
 		top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] = parsed_output;
@@ -1558,7 +1546,7 @@ local process_end_of_element = function(reader, sts, objs, pss)
 		end
 	end
 
-	return;
+	return true;
 end
 
 local process_node = function(reader, sts, objs, pss)
@@ -1569,36 +1557,38 @@ local process_node = function(reader, sts, objs, pss)
 	local q_name = '{'..get_uri(uri)..'}'..name;
 
 	local schema_type_handler = sts:top();
+	local ret = false;
 	if (typ == reader.node_types.XML_READER_TYPE_ELEMENT) then
-		--process_start_of_element(reader, sts, objs, pss);
-		--if (reader:node_is_empty_element(reader)) then
 		if (not reader:node_is_empty_element(reader)) then
-			process_start_of_element(reader, sts, objs, pss);
-			--process_end_of_element(reader, sts, objs, pss);
+			ret = process_start_of_element(reader, sts, objs, pss);
 		end
 	elseif ((typ == reader.node_types.XML_READER_TYPE_TEXT) or
 			(typ == reader.node_types.XML_READER_TYPE_CDATA)) then
-		process_text(reader, sts, objs, pss);
+		ret = process_text(reader, sts, objs, pss);
 	elseif (typ == reader.node_types.XML_READER_TYPE_END_ELEMENT) then
-		process_end_of_element(reader, sts, objs, pss);
+		ret = process_end_of_element(reader, sts, objs, pss);
 	elseif (typ == reader.node_types.XML_READER_TYPE_SIGNIFICANT_WHITESPACE) then
 		--print("SIGNIFICANT WHITESPACE HANDLED", typ, q_name);
+		ret = true;
 	else
 		print("UNKNOWN HANDLED", typ, q_name);
 		error_handler.raise_validation_error(-1, "Unhandled reader event:".. typ..":"..q_name);
-		error("Unhandled reader event:".. typ..":"..q_name);
+		--error("Unhandled reader event:".. typ..":"..q_name);
+		ret = false;
 	end
 
-	return;
+	return ret;
 end
 
 local parse_xml_to_obj = function(reader, sts, objs, pss)
 	local ret = read_ahead(reader);
 	while (ret == 1) do
-		process_node(reader, sts, objs, pss);
+		if (not process_node(reader, sts, objs, pss)) then
+			return false;
+		end
 		ret = read_ahead(reader);
 	end
-	return;
+	return true;
 end
 
 local low_parse_xml = function(schema_type_handler, xmlua, xml)
@@ -1618,9 +1608,9 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	sts:push(schema_type_handler);
 
 	error_handler.init()
-	local result = pcall(parse_xml_to_obj, reader, sts, objs, pss);
+	local status, result = pcall(parse_xml_to_obj, reader, sts, objs, pss);
 	local message_validation_context = error_handler.reset();
-	if (not result) then
+	if ((not result) or (not status)) then
 		print(message_validation_context.status.traceback);
 		error(message_validation_context.status.error_message);
 	end

@@ -41,5 +41,7 @@ if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
 
-print(xml_struct:to_json(content))
-print(xml_struct:to_xml(content))
+if (nil ~= content) then
+	print(xml_struct:to_json(content))
+	print(xml_struct:to_xml(content))
+end

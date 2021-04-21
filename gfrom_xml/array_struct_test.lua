@@ -26,5 +26,5 @@ if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
 
-print(array_struct:to_xml(content))
+if (nil ~= content) then print(array_struct:to_xml(content)); end
 

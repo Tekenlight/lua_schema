@@ -35,5 +35,7 @@ if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
 
-print(example_struct:to_json(content))
-print(example_struct:to_xml(content))
+if (nil ~= content) then
+	print(example_struct:to_json(content))
+	print(example_struct:to_xml(content))
+end

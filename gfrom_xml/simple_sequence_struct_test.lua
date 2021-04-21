@@ -18,4 +18,6 @@ else print(content, msg)
 end
 
 
-print(simple_sequence_struct:to_xml(content));
+if (nil ~= content) then
+	print(simple_sequence_struct:to_xml(content));
+end

@@ -13,5 +13,7 @@ if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
 
-print(basic_string_simple_content:to_json(content))
-print(basic_string_simple_content:to_xml(content))
+if (nil ~= content) then
+	print(basic_string_simple_content:to_json(content))
+	print(basic_string_simple_content:to_xml(content))
+end

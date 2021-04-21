@@ -37,12 +37,14 @@ else print(content, msg)
 end
 
 --print(example_struct:to_xml(content))
-local json_str = example_struct:to_json(content);
+if (nil ~= content) then
+	local json_str = example_struct:to_json(content);
 
-local lua_obj = example_struct:from_json(json_str);
+	local lua_obj = example_struct:from_json(json_str);
 
 
-print("from JSON");
-print(json_str);
-(require 'pl.pretty').dump(lua_obj);
+	print("from JSON");
+	print(json_str);
+	(require 'pl.pretty').dump(lua_obj);
+end
 

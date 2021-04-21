@@ -18,4 +18,6 @@ if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
 
-print(mult_choice_struct:to_xml(content))
+if (nil ~= content) then
+	print(mult_choice_struct:to_xml(content))
+end
