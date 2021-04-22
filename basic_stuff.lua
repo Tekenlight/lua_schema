@@ -1640,7 +1640,8 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 		parsing_result_msg = 'Parsing failed: '..message_validation_context.status.error_message;
 		print(message_validation_context.status.source_file, message_validation_context.status.line_no);
 		print(message_validation_context.status.traceback);
-		error(message_validation_context.status.error_message);
+		--error(message_validation_context.status.error_message);
+		return false, nil;
 	end
 
 	local doc = (objs:pop())['___DATA___'];
@@ -1652,17 +1653,17 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 		parsing_result_msg = 'Content not valid:'..msv.status.error_message;
 		print(msv.status.source_file, msv.status.line_no);
 		print(msv.status.traceback);
-		error(msv.status.error_message);
+		--error(msv.status.error_message);
+		return false, nil;
 	end
-	return obj;
+	return true, obj;
 end
 
 basic_stuff.parse_xml = function(schema_type_handler, xmlua, xml)
 
 	parsing_result_msg = nil;
-	local status, obj = pcall(low_parse_xml, schema_type_handler, xmlua, xml);
+	local status, obj = low_parse_xml(schema_type_handler, xmlua, xml);
 	if (not status) then
-		--parsing_result_msg = obj;
 		obj = nil;
 	else
 		parsing_result_msg = nil;
