@@ -123,8 +123,12 @@ basic_stuff.get_type_handler_str = function(namespace, tn)
 	return handler;
 end
 
-basic_stuff.get_type_handler = function(namespace, tn)
+basic_stuff.get_root_element_handler = function(namespace, tn)
 	return require(basic_stuff.get_type_handler_str(namespace, tn));
+end
+
+basic_stuff.get_type_handler = function(namespace, tn)
+	return require(basic_stuff.get_type_handler_str(namespace, tn)):instantiate();
 end
 
 basic_stuff.attributes_are_valid = function(attrs_def, attrs)
@@ -1582,13 +1586,23 @@ local process_node = function(reader, sts, objs, pss)
 	local ret = false;
 	if (typ == reader.node_types.XML_READER_TYPE_ELEMENT) then
 		if (not reader:node_is_empty_element(reader)) then
+			--print("\tST B", name);
 			ret = process_start_of_element(reader, sts, objs, pss);
+			--print("\tST E", name);
+		else
+			--print("\tST B", name);
+			ret = true;
+			--print("\tST E", name);
 		end
 	elseif ((typ == reader.node_types.XML_READER_TYPE_TEXT) or
 			(typ == reader.node_types.XML_READER_TYPE_CDATA)) then
+			--print("\tTE B");
 		ret = process_text(reader, sts, objs, pss);
+			--print("\tTE E");
 	elseif (typ == reader.node_types.XML_READER_TYPE_END_ELEMENT) then
+		--print("\tEE B");
 		ret = process_end_of_element(reader, sts, objs, pss);
+		--print("\tEE E");
 	elseif (typ == reader.node_types.XML_READER_TYPE_SIGNIFICANT_WHITESPACE) then
 		--print("SIGNIFICANT WHITESPACE HANDLED", typ, q_name);
 		ret = true;
@@ -1599,6 +1613,7 @@ local process_node = function(reader, sts, objs, pss)
 		ret = false;
 	end
 
+	--print("HERE ", name, typ,  tostring(ret));
 	return ret;
 end
 
@@ -1609,9 +1624,11 @@ end
 local parse_xml_to_obj = function(reader, sts, objs, pss)
 	local ret = read_ahead(reader);
 	while (ret == 1) do
+		--print("BB B", ret);
 		if (not process_node(reader, sts, objs, pss)) then
 			return false;
 		end
+		--print("BB E");
 		ret = read_ahead(reader);
 	end
 	return true;
@@ -1634,9 +1651,11 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	sts:push(schema_type_handler);
 
 	error_handler.init()
-	local status, result = pcall(parse_xml_to_obj, reader, sts, objs, pss);
+	--local status, result = pcall(parse_xml_to_obj, reader, sts, objs, pss);
+	local result = false;
+	result = parse_xml_to_obj( reader, sts, objs, pss);
 	local message_validation_context = error_handler.reset();
-	if ((not result) or (not status)) then
+	if (not result) then
 		parsing_result_msg = 'Parsing failed: '..message_validation_context.status.error_message;
 		print(message_validation_context.status.source_file, message_validation_context.status.line_no);
 		print(message_validation_context.status.traceback);

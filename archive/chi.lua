@@ -42,9 +42,11 @@ choice_struct = mhf:get_message_handler_using_xsd("./xsd_for_test/choice_struct.
 --choice_struct = mhf:get_message_handler("choice_struct", "http://test_example.com");
 
 local content, msg = choice_struct:from_xml(xml_string)
+print("HH");
 if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
+print("HH");
 
 --print(choice_struct:to_json(content))
 print(choice_struct:to_xml(content))

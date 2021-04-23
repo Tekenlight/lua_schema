@@ -25,7 +25,7 @@ _basic_string_simple_content_handler.properties = {
 					q_name = { ns = '', local_name = "attr1" },
 					generated_name = 'attr1'
 				},
-				type_handler = require("org.w3.2001.XMLSchema.int_handler")
+				type_handler = require("org.w3.2001.XMLSchema.int_handler"):instantiate()
 			},
 			["{}attr2"] = {
 				properties = {
@@ -39,7 +39,7 @@ _basic_string_simple_content_handler.properties = {
 					q_name = { ns = '', local_name = "attr2" },
 					generated_name = 'attr2'
 				},
-				type_handler = require("org.w3.2001.XMLSchema.string_handler")
+				type_handler = require("org.w3.2001.XMLSchema.string_handler"):instantiate()
 			},
 		},
 		_generated_attr = {
@@ -53,7 +53,7 @@ _basic_string_simple_content_handler.particle_properties = {
 	generated_name = "basic_string_simple_content"
 };
 
-_basic_string_simple_content_handler.type_handler = require("org.w3.2001.XMLSchema.string_handler");
+_basic_string_simple_content_handler.type_handler = require("org.w3.2001.XMLSchema.string_handler"):instantiate();
 _basic_string_simple_content_handler.get_attributes = basic_stuff.get_attributes;
 _basic_string_simple_content_handler.is_valid = basic_stuff.complex_type_simple_content_is_valid;
 _basic_string_simple_content_handler.to_xmlua = basic_stuff.complex_type_simple_content_to_xmlua;

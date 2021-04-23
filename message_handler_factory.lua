@@ -242,7 +242,7 @@ function _message_handler_factory:generate_lua_schema(xsd_name, element_name)
 end
 
 function _message_handler_factory:get_message_handler(type_name, name_space)
-	local message_handler_base = basic_stuff.get_type_handler(name_space, type_name);
+	local message_handler_base = basic_stuff.get_root_element_handler(name_space, type_name);
 	local message_handler = message_handler_base.new_instance_as_root();
 
 	return form_complete_message_handler(message_handler);

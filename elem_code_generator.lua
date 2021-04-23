@@ -128,7 +128,8 @@ end
 
 elem_code_generator.get_type_handler_code = function(ns, name)
 	local ths = basic_stuff.get_type_handler_str(ns, name..'_handler');
-	return ths;
+	local thc = 'require(\''..ths..'\'):instantiate()';
+	return thc;
 end
 
 function elem_code_generator.add_and_get_name(ns, name)
@@ -528,7 +529,7 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 			code = code..'\n';
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'].type_handler = '..
 					'require(\''..basic_stuff.get_type_handler_str(element_handler.properties.attr._attr_properties[n].properties.type.ns,
-								element_handler.properties.attr._attr_properties[n].properties.type.name)..'_handler\');\n';
+								element_handler.properties.attr._attr_properties[n].properties.type.name)..'_handler\'):instantiate();\n';
 		end
 		code = code..indentation..'end\n';
 	end
@@ -793,7 +794,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 	else
 		local ns = properties.bi_type.ns;
 		local name = properties.bi_type.name;
-		code = code..indent..'    '..eh_name..'.type_handler = require(\''..elem_code_generator.get_type_handler_code(ns, name)..'\');\n';
+		code = code..indent..'    '..eh_name..'.type_handler = '..elem_code_generator.get_type_handler_code(ns, name)..';\n';
 	end
 	code = code..indent..'    '..eh_name..'.get_attributes = basic_stuff.get_attributes;\n'
 	code = code..indent..'    '..eh_name..'.is_valid = '..elem_code_generator.get_is_valid_func_name(properties.element_type, properties.content_type)..';\n';

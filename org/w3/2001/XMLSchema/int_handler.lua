@@ -37,5 +37,15 @@ function __int_handler_class:to_type(ns, i)
 	return c_i;
 end
 
-return __int_handler_class;
+local mt = { __index = __int_handler_class; } ;
+local _factory = {};
+
+function _factory:instantiate()
+	local o = {};
+	o = setmetatable(o, mt);
+	return o;
+end
+
+
+return _factory;
 

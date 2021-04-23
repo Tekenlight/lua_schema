@@ -203,7 +203,7 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 	else
 		local ns = properties.bi_type.ns;
 		local name = properties.bi_type.name;
-		code = code..indent..'    '..eh_name..'.type_handler = require(\''..elem_code_generator.get_type_handler_code(ns, name)..'\');\n';
+		code = code..indent..'    '..eh_name..'.type_handler = '..elem_code_generator.get_type_handler_code(ns, name)..';\n';
 	end
 	code = code..indent..'    '..eh_name..'.get_attributes = basic_stuff.get_attributes;\n'
 	code = code..indent..'    '..eh_name..'.is_valid = '..elem_code_generator.get_is_valid_func_name(properties.element_type, properties.content_type)..';\n';

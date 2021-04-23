@@ -27,8 +27,18 @@ function __string_handler_class:to_cjson_struct(ns, s)
 end
 
 function __string_handler_class:to_type(ns, i)
-	if (false == self:is_valid(i)) then error("Input not an int"); end
+	if (false == self:is_valid(i)) then error("Input not a valid string"); end
 	return i;
 end
 
-return __string_handler_class;
+local mt = { __index = __string_handler_class; } ;
+local _factory = {};
+
+function _factory:instantiate()
+	local o = {};
+	o = setmetatable(o, mt);
+	return o;
+end
+
+
+return _factory;

@@ -23,7 +23,7 @@ do
 end
 
 do
-    element_handler.type_handler = require('org.w3.2001.XMLSchema.int_handler');
+    element_handler.type_handler = require('org.w3.2001.XMLSchema.int_handler'):instantiate();
     element_handler.get_attributes = basic_stuff.get_attributes;
     element_handler.is_valid = basic_stuff.simple_is_valid;
     element_handler.to_xmlua = basic_stuff.simple_to_xmlua;

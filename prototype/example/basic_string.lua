@@ -18,7 +18,7 @@ _basic_string_handler.particle_properties = {
 	generated_name = "basic_string"
 }
 
-_basic_string_handler.type_handler = require("org.w3.2001.XMLSchema.string_handler");
+_basic_string_handler.type_handler = require("org.w3.2001.XMLSchema.string_handler"):instantiate();
 _basic_string_handler.is_valid = basic_stuff.simple_is_valid;
 _basic_string_handler.get_attributes = basic_stuff.get_attributes;
 _basic_string_handler.to_xmlua = basic_stuff.simple_to_xmlua;

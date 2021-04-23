@@ -1,0 +1,13 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+targetNamespace="http://test_example.com">
+
+	<xsd:element name="struct_with_various_types">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="string" type="xsd:string"/>
+				<xsd:element name="normalizedString" type="xsd:normalizedString"/>
+				<xsd:element name="token" type="xsd:token"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
