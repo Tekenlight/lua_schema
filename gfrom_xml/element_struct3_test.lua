@@ -47,3 +47,5 @@ if (nil ~= content) then
 	print(element_struct3:to_xml(content));
 end
 
+if (content ~= nil) then os.exit(true); else os.exit(false); end
+

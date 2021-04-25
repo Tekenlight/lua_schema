@@ -16,3 +16,5 @@ print("CHA");
 print(example_struct:to_xml(content))
 print(example_struct:to_json(content))
 ]]--
+if (content ~= nil) then os.exit(true); else os.exit(false); end
+

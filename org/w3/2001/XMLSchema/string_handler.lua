@@ -12,22 +12,22 @@ function __string_handler_class:is_valid(s)
 end
 
 function __string_handler_class:to_xmlua(ns, s)
-	if (false == self:is_valid(s)) then error("Input not a string"); end
-	return s;
+	if (false == self:is_valid(s)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a string"); end
+	return self:to_schema_type(ns, s);
 end
 
 function __string_handler_class:to_schema_type(ns, s)
-	if (false == basic_stuff.is_simple_type(s)) then error("Input not a primitive"); end
+	if (false == basic_stuff.is_simple_type(s)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a primitive"); end
 	return tostring(s);
 end
 
 function __string_handler_class:to_cjson_struct(ns, s)
-	if (false == self:is_valid(s)) then error("Input not a string"); end
+	if (false == self:is_valid(s)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a string"); end
 	return s;
 end
 
 function __string_handler_class:to_type(ns, i)
-	if (false == self:is_valid(i)) then error("Input not a valid string"); end
+	if ('string' ~= type(i)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a valid string"); end
 	return i;
 end
 

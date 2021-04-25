@@ -12,29 +12,30 @@ function __token_handler_class:is_valid(s)
 end
 
 function __token_handler_class:to_xmlua(ns, s)
-	if (false == self:is_valid(s)) then error("Input not a token"); end
-	return s;
+	if (false == self:is_valid(s)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a token"); end
+	return self:to_schema_type(ns, s);
 end
 
 function __token_handler_class:to_schema_type(ns, s)
-	if (false == basic_stuff.is_simple_type(s)) then error("Input not a primitive"); end
+	if (false == basic_stuff.is_simple_type(s)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a primitive"); end
 	local temp_s = tostring(s);
-	temp_s = string.gsub(temp_s, '\n', ' ');
-	temp_s = string.gsub(temp_s, '\r\n', ' ');
-	temp_s = string.gsub(temp_s, '\t', ' ');
-	temp_s = string.gsub(temp_s, ' +', ' ');
+	temp_s = string.gsub(temp_s, "\r\n", ' ');
+	temp_s = string.gsub(temp_s, "\n", ' ');
+	temp_s = string.gsub(temp_s, "\r", ' ');
+	temp_s = string.gsub(temp_s, "\t", ' ');
+	temp_s = string.gsub(temp_s, " +", ' ');
 	temp_s = string.gsub(temp_s, '^ +', '');
 	temp_s = string.gsub(temp_s, ' +$', '');
 	return temp_s;
 end
 
 function __token_handler_class:to_cjson_struct(ns, s)
-	if (false == self:is_valid(s)) then error("Input not a token"); end
+	if (false == self:is_valid(s)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a token"); end
 	return s;
 end
 
 function __token_handler_class:to_type(ns, i)
-	if (false == self:is_valid(i)) then error("Input not a valid token"); end
+	if ('string' ~= type(i)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a valid token"); end
 	return self:to_schema_type(ns, i);
 end
 

@@ -48,3 +48,5 @@ if (nil ~= content) then
 	(require 'pl.pretty').dump(lua_obj);
 end
 
+if (content ~= nil) then os.exit(true); else os.exit(false); end
+

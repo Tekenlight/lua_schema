@@ -1434,7 +1434,6 @@ local process_start_of_element = function(reader, sts, objs, pss)
 	obj['___METADATA___'].cms = (require('stack')).new();
 	obj['___METADATA___'].covering_object = false;
 	obj['___DATA___'] = {};
-	error_handler.push_element(q_name);
 	if (sth.properties.element_type == 'S') then
 		obj['___METADATA___'].content_model_type = 'SS';
 	else
@@ -1499,7 +1498,6 @@ local process_end_of_element = function(reader, sts, objs, pss)
 		(sts:top().properties.content_model.group_type ~= 'A')) then
 		windup_fsa(reader, sts, objs, pss);
 	end
-	error_handler.pop_element();
 
 	local parsed_element = objs:pop();
 	top_obj = objs:top();
@@ -1587,6 +1585,7 @@ local process_node = function(reader, sts, objs, pss)
 	if (typ == reader.node_types.XML_READER_TYPE_ELEMENT) then
 		if (not reader:node_is_empty_element(reader)) then
 			--print("\tST B", name);
+			error_handler.push_element(q_name);
 			ret = process_start_of_element(reader, sts, objs, pss);
 			--print("\tST E", name);
 		else
@@ -1602,6 +1601,7 @@ local process_node = function(reader, sts, objs, pss)
 	elseif (typ == reader.node_types.XML_READER_TYPE_END_ELEMENT) then
 		--print("\tEE B");
 		ret = process_end_of_element(reader, sts, objs, pss);
+		error_handler.pop_element();
 		--print("\tEE E");
 	elseif (typ == reader.node_types.XML_READER_TYPE_SIGNIFICANT_WHITESPACE) then
 		--print("SIGNIFICANT WHITESPACE HANDLED", typ, q_name);

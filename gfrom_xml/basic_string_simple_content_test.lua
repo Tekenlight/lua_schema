@@ -17,3 +17,6 @@ if (nil ~= content) then
 	--print(basic_string_simple_content:to_json(content))
 	--print(basic_string_simple_content:to_xml(content))
 end
+
+if (content ~= nil) then os.exit(true); else os.exit(false); end
+

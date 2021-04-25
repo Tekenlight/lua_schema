@@ -1,0 +1,19 @@
+<ns1:struct_with_various_types xmlns:ns1="http://test_example.com">
+<int>123</int>
+<string>This is a name:
+Gunda
+</string>
+<normalizedString>
+This is     also a      name:
+Thimmashetty
+    Dasiah
+</normalizedString>
+<token>
+
+
+This is     also a      name now represetd      as           a token:
+Thimmashetty
+    Dasiah
+</token>
+<Name>:cha</Name>
+</ns1:struct_with_various_types>

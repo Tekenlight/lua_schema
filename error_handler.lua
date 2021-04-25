@@ -46,6 +46,7 @@ error_handler.raise_validation_error = function(error_no, message, d_info)
 		error(message);
 		return false;
 	else
+		--print(d_info.source, d_info.currentline);
 		error_handler.set_validation_error(error_no, message, tb, d_info.source, d_info.currentline);
 		return false;
 	end

@@ -17,23 +17,27 @@ function __int_handler_class:is_valid(i)
 end
 
 function __int_handler_class:to_xmlua(ns, i)
-	if (false == self:is_valid(i)) then error("Input not an int"); end
+	if (false == self:is_valid(i)) then
+		error_handler.raise_validation_error(-1,
+						"Field: {"..error_handler.get_fieldpath().."} is not a valid integer", debug.getinfo(1));
+		error("Field: {"..error_handler.get_fieldpath().."} is not a valid integer");
+	end
 	return tostring(i);
 end
 
 function __int_handler_class:to_schema_type(ns, i)
-	if (false == self:is_valid(i)) then error("Input not an int"); end
+	if (false == self:is_valid(i)) then error("Field: {"..error_handler.get_fieldpath().."} Input not an int"); end
 	return i;
 end
 
 function __int_handler_class:to_cjson_struct(ns, i)
-	if (false == self:is_valid(i)) then error("Input not an int"); end
+	if (false == self:is_valid(i)) then error("Field: {"..error_handler.get_fieldpath().."} Input not an int"); end
 	return i;
 end
 
 function __int_handler_class:to_type(ns, i)
 	local c_i = tonumber(i);
-	if (false == self:is_valid(c_i)) then error("Input not an int"); end
+	if (false == self:is_valid(c_i)) then error("Field: {"..error_handler.get_fieldpath().."} Input not an int"); end
 	return c_i;
 end
 
@@ -45,7 +49,6 @@ function _factory:instantiate()
 	o = setmetatable(o, mt);
 	return o;
 end
-
 
 return _factory;
 

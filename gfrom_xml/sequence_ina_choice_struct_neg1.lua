@@ -18,3 +18,6 @@ if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
 
+
+if (content ~= nil) then os.exit(true); else os.exit(false); end
+

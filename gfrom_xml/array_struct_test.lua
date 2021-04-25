@@ -28,3 +28,5 @@ end
 
 if (nil ~= content) then print(array_struct:to_xml(content)); end
 
+if (content ~= nil) then os.exit(true); else os.exit(false); end
+

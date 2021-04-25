@@ -21,3 +21,5 @@ else print(content, msg)
 end
 
 --print(repeated_sequence_struct:to_xml(content))
+if (content ~= nil) then os.exit(true); else os.exit(false); end
+

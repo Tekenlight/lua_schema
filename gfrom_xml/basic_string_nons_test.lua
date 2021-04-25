@@ -20,3 +20,6 @@ if (nil ~= content) then
 	print(json_str);
 	(require 'pl.pretty').dump(lua_obj);
 end
+
+if (content ~= nil) then os.exit(true); else os.exit(false); end
+
