@@ -53,6 +53,8 @@ end
 
 local function count_total_digits(n)
 	local s = tostring(n);
+	s = string.sub(s, "^0+", '');
+	s = string.sub(s, "0+$", '');
 	local i = 0;
 	local len = string.len(s);
 	local pos = 1;
@@ -71,6 +73,8 @@ end
 
 local function count_fractional_digits(n)
 	local s = tostring(n);
+	s = string.sub(s, "^0+", '');
+	s = string.sub(s, "0+$", '');
 	local i = 0;
 	local len = string.len(s);
 	local pos = 1;
@@ -168,6 +172,42 @@ function _xsd_facets:check_number_facets(s)
 		end
 	end
 	return true;
+end
+
+function _xsd_facets:check_enumeration(s)
+	local val_type = type(s);
+	if (val_type ~= 'string' and val_type ~= 'number') then
+	end
+end
+
+function _xsd_facets:process_white_space(s)
+	if (type(s) ~= 'string') then
+		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"string type\"");
+	end
+	local o = '';
+	if (self.white_space ~= nil) then
+		if (self.white_space == 'preserve') then
+			o = s;
+		elseif (self.white_space == 'replace') then
+			o = s;
+			o = string.gsub(o, "\r\n", ' ');
+			o = string.gsub(o, "\n", ' ');
+			o = string.gsub(o, "\r", ' ');
+			o = string.gsub(o, "\t", ' ');
+		elseif (self.white_space == 'collapse') then
+			o = s;
+			o = string.gsub(o, "\r\n", ' ');
+			o = string.gsub(o, "\n", ' ');
+			o = string.gsub(o, "\r", ' ');
+			o = string.gsub(o, "\t", ' ');
+			o = string.gsub(o, " +", ' ');
+			o = string.gsub(o, '^ +', '');
+			o = string.gsub(o, ' +$', '');
+		else
+			error("Invalid value of whitespace facet "..self.white_space);
+		end
+	end
+	return o;
 end
 
 function _xsd_facets:inherit()

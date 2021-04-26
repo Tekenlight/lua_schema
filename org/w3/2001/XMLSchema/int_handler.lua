@@ -1,3 +1,4 @@
+local facets = require("facets");
 local error_handler = require("error_handler");
 local __int_handler_class = {}
 
@@ -37,7 +38,11 @@ end
 
 function __int_handler_class:to_type(ns, i)
 	local c_i = tonumber(i);
-	if (false == self:is_valid(c_i)) then error("Field: {"..error_handler.get_fieldpath().."} Input not an int"); end
+	if (false == self:is_valid(c_i)) then
+		error_handler.raise_validation_error(-1,
+								"Field: {"..error_handler.get_fieldpath().."} Input not an int");
+		error("Field: {"..error_handler.get_fieldpath().."} Input not an int");
+	end
 	return c_i;
 end
 
@@ -47,6 +52,8 @@ local _factory = {};
 function _factory:instantiate()
 	local o = {};
 	o = setmetatable(o, mt);
+	o.facets = facets.new();
+	o.facets.white_space = 'collapse';
 	return o;
 end
 

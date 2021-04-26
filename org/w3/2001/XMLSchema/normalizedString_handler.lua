@@ -1,3 +1,4 @@
+local facets = require("facets");
 local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __normalized_string_handler_class = {}
@@ -18,11 +19,7 @@ end
 
 function __normalized_string_handler_class:to_schema_type(ns, s)
 	if (false == basic_stuff.is_simple_type(s)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a primitive"); end
-	local temp_s = tostring(s);
-	temp_s = string.gsub(temp_s, "\r\n", ' ');
-	temp_s = string.gsub(temp_s, "\n", ' ');
-	temp_s = string.gsub(temp_s, "\r", ' ');
-	temp_s = string.gsub(temp_s, "\t", ' ');
+	local temp_s = self.facets:process_white_space(s);
 	return temp_s;
 end
 
@@ -33,7 +30,13 @@ end
 
 function __normalized_string_handler_class:to_type(ns, i)
 	if ('string' ~= type(i)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a valid normalizedString"); end
-	return self:to_schema_type(ns, i);
+	local n_s = self:to_schema_type(ns, i);
+	if (false == self:is_valid(n_s)) then
+		error_handler.raise_validation_error(-1,
+						"Field: {"..error_handler.get_fieldpath().."} Input not a valid normalizedString");
+		error("Field: {"..error_handler.get_fieldpath().."} Input not a valid normalizedString");
+	end
+	return n_s;
 end
 
 local mt = { __index = __normalized_string_handler_class; } ;
@@ -42,6 +45,8 @@ local _factory = {};
 function _factory:instantiate()
 	local o = {};
 	o = setmetatable(o, mt);
+	o.facets = facets.new();
+	o.facets.white_space = 'replace';
 	return o;
 end
 

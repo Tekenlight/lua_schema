@@ -52,6 +52,8 @@ end
 
 local function count_total_digits(n)
 	local s = tostring(n);
+	s = string.gsub(s, "^0+", '');
+	s = string.gsub(s, "0+$", '');
 	local i = 0;
 	local len = string.len(s);
 	local pos = 1;
@@ -70,6 +72,8 @@ end
 
 local function count_fractional_digits(n)
 	local s = tostring(n);
+	s = string.gsub(s, "^0+", '');
+	s = string.gsub(s, "0+$", '');
 	local i = 0;
 	local len = string.len(s);
 	local pos = 1;
@@ -85,6 +89,7 @@ local function count_fractional_digits(n)
 	--print("frctional digits = ",i);
 	return i;
 end
+
 
 function _xsd_facets:check_string_facets(s)
 	if (type(s) ~= 'string') then
@@ -169,6 +174,36 @@ function _xsd_facets:check_number_facets(s)
 	return true;
 end
 
+function _xsd_facets:process_white_space(s)
+	if (type(s) ~= 'string') then
+		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"string type\"");
+	end
+	local o = '';
+	if (self.white_space ~= nil) then
+		if (self.white_space == 'preserve') then
+			o = s;
+		elseif (self.white_space == 'replace') then
+			o = s;
+			o = string.gsub(o, "\r\n", ' ');
+			o = string.gsub(o, "\n", ' ');
+			o = string.gsub(o, "\r", ' ');
+			o = string.gsub(o, "\t", ' ');
+		elseif (self.white_space == 'collapse') then
+			o = s;
+			o = string.gsub(o, "\r\n", ' ');
+			o = string.gsub(o, "\n", ' ');
+			o = string.gsub(o, "\r", ' ');
+			o = string.gsub(o, "\t", ' ');
+			o = string.gsub(o, " +", ' ');
+			o = string.gsub(o, '^ +', '');
+			o = string.gsub(o, ' +$', '');
+		else
+			error("Invalid value of whitespace facet "..self.white_space);
+		end
+	end
+	return o;
+end
+
 function _xsd_facets:inherit()
 	local o = make_copy(self);
 	o =  setmetatable(o, mt);
@@ -183,9 +218,8 @@ end
 
 mt = {__index =_xsd_facets };
 
-return _xsd_facets;
+--return _xsd_facets;
 
---[[
 
 _xsd_facets.length = 5;
 error_handler.init();
@@ -382,7 +416,7 @@ else
 end
 error_handler.reset();
 error_handler.init();
-local n = 234.79;
+local n = 00234.79;
 if (not(_xsd_facets:check_number_facets(n))) then
 	local msv = error_handler.reset();
 	print(msv.status.error_message);
@@ -394,8 +428,17 @@ _xsd_facets.fractional_digits = nil;
 
 
 
---_xsd_facets.white_space = nil
+local s = ' lajsdfk lkasdflkasdjf          asdfkljf';
+_xsd_facets.white_space = 'preserve';
+print(_xsd_facets:process_white_space(s));
+_xsd_facets.white_space = 'replace';
+print(_xsd_facets:process_white_space(s));
+_xsd_facets.white_space = 'collapse';
+print(_xsd_facets:process_white_space(s));
+_xsd_facets.white_space = nil
+
 --_xsd_facets.enumeration = nil
 --_xsd_facets.pattern = nil
 
+--[[
 --]]

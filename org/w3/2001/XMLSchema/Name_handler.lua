@@ -1,3 +1,4 @@
+local facets = require("facets");
 local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __Name_handler_class = {}
@@ -39,9 +40,7 @@ function __Name_handler_class:to_schema_type(ns, s)
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:Name", debug.getinfo(1));
 		error("Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:Name");
 	end
-	local temp_s = tostring(s);
-	temp_s = string.gsub(temp_s, '^ +', '');
-	temp_s = string.gsub(temp_s, ' +$', '');
+	local temp_s = self.facets:process_white_space(s);
 	return temp_s;
 end
 
@@ -75,6 +74,8 @@ local _factory = {};
 function _factory:instantiate()
 	local o = {};
 	o = setmetatable(o, mt);
+	o.facets = facets.new();
+	o.facets.white_space = 'collapse';
 	return o;
 end
 
