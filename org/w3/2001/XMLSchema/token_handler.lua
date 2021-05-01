@@ -3,17 +3,27 @@ local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __token_handler_class = {}
 
+__token_handler_class.__name__ = '__token_handler_class';
+
 function __token_handler_class:is_valid(s)
 	if((s ~= nil) and (type(s) ~= "string")) then
 		error_handler.raise_validation_error(-1,
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid token", debug.getinfo(1));
 		return false
 	end
+	if (self.facets ~= nil) then
+		if (not self.facets:check(s)) then
+			return false;
+		end
+	end
 	return true;
 end
 
 function __token_handler_class:to_xmlua(ns, s)
-	if (false == self:is_valid(s)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a token"); end
+	if (false == self:is_valid(s)) then
+		local msv = error_handler.reset();
+		error(msv.status.error_message);
+	end
 	return self:to_schema_type(ns, s);
 end
 
@@ -24,17 +34,19 @@ function __token_handler_class:to_schema_type(ns, s)
 end
 
 function __token_handler_class:to_cjson_struct(ns, s)
-	if (false == self:is_valid(s)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a token"); end
+	if (false == self:is_valid(s)) then
+		local msv = error_handler.reset();
+		error(msv.status.error_message);
+	end
 	return s;
 end
 
 function __token_handler_class:to_type(ns, i)
 	if ('string' ~= type(i)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a valid token"); end
 	local s =  self:to_schema_type(ns, i);
-	if (false == self:is_valid(s)) then
-		error_handler.raise_validation_error(-1,
-							"Field: {"..error_handler.get_fieldpath().."} Input not a token");
-		error("Field: {"..error_handler.get_fieldpath().."} Input not a token");
+	if (false == self:is_valid(i)) then
+		local msv = error_handler.reset();
+		error(msv.status.error_message);
 	end
 	return s;
 end
@@ -44,6 +56,7 @@ local _factory = {};
 
 function _factory:instantiate()
 	local o = {};
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	o = setmetatable(o, mt);
 	o.facets = facets.new();
 	o.facets.white_space = 'collapse';

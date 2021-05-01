@@ -29,7 +29,7 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
     </s2>
     <ns3:basic_string_simple_content attr1="123" attr2="CHA">GOWRI</ns3:basic_string_simple_content>
   </ns3:example_struct>
-  <ns3:basic_string>BASICSTRING</ns3:basic_string>
+  <ns3:basic_string>BASICST</ns3:basic_string>
   <basic_string_nons>VERYBASICSTRING</basic_string_nons>
 </ns1:element_struct3>]=]
 

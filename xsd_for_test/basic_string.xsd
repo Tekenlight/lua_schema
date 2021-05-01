@@ -1,3 +1,12 @@
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"  targetNamespace="http://test_example.com">
-	<xsd:element name="basic_string" type="xsd:string"/>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://test_example.com" targetNamespace="http://test_example.com">
+	<xsd:simpleType name="very_basic_string">
+		<xsd:restriction base="xsd:string"/>
+	</xsd:simpleType>
+	<xsd:element name="basic_string">
+		<xsd:simpleType>
+			<xsd:restriction base="ns:very_basic_string">
+				<xsd:maxLength value="7"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
 </xsd:schema>

@@ -3,12 +3,23 @@ local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __string_handler_class = {}
 
---[[
 __string_handler_class.properties = {};
 __string_handler_class.properties.element_type = 'S';
 __string_handler_class.properties.content_type = 'S';
 __string_handler_class.properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-]]--
+__string_handler_class.properties.attr = {};
+__string_handler_class.properties.attr._attr_properties = {};
+__string_handler_class.properties.attr._generated_attr = {};
+function __string_handler_class:get_unique_namespaces_declared()
+	local namespaces = nil;
+
+	namespaces = { ["http://www.w3.org/2001/XMLSchema"] = ""};
+
+	return namespaces;
+end
+__string_handler_class.parse_xml = basic_stuff.parse_xml
+__string_handler_class.type_handler = __string_handler_class;
+__string_handler_class.get_attributes = basic_stuff.get_attributes;
 
 function __string_handler_class:is_valid(s)
 	if((s ~= nil) and (type(s) ~= "string")) then
@@ -78,12 +89,18 @@ function _factory:instantiate()
 end
 
 function _factory:new_instance_as_global_element(global_element_properties)
-    return basic_stuff.instantiate_type_as_doc_root(mt, global_element_properties);
+    local s = basic_stuff.instantiate_type_as_doc_root(mt, global_element_properties);
+	s.facets = facets.new();
+	s.facets.white_space = 'preserve';
+	return s;
 end
 
 
 function _factory:new_instance_as_local_element(local_element_properties)
-    return basic_stuff.instantiate_type_as_local_element(mt, local_element_properties);
+    local s = basic_stuff.instantiate_type_as_local_element(mt, local_element_properties);
+	s.facets = facets.new();
+	s.facets.white_space = 'preserve';
+	return s;
 end
 
 return _factory;

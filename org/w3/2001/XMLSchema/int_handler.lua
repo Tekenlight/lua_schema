@@ -14,34 +14,43 @@ function __int_handler_class:is_valid(i)
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid integer", debug.getinfo(1));
 		return false;
 	end
+	if (self.facets ~= nil) then
+		if (not self.facets:check(i)) then
+			return false;
+		end
+	end
 	return true;
 end
 
 function __int_handler_class:to_xmlua(ns, i)
 	if (false == self:is_valid(i)) then
-		error_handler.raise_validation_error(-1,
-						"Field: {"..error_handler.get_fieldpath().."} is not a valid integer", debug.getinfo(1));
-		error("Field: {"..error_handler.get_fieldpath().."} is not a valid integer");
+		local msv = error_handler.reset();
+		error(msv.status.error_message);
 	end
 	return tostring(i);
 end
 
 function __int_handler_class:to_schema_type(ns, i)
-	if (false == self:is_valid(i)) then error("Field: {"..error_handler.get_fieldpath().."} Input not an int"); end
+	if (false == self:is_valid(i)) then
+		local msv = error_handler.reset();
+		error(msv.status.error_message);
+	end
 	return i;
 end
 
 function __int_handler_class:to_cjson_struct(ns, i)
-	if (false == self:is_valid(i)) then error("Field: {"..error_handler.get_fieldpath().."} Input not an int"); end
+	if (false == self:is_valid(i)) then
+		local msv = error_handler.reset();
+		error(msv.status.error_message);
+	end
 	return i;
 end
 
 function __int_handler_class:to_type(ns, i)
 	local c_i = tonumber(i);
 	if (false == self:is_valid(c_i)) then
-		error_handler.raise_validation_error(-1,
-								"Field: {"..error_handler.get_fieldpath().."} Input not an int");
-		error("Field: {"..error_handler.get_fieldpath().."} Input not an int");
+		local msv = error_handler.reset();
+		error(msv.status.error_message);
 	end
 	return c_i;
 end

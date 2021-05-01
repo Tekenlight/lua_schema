@@ -4,6 +4,8 @@ local element_handler = {};
 
 
 
+element_handler.super_element_content_type = require('org.w3.2001.XMLSchema.int_handler'):instantiate();
+
 do
     element_handler.properties = {};
     element_handler.properties.element_type = 'S';
@@ -22,13 +24,22 @@ do
     element_handler.particle_properties.generated_name = 'basic_int_nons';
 end
 
+-- Simple type properties
+do
+    element_handler.base = {};
+    element_handler.base.ns = 'http://www.w3.org/2001/XMLSchema';
+    element_handler.base.name = 'int';
+    element_handler.local_facets = {};
+    element_handler.facets = basic_stuff.inherit_facets(element_handler);
+end
+
 do
     element_handler.type_handler = require('org.w3.2001.XMLSchema.int_handler'):instantiate();
     element_handler.get_attributes = basic_stuff.get_attributes;
     element_handler.is_valid = basic_stuff.simple_is_valid;
     element_handler.to_xmlua = basic_stuff.simple_to_xmlua;
     element_handler.get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-    element_handler.parse_xml = basic_stuff.parse_xml
+    element_handler.parse_xml = basic_stuff.parse_xml;
 end
 
 local mt = { __index = element_handler; };

@@ -89,6 +89,11 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names)
 			props.bi_type = {};
 		else
 			props.bi_type = typedef:get_typedef_primary_bi_type();
+			local simple_type_props = typedef:get_typedef_simpletype_dtls();
+			element_handler.base = simple_type_props.base;
+			element_handler.local_facets = simple_type_props.local_facets;
+			element_handler.facets = simple_type_props.facets;
+			--require 'pl.pretty'.dump(simple_type_props);
 		end
 		element_handler.properties = props;
 	end
@@ -105,13 +110,18 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 	local code = '';
 
 	local properties = element_handler.properties;
+	if (element_handler.properties.content_type == 'S') then
+		local ns = element_handler.base.ns;
+		local name = element_handler.base.name;
+		code = code..eh_name..'.super_element_content_type = '..elem_code_generator.get_type_handler_code(ns, name)..  ';\n\n';
+	end
 	code = code..indent..'do\n';
 	code = code..indent..'    '..eh_name..'.properties = {};\n';
 	code = code..indent..'    '..eh_name..'.properties.element_type = \''..properties.element_type..'\';\n';
 	code = code..indent..'    '..eh_name..'.properties.content_type = \''..properties.content_type..'\';\n';
 	code = code..indent..'    '..eh_name..'.properties.schema_type = \''..properties.schema_type..'\';\n';
 	code = code..'\n';
-	code = code..indent..'    -- No particle properties for a typef\n\n';
+	code = code..indent..'    -- No particle properties for a typedef\n\n';
 	if (properties.attr ~= nil) then
 		code = code..indent..'    '..eh_name..'.properties.attr = {};\n';
 		code = code..elem_code_generator.get_attr_code(eh_name..'.properties.attr', element_handler, indent..'    ');
@@ -195,6 +205,61 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 		end
 		code = code..indent..'    };\n';
 		code = code..indent..'end\n\n';
+	else
+		code = code..indent..'-- Simple type properties\n';
+		code = code..indent..'do\n';
+		code = code..indent..'    '..eh_name..'.base = {};\n';
+		code = code..indent..'    '..eh_name..'.base.ns = \''
+											..element_handler.base.ns..'\';\n';;
+		code = code..indent..'    '..eh_name..'.base.name = \''
+											..element_handler.base.name..'\';\n';;
+		local local_facets = element_handler.local_facets;
+		code = code..indent..'    '..eh_name..'.local_facets = {};\n';
+		if (local_facets.min_exclusive ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.min_exclusive = \''..local_facets.min_exclusive..'\';\n';;
+		end
+		if (local_facets.min_inclusive ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.min_inclusive = \''..local_facets.min_inclusive..'\';\n';;
+		end
+		if (local_facets.max_inclusive ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.max_inclusive = \''..local_facets.max_inclusive..'\';\n';;
+		end
+		if (local_facets.max_exclusive ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.max_exclusive = \''..local_facets.max_exclusive..'\';\n';;
+		end
+		if (local_facets.length ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.length = '..local_facets.length..';\n';;
+		end
+		if (local_facets.min_length ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.min_length = '..local_facets.min_length..';\n';;
+		end
+		if (local_facets.max_length ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.max_length = '..local_facets.max_length..';\n';;
+		end
+		if (local_facets.total_digits ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.total_digits = '..local_facets.total_digits..';\n';;
+		end
+		if (local_facets.fractional_digits ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.fractional_digits = '..local_facets.fractional_digits..';\n';;
+		end
+		if (local_facets.white_space ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.white_space = \''..local_facets.white_space..'\';\n';;
+		end
+		if (local_facets.enumeration ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.enumeration = {};';
+			for i,v in ipairs(properties.local_facets.enumeration) do
+				code = code..indent..'    '..eh_name..'.local_facets.enumeration['..i..'] = \''..v..'\';\n';
+			end
+		end
+		if (local_facets.pattern ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.pattern = {};\n';
+			for i,v in ipairs(local_facets.pattern) do
+				code = code..indent..'    '..eh_name..'.local_facets.pattern['..i..'] = \''..v..'\';\n';
+			end
+		end
+
+		code = code..indent..'    '..eh_name..'.facets = basic_stuff.inherit_facets('..eh_name..');\n'
+		code = code..indent..'end\n\n';
 	end
 
 	code = code..indent..'do\n';
@@ -205,6 +270,8 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 		local name = properties.bi_type.name;
 		code = code..indent..'    '..eh_name..'.type_handler = '..elem_code_generator.get_type_handler_code(ns, name)..';\n';
 	end
+
+
 	code = code..indent..'    '..eh_name..'.get_attributes = basic_stuff.get_attributes;\n'
 	code = code..indent..'    '..eh_name..'.is_valid = '..elem_code_generator.get_is_valid_func_name(properties.element_type, properties.content_type)..';\n';
 	code = code..indent..'    '..eh_name..'.to_xmlua = '..elem_code_generator.get_to_xmlua_func_name(properties.element_type, properties.content_type)..';\n';
@@ -226,6 +293,14 @@ type_code_generator.gen_lua_schema_code_from_typedef = function(typedef, indent)
 
 	code = 'local basic_stuff = require("basic_stuff");\n\n';
 	code = code..'local '..eh_name..' = {};\n\n\n\n';
+	code = code..eh_name..'.__name__ = \''..typedef:get_name()..'\';\n\n\n\n';
+	--[[
+	if (element_handler.properties.content_type == 'S') then
+		local ns = element_handler.base.ns;
+		local name = element_handler.base.name;
+		code = code..eh_name..'.super_element_content_type = '..elem_code_generator.get_type_handler_code(ns, name)..  ';\n\n';
+	end
+	--]]
 
 	-- This point onwards is where recursion starts
 
@@ -239,9 +314,14 @@ type_code_generator.gen_lua_schema_code_from_typedef = function(typedef, indent)
 	code = code..indent..'    return basic_stuff.instantiate_type_as_doc_root(mt, global_element_properties);\n';
 	code = code..indent..'end\n';
 
-	local particle_properties = element_handler.particle_properties;
 	code = code..'\n\nfunction _factory:new_instance_as_local_element(local_element_properties)\n';
 	code = code..indent..'    return basic_stuff.instantiate_type_as_local_element(mt, local_element_properties);\n';
+	code = code..indent..'end\n';
+
+	code = code..'\n\nfunction _factory:instantiate()\n';
+	code = code..indent..'    local o = {};\n';
+	code = code..indent..'    local o = setmetatable(o,mt);\n';
+	code = code..indent..'    return(o);\n';
 	code = code..indent..'end\n';
 
 	code = code..'\n\nreturn _factory;\n';

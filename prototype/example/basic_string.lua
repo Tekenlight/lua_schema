@@ -13,6 +13,7 @@ _basic_string_handler.properties = {
 	schema_type = "{http://www.w3.org/2001/XMLSchema}string",
 	attr = nil
 };
+
 _basic_string_handler.particle_properties = {
 	q_name={ns="http://example.prototype", local_name="basic_string"},
 	generated_name = "basic_string"
@@ -25,6 +26,9 @@ _basic_string_handler.to_xmlua = basic_stuff.simple_to_xmlua;
 _basic_string_handler.get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
 _basic_string_handler.parse_xml = basic_stuff.parse_xml;
 _basic_string_handler.parse_json = basic_stuff.parse_json;
+
+_basic_string_handler.facets = _basic_string_handler.type_handler:get_facets();
+_basic_string_handler.facets.max_length = 7;
 
 local mt = { __index = _basic_string_handler; } ;
 local _factory = {};

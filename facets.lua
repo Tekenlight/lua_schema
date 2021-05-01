@@ -1,6 +1,21 @@
 
 local error_handler = require("error_handler");
 
+local valid_facet_names = {
+	min_exclusive = 1
+	,min_inclusive = 1
+	,max_inclusive = 1
+	,max_exclusive = 1
+	,length = 1
+	,min_length = 1
+	,max_length = 1
+	,total_digits = 1
+	,fractional_digits = 1
+	,white_space = 1 -- 'preserve' 'replace' or 'collapse'
+	,enumeration = 1 -- Set of one of the valid values
+	,pattern = 1 -- A regular expression string
+};
+
 local mt;
 local _xsd_facets = {};
 local _xsd_facets_values = {
@@ -126,7 +141,7 @@ function _xsd_facets:check_number_facets(s)
 		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"number type\"");
 	end
 	if (self.min_exclusive ~= nil) then
-		if (compare_num(self.min_exclusive, s) >= 0) then
+		if (compare_num(tonumber(self.min_exclusive), s) >= 0) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
 							..s.."] is less than or equal to minExclusive ["..self.min_exclusive.."]", debug.getinfo(1));
@@ -134,7 +149,7 @@ function _xsd_facets:check_number_facets(s)
 		end
 	end
 	if (self.min_inclusive ~= nil) then
-		if (compare_num(self.min_inclusive, s) > 0) then
+		if (compare_num(tonumber(self.min_inclusive), s) > 0) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
 							..s.."] is less than to mininclusive ["..self.min_inclusive.."]", debug.getinfo(1));
@@ -142,7 +157,7 @@ function _xsd_facets:check_number_facets(s)
 		end
 	end
 	if (self.max_exclusive ~= nil) then
-		if (compare_num(self.max_exclusive, s) <= 0) then
+		if (compare_num(tonumber(self.max_exclusive), s) <= 0) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
 							..s.."] is greater than or equal to maxExclusive ["..self.max_exclusive.."]", debug.getinfo(1));
@@ -150,7 +165,7 @@ function _xsd_facets:check_number_facets(s)
 		end
 	end
 	if (self.max_inclusive ~= nil) then
-		if (compare_num(self.max_inclusive, s) < 0) then
+		if (compare_num(tonumber(self.max_inclusive), s) < 0) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
 							..s.."] is greater than to maxinclusive ["..self.max_inclusive.."]", debug.getinfo(1));
@@ -210,14 +225,52 @@ function _xsd_facets:process_white_space(s)
 	return o;
 end
 
+function _xsd_facets:check(v)
+	if (type(v) == 'string') then
+		if (not self:check_string_facets(v)) then
+			return false;
+		end
+	elseif (type(v) == 'number') then
+		if (not self:check_number_facets(v)) then
+			return false;
+		end
+	else
+		error("Unsupported type "..type(v));
+	end
+	return true;
+end
+
 function _xsd_facets:inherit()
 	local o = make_copy(self);
 	o =  setmetatable(o, mt);
 	return o;
 end
 
+function _xsd_facets:override(t)
+	--require 'pl.pretty'.dump(t);
+	--require 'pl.pretty'.dump(self);
+	for n,v in pairs(t) do
+		if (valid_facet_names[n] ~= nil) then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+			self[n] = v;
+		end
+	end
+	--require 'pl.pretty'.dump(self);
+end
+
 _xsd_facets.new = function()
 	local o = make_copy(_xsd_facets_values);
+	o =  setmetatable(o, mt);
+	return o;
+end
+
+_xsd_facets.new_from_table = function(t)
+	local o = {};
+	for n,v in pairs(t) do
+		if (valid_facet_names[n] ~= nil) then
+			o[n] = v;
+		end
+	end
 	o =  setmetatable(o, mt);
 	return o;
 end

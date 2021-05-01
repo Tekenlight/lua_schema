@@ -3,6 +3,7 @@ local URI = require("uri");
 local stringx = require("pl.stringx");
 local xmlua = require("xmlua")
 local basic_stuff = require("basic_stuff");
+local facets = require("facets");
 
 local elem_code_generator = {};
 
@@ -101,6 +102,25 @@ local get_primitive_type = function(elem)
 	local primitive_type = elem:get_element_primary_bi_type();
 end
 
+function elem_code_generator.get_super_element_content_type_s(ns, name)
+	local ths = nil;
+	if (ns ~= nil and ns ~= 'http://www.w3.org/2001/XMLSchema') then
+		ths = basic_stuff.get_type_handler_str(ns, name);
+	else
+		ths = basic_stuff.get_type_handler_str(ns, name..'_handler');
+	end
+	return ths;
+end
+
+function elem_code_generator.get_super_element_content_type(ns, name)
+	local ths = nil;
+	if (ns ~= nil and ns ~= 'http://www.w3.org/2001/XMLSchema') then
+		ths = basic_stuff.get_type_handler_str(ns, name);
+	else
+		ths = basic_stuff.get_type_handler_str(ns, name..'_handler');
+	end
+	return (require(ths):instantiate());
+end
 
 local get_type_handler = function(elem, dh, content_type)
 	if (content_type == 'C') then
@@ -127,7 +147,12 @@ elem_code_generator.get_package_name_parts = function(ns)
 end
 
 elem_code_generator.get_type_handler_code = function(ns, name)
-	local ths = basic_stuff.get_type_handler_str(ns, name..'_handler');
+	local ths = nil;
+	if (ns ~= nil and ns ~= 'http://www.w3.org/2001/XMLSchema') then
+		ths = basic_stuff.get_type_handler_str(ns, name);
+	else
+		ths = basic_stuff.get_type_handler_str(ns, name..'_handler');
+	end
 	local thc = 'require(\''..ths..'\'):instantiate()';
 	return thc;
 end
@@ -178,6 +203,15 @@ elem_code_generator.get_attr_decls = function(attrs)
 			attr.particle_properties = particle_properties;
 
 			attr.type_handler = basic_stuff.get_type_handler(v.type.ns, v.type.name..'_handler');
+
+			attr.base = v.base;
+			attr.local_facets = v.local_facets;
+			attr.facets = facets.new_from_table(v.facets);
+			do
+				local ns = attr.base.ns;
+				local name = attr.base.name;
+				attr.super_element_content_type = elem_code_generator.get_super_element_content_type(ns, name);
+			end
 
 			decls[attr_q_name] = attr;
 		end
@@ -438,6 +472,7 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 		props.content_type = elem:get_element_content_type();
 		props.schema_type = get_named_schema_type(elem);
 		props.attr = get_element_attr_decls(elem);
+		--require 'pl.pretty'.dump(elem:get_element_attr_decls());
 		if (content_type == 'C') then
 			local model = elem:get_element_content_model();
 			elem_code_generator.prepare_generated_names(model);
@@ -449,6 +484,13 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 			props.bi_type = {};
 		else
 			props.bi_type = elem:get_element_primary_bi_type();
+			local simple_type_props = elem:get_element_simpletype_dtls();
+			element_handler.base = simple_type_props.base;
+			element_handler.local_facets = simple_type_props.local_facets;
+			element_handler.facets = facets.new_from_table(simple_type_props.facets);
+			--local ns = element_handler.base.ns;
+			--local name = element_handler.base.name;
+			--element_handler.super_element_content_type = elem_code_generator.get_super_element_content_type(ns, name);
 		end
 		element_handler.properties = props;
 	end
@@ -461,6 +503,7 @@ end
 elem_code_generator.gen_lua_schema = function(elem)
 
 	local element_handler = elem_code_generator.get_element_handler(elem, true);
+	--require 'pl.pretty'.dump(element_handler);
 
 	local basic_stuff = require("basic_stuff");
 
@@ -493,6 +536,10 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 		code = code..indentation..'do\n';
 		do
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'] = {};\n\n';
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'].base = {};\n'
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'].base.ns = \''..v.base.ns..'\';\n';
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'].base.name = \''..v.base.name..'\';\n';
+
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'].properties = {};\n'
 			code = code..indentation..'    '
 						..attr_props_name..'['..i_n..'].properties.schema_type = \''..
@@ -530,6 +577,79 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'].type_handler = '..
 					'require(\''..basic_stuff.get_type_handler_str(element_handler.properties.attr._attr_properties[n].properties.type.ns,
 								element_handler.properties.attr._attr_properties[n].properties.type.name)..'_handler\'):instantiate();\n';
+			--[[
+			attr.local_facets = v.local_facets;
+			attr.facets = facets.new_from_table(v.facets);
+			attr.super_element_content_type = elem_code_generator.get_super_element_content_type(ns, name);
+			--]]
+			
+			code = code..'\n';
+			local sename = elem_code_generator.get_super_element_content_type_s(v.base.ns, v.base.name);
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'].super_element_content_type = require(\''
+															..sename..'\'):instantiate();\n';
+										
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'].local_facets = {}\n';
+				--code = code..indentation..'    '..attr_props_name..'['..i_n..'].local_facets.'..p..' = 
+			if (v.local_facets.min_exclusive ~= nil) then
+				code = code..indentation..'    '
+						..attr_props_name..'['..i_n..'].local_facets.min_exclusive= \''..  v.local_facets.min_exclusive..'\';\n';
+			end
+			if (v.local_facets.min_inclusive ~= nil) then
+				code = code..indentation..'    '
+						..attr_props_name..'['..i_n..'].local_facets.min_inclusive= \''..  v.local_facets.min_inclusive..'\';\n';
+			end
+			if (v.local_facets.max_inclusive ~= nil) then
+				code = code..indentation..'    '
+						..attr_props_name..'['..i_n..'].local_facets.max_inclusive= \''..  v.local_facets.max_inclusive..'\';\n';
+			end
+			if (v.local_facets.max_exclusive ~= nil) then
+				code = code..indentation..'    '
+						..attr_props_name..'['..i_n..'].local_facets.max_exclusive= \''..  v.local_facets.max_exclusive..'\';\n';
+			end
+			if (v.local_facets.length ~= nil) then
+				code = code..indentation..'    '
+						..attr_props_name..'['..i_n..'].local_facets.length= '..  v.local_facets.length..';\n';
+			end
+			if (v.local_facets.min_length ~= nil) then
+				code = code..indentation..'    '
+						..attr_props_name..'['..i_n..'].local_facets.min_length= '..  v.local_facets.min_length..';\n';
+			end
+			if (v.local_facets.max_length ~= nil) then
+				code = code..indentation..'    '
+						..attr_props_name..'['..i_n..'].local_facets.max_length= '..  v.local_facets.max_length..';\n';
+			end
+			if (v.local_facets.total_digits ~= nil) then
+				code = code..indentation..'    '
+						..attr_props_name..'['..i_n..'].local_facets.total_digits= '..  v.local_facets.total_digits..';\n';
+			end
+			if (v.local_facets.fractional_digits ~= nil) then
+				code = code..indentation..'    '
+						..attr_props_name..'['..i_n..'].local_facets.fractional_digits= '..  v.local_facets.fractional_digits..';\n';
+			end
+			if (v.local_facets.white_space ~= nil) then
+				code = code..indentation..'    '
+						..attr_props_name..'['..i_n..'].local_facets.white_space= \''..  v.local_facets.white_space..'\';\n';
+			end
+			if (v.local_facets.enumeration ~= nil) then
+				code = code..indentation..'    '
+						..attr_props_name..'['..i_n..'].local_facets.enumeration = {};\n';
+				for p,q in ipairs(v.local_facets.enumeration) do
+					code = code..indentation..'    '
+							..attr_props_name..'['..i_n..'].local_facets.enumerationa['..p..'] = \''..q..'\';\n';
+				end
+			end
+			if (v.local_facets.pattern ~= nil) then
+				code = code..indentation..'    '
+						..attr_props_name..'['..i_n..'].local_facets.pattern = {};\n';
+				for p,q in ipairs(v.local_facets.pattern) do
+					code = code..indentation..'    '
+							..attr_props_name..'['..i_n..'].local_facets.pattern['..p..'] = \''..q..'\';\n';
+				end
+			end
+			code = code..indentation..'    '
+					..attr_props_name..'['..i_n..'].facets = basic_stuff.inherit_facets('
+																		..attr_props_name..'['..i_n..']'..');\n'
+
 		end
 		code = code..indentation..'end\n';
 	end
@@ -689,6 +809,11 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 	local code = '';
 
 	local properties = element_handler.properties;
+	if (element_handler.properties.content_type == 'S') then
+		local ns = element_handler.base.ns;
+		local name = element_handler.base.name;
+		code = code..eh_name..'.super_element_content_type = '..elem_code_generator.get_type_handler_code(ns, name)..  ';\n\n';
+	end
 	code = code..indent..'do\n';
 	code = code..indent..'    '..eh_name..'.properties = {};\n';
 	code = code..indent..'    '..eh_name..'.properties.element_type = \''..properties.element_type..'\';\n';
@@ -786,6 +911,62 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 		end
 		code = code..indent..'    };\n';
 		code = code..indent..'end\n\n';
+	else
+		code = code..indent..'-- Simple type properties\n';
+		code = code..indent..'do\n';
+		code = code..indent..'    '..eh_name..'.base = {};\n';
+		code = code..indent..'    '..eh_name..'.base.ns = \''
+											..element_handler.base.ns..'\';\n';;
+		code = code..indent..'    '..eh_name..'.base.name = \''
+											..element_handler.base.name..'\';\n';;
+		local local_facets = element_handler.local_facets;
+		code = code..indent..'    '..eh_name..'.local_facets = {};\n';
+		if (local_facets.min_exclusive ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.min_exclusive = \''..local_facets.min_exclusive..'\';\n';;
+		end
+		if (local_facets.min_inclusive ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.min_inclusive = \''..local_facets.min_inclusive..'\';\n';;
+		end
+		if (local_facets.max_inclusive ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.max_inclusive = \''..local_facets.max_inclusive..'\';\n';;
+		end
+		if (local_facets.max_exclusive ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.max_exclusive = \''..local_facets.max_exclusive..'\';\n';;
+		end
+		if (local_facets.length ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.length = '..local_facets.length..';\n';;
+		end
+		if (local_facets.min_length ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.min_length = '..local_facets.min_length..';\n';;
+		end
+		if (local_facets.max_length ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.max_length = '..local_facets.max_length..';\n';;
+		end
+		if (local_facets.total_digits ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.total_digits = '..local_facets.total_digits..';\n';;
+		end
+		if (local_facets.fractional_digits ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.fractional_digits = '..local_facets.fractional_digits..';\n';;
+		end
+		if (local_facets.white_space ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.white_space = \''..local_facets.white_space..'\';\n';;
+		end
+		if (local_facets.enumeration ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.enumeration = {};';
+			for i,v in ipairs(properties.local_facets.enumeration) do
+				code = code..indent..'    '..eh_name..'.local_facets.enumeration['..i..'] = \''..v..'\';\n';
+			end
+		end
+		if (local_facets.pattern ~= nil) then
+			code = code..indent..'    '..eh_name..'.local_facets.pattern = {};\n';
+			for i,v in ipairs(local_facets.pattern) do
+				code = code..indent..'    '..eh_name..'.local_facets.pattern['..i..'] = \''..v..'\';\n';
+			end
+		end
+
+		--print(eh_name);
+		code = code..indent..'    '..eh_name..'.facets = basic_stuff.inherit_facets('..eh_name..');\n'
+		code = code..indent..'end\n\n';
 	end
 
 	code = code..indent..'do\n';
@@ -800,7 +981,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 	code = code..indent..'    '..eh_name..'.is_valid = '..elem_code_generator.get_is_valid_func_name(properties.element_type, properties.content_type)..';\n';
 	code = code..indent..'    '..eh_name..'.to_xmlua = '..elem_code_generator.get_to_xmlua_func_name(properties.element_type, properties.content_type)..';\n';
 	code = code..indent..'    '..eh_name..'.get_unique_namespaces_declared = '..elem_code_generator.get_to_unsd_func_name(properties.content_type)..';\n';
-	code = code..indent..'    '..eh_name..'.parse_xml = basic_stuff.parse_xml\n';
+	code = code..indent..'    '..eh_name..'.parse_xml = basic_stuff.parse_xml;\n';
 	code = code..indent..'end\n\n';
 
 	return code;
@@ -810,6 +991,7 @@ elem_code_generator.gen_lua_schema_code_named_type = function(elem, indent)
 	if (indent == nil) then
 		indent = ''
 	end
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	local code = '';
 	local eh_name = 'element_handler';
 	local element_handler = elem_code_generator.get_element_handler(elem, true);
@@ -819,6 +1001,7 @@ elem_code_generator.gen_lua_schema_code_named_type = function(elem, indent)
 
 	local ns = '';
 	if (elem.named_type_ns ~= nil) then ns = elem.named_type_ns; end
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, ns);
 	local type_name = elem.named_type;
 	local ths = basic_stuff.get_type_handler_str(ns, type_name);
 	code = code..indent..'local _factory = {};';
@@ -873,6 +1056,14 @@ elem_code_generator.gen_lua_schema_code_implicit_type = function(elem, indent)
 
 	code = 'local basic_stuff = require("basic_stuff");\n\n';
 	code = code..'local '..eh_name..' = {};\n\n\n\n';
+	--[[
+	if (element_handler.properties.content_type == 'S') then
+		local ns = element_handler.base.ns;
+		local name = element_handler.base.name;
+		code = code..eh_name..'.super_element_content_type = '..elem_code_generator.get_type_handler_code(ns, name)..  ';\n\n';
+	end
+	--]]
+
 
 	-- This point onwards is where recursion starts
 
@@ -922,6 +1113,7 @@ elem_code_generator.gen_lua_schema_code = function(elem, indent)
 	--If the type is one of definitions in http://www.w3.org/2001/XMLSchema
 	--Its definition will not be in any XSD
 	--]]
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	if ((elem.named_type == nil) or (named_type_ns == 'http://www.w3.org/2001/XMLSchema')) then
 		elem_code_generator.gen_lua_schema_code_implicit_type(elem, indent);
 	else

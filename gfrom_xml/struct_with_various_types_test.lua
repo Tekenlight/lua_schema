@@ -3,23 +3,15 @@ unistd = require("posix.unistd");
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>                                      
 <ns1:struct_with_various_types xmlns:ns1="http://test_example.com">
-<int>
-123
-</int>
-<string>This is a name:
-Gunda
+<int>123</int>
+<string>  This is a name:
+	Thimmashetty	Dasiah  
 </string>
-<normalizedString>
-This is     also a		name:
-Thimmashetty
-	Dasiah
+<normalizedString>  This is a name:
+	Thimmashetty	Dasiah  
 </normalizedString>
-<token>
-
-
-This is     also a		name now represetd      as 			 a token:
-Thimmashetty
-	Dasiah
+<token>  This is a name:
+	Thimmashetty	Dasiah  
 </token>
 <Name>ajs:lka.jf</Name>
 <NCName>ajslka.jf</NCName>

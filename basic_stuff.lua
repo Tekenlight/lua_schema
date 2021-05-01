@@ -155,7 +155,7 @@ basic_stuff.attributes_are_valid = function(attrs_def, attrs)
 													debug.getinfo(1));
 			return false;
 		elseif ((inp_attr[v.particle_properties.generated_name] ~= nil) and
-				(not basic_stuff.execute_primitive_validation(v.type_handler, inp_attr[v.particle_properties.generated_name]))) then
+				(not basic_stuff.execute_primitive_validation(v, inp_attr[v.particle_properties.generated_name]))) then
 			return false;
 		end
 		error_handler.pop_element();
@@ -252,7 +252,7 @@ basic_stuff.execute_validation_for_simple = function(schema_type_handler, conten
 		return false;
 	end
 	--if (not schema_type_handler.type_handler:is_valid(content)) then
-	if (not basic_stuff.execute_primitive_validation(schema_type_handler.type_handler, content)) then
+	if (not basic_stuff.execute_primitive_validation(schema_type_handler, content)) then
 		return false;
 	end
 	return true;
@@ -581,7 +581,7 @@ basic_stuff.execute_validation_for_complex_type_simple_content = function(schema
 	end
 
 	error_handler.push_element("_contained_value");
-	if (not basic_stuff.execute_primitive_validation(schema_type_handler.type_handler, content._contained_value)) then
+	if (not basic_stuff.execute_primitive_validation(schema_type_handler, content._contained_value)) then
 		return false;
 	end
 	error_handler.pop_element();
@@ -635,8 +635,22 @@ basic_stuff.complex_type_simple_content_is_valid = function(schema_type_handler,
 	return ret;
 end
 
+basic_stuff.inherit_facets = function(handler)
+	local local_facets = handler.local_facets;
+	local super = handler.super_element_content_type;
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	local facets = super.facets;
+	facets:override(local_facets);
+
+	return facets;
+end
+
 basic_stuff.execute_primitive_validation = function(handler, content)
-	local ret =  handler:is_valid(content);
+	--require 'pl.pretty'.dump(handler);
+	local ret =  handler.type_handler:is_valid(content);
+	if (not ret) then return false; end
+	ret = handler.facets:check(content);
+
 	return ret;
 end
 

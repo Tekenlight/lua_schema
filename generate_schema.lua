@@ -4,11 +4,13 @@ local xsd = xmlua.XSD.new();
 
 
 local function generate_schema_for_typedef(typedef)
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	require 'pl.pretty'.dump(typedef);
 	mhf:generate_lua_schema_from_typedef(typedef);
 end
 
 local function generate_schema_for_element(element)
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	require 'pl.pretty'.dump(element);
 	mhf:generate_lua_schema_from_element(element);
 end
