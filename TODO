@@ -1,0 +1,7 @@
+1. Implement inhereitence of simple types vis-a-vis facets
+2. Implement all the 49 built-in-types of XMLSchema 1.0
+3. Implement enumerations
+4. Implement pattern matching mechanism to validate data.
+5. Implement union types
+6. Implelent list types
+
