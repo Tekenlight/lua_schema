@@ -77,13 +77,4 @@ function _factory:instantiate()
 	return o;
 end
 
-function _factory:new_instance_as_global_element(global_element_properties)
-    return basic_stuff.instantiate_type_as_doc_root(mt, global_element_properties);
-end
-
-
-function _factory:new_instance_as_local_element(local_element_properties)
-    return basic_stuff.instantiate_type_as_local_element(mt, local_element_properties);
-end
-
 return _factory;
