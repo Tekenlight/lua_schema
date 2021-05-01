@@ -98,10 +98,6 @@ elem_code_generator.get_to_unsd_func_name = function(content_type)
 	end
 end
 
-local get_primitive_type = function(elem)
-	local primitive_type = elem:get_element_primary_bi_type();
-end
-
 function elem_code_generator.get_super_element_content_type_s(ns, name)
 	local ths = nil;
 	if (ns ~= nil and ns ~= 'http://www.w3.org/2001/XMLSchema') then
@@ -206,7 +202,7 @@ elem_code_generator.get_attr_decls = function(attrs)
 
 			attr.base = v.base;
 			attr.local_facets = v.local_facets;
-			attr.facets = facets.new_from_table(v.facets);
+			attr.facets = facets.new_from_table(v.facets, attr.type_handler.fundamental_type);
 			do
 				local ns = attr.base.ns;
 				local name = attr.base.name;
@@ -487,7 +483,7 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 			local simple_type_props = elem:get_element_simpletype_dtls();
 			element_handler.base = simple_type_props.base;
 			element_handler.local_facets = simple_type_props.local_facets;
-			element_handler.facets = facets.new_from_table(simple_type_props.facets);
+			element_handler.facets = facets.new_from_table(simple_type_props.facets, element_handler.type_handler.fundamental_type);
 			--local ns = element_handler.base.ns;
 			--local name = element_handler.base.name;
 			--element_handler.super_element_content_type = elem_code_generator.get_super_element_content_type(ns, name);
@@ -577,11 +573,6 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'].type_handler = '..
 					'require(\''..basic_stuff.get_type_handler_str(element_handler.properties.attr._attr_properties[n].properties.type.ns,
 								element_handler.properties.attr._attr_properties[n].properties.type.name)..'_handler\'):instantiate();\n';
-			--[[
-			attr.local_facets = v.local_facets;
-			attr.facets = facets.new_from_table(v.facets);
-			attr.super_element_content_type = elem_code_generator.get_super_element_content_type(ns, name);
-			--]]
 			
 			code = code..'\n';
 			local sename = elem_code_generator.get_super_element_content_type_s(v.base.ns, v.base.name);
@@ -953,7 +944,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 		end
 		if (local_facets.enumeration ~= nil) then
 			code = code..indent..'    '..eh_name..'.local_facets.enumeration = {};';
-			for i,v in ipairs(properties.local_facets.enumeration) do
+			for i,v in ipairs(local_facets.enumeration) do
 				code = code..indent..'    '..eh_name..'.local_facets.enumeration['..i..'] = \''..v..'\';\n';
 			end
 		end

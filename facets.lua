@@ -1,6 +1,11 @@
 
 local error_handler = require("error_handler");
 
+local supported_fundamental_types = {
+	--['string'] = 1, ['float'] = 1, ['number'] = 1, ['date'] = 1, ['bool'] = 1
+	['string'] = 1, ['float'] = 1, ['number'] = 1
+}
+
 local valid_facet_names = {
 	min_exclusive = 1
 	,min_inclusive = 1
@@ -104,6 +109,40 @@ local function count_fractional_digits(n)
 	end
 	--print("frctional digits = ",i);
 	return i;
+end
+
+function _xsd_facets:check_num_enumerations(v)
+	local e = self.enumeration;
+	if (e == nil) then return true; end
+	local found = false;
+	for p,q in ipairs(e) do
+		if (compare_num(tonumber(q), tonumber(v)) == 0) then
+			found = true;
+			break;
+		end
+	end
+	if (found == false) then
+		error_handler.raise_validation_error(-1,
+					"Value of {"..error_handler.get_fieldpath().."} "..v..": is not valid", debug.getinfo(1));
+	end
+	return found;
+end
+
+function _xsd_facets:check_string_enumerations(v)
+	local e = self.enumeration;
+	if (e == nil) then return true; end
+	local found = false;
+	for p,q in ipairs(e) do
+		if (tostring(q) == tostring(v)) then
+			found = true;
+			break;
+		end
+	end
+	if (found == false) then
+		error_handler.raise_validation_error(-1,
+					"Value of {"..error_handler.get_fieldpath().."} "..v..": is not valid", debug.getinfo(1));
+	end
+	return found;
 end
 
 function _xsd_facets:check_string_facets(s)
@@ -226,16 +265,24 @@ function _xsd_facets:process_white_space(s)
 end
 
 function _xsd_facets:check(v)
-	if (type(v) == 'string') then
+	if (self.fundamental_type == 'string') then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		if (not self:check_string_facets(v)) then
 			return false;
 		end
-	elseif (type(v) == 'number') then
+		if (not self:check_string_enumerations(v)) then
+			return false;
+		end
+	elseif (self.fundamental_type == 'number') then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		if (not self:check_number_facets(v)) then
 			return false;
 		end
+		if (not self:check_num_enumerations(v)) then
+			return false;
+		end
 	else
-		error("Unsupported type "..type(v));
+		error("Unsupported type "..self.fundamental_type);
 	end
 	return true;
 end
@@ -248,23 +295,40 @@ end
 
 function _xsd_facets:override(t)
 	--require 'pl.pretty'.dump(t);
-	--require 'pl.pretty'.dump(self);
 	for n,v in pairs(t) do
 		if (valid_facet_names[n] ~= nil) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-			self[n] = v;
+			if (n == 'pattern') then
+				for p,q in ipairs(v) do
+					if (nil == self[n]) then self[n] = {}; end
+					self[n][#self[n]+1] = q;
+				end
+			else
+				self[n] = v;
+			end
 		end
 	end
-	--require 'pl.pretty'.dump(self);
 end
 
-_xsd_facets.new = function()
+_xsd_facets.new = function(ft)
+	if (ft == nil) then
+		error("Facet should be based on one of the primitive types");
+	end
+	if (supported_fundamental_types[ft] ==nil) then
+		error("The type "..ft.." not supported");
+	end
 	local o = make_copy(_xsd_facets_values);
 	o =  setmetatable(o, mt);
+	o.fundamental_type = ft;
 	return o;
 end
 
-_xsd_facets.new_from_table = function(t)
+_xsd_facets.new_from_table = function(t, ft)
+	if (ft == nil) then
+		error("Facet should be based on one of the primitive types");
+	end
+	if (supported_fundamental_types[ft] ==nil) then
+		error("The type "..ft.." not supported");
+	end
 	local o = {};
 	for n,v in pairs(t) do
 		if (valid_facet_names[n] ~= nil) then
@@ -272,6 +336,7 @@ _xsd_facets.new_from_table = function(t)
 		end
 	end
 	o =  setmetatable(o, mt);
+	o.fundamental_type = ft;
 	return o;
 end
 

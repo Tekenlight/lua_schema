@@ -1,11 +1,38 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://test_example.com" targetNamespace="http://test_example.com">
 	<xsd:simpleType name="very_basic_string">
-		<xsd:restriction base="xsd:string"/>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="2"/>
+			<xsd:maxLength value="7"/>
+			<xsd:enumeration value="hello"/>
+			<xsd:enumeration value="world"/>
+			<xsd:enumeration value="hw"/>
+			<xsd:pattern value=".*"/>
+		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:element name="basic_string">
 		<xsd:simpleType>
 			<xsd:restriction base="ns:very_basic_string">
 				<xsd:maxLength value="7"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:element name="enumerated_basic_string">
+		<xsd:simpleType>
+			<xsd:restriction base="ns:very_basic_string">
+				<xsd:enumeration value="hello"/>
+				<xsd:enumeration value="hw"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:simpleType name="very_basic_regex_string">
+		<xsd:restriction base="xsd:string">
+			<xsd:pattern value=".*"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="regex_basic_string">
+		<xsd:simpleType>
+			<xsd:restriction base="ns:very_basic_regex_string">
+				<xsd:pattern value="h.*"/>
 			</xsd:restriction>
 		</xsd:simpleType>
 	</xsd:element>

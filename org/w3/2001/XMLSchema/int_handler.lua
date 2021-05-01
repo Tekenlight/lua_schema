@@ -2,6 +2,8 @@ local facets = require("facets");
 local error_handler = require("error_handler");
 local __int_handler_class = {}
 
+__int_handler_class.fundamental_type = 'number';
+
 function __int_handler_class:is_valid(i)
 	local valid = true;
 	if(type(i) ~= "number") then
@@ -61,7 +63,7 @@ local _factory = {};
 function _factory:instantiate()
 	local o = {};
 	o = setmetatable(o, mt);
-	o.facets = facets.new();
+	o.facets = facets.new('number');
 	o.facets.white_space = 'collapse';
 	return o;
 end

@@ -10,7 +10,7 @@ do
     element_handler.properties = {};
     element_handler.properties.element_type = 'S';
     element_handler.properties.content_type = 'S';
-    element_handler.properties.schema_type = '{http://www.w3.org/2001/XMLSchema}int';
+    element_handler.properties.schema_type = '{}basic_int_nons';
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     element_handler.properties.attr._generated_attr = {};
@@ -30,6 +30,7 @@ do
     element_handler.base.ns = 'http://www.w3.org/2001/XMLSchema';
     element_handler.base.name = 'int';
     element_handler.local_facets = {};
+    element_handler.local_facets.enumeration = {};    element_handler.local_facets.enumeration[1] = '123';
     element_handler.facets = basic_stuff.inherit_facets(element_handler);
 end
 

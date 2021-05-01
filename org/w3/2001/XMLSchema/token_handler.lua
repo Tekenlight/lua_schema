@@ -3,7 +3,7 @@ local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __token_handler_class = {}
 
-__token_handler_class.__name__ = '__token_handler_class';
+__token_handler_class.fundamental_type = 'string';
 
 function __token_handler_class:is_valid(s)
 	if((s ~= nil) and (type(s) ~= "string")) then
@@ -58,7 +58,7 @@ function _factory:instantiate()
 	local o = {};
 	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	o = setmetatable(o, mt);
-	o.facets = facets.new();
+	o.facets = facets.new('string');
 	o.facets.white_space = 'collapse';
 	return o;
 end

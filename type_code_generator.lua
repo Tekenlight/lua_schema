@@ -246,8 +246,8 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 			code = code..indent..'    '..eh_name..'.local_facets.white_space = \''..local_facets.white_space..'\';\n';;
 		end
 		if (local_facets.enumeration ~= nil) then
-			code = code..indent..'    '..eh_name..'.local_facets.enumeration = {};';
-			for i,v in ipairs(properties.local_facets.enumeration) do
+			code = code..indent..'    '..eh_name..'.local_facets.enumeration = {};\n';
+			for i,v in ipairs(local_facets.enumeration) do
 				code = code..indent..'    '..eh_name..'.local_facets.enumeration['..i..'] = \''..v..'\';\n';
 			end
 		end

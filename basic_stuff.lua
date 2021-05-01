@@ -3,6 +3,9 @@ local basic_stuff = {};
 local URI = require("uri");
 local stringx = require("pl.stringx");
 
+basic_stuff.fundamental_type_from_bi_type = function(b)
+end
+
 basic_stuff.is_complex_type_simple_content = function(content)
 	if ((content._attr == nil) or (type(content._attr) ~= 'table')) then
 		return false;
@@ -641,6 +644,7 @@ basic_stuff.inherit_facets = function(handler)
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	local facets = super.facets;
 	facets:override(local_facets);
+	require 'pl.pretty'.dump(facets);
 
 	return facets;
 end
@@ -649,6 +653,7 @@ basic_stuff.execute_primitive_validation = function(handler, content)
 	--require 'pl.pretty'.dump(handler);
 	local ret =  handler.type_handler:is_valid(content);
 	if (not ret) then return false; end
+
 	ret = handler.facets:check(content);
 
 	return ret;

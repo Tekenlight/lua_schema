@@ -3,6 +3,8 @@ local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __string_handler_class = {}
 
+__string_handler_class.fundamental_type = 'string';
+
 --[[
 __string_handler_class.properties = {};
 __string_handler_class.properties.element_type = 'S';
@@ -72,7 +74,7 @@ local _factory = {};
 function _factory:instantiate()
 	local o = {};
 	o = setmetatable(o, mt);
-	o.facets = facets.new();
+	o.facets = facets.new('string');
 	o.facets.white_space = 'preserve';
 	return o;
 end
