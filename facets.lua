@@ -364,7 +364,6 @@ _xsd_facets.new_from_table = function(t, ft)
 	local o = {};
 	for n,v in pairs(t) do
 		if (valid_facet_names[n] ~= nil) then
-			o[n] = v;
 			if (n == 'pattern') then
 				for p,q in ipairs(v) do
 					local res, out = pcall(regex.compile, regex, q.str_p);
@@ -374,6 +373,7 @@ _xsd_facets.new_from_table = function(t, ft)
 					q.com_p = out;
 				end
 			end
+			o[n] = v;
 		end
 	end
 	o =  setmetatable(o, mt);
