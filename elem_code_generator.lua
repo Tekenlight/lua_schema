@@ -636,7 +636,7 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 					code = code..indentation..'    '
 							..attr_props_name..'['..i_n..'].local_facets.pattern['..p..'] = {};\n';
 					code = code..indentation..'    '
-							..attr_props_name..'['..i_n..'].local_facets.pattern['..p..'].str_p = \''..q.str_p..'\';\n';
+							..attr_props_name..'['..i_n..'].local_facets.pattern['..p..'].str_p = [['..q.str_p..']];\n';
 					code = code..indentation..'    '
 							..attr_props_name..'['..i_n..'].local_facets.pattern['..p..'].com_p = nil;\n';
 					
@@ -957,7 +957,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 			code = code..indent..'    '..eh_name..'.local_facets.pattern = {};\n';
 			for i,v in ipairs(local_facets.pattern) do
 				code = code..indent..'    '..eh_name..'.local_facets.pattern['..i..'] = {};\n';
-				code = code..indent..'    '..eh_name..'.local_facets.pattern['..i..'].str_p = \''..v.str_p..'\';\n';
+				code = code..indent..'    '..eh_name..'.local_facets.pattern['..i..'].str_p = [['..v.str_p..']];\n';
 				code = code..indent..'    '..eh_name..'.local_facets.pattern['..i..'].com_p = nil;\n';
 			end
 		end

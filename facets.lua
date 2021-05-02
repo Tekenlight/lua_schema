@@ -295,9 +295,6 @@ function _xsd_facets:check(v)
 		if (not self:check_string_enumerations(v)) then
 			return false;
 		end
-		if (not self:check_patttern_match(v)) then
-			return false;
-		end
 	elseif (self.fundamental_type == 'number') then
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		if (not self:check_number_facets(v)) then
@@ -308,6 +305,9 @@ function _xsd_facets:check(v)
 		end
 	else
 		error("Unsupported type "..self.fundamental_type);
+	end
+	if (not self:check_patttern_match(tostring(v))) then
+		return false;
 	end
 	return true;
 end

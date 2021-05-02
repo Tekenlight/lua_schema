@@ -1,0 +1,28 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://test_example.com" targetNamespace="http://test_example.com">
+	<xsd:simpleType name="very_basic_int">
+		<xsd:restriction base="xsd:int">
+			<xsd:pattern value=".*"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="basic_int">
+		<xsd:simpleType>
+			<xsd:restriction base="ns:very_basic_int">
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:element name="enumerated_basic_int">
+		<xsd:simpleType>
+			<xsd:restriction base="ns:very_basic_int">
+				<xsd:enumeration value="12"/>
+				<xsd:enumeration value="13"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:element name="regex_basic_int">
+		<xsd:simpleType>
+			<xsd:restriction base="ns:very_basic_int">
+				<xsd:pattern value="\d{3}"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+</xsd:schema>
