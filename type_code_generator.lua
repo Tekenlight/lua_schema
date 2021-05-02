@@ -93,6 +93,7 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names)
 			element_handler.base = simple_type_props.base;
 			element_handler.local_facets = simple_type_props.local_facets;
 			element_handler.facets = simple_type_props.facets;
+			element_handler.type_of_simple = simple_type_props.type_of_simple;
 			--require 'pl.pretty'.dump(simple_type_props);
 		end
 		element_handler.properties = props;
@@ -114,6 +115,7 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 		local ns = element_handler.base.ns;
 		local name = element_handler.base.name;
 		code = code..eh_name..'.super_element_content_type = '..elem_code_generator.get_type_handler_code(ns, name)..  ';\n\n';
+		code = code..eh_name..'.type_of_simple = \''..element_handler.type_of_simple..  '\';\n\n';
 	end
 	code = code..indent..'do\n';
 	code = code..indent..'    '..eh_name..'.properties = {};\n';
@@ -296,13 +298,6 @@ type_code_generator.gen_lua_schema_code_from_typedef = function(typedef, indent)
 	code = 'local basic_stuff = require("basic_stuff");\n\n';
 	code = code..'local '..eh_name..' = {};\n\n\n\n';
 	code = code..eh_name..'.__name__ = \''..typedef:get_name()..'\';\n\n\n\n';
-	--[[
-	if (element_handler.properties.content_type == 'S') then
-		local ns = element_handler.base.ns;
-		local name = element_handler.base.name;
-		code = code..eh_name..'.super_element_content_type = '..elem_code_generator.get_type_handler_code(ns, name)..  ';\n\n';
-	end
-	--]]
 
 	-- This point onwards is where recursion starts
 

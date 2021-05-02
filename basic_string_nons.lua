@@ -6,6 +6,8 @@ local element_handler = {};
 
 element_handler.super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
 
+element_handler.type_of_simple = 'A';
+
 do
     element_handler.properties = {};
     element_handler.properties.element_type = 'S';

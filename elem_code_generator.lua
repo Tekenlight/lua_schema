@@ -207,6 +207,7 @@ elem_code_generator.get_attr_decls = function(attrs)
 				local ns = attr.base.ns;
 				local name = attr.base.name;
 				attr.super_element_content_type = elem_code_generator.get_super_element_content_type(ns, name);
+				attr.type_of_simple = v.type_of_simple;
 			end
 
 			decls[attr_q_name] = attr;
@@ -484,9 +485,7 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 			element_handler.base = simple_type_props.base;
 			element_handler.local_facets = simple_type_props.local_facets;
 			element_handler.facets = facets.new_from_table(simple_type_props.facets, element_handler.type_handler.fundamental_type);
-			--local ns = element_handler.base.ns;
-			--local name = element_handler.base.name;
-			--element_handler.super_element_content_type = elem_code_generator.get_super_element_content_type(ns, name);
+			element_handler.type_of_simple = simple_type_props.type_of_simple;
 		end
 		element_handler.properties = props;
 	end
@@ -578,6 +577,7 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 			local sename = elem_code_generator.get_super_element_content_type_s(v.base.ns, v.base.name);
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'].super_element_content_type = require(\''
 															..sename..'\'):instantiate();\n';
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'].type_of_simple = \''..v.type_of_simple..'\';\n';
 										
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'].local_facets = {}\n';
 				--code = code..indentation..'    '..attr_props_name..'['..i_n..'].local_facets.'..p..' = 
@@ -809,6 +809,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 		local ns = element_handler.base.ns;
 		local name = element_handler.base.name;
 		code = code..eh_name..'.super_element_content_type = '..elem_code_generator.get_type_handler_code(ns, name)..  ';\n\n';
+		code = code..eh_name..'.type_of_simple = \''..element_handler.type_of_simple..  '\';\n\n';
 	end
 	code = code..indent..'do\n';
 	code = code..indent..'    '..eh_name..'.properties = {};\n';
@@ -1054,14 +1055,6 @@ elem_code_generator.gen_lua_schema_code_implicit_type = function(elem, indent)
 
 	code = 'local basic_stuff = require("basic_stuff");\n\n';
 	code = code..'local '..eh_name..' = {};\n\n\n\n';
-	--[[
-	if (element_handler.properties.content_type == 'S') then
-		local ns = element_handler.base.ns;
-		local name = element_handler.base.name;
-		code = code..eh_name..'.super_element_content_type = '..elem_code_generator.get_type_handler_code(ns, name)..  ';\n\n';
-	end
-	--]]
-
 
 	-- This point onwards is where recursion starts
 

@@ -649,7 +649,7 @@ basic_stuff.inherit_facets = function(handler)
 	return facets;
 end
 
-basic_stuff.execute_primitive_validation = function(handler, content)
+basic_stuff.execute_validation_of_atom = function(handler, content)
 	--require 'pl.pretty'.dump(handler);
 	local ret =  handler.type_handler:is_valid(content);
 	if (not ret) then return false; end
@@ -657,6 +657,26 @@ basic_stuff.execute_primitive_validation = function(handler, content)
 	ret = handler.facets:check(content);
 
 	return ret;
+end
+
+basic_stuff.execute_validation_of_union = function(handler, content)
+	return true;
+end
+
+basic_stuff.execute_validation_of_list = function(handler, content)
+	return true;
+end
+
+basic_stuff.execute_primitive_validation = function(handler, content)
+	if (handler.type_of_simple == 'A') then
+		return basic_stuff.execute_validation_of_atom(handler, content)
+	elseif (handler.type_of_simple == 'U') then
+		return basic_stuff.execute_validation_of_union(handler, content)
+	elseif (handler.type_of_simple == 'L') then
+		return basic_stuff.execute_validation_of_list(handler, content)
+	else
+		error('Uknown type of simpleType ['..handler.type_of_simple..']');
+	end
 end
 
 basic_stuff.perform_element_validation = function(handler, content)
