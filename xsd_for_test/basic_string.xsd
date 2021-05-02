@@ -6,6 +6,7 @@
 			<xsd:enumeration value="hello"/>
 			<xsd:enumeration value="world"/>
 			<xsd:enumeration value="hw"/>
+			<xsd:enumeration value="BASICST"/>
 			<xsd:pattern value=".*"/>
 		</xsd:restriction>
 	</xsd:simpleType>
