@@ -1,3 +1,6 @@
+local xmlua = require("xmlua")
+local regex = xmlua.XMLRegexp.new();
+
 
 local error_handler = require("error_handler");
 
@@ -175,6 +178,25 @@ function _xsd_facets:check_string_facets(s)
 	return true;
 end
 
+function _xsd_facets:check_patttern_match(s)
+	if (type(s) ~= 'string') then
+		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"string type\"");
+	end
+	if (self.pattern ~= nil) then
+		for i,v in ipairs(self.pattern) do
+			local exp = v.com_p;
+			if (1 ~= exp:check(s)) then
+				error_handler.raise_validation_error(-1,
+							"Value of the field {"..error_handler.get_fieldpath().."}: "
+								..s..", does not match the regex \'"..v.str_p..'\'', debug.getinfo(1));
+				return false;
+			end
+		end
+	end
+
+	return true;
+end
+
 function _xsd_facets:check_number_facets(s)
 	if (type(s) ~= 'number') then
 		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"number type\"");
@@ -273,6 +295,9 @@ function _xsd_facets:check(v)
 		if (not self:check_string_enumerations(v)) then
 			return false;
 		end
+		if (not self:check_patttern_match(v)) then
+			return false;
+		end
 	elseif (self.fundamental_type == 'number') then
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		if (not self:check_number_facets(v)) then
@@ -299,8 +324,15 @@ function _xsd_facets:override(t)
 		if (valid_facet_names[n] ~= nil) then
 			if (n == 'pattern') then
 				for p,q in ipairs(v) do
+					local res, out = pcall(regex.compile, regex, q.str_p);
+					if (not res) then
+						error("Invalid regular expression "..q.str_p);
+					end
+					q.com_p = out;
+
 					if (nil == self[n]) then self[n] = {}; end
-					self[n][#self[n]+1] = q;
+					local i = #(self[n])+1;
+					self[n][i] = q;
 				end
 			else
 				self[n] = v;
@@ -333,6 +365,15 @@ _xsd_facets.new_from_table = function(t, ft)
 	for n,v in pairs(t) do
 		if (valid_facet_names[n] ~= nil) then
 			o[n] = v;
+			if (n == 'pattern') then
+				for p,q in ipairs(v) do
+					local res, out = pcall(regex.compile, regex, q.str_p);
+					if (not res) then
+						error("Invalid regular expression "..tostring(q.str_p));
+					end
+					q.com_p = out;
+				end
+			end
 		end
 	end
 	o =  setmetatable(o, mt);

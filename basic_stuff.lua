@@ -644,7 +644,7 @@ basic_stuff.inherit_facets = function(handler)
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	local facets = super.facets;
 	facets:override(local_facets);
-	require 'pl.pretty'.dump(facets);
+	--require 'pl.pretty'.dump(facets);
 
 	return facets;
 end

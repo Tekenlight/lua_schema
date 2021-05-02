@@ -33,6 +33,7 @@
 		<xsd:simpleType>
 			<xsd:restriction base="ns:very_basic_regex_string">
 				<xsd:pattern value="h.*"/>
+				<xsd:pattern value="he.*"/>
 			</xsd:restriction>
 		</xsd:simpleType>
 	</xsd:element>
