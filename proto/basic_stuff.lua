@@ -639,22 +639,12 @@ basic_stuff.complex_type_simple_content_is_valid = function(schema_type_handler,
 end
 
 basic_stuff.inherit_facets = function(handler)
-	local local_facets = handler.local_facets;
-	local super = handler.super_element_content_type;
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-	local facets = super.facets;
-	facets:override(local_facets);
-	--require 'pl.pretty'.dump(facets);
-
-	return facets;
+	return {};
 end
 
 basic_stuff.execute_validation_of_atom = function(handler, content)
 	--require 'pl.pretty'.dump(handler);
 	local ret =  handler.type_handler:is_valid(content);
-	if (not ret) then return false; end
-
-	ret = handler.facets:check(content);
 
 	return ret;
 end
@@ -668,15 +658,7 @@ basic_stuff.execute_validation_of_list = function(handler, content)
 end
 
 basic_stuff.execute_primitive_validation = function(handler, content)
-	if (handler.type_of_simple == 'A') then
-		return basic_stuff.execute_validation_of_atom(handler, content)
-	elseif (handler.type_of_simple == 'U') then
-		return basic_stuff.execute_validation_of_union(handler, content)
-	elseif (handler.type_of_simple == 'L') then
-		return basic_stuff.execute_validation_of_list(handler, content)
-	else
-		error('Unknown type of simpleType ['..tostring(handler.type_of_simple)..']');
-	end
+	return basic_stuff.execute_validation_of_atom(handler, content)
 end
 
 basic_stuff.perform_element_validation = function(handler, content)

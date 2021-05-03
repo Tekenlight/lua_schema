@@ -11,11 +11,6 @@ function __token_handler_class:is_valid(s)
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid token", debug.getinfo(1));
 		return false
 	end
-	if (self.facets ~= nil) then
-		if (not self.facets:check(s)) then
-			return false;
-		end
-	end
 	return true;
 end
 
