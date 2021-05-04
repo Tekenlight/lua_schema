@@ -118,6 +118,22 @@ function elem_code_generator.get_super_element_content_type(ns, name)
 	return (require(ths):instantiate());
 end
 
+elem_code_generator.get_list_type_handler_str = function()
+	return basic_stuff.get_type_handler_str('http://www.w3.org/2001/XMLSchema', 'list_handler');
+end
+
+elem_code_generator.get_list_type_handler = function()
+	return basic_stuff.get_type_handler('http://www.w3.org/2001/XMLSchema', 'list_handler');
+end
+
+elem_code_generator.get_union_type_handler_str = function()
+	return basic_stuff.get_type_handler_str('http://www.w3.org/2001/XMLSchema', 'union_handler');
+end
+
+elem_code_generator.get_union_type_handler = function()
+	return basic_stuff.get_type_handler('http://www.w3.org/2001/XMLSchema', 'union_handler');
+end
+
 local get_type_handler = function(elem, dh, content_type)
 	if (content_type == 'C') then
 		return dh;
@@ -198,7 +214,14 @@ elem_code_generator.get_attr_decls = function(attrs)
 			particle_properties.generated_name = elem_code_generator.add_and_get_name(g_names, v.name); -- generated_name
 			attr.particle_properties = particle_properties;
 
-			attr.type_handler = basic_stuff.get_type_handler(v.type.ns, v.type.name..'_handler');
+			if (v.type_of_simple == 'A') then
+				attr.type_handler = basic_stuff.get_type_handler(v.type.ns, v.type.name..'_handler');
+			elseif (v.type_of_simple == 'U') then
+				attr.type_handler = elem_code_generator.get_union_type_handler();
+			else
+				attr.type_handler = elem_code_generator.get_list_type_handler();
+			end
+
 
 			attr.base = v.base;
 			attr.local_facets = v.local_facets;
@@ -443,8 +466,39 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 	local content_type = elem:get_element_content_type();
 	local element_type = elem:get_element_type();
 
+	local simple_type_props = nil;
 	do
-		element_handler.type_handler = get_type_handler(elem, element_handler, content_type);
+		if (content_type == 'S') then
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+			simple_type_props = elem:get_element_simpletype_dtls();
+			if (simple_type_props.type_of_simple == 'A') then
+				element_handler.type_handler = get_type_handler(elem, element_handler, content_type);
+			else
+				if (simple_type_props.type_of_simple == 'U') then
+					element_handler.type_handler = elem_code_generator.get_union_type_handler();
+					element_handler.union = {};
+					do
+						local i = #element_handler.union;
+						for p,q in ipairs(simple_type_props.member_types) do
+							i = i + 1;
+							element_handler.union[i] = q;
+							local s = element_handler.union[i].typedef:get_typedef_primary_bi_type();
+							require 'pl.pretty'.dump(s);
+							local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
+							element_handler.union[i].type_handler = th;
+							element_handler.union[i].local_facets = q.local_facets;
+							element_handler.union[i].facets = facets.new_from_table(q.facets, th.fundamental_type);
+							element_handler.union[i].type_of_simple = 'A';
+						end
+					end
+				else
+					element_handler.type_handler = elem_code_generator.get_list_type_handler();
+				end
+			end
+		else
+			element_handler.type_handler = get_type_handler(elem, element_handler, content_type);
+			element_handler.base = simple_type_props.base;
+		end
 		element_handler.get_attributes = basic_stuff.get_attributes;
 		element_handler.is_valid = get_is_valid_func(elem);
 		element_handler.to_xmlua = get_to_xmlua_func(elem);
@@ -480,9 +534,8 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 			props.declared_subelements = elem_code_generator.get_declared_subelements(model);
 			props.bi_type = {};
 		else
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 			props.bi_type = elem:get_element_primary_bi_type();
-			local simple_type_props = elem:get_element_simpletype_dtls();
-			element_handler.base = simple_type_props.base;
 			element_handler.local_facets = simple_type_props.local_facets;
 			element_handler.facets = facets.new_from_table(simple_type_props.facets, element_handler.type_handler.fundamental_type);
 			element_handler.type_of_simple = simple_type_props.type_of_simple;

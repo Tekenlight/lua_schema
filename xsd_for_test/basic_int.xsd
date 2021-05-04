@@ -25,4 +25,5 @@
 			</xsd:restriction>
 		</xsd:simpleType>
 	</xsd:element>
+	<xsd:element name="simple_int" type="xsd:int"/>
 </xsd:schema>

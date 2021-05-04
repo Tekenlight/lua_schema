@@ -4,7 +4,12 @@ local __int_handler_class = {}
 
 __int_handler_class.fundamental_type = 'number';
 
-function __int_handler_class:is_valid(i)
+function __int_handler_class:is_valid(s)
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, s);
+	local i = tonumber(s);
+	if (i == nil) then
+		return false;
+	end
 	local valid = true;
 	if(type(i) ~= "number") then
 		valid =  false
@@ -17,6 +22,7 @@ function __int_handler_class:is_valid(i)
 		return false;
 	end
 	if (self.facets ~= nil) then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i);
 		if (not self.facets:check(i)) then
 			return false;
 		end

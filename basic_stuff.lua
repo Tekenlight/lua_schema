@@ -1510,7 +1510,32 @@ local process_text = function(reader, sts, objs, pss)
 
 	local top_obj = objs:top();
 
-	local converted_value = schema_type_handler.type_handler:to_type('', value);
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, schema_type_handler.type_of_simple);
+	local converted_value = '';
+	if (schema_type_handler.type_of_simple == 'U') then
+		local status = false;
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		for i,v in ipairs(schema_type_handler.union) do
+			--[[
+			--We want tp use the facets value in type_handler field of handler
+			--and not the faets value in the main handler itself (supposedly derived)
+			--The reason for this is :
+			--the libxml2 schema processor does not populate the value of white_space
+			--as per primitive definitions, which is taken care by lua schema definitions
+			--]]
+			local v_for_v = v.type_handler.facets:process_white_space(value);
+			if (v.type_handler:is_valid(v_for_v)) then
+				converted_value = v.type_handler:to_type('', v_for_v);
+				status = true;
+				break;
+			end
+		end
+		if (not status) then
+		end
+	elseif (schema_type_handler.type_handler.type_of_simple == 'L') then
+	else
+		converted_value = schema_type_handler.type_handler:to_type('', value);
+	end
 	top_obj['___DATA___']._contained_value = converted_value;
 	top_obj['___METADATA___'].empty = false;
 

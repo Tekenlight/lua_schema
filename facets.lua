@@ -6,7 +6,7 @@ local error_handler = require("error_handler");
 
 local supported_fundamental_types = {
 	--['string'] = 1, ['float'] = 1, ['number'] = 1, ['date'] = 1, ['bool'] = 1
-	['string'] = 1, ['float'] = 1, ['number'] = 1
+	['string'] = 1, ['float'] = 1, ['number'] = 1, ['list'] = 1, ['union'] = 1
 }
 
 local valid_facet_names = {
@@ -257,10 +257,12 @@ function _xsd_facets:check_enumeration(s)
 end
 
 function _xsd_facets:process_white_space(s)
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, s);
 	if (type(s) ~= 'string') then
 		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"string type\"");
 	end
 	local o = '';
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, tostring(self.white_space));
 	if (self.white_space ~= nil) then
 		if (self.white_space == 'preserve') then
 			o = s;
@@ -272,6 +274,7 @@ function _xsd_facets:process_white_space(s)
 			o = string.gsub(o, "\t", ' ');
 		elseif (self.white_space == 'collapse') then
 			o = s;
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, tostring(s));
 			o = string.gsub(o, "\r\n", ' ');
 			o = string.gsub(o, "\n", ' ');
 			o = string.gsub(o, "\r", ' ');
@@ -282,6 +285,8 @@ function _xsd_facets:process_white_space(s)
 		else
 			error("Invalid value of whitespace facet "..self.white_space);
 		end
+	else
+		error("Invalid value of whitespace facet "..tostring(self.white_space));
 	end
 	return o;
 end
@@ -296,11 +301,16 @@ function _xsd_facets:check(v)
 			return false;
 		end
 	elseif (self.fundamental_type == 'number') then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		--print(debug.traceback(1));
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, v);
 		if (not self:check_number_facets(v)) then
 			return false;
 		end
 		if (not self:check_num_enumerations(v)) then
+			return false;
+		end
+	elseif (self.fundamental_type == 'union') then
+		if (not self:check_string_enumerations(v)) then
 			return false;
 		end
 	else
