@@ -12,6 +12,11 @@ __list_handler_class.properties.content_type = 'S';
 __list_handler_class.properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
 ]]--
 
+function __list_handler_class:is_deserialized_valid(x)
+	local s = tostring(x);
+	return self:is_valid(s);
+end
+
 function __list_handler_class:is_valid(s)
 	if((s ~= nil) and (type(s) ~= "string")) then
 		error_handler.raise_validation_error(-1,

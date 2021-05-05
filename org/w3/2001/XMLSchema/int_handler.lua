@@ -4,12 +4,13 @@ local __int_handler_class = {}
 
 __int_handler_class.fundamental_type = 'number';
 
-function __int_handler_class:is_valid(s)
+function __int_handler_class:is_deserialized_valid(x)
+	local i = tonumber(x);
+	return self:is_valid(i);
+end
+
+function __int_handler_class:is_valid(i)
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, s);
-	local i = tonumber(s);
-	if (i == nil) then
-		return false;
-	end
 	local valid = true;
 	if(type(i) ~= "number") then
 		valid =  false

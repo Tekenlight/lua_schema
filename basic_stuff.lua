@@ -1524,8 +1524,11 @@ local process_text = function(reader, sts, objs, pss)
 			--as per primitive definitions, which is taken care by lua schema definitions
 			--]]
 			local v_for_v = v.type_handler.facets:process_white_space(value);
-			if (v.type_handler:is_valid(v_for_v)) then
-				converted_value = v.type_handler:to_type('', v_for_v);
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i, v.type_handler.fundamental_type, type(value) );
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i, v.type_handler.fundamental_type, v_for_v );
+			if (v.type_handler:is_deserialized_valid(v_for_v)) then
+				converted_value = v_for_v;
+				--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i, v.type_handler.fundamental_type, type(converted_value));
 				status = true;
 				break;
 			end

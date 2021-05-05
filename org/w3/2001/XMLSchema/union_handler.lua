@@ -5,8 +5,12 @@ local __union_handler_class = {}
 
 __union_handler_class.fundamental_type = 'string';
 
-function __union_handler_class:is_valid(x)
+function __union_handler_class:is_deserialized_valid(x)
 	local s = tostring(x);
+	return self:is_valid(s);
+end
+
+function __union_handler_class:is_valid(s)
 	if((s ~= nil) and (type(s) ~= "string")) then
 		error_handler.raise_validation_error(-1,
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid string", debug.getinfo(1));
@@ -20,7 +24,8 @@ function __union_handler_class:is_valid(x)
 	return true;
 end
 
-function __union_handler_class:to_xmlua(ns, s)
+function __union_handler_class:to_xmlua(ns, x)
+	local s = tostring(x);
 	if (false == self:is_valid(s)) then
 		local msv = error_handler.reset();
 		if (msv ~= nil) then error(msv.status.error_message);
@@ -37,7 +42,8 @@ function __union_handler_class:to_schema_type(ns, x)
 	return temp_s;
 end
 
-function __union_handler_class:to_cjson_struct(ns, s)
+function __union_handler_class:to_cjson_struct(ns, x)
+	local s = tostring(x);
 	if (false == self:is_valid(s)) then
 		local msv = error_handler.reset();
 		if (msv ~= nil) then error(msv.status.error_message);
@@ -57,7 +63,8 @@ function __union_handler_class:get_facets()
 	return facets;
 end
 
-function __union_handler_class:to_type(ns, i)
+function __union_handler_class:to_type(ns, x)
+	local i = tostring(x);
 	if ('string' ~= type(i)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a valid string"); end
 	local s = self:to_schema_type(ns, i);
 	if (false == self:is_valid(i)) then

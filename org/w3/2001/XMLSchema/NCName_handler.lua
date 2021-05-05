@@ -5,6 +5,11 @@ local __NCName_handler_class = {}
 
 __NCName_handler_class.fundamental_type = 'string';
 
+function __NCName_handler_class:is_deserialized_valid(x)
+	local s = tostring(x);
+	return self:is_valid(s);
+end
+
 function __NCName_handler_class:is_valid(s)
 	if((s ~= nil) and (type(s) ~= "string")) then
 		error_handler.raise_validation_error(-1,

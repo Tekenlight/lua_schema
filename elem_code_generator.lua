@@ -483,7 +483,7 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 							i = i + 1;
 							element_handler.union[i] = q;
 							local s = element_handler.union[i].typedef:get_typedef_primary_bi_type();
-							require 'pl.pretty'.dump(s);
+							--require 'pl.pretty'.dump(s);
 							local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
 							element_handler.union[i].type_handler = th;
 							element_handler.union[i].local_facets = q.local_facets;
