@@ -216,22 +216,52 @@ elem_code_generator.get_attr_decls = function(attrs)
 
 			if (v.type_of_simple == 'A') then
 				attr.type_handler = basic_stuff.get_type_handler(v.type.ns, v.type.name..'_handler');
+				do
+					--print(debug.getinfo(1).source, debug.getinfo(1).currentline, v.type_of_simple);
+					attr.base = v.base;
+				end
 			elseif (v.type_of_simple == 'U') then
 				attr.type_handler = elem_code_generator.get_union_type_handler();
+				do
+					attr.union = {};
+					local j = #attr.union;
+					for p,q in ipairs(v.member_types) do
+						j = j + 1;
+						attr.union[j] = q;
+						--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+						local s = attr.union[j].typedef:get_typedef_primary_bi_type();
+						--require 'pl.pretty'.dump(s);
+						local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
+						attr.union[j].type_handler = th;
+						attr.union[j].local_facets = q.local_facets;
+						attr.union[j].facets = facets.new_from_table(q.facets, th.fundamental_type);
+						attr.union[j].type_of_simple = 'A';
+					end
+				end
+				do
+					local ns;
+					local name;
+					attr.base = {}
+					if (v.base.name == nil) then
+						attr.base.ns = 'http://www.w3.org/2001/XMLSchema';
+						attr.base.name = 'union';
+					else
+						attr.base.ns = attr.base.ns;
+						attr.base.name = attr.base.name;
+					end
+				end
 			else
 				attr.type_handler = elem_code_generator.get_list_type_handler();
+				attr.base = v.base;
 			end
-
-
-			attr.base = v.base;
+			--require 'pl.pretty'.dump(attr.base);
 			attr.local_facets = v.local_facets;
 			attr.facets = facets.new_from_table(v.facets, attr.type_handler.fundamental_type);
-			do
-				local ns = attr.base.ns;
-				local name = attr.base.name;
-				attr.super_element_content_type = elem_code_generator.get_super_element_content_type(ns, name);
-				attr.type_of_simple = v.type_of_simple;
-			end
+			local ns = attr.base.ns;
+			local name = attr.base.name;
+			attr.super_element_content_type = elem_code_generator.get_super_element_content_type(ns, name);
+			attr.type_of_simple = v.type_of_simple;
+
 
 			decls[attr_q_name] = attr;
 		end
@@ -473,6 +503,7 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 			simple_type_props = elem:get_element_simpletype_dtls();
 			if (simple_type_props.type_of_simple == 'A') then
 				element_handler.type_handler = get_type_handler(elem, element_handler, content_type);
+				element_handler.base = simple_type_props.base;
 			else
 				if (simple_type_props.type_of_simple == 'U') then
 					element_handler.type_handler = elem_code_generator.get_union_type_handler();
@@ -491,13 +522,17 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 							element_handler.union[i].type_of_simple = 'A';
 						end
 					end
+					element_handler.base = {};
+					element_handler.base.ns = 'http://www.w3.org/2001/XMLSchema';
+					element_handler.base.name = 'union';
 				else
 					element_handler.type_handler = elem_code_generator.get_list_type_handler();
+					element_handler.base = simple_type_props.base;
 				end
 			end
+			--require 'pl.pretty'.dump(element_handler.base);
 		else
 			element_handler.type_handler = get_type_handler(elem, element_handler, content_type);
-			element_handler.base = simple_type_props.base;
 		end
 		element_handler.get_attributes = basic_stuff.get_attributes;
 		element_handler.is_valid = get_is_valid_func(elem);

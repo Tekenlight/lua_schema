@@ -660,7 +660,22 @@ basic_stuff.execute_validation_of_atom = function(handler, content)
 end
 
 basic_stuff.execute_validation_of_union = function(handler, content)
-	return true;
+	local ret = false;
+
+	ret = handler.type_handler:is_valid(content);
+	if (not ret) then return false; end
+
+	ret = false;
+	for i,v in ipairs(handler.union) do
+		local v_for_v = v.type_handler.facets:process_white_space(content);
+		if (v.type_handler:is_deserialized_valid(v_for_v)) then
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, v_for_v, v.type_handler.fundamental_type);
+			ret = true;
+			break;
+		end
+	end
+
+	return ret;
 end
 
 basic_stuff.execute_validation_of_list = function(handler, content)
@@ -1137,7 +1152,8 @@ local read_attributes = function(reader, schema_type_handler, obj)
 					--error("Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element");
 					return false;
 				end
-				local converted_value = attr_properties.type_handler:to_type(attr_properties.particle_properties.q_name.ns, attr_value);
+				--local converted_value = attr_properties.type_handler:to_type(attr_properties.particle_properties.q_name.ns, attr_value);
+				local converted_value = basic_stuff.get_converted_value(attr_properties, attr_value);
 				error_handler.pop_element();
 				obj['___DATA___']._attr[attr_properties.particle_properties.generated_name] = converted_value;
 				count = count + 1;
@@ -1495,23 +1511,7 @@ local process_start_of_element = function(reader, sts, objs, pss)
 	return true;
 end
 
-local process_text = function(reader, sts, objs, pss)
-	local name = reader:const_local_name()
-	local uri = reader:const_namespace_uri();
-	local value = reader:const_value();
-	local depth = reader:node_depth();
-	local typ = reader:node_type();
-	local is_empty = reader:node_is_empty_element();
-	local has_value = reader:node_reader_has_value();
-	local q_name = '{'..get_uri(uri)..'}'..name;
-
-	local schema_type_handler = sts:top();
-	--print(depth, typ, name, is_empty, has_value, value);
-
-	local top_obj = objs:top();
-
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, schema_type_handler.type_of_simple);
-	local converted_value = '';
+basic_stuff.get_converted_value = function (schema_type_handler, value)
 	if (schema_type_handler.type_of_simple == 'U') then
 		local status = false;
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
@@ -1534,11 +1534,33 @@ local process_text = function(reader, sts, objs, pss)
 			end
 		end
 		if (not status) then
+			error_handler.raise_validation_error(-1, "Content not valid", debug.getinfo(1));
+			error("Content not valid");
 		end
 	elseif (schema_type_handler.type_handler.type_of_simple == 'L') then
 	else
 		converted_value = schema_type_handler.type_handler:to_type('', value);
 	end
+	return converted_value;
+end
+
+local process_text = function(reader, sts, objs, pss)
+	local name = reader:const_local_name()
+	local uri = reader:const_namespace_uri();
+	local value = reader:const_value();
+	local depth = reader:node_depth();
+	local typ = reader:node_type();
+	local is_empty = reader:node_is_empty_element();
+	local has_value = reader:node_reader_has_value();
+	local q_name = '{'..get_uri(uri)..'}'..name;
+
+	local schema_type_handler = sts:top();
+	--print(depth, typ, name, is_empty, has_value, value);
+
+	local top_obj = objs:top();
+
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, schema_type_handler.type_of_simple);
+	local converted_value = basic_stuff.get_converted_value(schema_type_handler, value);
 	top_obj['___DATA___']._contained_value = converted_value;
 	top_obj['___METADATA___'].empty = false;
 
