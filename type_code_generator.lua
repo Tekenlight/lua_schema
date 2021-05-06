@@ -217,50 +217,7 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 											..element_handler.base.name..'\';\n';;
 		local local_facets = element_handler.local_facets;
 		code = code..indent..'    '..eh_name..'.local_facets = {};\n';
-		if (local_facets.min_exclusive ~= nil) then
-			code = code..indent..'    '..eh_name..'.local_facets.min_exclusive = \''..local_facets.min_exclusive..'\';\n';;
-		end
-		if (local_facets.min_inclusive ~= nil) then
-			code = code..indent..'    '..eh_name..'.local_facets.min_inclusive = \''..local_facets.min_inclusive..'\';\n';;
-		end
-		if (local_facets.max_inclusive ~= nil) then
-			code = code..indent..'    '..eh_name..'.local_facets.max_inclusive = \''..local_facets.max_inclusive..'\';\n';;
-		end
-		if (local_facets.max_exclusive ~= nil) then
-			code = code..indent..'    '..eh_name..'.local_facets.max_exclusive = \''..local_facets.max_exclusive..'\';\n';;
-		end
-		if (local_facets.length ~= nil) then
-			code = code..indent..'    '..eh_name..'.local_facets.length = '..local_facets.length..';\n';;
-		end
-		if (local_facets.min_length ~= nil) then
-			code = code..indent..'    '..eh_name..'.local_facets.min_length = '..local_facets.min_length..';\n';;
-		end
-		if (local_facets.max_length ~= nil) then
-			code = code..indent..'    '..eh_name..'.local_facets.max_length = '..local_facets.max_length..';\n';;
-		end
-		if (local_facets.total_digits ~= nil) then
-			code = code..indent..'    '..eh_name..'.local_facets.total_digits = '..local_facets.total_digits..';\n';;
-		end
-		if (local_facets.fractional_digits ~= nil) then
-			code = code..indent..'    '..eh_name..'.local_facets.fractional_digits = '..local_facets.fractional_digits..';\n';;
-		end
-		if (local_facets.white_space ~= nil) then
-			code = code..indent..'    '..eh_name..'.local_facets.white_space = \''..local_facets.white_space..'\';\n';;
-		end
-		if (local_facets.enumeration ~= nil) then
-			code = code..indent..'    '..eh_name..'.local_facets.enumeration = {};\n';
-			for i,v in ipairs(local_facets.enumeration) do
-				code = code..indent..'    '..eh_name..'.local_facets.enumeration['..i..'] = \''..v..'\';\n';
-			end
-		end
-		if (local_facets.pattern ~= nil) then
-			code = code..indent..'    '..eh_name..'.local_facets.pattern = {};\n';
-			for i,v in ipairs(local_facets.pattern) do
-				code = code..indent..'    '..eh_name..'.local_facets.pattern['..i..'] = {};\n';
-				code = code..indent..'    '..eh_name..'.local_facets.pattern['..i..'].str_p = [['..tostring(v.str_p)..']];\n';
-				code = code..indent..'    '..eh_name..'.local_facets.pattern['..i..'].com_p = nil;\n';
-			end
-		end
+		code = elem_code_generator.gen_code_copy_facets(code, indent..'    '..eh_name..'.local_facets', local_facets);
 
 		code = code..indent..'    '..eh_name..'.facets = basic_stuff.inherit_facets('..eh_name..');\n'
 		code = code..indent..'end\n\n';
