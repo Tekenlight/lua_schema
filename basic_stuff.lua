@@ -1755,6 +1755,7 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	local doc = (objs:pop())['___DATA___'];
 
 	obj = doc[schema_type_handler.particle_properties.generated_name];
+	--(require 'pl.pretty').dump(obj);
 
 	local valid, msv = validate_content(schema_type_handler, obj);
 	if (not valid) then

@@ -1,0 +1,22 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"  targetNamespace="http://test_example.com" xmlns:ns="http://test_example.com">
+	<xsd:complexType name="basic_string_simple_content_type">
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string">
+				<xsd:attribute name="attr1">
+					<xsd:simpleType>
+						<xsd:union>
+							<xsd:simpleType>
+								<xsd:restriction base="xsd:int"/>
+							</xsd:simpleType>
+							<xsd:simpleType>
+								<xsd:restriction base="xsd:token"/>
+							</xsd:simpleType>
+						</xsd:union>
+					</xsd:simpleType>
+				</xsd:attribute>
+				<xsd:attribute name="attr2" type="xsd:string" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:element name="basic_string_simple_content" type="ns:basic_string_simple_content_type"/>
+</xsd:schema>

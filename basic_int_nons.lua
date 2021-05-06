@@ -32,7 +32,7 @@ do
     element_handler.base.ns = 'http://www.w3.org/2001/XMLSchema';
     element_handler.base.name = 'int';
     element_handler.local_facets = {};
-    element_handler.local_facets.enumeration = {};    element_handler.local_facets.enumeration[1] = '123';
+    element_handler.local_facets.facets_set.enumeration = {};    element_handler.local_facets.enumeration[1] = '123';
     element_handler.facets = basic_stuff.inherit_facets(element_handler);
 end
 

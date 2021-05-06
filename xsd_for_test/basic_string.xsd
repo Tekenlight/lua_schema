@@ -39,4 +39,16 @@
 			</xsd:restriction>
 		</xsd:simpleType>
 	</xsd:element>
+	<xsd:element name="uniont">
+		<xsd:simpleType>
+			<xsd:union>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:int"/>
+				</xsd:simpleType>
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:token"/>
+				</xsd:simpleType>
+			</xsd:union>
+		</xsd:simpleType>
+	</xsd:element>
 </xsd:schema>
