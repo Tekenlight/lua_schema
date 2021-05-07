@@ -39,16 +39,24 @@
 			</xsd:restriction>
 		</xsd:simpleType>
 	</xsd:element>
-	<xsd:element name="uniont">
-		<xsd:simpleType>
-			<xsd:union>
-				<xsd:simpleType>
-					<xsd:restriction base="xsd:int"/>
-				</xsd:simpleType>
-				<xsd:simpleType>
-					<xsd:restriction base="xsd:token"/>
-				</xsd:simpleType>
-			</xsd:union>
-		</xsd:simpleType>
+	<xsd:simpleType name="uniont_t">
+		<xsd:union>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:int"/>
+			</xsd:simpleType>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:token"/>
+			</xsd:simpleType>
+		</xsd:union>
+	</xsd:simpleType>
+	<xsd:element name="uniont" type="ns:uniont_t">
 	</xsd:element>
+	<xsd:simpleType name="uniont_t_1">
+		<xsd:union memberTypes="ns:uniont_t">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string"/>
+			</xsd:simpleType>
+		</xsd:union>
+	</xsd:simpleType>
+	<xsd:element name="uniont_1" type="ns:uniont_t_1"/>
 </xsd:schema>

@@ -139,20 +139,16 @@ elem_code_generator.get_union_type_handler = function()
 	return basic_stuff.get_type_handler('http://www.w3.org/2001/XMLSchema', 'union_handler');
 end
 
-local get_type_handler = function(elem, dh, content_type)
+local get_type_handler = function(defn, dh, content_type)
 	if (content_type == 'C') then
 		return dh;
 	end
-	--[[
-	local type_name = elem:get_named_type();
-	if (type_name == nil) then return dh; end
-	local type_ns = elem:get_named_type_ns();
-		TBD: 
-		THIS NEEDS TO BE CHANGED
-		basically, this is the type handler on which the current on depends
-		We basically expect this already to be available in some sort of a cache.
-	]]--
-	local s = elem:get_element_primary_bi_type();
+	local s = '';
+	if (defn.class == 'E') then
+		s =defn:get_element_primary_bi_type();
+	else
+		s =defn:get_typedef_primary_bi_type();
+	end
 	--print(s.name..'_handler');
 	local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
 	return th;
@@ -496,6 +492,70 @@ function elem_code_generator.prepare_generated_names(model)
 	return generated_names;
 end
 
+elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names, element_handler)
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	local content_type = '';
+	local element_type = '';
+
+	if (defn.class == 'E') then
+		content_type = defn:get_element_content_type();
+		element_type = defn:get_element_type();
+	else
+		content_type = defn:get_typedef_content_type();
+		element_type = defn:get_typedef_type();
+	end
+
+	local simple_type_props = nil;
+	if (content_type == 'S') then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		if (defn.class == 'E') then
+			simple_type_props = defn:get_element_simpletype_dtls();
+		else
+			simple_type_props = defn:get_typedef_simpletype_dtls();
+		end
+		if (simple_type_props.type_of_simple == 'A') then
+			element_handler.type_handler = get_type_handler(defn, element_handler, content_type);
+			element_handler.base = simple_type_props.base;
+		else
+			if (simple_type_props.type_of_simple == 'U') then
+				element_handler.type_handler = elem_code_generator.get_union_type_handler();
+				element_handler.union = {};
+				do
+					local i = #element_handler.union;
+					for p,q in ipairs(simple_type_props.member_types) do
+						i = i + 1;
+						element_handler.union[i] = q;
+						local s = element_handler.union[i].typedef:get_typedef_primary_bi_type();
+						--require 'pl.pretty'.dump(s);
+						local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
+						element_handler.union[i].bi_type = s;
+						element_handler.union[i].type_handler = th;
+						element_handler.union[i].local_facets = q.local_facets;
+						element_handler.union[i].base = q.base;
+						element_handler.union[i].facets = facets.new_from_table(q.facets, th.fundamental_type);
+						element_handler.union[i].type_of_simple = 'A';
+					end
+				end
+				--if (simple_type_props.base.name == nil) then
+					element_handler.base = {};
+					element_handler.base.ns = 'http://www.w3.org/2001/XMLSchema';
+					element_handler.base.name = 'union';
+				--else
+					--element_handler.base = simple_type_props.base;
+				--end
+			else
+				element_handler.type_handler = elem_code_generator.get_list_type_handler();
+				element_handler.base = simple_type_props.base;
+			end
+		end
+		--require 'pl.pretty'.dump(element_handler.base);
+	else
+		element_handler.type_handler = get_type_handler(defn, element_handler, content_type);
+	end
+
+	return;
+end
+
 elem_code_generator.get_element_handler = function(elem, to_generate_names)
 	local element_handler = {};
 
@@ -503,55 +563,16 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 	local element_type = elem:get_element_type();
 
 	local simple_type_props = nil;
+	if (content_type == 'S') then
+		simple_type_props = elem:get_element_simpletype_dtls();
+	end
 	do
-		if (content_type == 'S') then
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-			simple_type_props = elem:get_element_simpletype_dtls();
-			if (simple_type_props.type_of_simple == 'A') then
-				element_handler.type_handler = get_type_handler(elem, element_handler, content_type);
-				element_handler.base = simple_type_props.base;
-			else
-				if (simple_type_props.type_of_simple == 'U') then
-					print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-					element_handler.type_handler = elem_code_generator.get_union_type_handler();
-					element_handler.union = {};
-					do
-						local i = #element_handler.union;
-						for p,q in ipairs(simple_type_props.member_types) do
-							i = i + 1;
-							element_handler.union[i] = q;
-							local s = element_handler.union[i].typedef:get_typedef_primary_bi_type();
-							--require 'pl.pretty'.dump(s);
-							local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
-							element_handler.union[i].bi_type = s;
-							element_handler.union[i].type_handler = th;
-							element_handler.union[i].local_facets = q.local_facets;
-							element_handler.union[i].base = q.base;
-							element_handler.union[i].facets = facets.new_from_table(q.facets, th.fundamental_type);
-							element_handler.union[i].type_of_simple = 'A';
-						end
-					end
-					--if (simple_type_props.base.name == nil) then
-						element_handler.base = {};
-						element_handler.base.ns = 'http://www.w3.org/2001/XMLSchema';
-						element_handler.base.name = 'union';
-					--else
-						--element_handler.base = simple_type_props.base;
-					--end
-				else
-					element_handler.type_handler = elem_code_generator.get_list_type_handler();
-					element_handler.base = simple_type_props.base;
-				end
-			end
-			--require 'pl.pretty'.dump(element_handler.base);
-		else
-			element_handler.type_handler = get_type_handler(elem, element_handler, content_type);
-		end
 		element_handler.get_attributes = basic_stuff.get_attributes;
 		element_handler.is_valid = get_is_valid_func(elem);
 		element_handler.to_xmlua = get_to_xmlua_func(elem);
 		element_handler.get_unique_namespaces_declared = get_to_unsd_func(elem);
 		element_handler.parse_xml = basic_stuff.parse_xml;
+		elem_code_generator.get_type_handler_and_base(elem, to_generate_names, element_handler);
 	end
 
 	do
@@ -930,60 +951,68 @@ elem_code_generator.gen_code_copy_facets = function(code, prefix, facets_set)
 	return code;
 end
 
+elem_code_generator.put_union_or_list_code = function(eh_name, element_handler, indentation)
+	local code = '';
+	if (element_handler.type_of_simple == 'A') then
+	else
+		if (element_handler.type_of_simple == 'U') then
+			code = code..'do\n'
+			code = code..indentation..eh_name..'.union = {};\n\n';
+			local i = #element_handler.union;
+			for p,q in ipairs(element_handler.union) do
+
+				code = code..indentation..eh_name..'.union['..p..'] = {};\n';
+
+				code = code..indentation..eh_name..'.union['..p..'].type_of_simple = \'A\';\n';
+				code = code..indentation..eh_name..'.union['..p..'].base = {};\n';
+				code = code..indentation..eh_name..'.union['..p..'].base.ns  = \'' ..q.base.ns..'\';\n';
+				code = code..indentation..eh_name..'.union['..p..'].base.name  = \'' ..q.base.name..'\';\n';
+				do
+					local ns = q.base.ns;
+					local name = q.base.name;
+					code = code..indentation..eh_name..'.union['..p..'].super_element_content_type = '
+								..elem_code_generator.get_type_handler_code(ns, name)..  ';\n';
+				end
+				do
+					local ns = q.bi_type.ns;
+					local name = q.bi_type.name;
+					code = code..indentation..eh_name..'.union['..p..'].type_handler = '
+							..elem_code_generator.get_type_handler_code(ns, name)..';\n';
+				end
+				do
+					code = code..indentation..eh_name..'.union['..p..'].local_facets = {};\n';
+					local prefix = indentation..eh_name..'.union['..p..'].local_facets';
+					local local_facets = q.local_facets;
+					code = elem_code_generator.gen_code_copy_facets(code, prefix, local_facets);
+
+					--print(eh_name);
+					code = code..indentation..eh_name..
+						'.union['..p..'].facets = basic_stuff.inherit_facets('..eh_name..'.union['..p..']);\n'
+				end
+				code = code..'\n';
+			end
+			code = code..'end\n\n'
+		else
+		end
+	end
+	return code;
+end
+
 elem_code_generator.put_element_handler_code = function(eh_name, element_handler, indent)
 	if (indent == nil) then
 		indent = ''
 	end
 	local code = '';
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 
 	local properties = element_handler.properties;
 	if (element_handler.properties.content_type == 'S') then
 		local ns = element_handler.base.ns;
 		local name = element_handler.base.name;
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, tostring(ns), tostring(name));
 		code = code..eh_name..'.super_element_content_type = '..elem_code_generator.get_type_handler_code(ns, name)..  ';\n\n';
 		code = code..eh_name..'.type_of_simple = \''..element_handler.type_of_simple..  '\';\n\n';
-		if (element_handler.type_of_simple == 'A') then
-		else
-			if (element_handler.type_of_simple == 'U') then
-				code = code..'do\n'
-				code = code..indent..'    '..eh_name..'.union = {};\n\n';
-				local i = #element_handler.union;
-				for p,q in ipairs(element_handler.union) do
-
-					code = code..indent..'    '..eh_name..'.union['..p..'] = {};\n';
-
-					code = code..indent..'    '..eh_name..'.union['..p..'].type_of_simple = \'A\';\n';
-					code = code..indent..'    '..eh_name..'.union['..p..'].base = {};\n';
-					code = code..indent..'    '..eh_name..'.union['..p..'].base.ns  = \'' ..q.base.ns..'\';\n';
-					code = code..indent..'    '..eh_name..'.union['..p..'].base.name  = \'' ..q.base.name..'\';\n';
-					do
-						local ns = q.base.ns;
-						local name = q.base.name;
-						code = code..indent..'    '..eh_name..'.union['..p..'].super_element_content_type = '
-									..elem_code_generator.get_type_handler_code(ns, name)..  ';\n';
-					end
-					do
-						local ns = q.bi_type.ns;
-						local name = q.bi_type.name;
-						code = code..indent..'    '..eh_name..'.union['..p..'].type_handler = '
-								..elem_code_generator.get_type_handler_code(ns, name)..';\n';
-					end
-					do
-						code = code..indent..'    '..eh_name..'.union['..p..'].local_facets = {};\n';
-						local prefix = indent..'    '..eh_name..'.union['..p..'].local_facets';
-						local local_facets = q.local_facets;
-						code = elem_code_generator.gen_code_copy_facets(code, prefix, local_facets);
-
-						--print(eh_name);
-						code = code..indent..'    '..eh_name..
-							'.union['..p..'].facets = basic_stuff.inherit_facets('..eh_name..'.union['..p..']);\n'
-					end
-					code = code..'\n';
-				end
-				code = code..'end\n\n'
-			else
-			end
-		end
+		code = code..elem_code_generator.put_union_or_list_code(eh_name, element_handler, indent..'    ');
 	end
 	code = code..indent..'do\n';
 	code = code..indent..'    '..eh_name..'.properties = {};\n';

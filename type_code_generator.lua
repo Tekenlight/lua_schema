@@ -64,12 +64,16 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names)
 	local element_type = typedef:get_typedef_type();
 
 	do
-		element_handler.type_handler = get_type_handler(typedef, element_handler, content_type);
+		--element_handler.type_handler = get_type_handler(typedef, element_handler, content_type);
 		element_handler.get_attributes = basic_stuff.get_attributes;
 		element_handler.is_valid = get_is_valid_func(typedef);
 		element_handler.to_xmlua = get_to_xmlua_func(typedef);
 		element_handler.get_unique_namespaces_declared = get_to_unsd_func(typedef);
 		element_handler.parse_xml = basic_stuff.parse_xml;
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		--print(debug.traceback(1));
+		elem_code_generator.get_type_handler_and_base(typedef, to_generate_names, element_handler);
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	end
 
 	do
@@ -90,7 +94,10 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names)
 		else
 			props.bi_type = typedef:get_typedef_primary_bi_type();
 			local simple_type_props = typedef:get_typedef_simpletype_dtls();
-			element_handler.base = simple_type_props.base;
+			--[[
+			--In case of simple base is populated by elem_code_generator.get_type_handler_and_base
+			--element_handler.base = simple_type_props.base;
+			--]]
 			element_handler.local_facets = simple_type_props.local_facets;
 			element_handler.facets = simple_type_props.facets;
 			element_handler.type_of_simple = simple_type_props.type_of_simple;
@@ -110,13 +117,16 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 	end
 	local code = '';
 
+
 	local properties = element_handler.properties;
 	if (element_handler.properties.content_type == 'S') then
 		local ns = element_handler.base.ns;
 		local name = element_handler.base.name;
 		code = code..eh_name..'.super_element_content_type = '..elem_code_generator.get_type_handler_code(ns, name)..  ';\n\n';
 		code = code..eh_name..'.type_of_simple = \''..element_handler.type_of_simple..  '\';\n\n';
+		code = code..elem_code_generator.put_union_or_list_code(eh_name, element_handler, indent..'    ');
 	end
+
 	code = code..indent..'do\n';
 	code = code..indent..'    '..eh_name..'.properties = {};\n';
 	code = code..indent..'    '..eh_name..'.properties.element_type = \''..properties.element_type..'\';\n';
@@ -229,7 +239,15 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 	else
 		local ns = properties.bi_type.ns;
 		local name = properties.bi_type.name;
-		code = code..indent..'    '..eh_name..'.type_handler = '..elem_code_generator.get_type_handler_code(ns, name)..';\n';
+		if (element_handler.type_of_simple == 'A') then
+			code = code..indent..'    '..eh_name..'.type_handler = '..elem_code_generator.get_type_handler_code(ns, name)..';\n';
+		elseif (element_handler.type_of_simple == 'U') then
+			code = code..indent..'    '..eh_name..'.type_handler = '
+				..elem_code_generator.get_oth_type_handler_code(elem_code_generator.get_union_type_handler_str())..';\n';
+		else
+			code = code..indent..'    '..eh_name..'.type_handler = '
+				..elem_code_generator.get_oth_type_handler_code(elem_code_generator.get_list_type_handler_str())..';\n';
+		end
 	end
 
 

@@ -4,7 +4,7 @@ local xsd = xmlua.XSD.new();
 
 
 local function generate_schema_for_typedef(typedef)
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, typedef.name);
 	require 'pl.pretty'.dump(typedef);
 	mhf:generate_lua_schema_from_typedef(typedef);
 end
