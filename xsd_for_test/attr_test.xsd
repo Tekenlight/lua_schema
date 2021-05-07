@@ -1,7 +1,8 @@
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"  targetNamespace="http://test_example.com" xmlns:ns="http://test_example.com">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://test_example.com" xmlns:ns="http://test_example.com">
+	<xsd:include schemaLocation="basic_string.xsd"/>
 	<xsd:complexType name="ua_basic_string_simple_content_type">
 		<xsd:simpleContent>
-			<xsd:extension base="xsd:string">
+			<xsd:extension base="ns:uniont_t">
 				<xsd:attribute name="attr1">
 					<xsd:simpleType>
 						<xsd:union>
