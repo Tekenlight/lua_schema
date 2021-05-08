@@ -52,6 +52,14 @@ error_handler.raise_validation_error = function(error_no, message, d_info)
 	end
 end
 
+error_handler.reset_error = function()
+	_G.message_validation_context.status = { success = true,
+										error_no = 0,
+										error_message = '',
+										traceback = ''};
+	return;
+end
+
 error_handler.reset = function()
 	local message_validation_context = _G.message_validation_context;
 	_G.message_validation_context = nil; -- to ensure garbage collection

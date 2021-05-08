@@ -5,21 +5,28 @@ local __int_handler_class = {}
 __int_handler_class.fundamental_type = 'number';
 
 function __int_handler_class:is_deserialized_valid(x)
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, x);
 	local i = tonumber(x);
+	if (i == nil) then
+		error_handler.raise_validation_error(-1,
+						"Field:["..x.."]:{"..error_handler.get_fieldpath().."} is not a valid integer", debug.getinfo(1));
+		return false;
+	end
 	return self:is_valid(i);
 end
 
 function __int_handler_class:is_valid(i)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, s);
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i);
 	local valid = true;
 	if(type(i) ~= "number") then
 		valid =  false
 	elseif (0 ~= (i%1)) then
 		valid =  false
 	end
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i);
 	if (not valid) then
 		error_handler.raise_validation_error(-1,
-						"Field: {"..error_handler.get_fieldpath().."} is not a valid integer", debug.getinfo(1));
+						"Field:["..i.."]:{"..error_handler.get_fieldpath().."} is not a valid integer", debug.getinfo(1));
 		return false;
 	end
 	if (self.facets ~= nil) then
@@ -57,6 +64,12 @@ end
 
 function __int_handler_class:to_type(ns, i)
 	local c_i = tonumber(i);
+	if (c_i == nil) then
+		error_handler.raise_validation_error(-1,
+						"Field:["..i.."]:{"..error_handler.get_fieldpath().."} is not a valid integer", debug.getinfo(1));
+		local msv = error_handler.reset();
+		error(msv.status.error_message);
+	end
 	if (false == self:is_valid(c_i)) then
 		local msv = error_handler.reset();
 		error(msv.status.error_message);

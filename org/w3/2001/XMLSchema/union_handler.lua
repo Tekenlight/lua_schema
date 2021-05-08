@@ -3,7 +3,7 @@ local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __union_handler_class = {}
 
-__union_handler_class.fundamental_type = 'string';
+__union_handler_class.fundamental_type = 'union';
 
 function __union_handler_class:is_deserialized_valid(x)
 	local s = tostring(x);

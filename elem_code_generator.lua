@@ -254,7 +254,18 @@ elem_code_generator.get_attr_decls = function(attrs)
 				end
 			else
 				attr.type_handler = elem_code_generator.get_list_type_handler();
-				attr.base = v.base;
+				attr.base.ns = 'http://www.w3.org/2001/XMLSchema';
+				attr.base.name = 'list';
+				attr.list_item_type = v.list_item_type;
+				local s = v.list_item_type.typedef:get_typedef_primary_bi_type();
+				local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
+				attr.list_item_type.type_of_simple = 'A';
+				attr.list_item_type.bi_type = s;
+				attr.list_item_type.type_handler = th;
+				attr.list_item_type.base = v.list_item_type.base;
+				attr.list_item_type.local_facets = v.list_item_type.local_facets;
+				attr.list_item_type.facets = facets.new_from_table(v.list_item_type.facets, th.fundamental_type);
+
 			end
 			--require 'pl.pretty'.dump(attr.base);
 			attr.local_facets = v.local_facets;
@@ -507,10 +518,13 @@ elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names
 
 	local simple_type_props = nil;
 	if (content_type == 'S') then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		if (defn.class == 'E') then
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+			--require 'pl.pretty'.dump(defn);
 			simple_type_props = defn:get_element_simpletype_dtls();
+			--require 'pl.pretty'.dump(simple_type_props);
 		else
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 			simple_type_props = defn:get_typedef_simpletype_dtls();
 		end
 		if (simple_type_props.type_of_simple == 'A') then
@@ -545,7 +559,20 @@ elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names
 				--end
 			else
 				element_handler.type_handler = elem_code_generator.get_list_type_handler();
-				element_handler.base = simple_type_props.base;
+				element_handler.base = {};
+				element_handler.base.ns = 'http://www.w3.org/2001/XMLSchema';
+				element_handler.base.name = 'list';
+				element_handler.list_item_type = simple_type_props.list_item_type;
+				local s = element_handler.list_item_type.typedef:get_typedef_primary_bi_type();
+				local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
+				element_handler.list_item_type.bi_type = s;
+				element_handler.list_item_type.type_handler = th;
+				element_handler.list_item_type.base = simple_type_props.list_item_type.base;
+				element_handler.list_item_type.local_facets = simple_type_props.list_item_type.local_facets;
+				--require 'pl.pretty'.dump(simple_type_props);
+				element_handler.list_item_type.facets =
+							facets.new_from_table(simple_type_props.list_item_type.facets, th.fundamental_type);
+				
 			end
 		end
 		--require 'pl.pretty'.dump(element_handler.base);
@@ -734,6 +761,39 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 			else
 				code = code..indentation..'    '..attr_props_name..'['..i_n..'].type_handler = '..
 					elem_code_generator.get_oth_type_handler_code(elem_code_generator.get_list_type_handler_str())..';\n';
+				code = code..indentation..'    '..attr_props_name..'['..i_n..'].base = {};\n';
+				code = code..indentation..'    '..attr_props_name..'['..i_n..'].base.ns  = \'' ..v.base.ns..'\';\n';
+				code = code..indentation..'    '..attr_props_name..'['..i_n..'].base.name  = \'' ..v.base.name..'\';\n';
+
+				code = code..indentation..'    '..attr_props_name..'['..i_n..'].list_item_type = {};\n';
+				local prefix = indentation..'    '..attr_props_name..'['..i_n..'].list_item_type';
+
+				code = code..prefix..'.type_of_simple = \'A\';\n';
+				code = code..prefix..'.base = {};\n';
+				code = code..prefix..'.base.ns = \''..v.list_item_type.base.ns..'\';\n';
+				code = code..prefix..'.base.name = \''..v.list_item_type.base.name..'\';\n';
+				do
+					local ns = v.list_item_type.base.ns;
+					local name = v.list_item_type.base.name;
+					code = code..prefix..'.super_element_content_type = '
+								..elem_code_generator.get_type_handler_code(ns, name)..  ';\n';
+				end
+				do
+					local ns = v.list_item_type.bi_type.ns;
+					local name = v.list_item_type.bi_type.name;
+					code = code..prefix..'.type_handler = '
+								..elem_code_generator.get_type_handler_code(ns, name)..  ';\n';
+				end
+				do
+					code = code..prefix..'.local_facets = {}\n;';
+					local new_prefix = prefix..'.local_facets;'
+					code = elem_code_generator.gen_code_copy_facets(code, new_prefix, v.list_item_type.local_facets);
+
+					code = code..prefix..'.facets = '
+						..'basic_stuff.inherit_facets('..attr_props_name..'.list_item_type);\n';
+				end
+				code = code..'\n';
+
 			end
 			
 			code = code..'\n';
@@ -993,6 +1053,35 @@ elem_code_generator.put_union_or_list_code = function(eh_name, element_handler, 
 			end
 			code = code..'end\n\n'
 		else
+			code = code..indentation..eh_name..'.list_item_type = {};\n';
+
+			code = code..indentation..eh_name..'.list_item_type.type_of_simple = \'A\';\n';
+			code = code..indentation..eh_name..'.list_item_type.base = {};\n';
+			code = code..indentation..eh_name..'.list_item_type.base.ns  = \'' ..element_handler.list_item_type.base.ns..'\';\n';
+			code = code..indentation..eh_name..'.list_item_type.base.name  = \'' ..element_handler.list_item_type.base.name..'\';\n';
+			do
+				local ns = element_handler.list_item_type.base.ns;
+				local name = element_handler.list_item_type.base.name;
+				code = code..indentation..eh_name..'.list_item_type.super_element_content_type = '
+							..elem_code_generator.get_type_handler_code(ns, name)..  ';\n';
+			end
+			do
+				local ns = element_handler.list_item_type.bi_type.ns;
+				local name = element_handler.list_item_type.bi_type.name;
+				code = code..indentation..eh_name..'.list_item_type.type_handler = '
+						..elem_code_generator.get_type_handler_code(ns, name)..';\n';
+			end
+			do
+				code = code..indentation..eh_name..'.list_item_type.local_facets = {};\n';
+				local prefix = indentation..eh_name..'.list_item_type.local_facets';
+				local local_facets = element_handler.list_item_type.local_facets;
+				code = elem_code_generator.gen_code_copy_facets(code, prefix, local_facets);
+
+				--print(eh_name);
+				code = code..indentation..eh_name..
+					'.list_item_type.facets = basic_stuff.inherit_facets('..eh_name..'.list_item_type);\n'
+			end
+			code = code..'\n';
 		end
 	end
 	return code;

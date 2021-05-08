@@ -666,20 +666,57 @@ basic_stuff.execute_validation_of_union = function(handler, content)
 	if (not ret) then return false; end
 
 	ret = false;
+	ret = handler.facets:check(content);
+	if (not ret) then return false; end
+
+	ret = false;
 	for i,v in ipairs(handler.union) do
 		local v_for_v = v.type_handler.facets:process_white_space(content);
 		if (v.type_handler:is_deserialized_valid(v_for_v)) then
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, v_for_v, v.type_handler.fundamental_type);
 			ret = true;
-			break;
+
+			v_for_v = v.type_handler:to_type('', v_for_v);
+
+			ret = v.facets:check(v_for_v);
+			if (ret) then break; end
 		end
+	end
+	error_handler.reset_error();
+	if (not ret) then
+		error_handler.raise_validation_error(-1, "Content: {"..error_handler.get_fieldpath().."} not valid", debug.getinfo(1));
 	end
 
 	return ret;
 end
 
 basic_stuff.execute_validation_of_list = function(handler, content)
-	return true;
+	local ret = nil;
+
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	--require 'pl.pretty'.dump(handler.facets);
+
+	ret = false;
+	ret = handler.type_handler:is_valid(content);
+	if (not ret) then return false; end
+
+	ret = false;
+	ret = handler.facets:check(content);
+	if (not ret) then return false; end
+
+	ret = true
+	local list_item_type = handler.list_item_type;
+	local v_for_v = nil;
+	for w in string.gmatch(content, "[^%s]+") do
+		ret = list_item_type.type_handler:is_deserialized_valid(w);
+		if (not ret) then break; end
+
+		v_for_v = list_item_type.type_handler:to_type('', w);
+
+		ret = list_item_type.facets:check(v_for_v);
+		if (not ret) then break; end
+	end
+
+	return ret;
 end
 
 basic_stuff.execute_primitive_validation = function(handler, content)
@@ -1504,40 +1541,69 @@ local process_start_of_element = function(reader, sts, objs, pss)
 		end
 	end
 	objs:push(obj);
-	--print("----------------------------------");
-	--(require 'pl.pretty').dump(objs);
-	--print("----------------------------------");
 
 	return true;
 end
 
+local function deser_is_valid(handler, content)
+	local ret = nil;
+
+	ret = false;
+	ret = handler.type_handler:is_deserialized_valid(content);
+	if (not ret) then return false; end
+
+	ret = false;
+	v = handler.type_handler:to_type('', content);
+	ret = handler.facets:check(v);
+	if (not ret) then return false; end
+
+	return ret;
+end
+
 basic_stuff.get_converted_value = function (schema_type_handler, value)
+	local converted_value = '';
 	if (schema_type_handler.type_of_simple == 'U') then
 		local status = false;
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+
+		status = schema_type_handler.type_handler:is_valid(content);
+		if (not status) then
+			error_handler.raise_validation_error(-1, "Content not valid", debug.getinfo(1));
+			local message_validation_context = error_handler.reset();
+			error(message_validation_context.status.error_message);
+			return false;
+		end
+
+		status = false;
+		status = schema_type_handler.facets:check(content);
+		if (not status) then
+			error_handler.raise_validation_error(-1, "Content not valid", debug.getinfo(1));
+			local message_validation_context = error_handler.reset();
+			error(message_validation_context.status.error_message);
+			return false;
+		end
+
+		status = false;
 		for i,v in ipairs(schema_type_handler.union) do
-			--[[
-			--We want tp use the facets value in type_handler field of handler
-			--and not the faets value in the main handler itself (supposedly derived)
-			--The reason for this is :
-			--the libxml2 schema processor does not populate the value of white_space
-			--as per primitive definitions, which is taken care by lua schema definitions
-			--]]
 			local v_for_v = v.type_handler.facets:process_white_space(value);
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i, v.type_handler.fundamental_type, type(value) );
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i, v.type_handler.fundamental_type, v_for_v );
-			if (v.type_handler:is_deserialized_valid(v_for_v)) then
+			if (deser_is_valid(v, v_for_v)) then
 				converted_value = v_for_v;
-				--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i, v.type_handler.fundamental_type, type(converted_value));
 				status = true;
 				break;
 			end
 		end
+		error_handler.reset_error();
 		if (not status) then
 			error_handler.raise_validation_error(-1, "Content not valid", debug.getinfo(1));
-			error("Content not valid");
+			local message_validation_context = error_handler.reset();
+			error(message_validation_context.status.error_message);
 		end
-	elseif (schema_type_handler.type_handler.type_of_simple == 'L') then
+	elseif (schema_type_handler.type_of_simple == 'L') then
+		local ret = basic_stuff.execute_validation_of_list(schema_type_handler, value)
+		if (not ret) then 
+			local message_validation_context = error_handler.reset();
+			error(message_validation_context.status.error_message);
+		end
+		converted_value = schema_type_handler.type_handler:to_type('', value);
 	else
 		converted_value = schema_type_handler.type_handler:to_type('', value);
 	end

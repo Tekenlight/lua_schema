@@ -178,6 +178,47 @@ function _xsd_facets:check_string_facets(s)
 	return true;
 end
 
+local function count_words(s)
+	local count = 0;
+	for w in string.gmatch(s, "[^%s]+") do
+		count = count + 1;
+	end
+	return count;
+end
+
+function _xsd_facets:check_list_facets(s)
+	if (type(s) ~= 'string') then
+		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"list type\"");
+	end
+	local count = count_words(s);
+	if (self.length ~= nil) then
+		if (count ~= self.length) then
+			error_handler.raise_validation_error(-1,
+						"No. of items in the field {"..error_handler.get_fieldpath().."}: is not valid", debug.getinfo(1));
+			return false;
+		end
+	end
+	if (self.min_length ~= nil) then
+		if (count < self.min_length) then
+			error_handler.raise_validation_error(-1,
+						"No. of items in the field {"..error_handler.get_fieldpath().."}: "
+							..count.." is less than minLength "..self.min_length, debug.getinfo(1));
+			return false;
+		end
+	end
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, self.max_length, count);
+	if (self.max_length ~= nil) then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		if (count > self.max_length) then
+			error_handler.raise_validation_error(-1,
+						"No. of items in the field {"..error_handler.get_fieldpath().."}: "
+							..count.." is greater than maxLength "..self.max_length, debug.getinfo(1));
+			return false;
+		end
+	end
+	return true;
+end
+
 function _xsd_facets:check_patttern_match(s)
 	if (type(s) ~= 'string') then
 		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"string type\"");
@@ -229,7 +270,7 @@ function _xsd_facets:check_number_facets(s)
 		if (compare_num(tonumber(self.max_inclusive), s) < 0) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
-							..s.."] is greater than to maxinclusive ["..self.max_inclusive.."]", debug.getinfo(1));
+							..s.."] is greater than maxinclusive ["..self.max_inclusive.."]", debug.getinfo(1));
 			return false;
 		end
 	end
@@ -310,6 +351,15 @@ function _xsd_facets:check(v)
 			return false;
 		end
 	elseif (self.fundamental_type == 'union') then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		if (not self:check_string_enumerations(v)) then
+			return false;
+		end
+	elseif (self.fundamental_type == 'list') then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		if (not self:check_list_facets(v)) then
+			return false;
+		end
 		if (not self:check_string_enumerations(v)) then
 			return false;
 		end

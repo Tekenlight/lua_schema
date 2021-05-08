@@ -3,7 +3,7 @@ local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __list_handler_class = {}
 
-__list_handler_class.fundamental_type = 'string';
+__list_handler_class.fundamental_type = 'list';
 
 --[[
 __list_handler_class.properties = {};
@@ -23,7 +23,10 @@ function __list_handler_class:is_valid(s)
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid string", debug.getinfo(1));
 		return false
 	end
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	if (self.facets ~= nil) then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		--require 'pl.pretty'.dump(self.facets);
 		if (not self.facets:check(s)) then
 			return false;
 		end
