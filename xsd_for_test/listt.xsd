@@ -1,0 +1,41 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://test_example.com" targetNamespace="http://test_example.com">
+	<xsd:simpleType name="iint">
+		<xsd:restriction base="xsd:int">
+			<xsd:maxInclusive value="100"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="listt_t">
+		<xsd:restriction>
+			<xsd:simpleType>
+				<xsd:list itemType="ns:iint"/>
+			</xsd:simpleType>
+			<xsd:maxLength value="2"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="listt" type="ns:listt_t"/>
+	<xsd:element name="listt_1">
+		<xsd:simpleType>
+			<xsd:restriction>
+				<xsd:simpleType>
+					<xsd:list>
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:int">
+								<xsd:maxInclusive value="100"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:list>
+				</xsd:simpleType>
+				<xsd:maxLength value="2"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:simpleType name="listt_t_2">
+		<xsd:restriction>
+			<xsd:simpleType>
+				<xsd:list itemType="ns:iint"/>
+			</xsd:simpleType>
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="listt_2" type="ns:listt_t"/>
+</xsd:schema>
