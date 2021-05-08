@@ -23,9 +23,13 @@ if (#arg ~= 1) then
 end
 local xsd_name = arg[1];
 
+require 'pl.pretty'.dump(debug.getinfo(1));
+print(xsd_name);
 local schema = xsd:parse(xsd_name);
 
 local elems = schema:get_element_decls();
+print(xsd_name);
+require 'pl.pretty'.dump(debug.getinfo(1));
 --require 'pl.pretty'.dump(elems);
 if (elems ~= nil) then
 	for _, v in ipairs(elems) do

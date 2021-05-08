@@ -1,5 +1,6 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://test_example.com" xmlns:ns="http://test_example.com">
 	<xsd:include schemaLocation="basic_string.xsd"/>
+	<xsd:include schemaLocation="listt.xsd"/>
 	<xsd:complexType name="ua_basic_string_simple_content_type">
 		<xsd:simpleContent>
 			<xsd:extension base="ns:uniont_t">
@@ -20,4 +21,17 @@
 		</xsd:simpleContent>
 	</xsd:complexType>
 	<xsd:element name="ua_basic_string_simple_content" type="ns:ua_basic_string_simple_content_type"/>
+	<xsd:complexType name="la_basic_string_simple_content_type">
+		<xsd:simpleContent>
+			<xsd:extension base="ns:uniont_t">
+				<xsd:attribute name="attr1">
+					<xsd:simpleType>
+						<xsd:list itemType="ns:iint"/>
+					</xsd:simpleType>
+				</xsd:attribute>
+				<xsd:attribute name="attr2" type="xsd:string" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<xsd:element name="la_basic_string_simple_content" type="ns:la_basic_string_simple_content_type"/>
 </xsd:schema>

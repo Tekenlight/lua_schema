@@ -142,6 +142,7 @@ basic_stuff.attributes_are_valid = function(attrs_def, attrs)
 		inp_attr = attrs
 	end
 	for n,v in pairs(attrs_def._attr_properties) do
+		--require 'pl.pretty'.dump(v);
 		error_handler.push_element(v.particle_properties.generated_name);
 		if ((v.properties.use == 'R') and (inp_attr[v.particle_properties.generated_name] == nil)) then
 			error_handler.raise_validation_error(-1, " Attribute: {"..error_handler.get_fieldpath().."} should be present",

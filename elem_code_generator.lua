@@ -254,6 +254,7 @@ elem_code_generator.get_attr_decls = function(attrs)
 				end
 			else
 				attr.type_handler = elem_code_generator.get_list_type_handler();
+				attr.base = {};
 				attr.base.ns = 'http://www.w3.org/2001/XMLSchema';
 				attr.base.name = 'list';
 				attr.list_item_type = v.list_item_type;
@@ -265,6 +266,9 @@ elem_code_generator.get_attr_decls = function(attrs)
 				attr.list_item_type.base = v.list_item_type.base;
 				attr.list_item_type.local_facets = v.list_item_type.local_facets;
 				attr.list_item_type.facets = facets.new_from_table(v.list_item_type.facets, th.fundamental_type);
+				attr.list_item_type.super_element_content_type =
+									elem_code_generator.get_super_element_content_type(v.list_item_type.base.ns,
+									v.list_item_type.base.name);
 
 			end
 			--require 'pl.pretty'.dump(attr.base);
@@ -775,6 +779,7 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 				do
 					local ns = v.list_item_type.base.ns;
 					local name = v.list_item_type.base.name;
+					print(debug.getinfo(1).source, debug.getinfo(1).currentline, ns, name);
 					code = code..prefix..'.super_element_content_type = '
 								..elem_code_generator.get_type_handler_code(ns, name)..  ';\n';
 				end
@@ -790,7 +795,7 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 					code = elem_code_generator.gen_code_copy_facets(code, new_prefix, v.list_item_type.local_facets);
 
 					code = code..prefix..'.facets = '
-						..'basic_stuff.inherit_facets('..attr_props_name..'.list_item_type);\n';
+						..'basic_stuff.inherit_facets('..attr_props_name..'['..i_n..'].list_item_type);\n';
 				end
 				code = code..'\n';
 
