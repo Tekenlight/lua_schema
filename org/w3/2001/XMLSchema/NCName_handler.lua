@@ -3,7 +3,7 @@ local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __NCName_handler_class = {}
 
-__NCName_handler_class.fundamental_type = 'string';
+__NCName_handler_class.datatype = 'string';
 
 function __NCName_handler_class:is_deserialized_valid(x)
 	local s = tostring(x);

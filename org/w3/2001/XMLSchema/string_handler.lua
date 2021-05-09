@@ -3,7 +3,7 @@ local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __string_handler_class = {}
 
-__string_handler_class.fundamental_type = 'string';
+__string_handler_class.datatype = 'string';
 
 --[[
 __string_handler_class.properties = {};

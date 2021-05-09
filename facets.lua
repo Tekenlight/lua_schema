@@ -4,7 +4,7 @@ local regex = xmlua.XMLRegexp.new();
 
 local error_handler = require("error_handler");
 
-local supported_fundamental_types = {
+local supported_datatypes = {
 	--['string'] = 1, ['float'] = 1, ['number'] = 1, ['date'] = 1, ['bool'] = 1
 	['string'] = 1, ['float'] = 1, ['number'] = 1, ['list'] = 1, ['union'] = 1
 }
@@ -333,7 +333,7 @@ function _xsd_facets:process_white_space(s)
 end
 
 function _xsd_facets:check(v)
-	if (self.fundamental_type == 'string') then
+	if (self.datatype == 'string') then
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		if (not self:check_string_facets(v)) then
 			return false;
@@ -341,7 +341,7 @@ function _xsd_facets:check(v)
 		if (not self:check_string_enumerations(v)) then
 			return false;
 		end
-	elseif (self.fundamental_type == 'number') then
+	elseif (self.datatype == 'number') then
 		--print(debug.traceback(1));
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, v);
 		if (not self:check_number_facets(v)) then
@@ -350,12 +350,12 @@ function _xsd_facets:check(v)
 		if (not self:check_num_enumerations(v)) then
 			return false;
 		end
-	elseif (self.fundamental_type == 'union') then
+	elseif (self.datatype == 'union') then
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		if (not self:check_string_enumerations(v)) then
 			return false;
 		end
-	elseif (self.fundamental_type == 'list') then
+	elseif (self.datatype == 'list') then
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		if (not self:check_list_facets(v)) then
 			return false;
@@ -364,7 +364,7 @@ function _xsd_facets:check(v)
 			return false;
 		end
 	else
-		error("Unsupported type "..self.fundamental_type);
+		error("Unsupported type "..self.datatype);
 	end
 	if (not self:check_patttern_match(tostring(v))) then
 		return false;
@@ -405,12 +405,12 @@ _xsd_facets.new = function(ft)
 	if (ft == nil) then
 		error("Facet should be based on one of the primitive types");
 	end
-	if (supported_fundamental_types[ft] ==nil) then
+	if (supported_datatypes[ft] ==nil) then
 		error("The type "..ft.." not supported");
 	end
 	local o = make_copy(_xsd_facets_values);
 	o =  setmetatable(o, mt);
-	o.fundamental_type = ft;
+	o.datatype = ft;
 	return o;
 end
 
@@ -418,7 +418,7 @@ _xsd_facets.new_from_table = function(t, ft)
 	if (ft == nil) then
 		error("Facet should be based on one of the primitive types");
 	end
-	if (supported_fundamental_types[ft] ==nil) then
+	if (supported_datatypes[ft] ==nil) then
 		error("The type "..ft.." not supported");
 	end
 	local o = {};
@@ -437,7 +437,7 @@ _xsd_facets.new_from_table = function(t, ft)
 		end
 	end
 	o =  setmetatable(o, mt);
-	o.fundamental_type = ft;
+	o.datatype = ft;
 	return o;
 end
 

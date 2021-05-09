@@ -3,9 +3,6 @@ local basic_stuff = {};
 local URI = require("uri");
 local stringx = require("pl.stringx");
 
-basic_stuff.fundamental_type_from_bi_type = function(b)
-end
-
 basic_stuff.is_complex_type_simple_content = function(content)
 	if ((content._attr == nil) or (type(content._attr) ~= 'table')) then
 		return false;
