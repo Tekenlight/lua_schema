@@ -1,19 +1,19 @@
 local facets = require("facets");
 local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
-local __NCName_handler_class = {}
+local __language_handler_class = {}
 
-__NCName_handler_class.datatype = 'string';
+__language_handler_class.datatype = 'string';
 
-function __NCName_handler_class:is_deserialized_valid(x)
+function __language_handler_class:is_deserialized_valid(x)
 	local s = tostring(x);
 	return self:is_valid(s);
 end
 
-function __NCName_handler_class:is_valid(s)
+function __language_handler_class:is_valid(s)
 	if((s ~= nil) and (type(s) ~= "string")) then
 		error_handler.raise_validation_error(-1,
-						"Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:NCName", debug.getinfo(1));
+						"Field: {"..error_handler.get_fieldpath().."} is not a valid language", debug.getinfo(1));
 		return false
 	end
 	if (self.facets ~= nil) then
@@ -24,7 +24,7 @@ function __NCName_handler_class:is_valid(s)
 	return true;
 end
 
-function __NCName_handler_class:to_xmlua(ns, s)
+function __language_handler_class:to_xmlua(ns, s)
 	if (false == self:is_valid(s)) then
 		local msv = error_handler.reset();
 		error(msv.status.error_message);
@@ -32,17 +32,13 @@ function __NCName_handler_class:to_xmlua(ns, s)
 	return self:to_schema_type(ns, s);
 end
 
-function __NCName_handler_class:to_schema_type(ns, s)
-	if (false == basic_stuff.is_simple_type(s)) then
-		error_handler.raise_validation_error(-1,
-						"Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:NCName", debug.getinfo(1));
-		error("Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:NCName");
-	end
+function __language_handler_class:to_schema_type(ns, s)
+	if (false == basic_stuff.is_simple_type(s)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a primitive"); end
 	local temp_s = self.facets:process_white_space(s);
 	return temp_s;
 end
 
-function __NCName_handler_class:to_cjson_struct(ns, s)
+function __language_handler_class:to_cjson_struct(ns, s)
 	if (false == self:is_valid(s)) then
 		local msv = error_handler.reset();
 		error(msv.status.error_message);
@@ -50,12 +46,18 @@ function __NCName_handler_class:to_cjson_struct(ns, s)
 	return s;
 end
 
-function __NCName_handler_class:to_type(ns, i)
-	if ('string' ~= type(i)) then
-		error_handler.raise_validation_error(-1,
-						"Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:NCName", debug.getinfo(1));
-		error("Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:NCName");
+function __language_handler_class:get_facets()
+	local facets;
+	if (self.facets == nil) then
+		facets = {};
+	else
+		facets = self.facets;
 	end
+	return facets;
+end
+
+function __language_handler_class:to_type(ns, i)
+	if ('string' ~= type(i)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a valid language"); end
 	local s = self:to_schema_type(ns, i);
 	if (false == self:is_valid(s)) then
 		local msv = error_handler.reset();
@@ -64,7 +66,7 @@ function __NCName_handler_class:to_type(ns, i)
 	return s;
 end
 
-local mt = { __index = __NCName_handler_class; } ;
+local mt = { __index = __language_handler_class; } ;
 local _factory = {};
 
 function _factory:instantiate()
@@ -73,9 +75,8 @@ function _factory:instantiate()
 	o.facets = facets.new('string');
 	o.facets.white_space = 'collapse';
 	o.facets.pattern[1] = {};
-	o.facets.pattern[1].str_p = [=[[\i-[:]][\c-[:]]*]=];
+	o.facets.pattern[1].str_p = [=[([a-zA-Z]{1,8})(-[a-zA-Z0-9]{1,8})*]=];
 	return o;
 end
-
 
 return _factory;

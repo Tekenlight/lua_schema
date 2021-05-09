@@ -69,7 +69,7 @@ end
 function __list_handler_class:to_type(ns, i)
 	if ('string' ~= type(i)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a valid string"); end
 	local s = self:to_schema_type(ns, i);
-	if (false == self:is_valid(i)) then
+	if (false == self:is_valid(s)) then
 		local msv = error_handler.reset();
 		error(msv.status.error_message);
 	end

@@ -17,19 +17,6 @@ function __Name_handler_class:is_valid(s)
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:Name", debug.getinfo(1));
 		return false
 	end
-	local found = string.match(s, '[^%a%d_.:-]');
-	if (nil ~= found) then
-		error_handler.raise_validation_error(-1,
-						"Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:Name", debug.getinfo(1));
-		return false
-	end
-	local begin = string.sub(s, 1, 1);
-	local c = string.match(begin, '[^:%a_]');
-	if (nil ~= c) then
-		error_handler.raise_validation_error(-1,
-						"Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:Name", debug.getinfo(1));
-		return false
-	end
 	if (self.facets ~= nil) then
 		if (not self.facets:check(s)) then
 			return false;
@@ -71,7 +58,7 @@ function __Name_handler_class:to_type(ns, i)
 		error("Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:Name");
 	end
 	local s = self:to_schema_type(ns, i);
-	if (false == self:is_valid(i)) then
+	if (false == self:is_valid(s)) then
 		local msv = error_handler.reset();
 		error(msv.status.error_message);
 	end
@@ -86,6 +73,8 @@ function _factory:instantiate()
 	o = setmetatable(o, mt);
 	o.facets = facets.new('string');
 	o.facets.white_space = 'collapse';
+	o.facets.pattern[1] = {};
+	o.facets.pattern[1].str_p = [=[\i\c*]=]
 	return o;
 end
 

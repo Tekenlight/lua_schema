@@ -23,7 +23,7 @@ function __int_handler_class:is_valid(i)
 	elseif (0 ~= (i%1)) then
 		valid =  false
 	end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i);
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i, valid);
 	if (not valid) then
 		error_handler.raise_validation_error(-1,
 						"Field:["..i.."]:{"..error_handler.get_fieldpath().."} is not a valid integer", debug.getinfo(1));
@@ -31,6 +31,7 @@ function __int_handler_class:is_valid(i)
 	end
 	if (self.facets ~= nil) then
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i);
+		--(require 'pl.pretty').dump(self.facets);
 		if (not self.facets:check(i)) then
 			return false;
 		end
@@ -47,7 +48,8 @@ function __int_handler_class:to_xmlua(ns, i)
 end
 
 function __int_handler_class:to_schema_type(ns, i)
-	if (false == self:is_valid(i)) then
+	local n = tonumber(i);
+	if (false == self:is_valid(n)) then
 		local msv = error_handler.reset();
 		error(msv.status.error_message);
 	end

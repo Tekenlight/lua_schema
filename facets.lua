@@ -55,7 +55,9 @@ local function make_copy(f)
 	o.fractional_digits = f.fractional_digits;
 	o.white_space = f.white_space;
 	o.enumeration = f.enumeration;
+	if (o.enumeration == nil) then o.enumeration = {}; end
 	o.pattern = f.pattern;
+	if (o.pattern == nil) then o.pattern = {}; end
 
 	return o;
 end
@@ -116,7 +118,7 @@ end
 
 function _xsd_facets:check_num_enumerations(v)
 	local e = self.enumeration;
-	if (e == nil) then return true; end
+	if (e == nil or #e == 0) then return true; end
 	local found = false;
 	for p,q in ipairs(e) do
 		if (compare_num(tonumber(q), tonumber(v)) == 0) then
@@ -133,7 +135,7 @@ end
 
 function _xsd_facets:check_string_enumerations(v)
 	local e = self.enumeration;
-	if (e == nil) then return true; end
+	if (e == nil or #e == 0) then return true; end
 	local found = false;
 	for p,q in ipairs(e) do
 		if (tostring(q) == tostring(v)) then
@@ -223,8 +225,15 @@ function _xsd_facets:check_patttern_match(s)
 	if (type(s) ~= 'string') then
 		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"string type\"");
 	end
-	if (self.pattern ~= nil) then
+	if (self.pattern ~= nil and #self.pattern ~= 0) then
 		for i,v in ipairs(self.pattern) do
+			if (v.vom_p == nil) then
+				local res, out = pcall(regex.compile, regex, v.str_p);
+				if (not res) then
+					error("Invalid regular expression "..v.str_p);
+				end
+				v.com_p = out;
+			end
 			local exp = v.com_p;
 			if (1 ~= exp:check(s)) then
 				error_handler.raise_validation_error(-1,
@@ -334,7 +343,6 @@ end
 
 function _xsd_facets:check(v)
 	if (self.datatype == 'string') then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		if (not self:check_string_facets(v)) then
 			return false;
 		end
@@ -343,7 +351,6 @@ function _xsd_facets:check(v)
 		end
 	elseif (self.datatype == 'number') then
 		--print(debug.traceback(1));
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, v);
 		if (not self:check_number_facets(v)) then
 			return false;
 		end

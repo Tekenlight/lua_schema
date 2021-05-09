@@ -15,6 +15,16 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 </token>
 <Name>ajs:lka.jf</Name>
 <NCName>ajslka.jf</NCName>
+<language>en-US</language>
+<ID>A123</ID>
+<IDREF>A123</IDREF>
+<IDREFS>A123 A123</IDREFS>
+<ENTITY>A123</ENTITY>
+<ENTITIES>A123 A234 </ENTITIES>
+<NMTOKEN>:_0123123</NMTOKEN>
+<NMTOKENS>:_0123123 askfjaklfj asd_: :fskdjf </NMTOKENS>
+<NOTATION>:_0123123 askfjaklfj asd_: :fskdjf </NOTATION>
+<QName>A0123123askfjaklfjasd_:fskdjf </QName>
 </ns1:struct_with_various_types>]=]
 
 mhf = require("message_handler_factory")

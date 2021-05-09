@@ -236,7 +236,7 @@ elem_code_generator.get_attr_decls = function(attrs)
 						attr.union[j].bi_type = s;
 						attr.union[j].type_handler = th;
 						attr.union[j].local_facets = q.local_facets;
-						attr.union[j].facets = facets.new_from_table(q.facets, th.fundamental_type);
+						attr.union[j].facets = facets.new_from_table(q.facets, th.datatype);
 						attr.union[j].type_of_simple = 'A';
 					end
 				end
@@ -265,7 +265,7 @@ elem_code_generator.get_attr_decls = function(attrs)
 				attr.list_item_type.type_handler = th;
 				attr.list_item_type.base = v.list_item_type.base;
 				attr.list_item_type.local_facets = v.list_item_type.local_facets;
-				attr.list_item_type.facets = facets.new_from_table(v.list_item_type.facets, th.fundamental_type);
+				attr.list_item_type.facets = facets.new_from_table(v.list_item_type.facets, th.datatype);
 				attr.list_item_type.super_element_content_type =
 									elem_code_generator.get_super_element_content_type(v.list_item_type.base.ns,
 									v.list_item_type.base.name);
@@ -273,7 +273,7 @@ elem_code_generator.get_attr_decls = function(attrs)
 			end
 			--require 'pl.pretty'.dump(attr.base);
 			attr.local_facets = v.local_facets;
-			attr.facets = facets.new_from_table(v.facets, attr.type_handler.fundamental_type);
+			attr.facets = facets.new_from_table(v.facets, attr.type_handler.datatype);
 			local ns = attr.base.ns;
 			local name = attr.base.name;
 			attr.super_element_content_type = elem_code_generator.get_super_element_content_type(ns, name);
@@ -550,7 +550,7 @@ elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names
 						element_handler.union[i].type_handler = th;
 						element_handler.union[i].local_facets = q.local_facets;
 						element_handler.union[i].base = q.base;
-						element_handler.union[i].facets = facets.new_from_table(q.facets, th.fundamental_type);
+						element_handler.union[i].facets = facets.new_from_table(q.facets, th.datatype);
 						element_handler.union[i].type_of_simple = 'A';
 					end
 				end
@@ -575,7 +575,7 @@ elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names
 				element_handler.list_item_type.local_facets = simple_type_props.list_item_type.local_facets;
 				--require 'pl.pretty'.dump(simple_type_props);
 				element_handler.list_item_type.facets =
-							facets.new_from_table(simple_type_props.list_item_type.facets, th.fundamental_type);
+							facets.new_from_table(simple_type_props.list_item_type.facets, th.datatype);
 				
 			end
 		end
@@ -637,7 +637,7 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 			props.bi_type = elem:get_element_primary_bi_type();
 			element_handler.local_facets = simple_type_props.local_facets;
-			element_handler.facets = facets.new_from_table(simple_type_props.facets, element_handler.type_handler.fundamental_type);
+			element_handler.facets = facets.new_from_table(simple_type_props.facets, element_handler.type_handler.datatype);
 			element_handler.type_of_simple = simple_type_props.type_of_simple;
 		end
 		element_handler.properties = props;
@@ -779,7 +779,7 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 				do
 					local ns = v.list_item_type.base.ns;
 					local name = v.list_item_type.base.name;
-					print(debug.getinfo(1).source, debug.getinfo(1).currentline, ns, name);
+					--print(debug.getinfo(1).source, debug.getinfo(1).currentline, ns, name);
 					code = code..prefix..'.super_element_content_type = '
 								..elem_code_generator.get_type_handler_code(ns, name)..  ';\n';
 				end
