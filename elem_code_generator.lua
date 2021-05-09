@@ -732,7 +732,7 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 				code = code..indentation..'    '..attr_props_name..'['..i_n..'].union = {};\n';
 				local prefix = indentation..'    '..attr_props_name..'['..i_n..'].union';
 				for p,q in ipairs(v.union) do
-					print(debug.getinfo(1).source, debug.getinfo(1).currentline, p);
+					--print(debug.getinfo(1).source, debug.getinfo(1).currentline, p);
 					code = code..prefix..'['..p..'] = {};\n';
 					code = code..prefix..'['..p..'].type_of_simple = \'A\';\n';
 					code = code..prefix..'['..p..'].base = {};\n';
