@@ -53,7 +53,7 @@ function __int_handler_class:to_schema_type(ns, i)
 		local msv = error_handler.reset();
 		error(msv.status.error_message);
 	end
-	return i;
+	return n;
 end
 
 function __int_handler_class:to_cjson_struct(ns, i)

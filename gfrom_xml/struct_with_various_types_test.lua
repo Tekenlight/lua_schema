@@ -25,6 +25,8 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 <NMTOKENS>:_0123123 askfjaklfj asd_: :fskdjf </NMTOKENS>
 <NOTATION>:_0123123 askfjaklfj asd_: :fskdjf </NOTATION>
 <QName>A0123123askfjaklfjasd_:fskdjf </QName>
+<boolean>true </boolean>
+<hexBinary>023a </hexBinary>
 </ns1:struct_with_various_types>]=]
 
 mhf = require("message_handler_factory")
@@ -36,3 +38,11 @@ if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
 
+--[[
+if (content ~= nil) then
+	local json_str = struct_with_various_types:to_json(content);
+	print(json_str);
+	local xml_str = struct_with_various_types:to_xml(content);
+	print(xml_str);
+end
+--]]

@@ -6,7 +6,7 @@ local error_handler = require("error_handler");
 
 local supported_datatypes = {
 	--['string'] = 1, ['float'] = 1, ['number'] = 1, ['date'] = 1, ['bool'] = 1
-	['string'] = 1, ['float'] = 1, ['number'] = 1, ['list'] = 1, ['union'] = 1
+	['string'] = 1, ['float'] = 1, ['number'] = 1, ['list'] = 1, ['union'] = 1, ['boolean'] = 1
 }
 
 local valid_facet_names = {
@@ -370,6 +370,8 @@ function _xsd_facets:check(v)
 		if (not self:check_string_enumerations(v)) then
 			return false;
 		end
+	elseif (self.datatype == 'boolean') then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	else
 		error("Unsupported type "..self.datatype);
 	end

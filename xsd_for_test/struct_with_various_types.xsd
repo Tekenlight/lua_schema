@@ -20,6 +20,8 @@ targetNamespace="http://test_example.com">
 				<xsd:element name="NMTOKENS" type="xsd:NMTOKENS"/>
 				<xsd:element name="NOTATION" type="xsd:NOTATION"/>
 				<xsd:element name="QName" type="xsd:QName"/>
+				<xsd:element name="boolean" type="xsd:boolean"/>
+				<xsd:element name="hexBinary" type="xsd:hexBinary"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
