@@ -6,7 +6,7 @@ local error_handler = require("error_handler");
 
 local supported_datatypes = {
 	--['string'] = 1, ['float'] = 1, ['number'] = 1, ['date'] = 1, ['bool'] = 1
-	['string'] = 1, ['float'] = 1, ['number'] = 1, ['list'] = 1, ['union'] = 1, ['boolean'] = 1
+	['string'] = 1, ['float'] = 1, ['number'] = 1, ['list'] = 1, ['union'] = 1, ['boolean'] = 1, ['binary'] = 1
 }
 
 local valid_facet_names = {
@@ -342,41 +342,44 @@ function _xsd_facets:process_white_space(s)
 end
 
 function _xsd_facets:check(v)
-	if (self.datatype == 'string') then
-		if (not self:check_string_facets(v)) then
-			return false;
-		end
-		if (not self:check_string_enumerations(v)) then
-			return false;
-		end
-	elseif (self.datatype == 'number') then
-		--print(debug.traceback(1));
-		if (not self:check_number_facets(v)) then
-			return false;
-		end
-		if (not self:check_num_enumerations(v)) then
-			return false;
-		end
-	elseif (self.datatype == 'union') then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-		if (not self:check_string_enumerations(v)) then
-			return false;
-		end
-	elseif (self.datatype == 'list') then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-		if (not self:check_list_facets(v)) then
-			return false;
-		end
-		if (not self:check_string_enumerations(v)) then
-			return false;
-		end
-	elseif (self.datatype == 'boolean') then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	if (self.datatype == 'binary') then
 	else
-		error("Unsupported type "..self.datatype);
-	end
-	if (not self:check_patttern_match(tostring(v))) then
-		return false;
+		if (self.datatype == 'string') then
+			if (not self:check_string_facets(v)) then
+				return false;
+			end
+			if (not self:check_string_enumerations(v)) then
+				return false;
+			end
+		elseif (self.datatype == 'number') then
+			--print(debug.traceback(1));
+			if (not self:check_number_facets(v)) then
+				return false;
+			end
+			if (not self:check_num_enumerations(v)) then
+				return false;
+			end
+		elseif (self.datatype == 'union') then
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+			if (not self:check_string_enumerations(v)) then
+				return false;
+			end
+		elseif (self.datatype == 'list') then
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+			if (not self:check_list_facets(v)) then
+				return false;
+			end
+			if (not self:check_string_enumerations(v)) then
+				return false;
+			end
+		elseif (self.datatype == 'boolean') then
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		else
+			error("Unsupported type "..self.datatype);
+		end
+		if (not self:check_patttern_match(tostring(v))) then
+			return false;
+		end
 	end
 	return true;
 end

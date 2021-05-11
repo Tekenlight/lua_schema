@@ -1,7 +1,10 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-targetNamespace="http://test_example.com">
+xmlns:ns="http://test_example.com" targetNamespace="http://test_example.com">
 
-	<xsd:element name="struct_with_various_types">
+	<xsd:notation name="gif" public="image/gif" system="view.exe"/>
+	<xsd:notation name="jpeg" public="image/jpeg" system="view.exe"/>
+
+	<xsd:element name="a_struct_with_various_types">
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element name="int" type="xsd:int"/>
@@ -24,6 +27,14 @@ targetNamespace="http://test_example.com">
 				<xsd:element name="hexBinary" type="xsd:hexBinary"/>
 				<xsd:element name="base64Binary" type="xsd:base64Binary"/>
 			</xsd:sequence>
+			<xsd:attribute name = "a">
+				<xsd:simpleType>
+					<xsd:restriction base="xsd:NOTATION">
+						<xsd:enumeration value="ns:gif"/>
+						<xsd:enumeration value="ns:jpeg"/>
+					</xsd:restriction>
+				</xsd:simpleType>
+			</xsd:attribute>
 		</xsd:complexType>
 	</xsd:element>
 </xsd:schema>

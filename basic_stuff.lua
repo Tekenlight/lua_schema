@@ -1,3 +1,4 @@
+local ffi = require("ffi");
 local error_handler = require("error_handler");
 local basic_stuff = {};
 local URI = require("uri");
@@ -46,7 +47,8 @@ basic_stuff.assert_input_is_complex_type_simple_content = function(content)
 end
 
 basic_stuff.is_simple_type = function(content)
-	if ((type(content) ~= 'string') and (type(content) ~= 'boolean') and (type(content) ~= 'number')) then
+	if ((type(content) ~= 'string') and (type(content) ~= 'boolean')
+		and (type(content) ~= 'number') and (not ffi.istype("unsigned char *", content))) then
 		return false;
 	end
 	return true;
