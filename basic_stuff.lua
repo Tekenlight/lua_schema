@@ -1106,6 +1106,191 @@ end
 --[[
 -- ===========================================================================================
 --
+-- To and from intermediate JSON functions from here.
+--
+-- ===========================================================================================
+--]]
+--
+
+basic_stuff.primitive_to_intermediate_json = function(th, bi_type, content)
+
+	--(require 'pl.pretty').dump(th);
+	if ('binary' == th.datatype) then 
+		if ('base64Binary' == bi_type.name) then
+			content = th:to_xmlua(nil, content);
+		elseif ('hexBinary' == bi_type.name) then
+			content = th:to_xmlua(nil, content);
+		end
+	end
+	return content;
+end
+
+basic_stuff.simple_to_intermediate_json = function(schema_type_handler, content)
+	return basic_stuff.primitive_to_intermediate_json(schema_type_handler.type_handler,
+											schema_type_handler.properties.bi_type, content);
+end
+
+basic_stuff.inner_complex_to_intermediate_json = function(schema_type_handler, array_element, content_model)
+	for _, v in ipairs(content_model) do
+		if (type(v) == 'string') then
+			if (array_element[v] ~= nil) then
+				local inner_sth = schema_type_handler.properties.generated_subelements[v];
+				array_element[v] = basic_stuff.low_to_intermediate_json(inner_sth, array_element[v]);
+			end
+		elseif (type(v) == 'table') then
+			local inner_content_model = v;
+			local generated_subelement_name = inner_content_model.generated_subelement_name;
+			if (inner_content_model.max_occurs ~= 1 and
+					array_element[inner_content_model.generated_subelement_name] ~= nil) then
+				for i, q in pairs(array_element[inner_content_model.generated_subelement_name]) do
+					array_element[generated_subelement_name][i] =
+							basic_stuff.inner_complex_to_intermediate_json(schema_type_handler, q, inner_content_model);
+				end
+			else
+				basic_stuff.inner_complex_to_intermediate_json(schema_type_handler, array_element, inner_content_model);
+			end
+		else
+			error("SCHEMA MODEL IS INVALID for "..content_model.generated_subelement_name);
+		end
+	end
+	return array_element;
+end
+
+basic_stuff.complex_to_intermediate_json = function(schema_type_handler, content)
+	local content_model = schema_type_handler.properties.content_model;
+	if (content_model.max_occurs ~= 1) then
+		for i,v in ipairs(content[schema_type_handler.properties.content_model[generated_subelement_name]]) do
+			content[generated_subelement_name][i] = basic_stuff.inner_complex_to_intermediate_json(schema_type_handler, v);
+		end
+	else
+		basic_stuff.inner_complex_to_intermediate_json(schema_type_handler, content, content_model);
+	end
+	if (content._attr ~= nil) then
+		for n,v in pairs(content._attr) do
+			local q_name = schema_type_handler.properties.attr._generated_attr[n];
+			if (q_name == nil) then
+				error("INVALID ATTR "..tostring(n));
+			end
+			local sth = schema_type_handler.properties.attr._attr_properties[q_name] ;
+			content._attr[n] = basic_stuff.primitive_to_intermediate_json(sth.type_handler,
+														sth.properties.bi_type, v);
+		end
+	end
+	return content;
+end
+
+basic_stuff.low_to_intermediate_json = function(schema_type_handler, content)
+	if (content == nil) then return nil; end
+	local i_content = nil;
+	if (schema_type_handler.properties.content_type == 'C') then
+		i_content = basic_stuff.complex_to_intermediate_json(schema_type_handler, content);
+	else
+		i_content = basic_stuff.simple_to_intermediate_json(schema_type_handler, content);
+	end
+	return i_content;
+end
+
+basic_stuff.to_intermediate_json = function(schema_type_handler, content)
+	local i_content = basic_stuff.low_to_intermediate_json(schema_type_handler, content);
+	return i_content;
+end
+
+--[[
+-- ===========================================================================================
+--
+-- To and from intermediate JSON functions from here.
+--
+-- ===========================================================================================
+--]]
+--
+
+basic_stuff.primitive_from_intermediate_json = function(th, bi_type, content)
+
+	--(require 'pl.pretty').dump(th);
+	if ('binary' == th.datatype) then 
+		if ('base64Binary' == bi_type.name) then
+			content = th:to_type(nil, content);
+		elseif ('hexBinary' == bi_type.name) then
+			content = th:to_type(nil, content);
+		end
+	end
+	return content;
+end
+
+basic_stuff.simple_from_intermediate_json = function(schema_type_handler, content)
+	return basic_stuff.primitive_from_intermediate_json(schema_type_handler.type_handler,
+											schema_type_handler.properties.bi_type, content);
+end
+
+basic_stuff.inner_complex_from_intermediate_json = function(schema_type_handler, array_element, content_model)
+	for _, v in ipairs(content_model) do
+		if (type(v) == 'string') then
+			if (array_element[v] ~= nil) then
+				local inner_sth = schema_type_handler.properties.generated_subelements[v];
+				array_element[v] = basic_stuff.low_from_intermediate_json(inner_sth, array_element[v]);
+			end
+		elseif (type(v) == 'table') then
+			local inner_content_model = v;
+			local generated_subelement_name = inner_content_model.generated_subelement_name;
+			if (inner_content_model.max_occurs ~= 1 and
+					array_element[inner_content_model.generated_subelement_name] ~= nil) then
+				for i, q in pairs(array_element[inner_content_model.generated_subelement_name]) do
+					array_element[generated_subelement_name][i] =
+							basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, q, inner_content_model);
+				end
+			else
+				basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, array_element, inner_content_model);
+			end
+		else
+			error("SCHEMA MODEL IS INVALID for "..content_model.generated_subelement_name);
+		end
+	end
+	return array_element;
+end
+
+basic_stuff.complex_from_intermediate_json = function(schema_type_handler, content)
+	local content_model = schema_type_handler.properties.content_model;
+	if (content_model.max_occurs ~= 1) then
+		for i,v in ipairs(content[schema_type_handler.properties.content_model[generated_subelement_name]]) do
+			content[generated_subelement_name][i] = basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, v);
+		end
+	else
+		basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, content, content_model);
+	end
+	if (content._attr ~= nil) then
+		for n,v in pairs(content._attr) do
+			local q_name = schema_type_handler.properties.attr._generated_attr[n];
+			if (q_name == nil) then
+				error("INVALID ATTR "..tostring(n));
+			end
+			local sth = schema_type_handler.properties.attr._attr_properties[q_name] ;
+			content._attr[n] = basic_stuff.primitive_from_intermediate_json(sth.type_handler,
+														sth.properties.bi_type, v);
+		end
+	end
+	return content;
+end
+
+basic_stuff.low_from_intermediate_json = function(schema_type_handler, content)
+	if (content == nil) then return nil; end
+	local i_content = nil;
+	if (schema_type_handler.properties.content_type == 'C') then
+		i_content = basic_stuff.complex_from_intermediate_json(schema_type_handler, content);
+	else
+		i_content = basic_stuff.simple_from_intermediate_json(schema_type_handler, content);
+	end
+	return i_content;
+end
+
+
+basic_stuff.from_intermediate_json = function(schema_type_handler, content)
+	local i_content = basic_stuff.low_from_intermediate_json(schema_type_handler, content);
+	return i_content;
+end
+
+--[[
+-- ===========================================================================================
+--
 -- Parsing functions from here
 --
 -- ===========================================================================================
@@ -1821,7 +2006,6 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	local doc = (objs:pop())['___DATA___'];
 
 	obj = doc[schema_type_handler.particle_properties.generated_name];
-	--(require 'pl.pretty').dump(obj);
 
 	local valid, msv = validate_content(schema_type_handler, obj);
 	if (not valid) then

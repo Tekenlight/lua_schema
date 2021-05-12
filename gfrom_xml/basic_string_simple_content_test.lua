@@ -14,7 +14,7 @@ else print(content, msg)
 end
 
 if (nil ~= content) then
-	--print(basic_string_simple_content:to_json(content))
+	print(basic_string_simple_content:to_json(content))
 	--print(basic_string_simple_content:to_xml(content))
 end
 

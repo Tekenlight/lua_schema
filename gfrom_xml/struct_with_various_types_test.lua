@@ -26,7 +26,7 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 <NOTATION>:_0123123 askfjaklfj asd_: :fskdjf </NOTATION>
 <QName>A0123123askfjaklfjasd_:fskdjf </QName>
 <boolean>true </boolean>
-<hexBinary>023a </hexBinary>
+<hexBinary>48656C6C6F20576F726C642053726972616D20616E6420476F777269202121212048656C6C6F20576F726C642053726972616D20616E6420476F77726920212121202048656C6C6F20576F726C642053726972616D20616E6420476F7772692021212121 </hexBinary>
 <base64Binary>SGVsbG8gV29ybGQgU3JpcmFtIGFuZCBHb3dyaSAhISEgSGVsbG8gV29ybGQgU3JpcmFtIGFuZCBH
 b3dyaSAhISEgIEhlbGxvIFdvcmxkIFNyaXJhbSBhbmQgR293cmkgISEhIQ==</base64Binary>
 </ns1:struct_with_various_types>]=]
@@ -40,9 +40,19 @@ if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
 
+local ffi = require("ffi");
+
+ffi.cdef[[
+int printf(const char * restrict format, ...);
+]]
+
+print(ffi.string(content.base64Binary));
+print(ffi.string(content.hexBinary));
+
 if (content ~= nil) then
 	local json_str = struct_with_various_types:to_json(content);
 	print(json_str);
-	local xml_str = struct_with_various_types:to_xml(content);
+	local content_1 = struct_with_various_types:from_json(json_str);
+	local xml_str = struct_with_various_types:to_xml(content_1);
 	print(xml_str);
 end

@@ -132,6 +132,11 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 	code = code..indent..'    '..eh_name..'.properties.element_type = \''..properties.element_type..'\';\n';
 	code = code..indent..'    '..eh_name..'.properties.content_type = \''..properties.content_type..'\';\n';
 	code = code..indent..'    '..eh_name..'.properties.schema_type = \''..properties.schema_type..'\';\n';
+	if (element_handler.properties.content_type == 'S') then
+		code = code..indent..'    '..eh_name..'.properties.bi_type = {};\n';
+		code = code..indent..'    '..eh_name..'.properties.bi_type.ns = \''..properties.bi_type.ns..'\';\n';
+		code = code..indent..'    '..eh_name..'.properties.bi_type.name = \''..properties.bi_type.name..'\';\n';
+	end
 	code = code..'\n';
 	code = code..indent..'    -- No particle properties for a typedef\n\n';
 	if (properties.attr ~= nil) then

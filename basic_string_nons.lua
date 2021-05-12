@@ -13,6 +13,9 @@ do
     element_handler.properties.element_type = 'S';
     element_handler.properties.content_type = 'S';
     element_handler.properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+    element_handler.properties.bi_type = {};
+    element_handler.properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+    element_handler.properties.bi_type.name = 'string';
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     element_handler.properties.attr._generated_attr = {};

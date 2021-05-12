@@ -17,3 +17,16 @@ size_t binary_data_len(unsigned char *data)
 	return size;
 }
 
+void * alloc_binary_data_memory(size_t size)
+{
+	void* data = malloc(size + sizeof(size_t) + 1);
+
+	if (data == NULL) return NULL;
+	memset(data, 0, (size + sizeof(size_t) + 1));
+
+	memcpy(data, &size, sizeof(size_t));
+	data = data + sizeof(size_t);
+
+	return data;
+}
+

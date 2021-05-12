@@ -199,6 +199,7 @@ elem_code_generator.get_attr_decls = function(attrs)
 			local properties = {};
 		
 			properties.schema_type = get_q_name(v.type.ns, v.type.name);
+			properties.bi_type = v.bi_type;
 			properties.type = {};
 			properties.type.name = v.type.name;
 			properties.type.ns = v.type.ns;
@@ -266,9 +267,13 @@ elem_code_generator.get_attr_decls = function(attrs)
 				attr.list_item_type.base = v.list_item_type.base;
 				attr.list_item_type.local_facets = v.list_item_type.local_facets;
 				attr.list_item_type.facets = facets.new_from_table(v.list_item_type.facets, th.datatype);
+				--[[
 				attr.list_item_type.super_element_content_type =
 									elem_code_generator.get_super_element_content_type(v.list_item_type.base.ns,
 									v.list_item_type.base.name);
+				--]]
+				--local elem_decl = 
+				--attr.list_item_type.super_element_content_type
 
 			end
 			--require 'pl.pretty'.dump(attr.base);
@@ -276,7 +281,9 @@ elem_code_generator.get_attr_decls = function(attrs)
 			attr.facets = facets.new_from_table(v.facets, attr.type_handler.datatype);
 			local ns = attr.base.ns;
 			local name = attr.base.name;
+			--[[
 			attr.super_element_content_type = elem_code_generator.get_super_element_content_type(ns, name);
+			--]]
 			attr.type_of_simple = v.type_of_simple;
 
 
@@ -687,6 +694,9 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'].base = {};\n'
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'].base.ns = \''..v.base.ns..'\';\n';
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'].base.name = \''..v.base.name..'\';\n';
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'].bi_type = {};\n'
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'].bi_type.ns = \''..v.properties.bi_type.ns..'\';\n';
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'].bi_type.name = \''..v.properties.bi_type.name..'\';\n';
 
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'].properties = {};\n'
 			code = code..indentation..'    '
@@ -1113,6 +1123,11 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 	code = code..indent..'    '..eh_name..'.properties.element_type = \''..properties.element_type..'\';\n';
 	code = code..indent..'    '..eh_name..'.properties.content_type = \''..properties.content_type..'\';\n';
 	code = code..indent..'    '..eh_name..'.properties.schema_type = \''..properties.schema_type..'\';\n';
+	if (element_handler.properties.content_type == 'S') then
+		code = code..indent..'    '..eh_name..'.properties.bi_type = {};\n';
+		code = code..indent..'    '..eh_name..'.properties.bi_type.ns = \''..properties.bi_type.ns..'\';\n';
+		code = code..indent..'    '..eh_name..'.properties.bi_type.name = \''..properties.bi_type.name..'\';\n';
+	end
 	if (properties.attr ~= nil) then
 		code = code..indent..'    '..eh_name..'.properties.attr = {};\n';
 		code = code..elem_code_generator.get_attr_code(eh_name..'.properties.attr', element_handler, indent..'    ');

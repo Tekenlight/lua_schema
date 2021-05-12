@@ -13,6 +13,9 @@ do
     element_handler.properties.element_type = 'S';
     element_handler.properties.content_type = 'S';
     element_handler.properties.schema_type = '{}basic_int_nons';
+    element_handler.properties.bi_type = {};
+    element_handler.properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+    element_handler.properties.bi_type.name = 'int';
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     element_handler.properties.attr._generated_attr = {};

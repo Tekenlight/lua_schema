@@ -42,7 +42,9 @@ local to_xml_string = function(message_handler_instance, content)
 	return s;
 end
 
-local to_json_string = function(message_handler_instance, content)
+local to_json_string = function(message_handler_instance, obj)
+	local content = basic_stuff.to_intermediate_json(message_handler_instance, obj);
+	--(require 'pl.pretty').dump(content);
 	local json_parser = cjson.new();
 	local tag = get_json_tag(message_handler_instance);
 	local table_output = nil;
@@ -80,7 +82,11 @@ local from_json_string = function(schema_type_handler, xmlua, json_input)
 	else
 		parsing_result_msg = nil;
 	end
-	return status, obj, parsing_result_msg;
+	if (not status) then return  status, obj, parsing_result_msg; end
+
+	local content = basic_stuff.from_intermediate_json(schema_type_handler, obj);
+
+	return status, content, parsing_result_msg;
 end
 
 local validate_doc = function(message_handler_instance, content)

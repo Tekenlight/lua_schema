@@ -5,6 +5,7 @@
 
 void free_binary_data(unsigned char *data);
 size_t binary_data_len(unsigned char *data);
+void * alloc_binary_data_memory(size_t size);
 
 static unsigned char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 								'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
@@ -90,13 +91,8 @@ unsigned char *base64_decode(const unsigned char *data, size_t input_length, siz
 	unsigned char *decoded_data = NULL;
 
 	*output_length = ((input_length / 4) * 3);
-	decoded_data = malloc(*output_length + sizeof(size_t) + 1);
-
+	decoded_data = alloc_binary_data_memory(*output_length);
 	if (decoded_data == NULL) return NULL;
-	memset(decoded_data, 0, (*output_length + 1));
-
-	memcpy(decoded_data, output_length, sizeof(size_t));
-	decoded_data = decoded_data + sizeof(size_t);
 
 	state = 0;
 	out_index = 0;
