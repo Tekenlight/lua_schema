@@ -46,13 +46,15 @@ ffi.cdef[[
 int printf(const char * restrict format, ...);
 ]]
 
-print(ffi.string(content.base64Binary));
-print(ffi.string(content.hexBinary));
+print(ffi.string(content.base64Binary)); print(require("core_utils").binary_size(content.base64Binary));
+print(#ffi.string(content.base64Binary));
+print(ffi.string(content.hexBinary)); print(require("core_utils").binary_size(content.hexBinary));
+print(#ffi.string(content.hexBinary));
 
 if (content ~= nil) then
 	local json_str = struct_with_various_types:to_json(content);
 	print(json_str);
-	local content_1 = struct_with_various_types:from_json(json_str);
-	local xml_str = struct_with_various_types:to_xml(content_1);
-	print(xml_str);
+	--local content_1 = struct_with_various_types:from_json(json_str);
+	--local xml_str = struct_with_various_types:to_xml(content_1);
+	--print(xml_str);
 end

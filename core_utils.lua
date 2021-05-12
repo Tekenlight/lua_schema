@@ -100,5 +100,17 @@ core_utils.base64_decode = function(input)
 	end
 end
 
+core_utils.binary_size = function(input)
+	if (input == nil) then
+		error("Invalid input");
+	end
+
+	local status = ffi.istype("unsigned char*", input);
+	if (not status) then
+		error("Invalid input");
+	end
+	return lib.binary_data_len(input);
+end
+
 return core_utils;
 
