@@ -54,10 +54,11 @@ unsigned char *hex_encode(const unsigned char *data, size_t input_length, size_t
 unsigned char *hex_decode(const unsigned char *data, size_t input_length, size_t *output_length)
 {
 	int i = 0, j = 0;
-	if (input_length % 2) { printf("%s:%d\n", __FILE__, __LINE__);return NULL; } // There must be even number of bytes in a hex string
+	if (input_length % 2) { return NULL; } // There must be even number of bytes in a hex string
 	*output_length = input_length / 2;
 
 	unsigned char * decoded_data = alloc_binary_data_memory(*output_length);
+	if (decoded_data == NULL) { return NULL; }
 
 	unsigned char one = 0;
 	unsigned char two = 0;
