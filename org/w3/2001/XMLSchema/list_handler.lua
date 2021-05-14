@@ -3,6 +3,7 @@ local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __list_handler_class = {}
 
+__list_handler_class.type_name = 'list';
 __list_handler_class.datatype = 'list';
 
 --[[

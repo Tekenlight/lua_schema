@@ -1121,6 +1121,8 @@ basic_stuff.primitive_to_intermediate_json = function(th, bi_type, content)
 		elseif ('hexBinary' == bi_type.name) then
 			content = th:to_xmlua(nil, content);
 		end
+	elseif (bi_type == 'float' or bi_type == 'double') then
+		content = tostring(content);
 	end
 	return content;
 end
@@ -1212,6 +1214,11 @@ basic_stuff.primitive_from_intermediate_json = function(th, bi_type, content)
 			content = th:to_type(nil, content);
 		elseif ('hexBinary' == bi_type.name) then
 			content = th:to_type(nil, content);
+		end
+	elseif (bi_type == 'float' or bi_type == 'double') then
+		content = th:to_type(nil, content);
+		if (content == nil) then
+			error("INVALID FLOATING POINT NUMBER");
 		end
 	end
 	return content;

@@ -3,6 +3,7 @@ local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __NMTOKEN_handler_class = {}
 
+__NMTOKEN_handler_class.type_name = 'NMTOKEN';
 __NMTOKEN_handler_class.datatype = 'string';
 
 function __NMTOKEN_handler_class:is_deserialized_valid(x)

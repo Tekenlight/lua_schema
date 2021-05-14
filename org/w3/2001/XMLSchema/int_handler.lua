@@ -2,6 +2,7 @@ local facets = require("facets");
 local error_handler = require("error_handler");
 local __int_handler_class = {}
 
+__int_handler_class.type_name = 'int';
 __int_handler_class.datatype = 'number';
 
 function __int_handler_class:is_deserialized_valid(x)

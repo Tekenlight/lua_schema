@@ -1,5 +1,6 @@
 local xmlua = require("xmlua")
 local regex = xmlua.XMLRegexp.new();
+local nu = require("number_utils");
 
 
 local error_handler = require("error_handler");
@@ -62,20 +63,6 @@ local function make_copy(f)
 	return o;
 end
 
-local function compare_num(n1, n2)
-	local epsilon = 0.0001;
-
-	local dif = n1 - n2;
-	if (math.abs(dif) < epsilon) then
-		return 0
-	elseif (dif < 0) then
-		return -1;
-	else
-		return 1;
-	end
-
-end
-
 local function count_total_digits(n)
 	local s = tostring(n);
 	s = string.sub(s, "^0+", '');
@@ -121,7 +108,7 @@ function _xsd_facets:check_num_enumerations(v)
 	if (e == nil or #e == 0) then return true; end
 	local found = false;
 	for p,q in ipairs(e) do
-		if (compare_num(tonumber(q), tonumber(v)) == 0) then
+		if (nu.compare_num(tonumber(q), tonumber(v)) == 0) then
 			found = true;
 			break;
 		end
@@ -252,7 +239,7 @@ function _xsd_facets:check_number_facets(s)
 		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"number type\"");
 	end
 	if (self.min_exclusive ~= nil) then
-		if (compare_num(tonumber(self.min_exclusive), s) >= 0) then
+		if (nu.compare_num(tonumber(self.min_exclusive), s) >= 0) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
 							..s.."] is less than or equal to minExclusive ["..self.min_exclusive.."]", debug.getinfo(1));
@@ -260,7 +247,7 @@ function _xsd_facets:check_number_facets(s)
 		end
 	end
 	if (self.min_inclusive ~= nil) then
-		if (compare_num(tonumber(self.min_inclusive), s) > 0) then
+		if (nu.compare_num(tonumber(self.min_inclusive), s) > 0) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
 							..s.."] is less than to mininclusive ["..self.min_inclusive.."]", debug.getinfo(1));
@@ -268,7 +255,7 @@ function _xsd_facets:check_number_facets(s)
 		end
 	end
 	if (self.max_exclusive ~= nil) then
-		if (compare_num(tonumber(self.max_exclusive), s) <= 0) then
+		if (nu.compare_num(tonumber(self.max_exclusive), s) <= 0) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
 							..s.."] is greater than or equal to maxExclusive ["..self.max_exclusive.."]", debug.getinfo(1));
@@ -276,7 +263,7 @@ function _xsd_facets:check_number_facets(s)
 		end
 	end
 	if (self.max_inclusive ~= nil) then
-		if (compare_num(tonumber(self.max_inclusive), s) < 0) then
+		if (nu.compare_num(tonumber(self.max_inclusive), s) < 0) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
 							..s.."] is greater than maxinclusive ["..self.max_inclusive.."]", debug.getinfo(1));

@@ -2,6 +2,7 @@ local facets = require("facets");
 local error_handler = require("error_handler");
 local __boolean_handler_class = {}
 
+__boolean_handler_class.type_name = 'boolean';
 __boolean_handler_class.datatype = 'boolean';
 
 function __boolean_handler_class:is_deserialized_valid(x)

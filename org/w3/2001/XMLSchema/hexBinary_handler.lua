@@ -5,6 +5,7 @@ local error_handler = require("error_handler");
 local __hexBinary_handler_class = {}
 local core_utils = require("core_utils");
 
+__hexBinary_handler_class.type_name = 'hexBinary';
 __hexBinary_handler_class.datatype = 'binary';
 
 function __hexBinary_handler_class:is_deserialized_valid(x)

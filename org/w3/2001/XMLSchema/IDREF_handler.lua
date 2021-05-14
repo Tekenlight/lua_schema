@@ -3,6 +3,7 @@ local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __IDREF_handler_class = {}
 
+__IDREF_handler_class.type_name = 'IDREF';
 __IDREF_handler_class.datatype = 'string';
 
 function __IDREF_handler_class:is_deserialized_valid(x)

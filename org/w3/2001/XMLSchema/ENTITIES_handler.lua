@@ -3,6 +3,7 @@ local basic_stuff = require("basic_stuff");
 local element_handler = {};
 
 
+element_handler.type_name = 'ENTITIES';
 element_handler.__name__ = 'ENTITIES';
 
 

@@ -3,6 +3,7 @@ local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __NOTATION_handler_class = {}
 
+__NOTATION_handler_class.type_name = 'NOTATION';
 __NOTATION_handler_class.datatype = 'string';
 
 function __NOTATION_handler_class:is_deserialized_valid(x)

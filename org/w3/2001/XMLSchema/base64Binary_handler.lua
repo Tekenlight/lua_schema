@@ -5,6 +5,7 @@ local error_handler = require("error_handler");
 local __base64Binary_handler_class = {}
 local core_utils = require("core_utils");
 
+__base64Binary_handler_class.type_name = 'base64Binary';
 __base64Binary_handler_class.datatype = 'binary';
 
 function __base64Binary_handler_class:is_deserialized_valid(x)

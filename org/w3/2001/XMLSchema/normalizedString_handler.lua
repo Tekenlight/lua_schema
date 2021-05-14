@@ -3,6 +3,7 @@ local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __normalized_string_handler_class = {}
 
+__normalized_string_handler_class.type_name = 'normalizedString';
 __normalized_string_handler_class.datatype = 'string';
 
 function __normalized_string_handler_class:is_deserialized_valid(x)

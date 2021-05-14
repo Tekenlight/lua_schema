@@ -3,6 +3,7 @@ local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 local __ENTITY_handler_class = {}
 
+__ENTITY_handler_class.type_name = 'ENTITY';
 __ENTITY_handler_class.datatype = 'string';
 
 function __ENTITY_handler_class:is_deserialized_valid(x)

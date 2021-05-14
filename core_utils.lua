@@ -34,8 +34,9 @@ core_utils.hex_encode = function(input)
 	local encoded_data = lib.hex_encode(input, lib.binary_data_len(input), encoded_data_len_ptr);
 
 	if (encoded_data ~= ffi.NULL) then
-		ffi.gc(encoded_data, ffi.C.free);
-		return ffi.string(encoded_data);
+		local e_str = ffi.string(encoded_data);
+		ffi.C.free(encoded_data);
+		return e_str;
 	else
 		return nil;
 	end
@@ -51,7 +52,6 @@ core_utils.hex_decode = function(input)
 	local decoded_data = lib.hex_decode(input, #input, decoded_data_len_ptr);
 
 	if (decoded_data ~= ffi.NULL) then
-		--print(type(decoded_data));
 		ffi.gc(decoded_data, lib.free_binary_data);
 		return (decoded_data);
 	else
@@ -75,8 +75,9 @@ core_utils.base64_encode = function(input)
 	local encoded_data = lib.base64_encode(input, lib.binary_data_len(input), encoded_data_len_ptr, 1);
 
 	if (encoded_data ~= ffi.NULL) then
-		ffi.gc(encoded_data, ffi.C.free);
-		return ffi.string(encoded_data);
+		local e_str = ffi.string(encoded_data);
+		ffi.C.free(encoded_data);
+		return e_str;
 	else
 		return nil;
 	end
@@ -92,7 +93,6 @@ core_utils.base64_decode = function(input)
 	local decoded_data = lib.base64_decode(input, #input, decoded_data_len_ptr);
 
 	if (decoded_data ~= ffi.NULL) then
-		--print(type(decoded_data));
 		ffi.gc(decoded_data, lib.free_binary_data);
 		return (decoded_data);
 	else
