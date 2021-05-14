@@ -38,6 +38,7 @@ targetNamespace="http://test_example.com">
 						</xsd:restriction>
 					</xsd:simpleType>
 				</xsd:element>
+				<xsd:element name="decimal" type="xsd:decimal"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>

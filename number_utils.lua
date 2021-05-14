@@ -4,6 +4,10 @@ ffi.cdef[[
 int printf(const char *, ...);
 float max_float();
 double max_double();
+int isfloat_nan(float f);
+int isfloat_inf(float f);
+int isdouble_nan(double f);
+int isdouble_inf(double f);
 ]]
 
 local loaded, lib = pcall(ffi.load, 'core_utils');

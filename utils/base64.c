@@ -80,7 +80,6 @@ unsigned char *base64_encode(const unsigned char *data, size_t input_length,
 	return encoded_data;
 }
 
-#define DECODE(c) 
 #define ISSPACE(c) (c==10 || c==13 || c==32 || c==9)
 #define BASE64_PAD '='
 

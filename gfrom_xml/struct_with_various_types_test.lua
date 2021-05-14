@@ -32,6 +32,7 @@ b3dyaSAhISEgIEhlbGxvIFdvcmxkIFNyaXJhbSBhbmQgR293cmkgISEhIQ==</base64Binary>
 <anyURI>urn:one:two</anyURI>
 <float>3.3E+38 </float>
 <double>100.15 </double>
+<decimal>100.15</decimal>
 </ns1:struct_with_various_types>]=]
 
 mhf = require("message_handler_factory")
