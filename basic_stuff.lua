@@ -3,6 +3,7 @@ local error_handler = require("error_handler");
 local basic_stuff = {};
 local URI = require("uri");
 local stringx = require("pl.stringx");
+local nu = require("number_utils");
 
 basic_stuff.is_complex_type_simple_content = function(content)
 	if ((content._attr == nil) or (type(content._attr) ~= 'table')) then
@@ -47,7 +48,7 @@ basic_stuff.assert_input_is_complex_type_simple_content = function(content)
 end
 
 basic_stuff.is_simple_type = function(content)
-	if ((type(content) ~= 'string') and (type(content) ~= 'boolean')
+	if ((type(content) ~= 'string') and (type(content) ~= 'boolean') and (not ffi.istype("long", content))
 		and (type(content) ~= 'number') and (not ffi.istype("unsigned char *", content))) then
 		return false;
 	end
@@ -732,7 +733,7 @@ basic_stuff.execute_primitive_validation = function(handler, content)
 end
 
 basic_stuff.perform_element_validation = function(handler, content)
-	--require 'pl.pretty'.dump(handler);
+	--require 'pl.pretty'.dump(content);
 	--require 'pl.pretty'.dump(handler.particle_properties);
 	--print("HHHHHHHHHH");
 	--require 'pl.pretty'.dump(handler.particle_properties.generated_name);
@@ -1121,7 +1122,13 @@ basic_stuff.primitive_to_intermediate_json = function(th, bi_type, content)
 		elseif ('hexBinary' == bi_type.name) then
 			content = th:to_xmlua(nil, content);
 		end
-	elseif (bi_type == 'float' or bi_type == 'double') then
+	elseif (bi_type.name == 'float' or bi_type.name == 'double') then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, type(content), bi_type.name, content);
+		if (nu.is_nan(content) or nu.is_inf(content)) then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, type(content), bi_type.name, content);
+			content = th:to_xmlua('', content);
+		end
+	elseif (th.datatype == 'integer') then
 		content = tostring(content);
 	end
 	return content;
@@ -1208,6 +1215,7 @@ end
 
 basic_stuff.primitive_from_intermediate_json = function(th, bi_type, content)
 
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, type(content), bi_type.name);
 	--(require 'pl.pretty').dump(th);
 	if ('binary' == th.datatype) then 
 		if ('base64Binary' == bi_type.name) then
@@ -1215,11 +1223,16 @@ basic_stuff.primitive_from_intermediate_json = function(th, bi_type, content)
 		elseif ('hexBinary' == bi_type.name) then
 			content = th:to_type(nil, content);
 		end
-	elseif (bi_type == 'float' or bi_type == 'double') then
-		content = th:to_type(nil, content);
-		if (content == nil) then
-			error("INVALID FLOATING POINT NUMBER");
+	elseif (bi_type.name == 'float' or bi_type.name == 'double') then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, type(content));
+		if (type(content) == 'string') then
+			content = th:to_type(nil, content);
+			if (content == nil) then
+				error("INVALID FLOATING POINT NUMBER");
+			end
 		end
+	elseif (th.datatype == 'integer') then
+		content = th:to_type(nil, content);
 	end
 	return content;
 end

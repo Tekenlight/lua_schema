@@ -18,9 +18,9 @@ function __float_handler_class:is_deserialized_valid(x)
 end
 
 function __float_handler_class:is_valid(f)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f);
 	local valid = true;
 	if ((not nu.is_nan(f)) and (not nu.is_inf(f)) and (not nu.is_float(f))) then
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, f);
 		valid = false;
 	end
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f, valid);

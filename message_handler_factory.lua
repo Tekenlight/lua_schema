@@ -109,6 +109,7 @@ local validate_doc = function(message_handler_instance, content)
 	--require 'pl.pretty'.dump(valid);
 
 	local message_validation_context = error_handler.reset();
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	--require 'pl.pretty'.dump(message_validation_context);
 	if (not result) then
 		valid = false;
@@ -154,8 +155,11 @@ local function form_complete_message_handler(message_handler)
 
 	function message_handler:to_xml(content)
 		status, msg = validate_doc(self, content)
-		if (status) then return to_xml_string(self, content);
+		if (status) then
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+			return to_xml_string(self, content);
 		else
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline, msg);
 			return nil, msg;
 		end
 	end

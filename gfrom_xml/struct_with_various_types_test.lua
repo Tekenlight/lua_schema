@@ -32,7 +32,8 @@ b3dyaSAhISEgIEhlbGxvIFdvcmxkIFNyaXJhbSBhbmQgR293cmkgISEhIQ==</base64Binary>
 <anyURI>urn:one:two</anyURI>
 <float>3.3E+38 </float>
 <double>100.15 </double>
-<decimal>100.15</decimal>
+<decimal>    +100.15    </decimal>
+<integer>    +20    </integer>
 </ns1:struct_with_various_types>]=]
 
 mhf = require("message_handler_factory")
@@ -51,16 +52,21 @@ int printf(const char * restrict format, ...);
 ]]
 
 if (content ~= nil) then
-	print(ffi.string(content.base64Binary)); print(require("core_utils").binary_size(content.base64Binary));
-	print(#ffi.string(content.base64Binary));
-	print(ffi.string(content.hexBinary)); print(require("core_utils").binary_size(content.hexBinary));
-	print(#ffi.string(content.hexBinary));
+	--print(ffi.string(content.base64Binary)); print(require("core_utils").binary_size(content.base64Binary));
+	--print(#ffi.string(content.base64Binary));
+	--print(ffi.string(content.hexBinary)); print(require("core_utils").binary_size(content.hexBinary));
+	--print(#ffi.string(content.hexBinary));
 end
 
 if (content ~= nil) then
 	local json_str = struct_with_various_types:to_json(content);
 	print(json_str);
-	local content_1 = struct_with_various_types:from_json(json_str);
-	local xml_str = struct_with_various_types:to_xml(content_1);
-	print(xml_str);
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	local content_1, msg = struct_with_various_types:from_json(json_str);
+	local xml_str, msg = struct_with_various_types:to_xml(content_1);
+	if (xml_str ~= nil) then
+		print(xml_str);
+	else
+		print(msg);
+	end
 end

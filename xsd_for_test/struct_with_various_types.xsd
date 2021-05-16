@@ -39,6 +39,16 @@ targetNamespace="http://test_example.com">
 					</xsd:simpleType>
 				</xsd:element>
 				<xsd:element name="decimal" type="xsd:decimal"/>
+				<xsd:element name="integer">
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:integer">
+							<xsd:enumeration value="10"/>
+							<xsd:enumeration value="20"/>
+							<xsd:enumeration value="30"/>
+							<xsd:minInclusive value ="15"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:element>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
