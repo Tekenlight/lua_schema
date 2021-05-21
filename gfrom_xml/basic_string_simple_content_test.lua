@@ -14,8 +14,15 @@ else print(content, msg)
 end
 
 if (nil ~= content) then
-	print(basic_string_simple_content:to_json(content))
-	--print(basic_string_simple_content:to_xml(content))
+	local json_string = (basic_string_simple_content:to_json(content))
+	print(json_string);
+
+	local content1, msg = basic_string_simple_content:from_json(json_string);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	require 'pl.pretty'.dump(content1);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	local xml_string = basic_string_simple_content:to_xml(content1);
+	print(xml_string);
 end
 
 if (content ~= nil) then os.exit(true); else os.exit(false); end

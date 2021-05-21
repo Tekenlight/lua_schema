@@ -1,5 +1,9 @@
 local error_handler = {};
 
+error_handler.dump = function()
+	(require 'pl.pretty').dump(_G.message_validation_context);
+end
+
 error_handler.init = function()
 	_G.message_validation_context = { fieldpath = { level = 0, path = {} },
 							status = { success = true,
@@ -47,7 +51,13 @@ error_handler.raise_validation_error = function(error_no, message, d_info)
 		return false;
 	else
 		--print(d_info.source, d_info.currentline);
-		error_handler.set_validation_error(error_no, message, tb, d_info.source, d_info.currentline);
+		local src = nil;
+		local line = nil;
+		if (d_info ~= nil) then
+			src = d_info.source;
+			line = d_info.line;
+		end
+		error_handler.set_validation_error(error_no, message, tb, src, line);
 		return false;
 	end
 end
@@ -63,6 +73,16 @@ end
 error_handler.reset = function()
 	local message_validation_context = _G.message_validation_context;
 	_G.message_validation_context = nil; -- to ensure garbage collection
+	return message_validation_context;
+end
+
+error_handler.reset_init = function()
+	local message_validation_context = nil;
+	if (_G.message_validation_context ~= nil) then
+		message_validation_context = _G.message_validation_context;
+		_G.message_validation_context = nil; -- to ensure garbage collection
+		error_handler.init();
+	end
 	return message_validation_context;
 end
 

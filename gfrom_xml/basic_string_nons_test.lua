@@ -14,11 +14,15 @@ end
 if (nil ~= content) then
 	local json_str = basic_string:to_json(content);
 
+	print(json_str);
 	local lua_obj = basic_string:from_json(json_str);
 
 
-	print(json_str);
-	(require 'pl.pretty').dump(lua_obj);
+	if (type(lua_obj) == 'table') then (require 'pl.pretty').dump(lua_obj);
+	else print(lua_obj);
+	end
+	local xml_str = basic_string:to_xml(lua_obj);
+	print(xml_str);
 end
 
 if (content ~= nil) then os.exit(true); else os.exit(false); end

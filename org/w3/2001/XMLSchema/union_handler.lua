@@ -28,7 +28,7 @@ end
 function __union_handler_class:to_xmlua(ns, x)
 	local s = tostring(x);
 	if (false == self:is_valid(s)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		if (msv ~= nil) then error(msv.status.error_message);
 		else error(s.." not a valid union");
 		end
@@ -46,7 +46,7 @@ end
 function __union_handler_class:to_cjson_struct(ns, x)
 	local s = tostring(x);
 	if (false == self:is_valid(s)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		if (msv ~= nil) then error(msv.status.error_message);
 		else error(s.." not a valid union");
 		end
@@ -69,7 +69,7 @@ function __union_handler_class:to_type(ns, x)
 	if ('string' ~= type(i)) then error("Field: {"..error_handler.get_fieldpath().."} Input not a valid string"); end
 	local s = self:to_schema_type(ns, i);
 	if (false == self:is_valid(s)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		if (msv ~= nil) then error(msv.status.error_message);
 		else error(s.." not a valid union");
 		end

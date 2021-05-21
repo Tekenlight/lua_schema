@@ -1,9 +1,11 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 targetNamespace="http://test_example.com">
 
-	<xsd:element name="struct_with_various_types">
+	<xsd:element name="wvt">
 		<xsd:complexType>
 			<xsd:sequence>
+				<!--
+				-->
 				<xsd:element name="int" type="xsd:int"/>
 				<xsd:element name="string" type="xsd:string"/>
 				<xsd:element name="normalizedString" type="xsd:normalizedString"/>
@@ -13,17 +15,14 @@ targetNamespace="http://test_example.com">
 				<xsd:element name="language" type="xsd:language"/>
 				<xsd:element name="ID" type="xsd:ID"/>
 				<xsd:element name="IDREF" type="xsd:IDREF"/>
-				<xsd:element name="IDREFS" type="xsd:IDREFS"/>
 				<xsd:element name="ENTITY" type="xsd:ENTITY"/>
-				<xsd:element name="ENTITIES" type="xsd:ENTITIES"/>
 				<xsd:element name="NMTOKEN" type="xsd:NMTOKEN"/>
-				<xsd:element name="NMTOKENS" type="xsd:NMTOKENS"/>
 				<xsd:element name="NOTATION" type="xsd:NOTATION"/>
 				<xsd:element name="QName" type="xsd:QName"/>
+				<xsd:element name="IDREFS" type="xsd:IDREFS"/>
+				<xsd:element name="ENTITIES" type="xsd:ENTITIES"/>
+				<xsd:element name="NMTOKENS" type="xsd:NMTOKENS"/>
 				<xsd:element name="boolean" type="xsd:boolean"/>
-				<xsd:element name="hexBinary" type="xsd:hexBinary"/>
-				<xsd:element name="base64Binary" type="xsd:base64Binary"/>
-				<xsd:element name="anyURI" type="xsd:anyURI"/>
 				<xsd:element name="float">
 					<xsd:simpleType>
 						<xsd:restriction base="xsd:float">
@@ -38,6 +37,11 @@ targetNamespace="http://test_example.com">
 						</xsd:restriction>
 					</xsd:simpleType>
 				</xsd:element>
+				<xsd:element name="hexBinary" type="xsd:hexBinary"/>
+				<xsd:element name="base64Binary" type="xsd:base64Binary"/>
+				<xsd:element name="anyURI" type="xsd:anyURI"/>
+				<!--
+				-->
 				<xsd:element name="decimal" type="xsd:decimal"/>
 				<xsd:element name="integer">
 					<xsd:simpleType>

@@ -30,14 +30,14 @@ end
 
 function __base64Binary_handler_class:to_xmlua(ns, s)
 	if (false == self:is_valid(s)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	local status, ed = pcall(core_utils.base64_encode, s);
 	if (not status) then
 		error_handler.raise_validation_error(-1,
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:base64Binary", debug.getinfo(1));
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return ed;
@@ -54,7 +54,7 @@ function __base64Binary_handler_class:to_schema_type(ns, s)
 	if (not status) then
 		error_handler.raise_validation_error(-1,
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:base64Binary", debug.getinfo(1));
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return dd;
@@ -62,14 +62,14 @@ end
 
 function __base64Binary_handler_class:to_cjson_struct(ns, s)
 	if (false == self:is_valid(s)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	local status, ed = pcall(core_utils.base64_encode, s);
 	if (not status) then
 		error_handler.raise_validation_error(-1,
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:base64Binary", debug.getinfo(1));
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return ed;
@@ -83,7 +83,7 @@ function __base64Binary_handler_class:to_type(ns, i)
 	end
 	local s = self:to_schema_type(ns, i);
 	if (false == self:is_valid(s)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return s;

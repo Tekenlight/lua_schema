@@ -44,6 +44,7 @@ end
 
 local to_json_string = function(message_handler_instance, obj)
 	local content = basic_stuff.to_intermediate_json(message_handler_instance, obj);
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	--(require 'pl.pretty').dump(content);
 	local json_parser = cjson.new();
 	local tag = get_json_tag(message_handler_instance);
@@ -84,7 +85,15 @@ local from_json_string = function(schema_type_handler, xmlua, json_input)
 	end
 	if (not status) then return  status, obj, parsing_result_msg; end
 
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	--require 'pl.pretty'.dump(obj);
+	if (schema_type_handler.properties.element_type == 'S') then
+		obj = obj[schema_type_handler.particle_properties.generated_name];
+	end
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, obj);
 	local content = basic_stuff.from_intermediate_json(schema_type_handler, obj);
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	--require 'pl.pretty'.dump(content);
 
 	return status, content, parsing_result_msg;
 end
@@ -156,10 +165,10 @@ local function form_complete_message_handler(message_handler)
 	function message_handler:to_xml(content)
 		status, msg = validate_doc(self, content)
 		if (status) then
-			print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 			return to_xml_string(self, content);
 		else
-			print(debug.getinfo(1).source, debug.getinfo(1).currentline, msg);
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, msg);
 			return nil, msg;
 		end
 	end

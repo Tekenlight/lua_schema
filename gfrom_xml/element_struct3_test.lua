@@ -44,6 +44,7 @@ end
 
 if (nil ~= content) then
 	print(element_struct3:to_json(content));
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, type(content.example_struct.author_1));
 	print(element_struct3:to_xml(content));
 end
 

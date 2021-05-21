@@ -39,7 +39,7 @@ end
 
 function __boolean_handler_class:to_xmlua(ns, i)
 	if (false == self:is_valid(i)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return tostring(i);
@@ -49,7 +49,7 @@ function __boolean_handler_class:to_schema_type(ns, x)
 	if (type(x) ~= 'string') then
 		error_handler.raise_validation_error(-1,
 						"Field:["..i.."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	local i = self.facets:process_white_space(x);
@@ -85,10 +85,10 @@ function __boolean_handler_class:to_schema_type(ns, x)
 		n = i;
 	end
 	if (status == false) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	elseif (false == self:is_valid(n)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return n;
@@ -96,7 +96,7 @@ end
 
 function __boolean_handler_class:to_cjson_struct(ns, i)
 	if (false == self:is_valid(i)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return i;
@@ -107,11 +107,11 @@ function __boolean_handler_class:to_type(ns, i)
 	if (c_i == nil) then
 		error_handler.raise_validation_error(-1,
 						"Field:["..i.."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	if (false == self:is_valid(c_i)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return c_i;

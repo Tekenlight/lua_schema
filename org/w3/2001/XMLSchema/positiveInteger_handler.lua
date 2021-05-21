@@ -3,33 +3,31 @@ local xmlua = require("xmlua");
 local facets = require("facets");
 local error_handler = require("error_handler");
 local nu = require("number_utils");
-local __int_handler_class = {}
+local __positive_integer_handler_class = {}
 
-__int_handler_class.type_name = 'int';
-__int_handler_class.datatype = 'integer';
+__positive_integer_handler_class.type_name = 'integer';
+__positive_integer_handler_class.datatype = 'integer';
 
 local regex = xmlua.XMLRegexp.new();
-__int_handler_class.s_int_str_pattern = [=[[+-]?[\d]+]=]
-local res, out = pcall(regex.compile, regex, __int_handler_class.s_int_str_pattern);
+__positive_integer_handler_class.s_positive_integer_str_pattern = [=[[+]?[\d]+]=]
+local res, out = pcall(regex.compile, regex, __positive_integer_handler_class.s_positive_integer_str_pattern);
 if (not res) then
-	error("Invalid regular expression "..__int_handler_class.s_int_str_pattern);
+	error("Invalid regular expression "..__positive_integer_handler_class.s_positive_integer_str_pattern);
 end
-__int_handler_class.c_int_str_pattern = out;
+__positive_integer_handler_class.c_positive_integer_str_pattern = out;
 
-function __int_handler_class:is_deserialized_valid(x)
+function __positive_integer_handler_class:is_deserialized_valid(x)
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, x);
-	local status, f = pcall(self.to_type, self, '', x);
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, x);
-	if (not status) then
-		error_handler.reset_init();
+	local f = self:to_type('', x);
+	if (f == nil) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..x.."]:{"..error_handler.get_fieldpath().."} is not a valid int", debug.getinfo(1));
+						"Field:["..x.."]:{"..error_handler.get_fieldpath().."} is not a valid positiveInteger", debug.getinfo(1));
 		return false;
 	end
 	return self:is_valid(f);
 end
 
-function __int_handler_class:is_valid(f)
+function __positive_integer_handler_class:is_valid(f)
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f);
 	local valid = true;
 	if (not nu.is_integer(f)) then
@@ -37,25 +35,20 @@ function __int_handler_class:is_valid(f)
 	end
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f, valid);
 	if (not valid) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f, valid);
 		error_handler.raise_validation_error(-1,
-						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid int", debug.getinfo(1));
+						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid positiveInteger", debug.getinfo(1));
 		return false;
 	end
 	if (self.facets ~= nil) then
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f, valid);
-		--(require 'pl.pretty').dump(self.facets);
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, type(f));
 		if (not self.facets:check(f)) then
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f, valid);
 			return false;
 		end
 	end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f, valid);
 	return true;
 end
 
-function __int_handler_class:to_xmlua(ns, f)
+function __positive_integer_handler_class:to_xmlua(ns, f)
 	if (false == self:is_valid(f)) then
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
@@ -63,24 +56,12 @@ function __int_handler_class:to_xmlua(ns, f)
 	return string.format("%d", tonumber(f));
 end
 
-function __int_handler_class:to_schema_type(ns, sf)
-	sf = self.facets:process_white_space(sf);
-	local f, status;
-	f = self.facets:process_white_space(sf);
-	--[[
-	status, f = pcall(string.format, "%d", sf);
-	if (not status) then
+function __positive_integer_handler_class:to_schema_type(ns, f)
+	f = self.facets:process_white_space(f);
+	if (1 ~= self.c_positive_integer_str_pattern:check(f)) then
 		error_handler.raise_validation_error(-1,
 					"Value of the field {"..error_handler.get_fieldpath().."}: "
-						..f..", is not in the lexical spcae of xsd:int", debug.getinfo(1));
-		local msv = error_handler.reset_init();
-		error(msv.status.error_message);
-	end
-	--]]
-	if (1 ~= self.c_int_str_pattern:check(f)) then
-		error_handler.raise_validation_error(-1,
-					"Value of the field {"..error_handler.get_fieldpath().."}: "
-						..f..", is not in the lexical spcae of xsd:int", debug.getinfo(1));
+						..f..", is not in the lexical spcae of xsd:positiveInteger", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
@@ -89,20 +70,20 @@ function __int_handler_class:to_schema_type(ns, sf)
 	if (n == nil) then
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
 		error_handler.raise_validation_error(-1,
-						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of int", debug.getinfo(1));
+						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of positiveInteger", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	n = ffi.cast("long", n);
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
 	if (false == self:is_valid(n)) then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return n;
 end
 
-function __int_handler_class:to_cjson_struct(ns, f)
+function __positive_integer_handler_class:to_cjson_struct(ns, f)
 	if (false == self:is_valid(f)) then
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
@@ -110,7 +91,7 @@ function __int_handler_class:to_cjson_struct(ns, f)
 	return f;
 end
 
-function __int_handler_class:to_type(ns, f)
+function __positive_integer_handler_class:to_type(ns, f)
 	if (type(f) ~= 'string') then
 		error_handler.raise_validation_error(-1,
 						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a string", debug.getinfo(1));
@@ -120,7 +101,7 @@ function __int_handler_class:to_type(ns, f)
 	local c_f = self:to_schema_type(ns, f);
 	if (c_f == nil) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid int", debug.getinfo(1));
+						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid positiveInteger", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
@@ -131,7 +112,7 @@ function __int_handler_class:to_type(ns, f)
 	return c_f;
 end
 
-local mt = { __index = __int_handler_class; } ;
+local mt = { __index = __positive_integer_handler_class; } ;
 local _factory = {};
 
 function _factory:instantiate()
@@ -139,8 +120,7 @@ function _factory:instantiate()
 	o = setmetatable(o, mt);
 	o.facets = facets.new('integer');
 	o.facets.white_space = 'collapse';
-	o.facets.min_inclusive = -2147483648;
-	o.facets.max_inclusive =  2147483647;
+	o.facets.min_inclusive = "1"
 	return o;
 end
 

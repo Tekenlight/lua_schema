@@ -139,7 +139,9 @@ end
 
 function _xsd_facets:check_string_facets(s)
 	if (type(s) ~= 'string') then
-		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"string type\"");
+		error_handler.raise_validation_error(-1,
+				"Field {"..error_handler.get_fieldpath().."}: Input not a \"string type\"", debug.getinfo(1));
+		return false;
 	end
 	if (self.length ~= nil) then
 		if (string.len(s) ~= self.length) then
@@ -177,7 +179,9 @@ end
 
 function _xsd_facets:check_list_facets(s)
 	if (type(s) ~= 'string') then
-		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"list type\"");
+		error_handler.raise_validation_error(-1,
+			"Field {"..error_handler.get_fieldpath().."}: Input not a \"list type\"", debug.getinfo(1));
+		return false;
 	end
 	local count = count_words(s);
 	if (self.length ~= nil) then
@@ -210,14 +214,18 @@ end
 
 function _xsd_facets:check_patttern_match(s)
 	if (type(s) ~= 'string') then
-		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"string type\"");
+		error_handler.raise_validation_error(-1,
+			"Field {"..error_handler.get_fieldpath().."}: Input not a \"string type\"", debug.getinfo(1));
+		return false;
 	end
 	if (self.pattern ~= nil and #self.pattern ~= 0) then
 		for i,v in ipairs(self.pattern) do
 			if (v.vom_p == nil) then
 				local res, out = pcall(regex.compile, regex, v.str_p);
 				if (not res) then
-					error("Invalid regular expression "..v.str_p);
+					error_handler.raise_validation_error(-1, "Invalid regular expression "..v.str_p);
+					local msv = error_handler.reset_init();
+					error(msv.status.error_message);
 				end
 				v.com_p = out;
 			end
@@ -236,7 +244,9 @@ end
 
 function _xsd_facets:check_number_facets(s)
 	if (type(s) ~= 'number') then
-		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"number type\"");
+		error_handler.raise_validation_error(-1,
+			"Field {"..error_handler.get_fieldpath().."}: Input not a \"number type\"", debug.getinfo(1));
+		return false;
 	end
 	if (self.min_exclusive ~= nil) then
 		if (nu.compare_num(tonumber(self.min_exclusive), s) >= 0) then
@@ -289,7 +299,9 @@ end
 
 function _xsd_facets:check_integer_facets(s)
 	if (type(s) ~= 'cdata') then
-		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"number type\"");
+		error_handler.raise_validation_error(-1,
+			"Field {"..error_handler.get_fieldpath().."}: Input not a \"number type\"", debug.getinfo(1));
+		return false;
 	end
 	if (self.min_exclusive ~= nil) then
 		if (nu.compare_num(tonumber(self.min_exclusive), s) >= 0) then
@@ -343,7 +355,10 @@ end
 function _xsd_facets:process_white_space(s)
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, s);
 	if (type(s) ~= 'string') then
-		error("Field {"..error_handler.get_fieldpath().."}: Input not a \"string type\"");
+		error_handler.raise_validation_error(-1,
+			"Field {"..error_handler.get_fieldpath().."}: Input not a \"string type\"", debug.getinfo(1));
+		local msv = error_handler.reset_init();
+		error(msv.status.error_message);
 	end
 	local o = '';
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, tostring(self.white_space));
@@ -367,10 +382,16 @@ function _xsd_facets:process_white_space(s)
 			o = string.gsub(o, '^ +', '');
 			o = string.gsub(o, ' +$', '');
 		else
-			error("Invalid value of whitespace facet "..self.white_space);
+			error_handler.raise_validation_error(-1,
+				"Invalid value of whitespace facet "..self.white_space, debug.getinfo(1));
+			local msv = error_handler.reset_init();
+			error(msv.status.error_message);
 		end
 	else
-		error("Invalid value of whitespace facet "..tostring(self.white_space));
+		error_handler.raise_validation_error(-1,
+			"Invalid value of whitespace facet "..tostring(self.white_space), debug.getinfo(1));
+		local msv = error_handler.reset_init();
+		error(msv.status.error_message);
 	end
 	return o;
 end
@@ -417,7 +438,8 @@ function _xsd_facets:check(v)
 		elseif (self.datatype == 'boolean') then
 			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		else
-			error("Unsupported type "..self.datatype);
+			error_handler.raise_validation_error(-1, "Unsupported type "..self.datatype, debug.getinfo(1));
+			return false;
 		end
 		if (not self:check_patttern_match(tostring(v))) then
 			return false;
@@ -440,7 +462,9 @@ function _xsd_facets:override(t)
 				for p,q in ipairs(v) do
 					local res, out = pcall(regex.compile, regex, q.str_p);
 					if (not res) then
-						error("Invalid regular expression "..q.str_p);
+						error_handler.raise_validation_error(-1, "Invalid regular expression "..q.str_p, debug.getinfo(1));
+						local msv = error_handler.reset_init();
+						error(msv.status.error_message);
 					end
 					q.com_p = out;
 
@@ -457,10 +481,14 @@ end
 
 _xsd_facets.new = function(ft)
 	if (ft == nil) then
-		error("Facet should be based on one of the primitive types");
+		error_handler.raise_validation_error(-1, "Facet should be based on one of the primitive types", debug.getinfo(1));
+		local msv = error_handler.reset_init();
+		error(msv.status.error_message);
 	end
 	if (supported_datatypes[ft] ==nil) then
-		error("The type "..ft.." not supported");
+		error_handler.raise_validation_error(-1, "The type "..ft.." not supported", debug.getinfo(1));
+		local msv = error_handler.reset_init();
+		error(msv.status.error_message);
 	end
 	local o = make_copy(_xsd_facets_values);
 	o =  setmetatable(o, mt);
@@ -470,10 +498,14 @@ end
 
 _xsd_facets.new_from_table = function(t, ft)
 	if (ft == nil) then
-		error("Facet should be based on one of the primitive types");
+		error_handler.raise_validation_error(-1, "Facet should be based on one of the primitive types", debug.getinfo(1));
+		local msv = error_handler.reset_init();
+		error(msv.status.error_message);
 	end
 	if (supported_datatypes[ft] ==nil) then
-		error("The type "..ft.." not supported");
+		error_handler.raise_validation_error(-1, "The type "..ft.." not supported", debug.getinfo(1));
+		local msv = error_handler.reset_init();
+		error(msv.status.error_message);
 	end
 	local o = {};
 	for n,v in pairs(t) do
@@ -482,7 +514,9 @@ _xsd_facets.new_from_table = function(t, ft)
 				for p,q in ipairs(v) do
 					local res, out = pcall(regex.compile, regex, q.str_p);
 					if (not res) then
-						error("Invalid regular expression "..tostring(q.str_p));
+						error_handler.raise_validation_error(-1, "Invalid regular expression "..tostring(q.str_p), debug.getinfo(1));
+						local msv = error_handler.reset_init();
+						error(msv.status.error_message);
 					end
 					q.com_p = out;
 				end

@@ -27,7 +27,7 @@ end
 
 function __NCName_handler_class:to_xmlua(ns, s)
 	if (false == self:is_valid(s)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return self:to_schema_type(ns, s);
@@ -45,7 +45,7 @@ end
 
 function __NCName_handler_class:to_cjson_struct(ns, s)
 	if (false == self:is_valid(s)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return s;
@@ -59,7 +59,7 @@ function __NCName_handler_class:to_type(ns, i)
 	end
 	local s = self:to_schema_type(ns, i);
 	if (false == self:is_valid(s)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return s;

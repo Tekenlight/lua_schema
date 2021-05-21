@@ -40,7 +40,7 @@ end
 
 function __float_handler_class:to_xmlua(ns, f)
 	if (false == self:is_valid(f)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	if (nu.is_nan(f)) then return 'NaN';
@@ -56,11 +56,11 @@ function __float_handler_class:to_schema_type(ns, f)
 	if (n == nil) then
 		error_handler.raise_validation_error(-1,
 						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of float", debug.getinfo(1));
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	if (false == self:is_valid(n)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return n;
@@ -68,7 +68,7 @@ end
 
 function __float_handler_class:to_cjson_struct(ns, f)
 	if (false == self:is_valid(f)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return f;
@@ -78,18 +78,18 @@ function __float_handler_class:to_type(ns, f)
 	if (type(f) ~= 'string') then
 		error_handler.raise_validation_error(-1,
 						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a string", debug.getinfo(1));
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	local c_f = self:to_schema_type(ns, f);
 	if (c_f == nil) then
 		error_handler.raise_validation_error(-1,
 						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid float", debug.getinfo(1));
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	if (false == self:is_valid(c_f)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return c_f;

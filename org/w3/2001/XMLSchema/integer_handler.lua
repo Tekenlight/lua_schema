@@ -50,19 +50,32 @@ end
 
 function __integer_handler_class:to_xmlua(ns, f)
 	if (false == self:is_valid(f)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return string.format("%d", tonumber(f));
 end
 
-function __integer_handler_class:to_schema_type(ns, f)
+function __integer_handler_class:to_schema_type(ns, sf)
+	sf = self.facets:process_white_space(sf);
+	local f, status;
+	f = self.facets:process_white_space(sf);
+	--[[
+	status, f = pcall(string.format, "%d", sf);
+	if (not status) then
+		error_handler.raise_validation_error(-1,
+					"Value of the field {"..error_handler.get_fieldpath().."}: "
+						..f..", is not in the lexical spcae of xsd:int", debug.getinfo(1));
+		local msv = error_handler.reset_init();
+		error(msv.status.error_message);
+	end
+	--]]
 	f = self.facets:process_white_space(f);
 	if (1 ~= self.c_integer_str_pattern:check(f)) then
 		error_handler.raise_validation_error(-1,
 					"Value of the field {"..error_handler.get_fieldpath().."}: "
 						..f..", is not in the lexical spcae of xsd:integer", debug.getinfo(1));
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	local n = math.tointeger(f);
@@ -71,13 +84,13 @@ function __integer_handler_class:to_schema_type(ns, f)
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
 		error_handler.raise_validation_error(-1,
 						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of integer", debug.getinfo(1));
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	n = ffi.cast("long", n);
 	if (false == self:is_valid(n)) then
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return n;
@@ -85,7 +98,7 @@ end
 
 function __integer_handler_class:to_cjson_struct(ns, f)
 	if (false == self:is_valid(f)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return f;
@@ -95,18 +108,18 @@ function __integer_handler_class:to_type(ns, f)
 	if (type(f) ~= 'string') then
 		error_handler.raise_validation_error(-1,
 						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a string", debug.getinfo(1));
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	local c_f = self:to_schema_type(ns, f);
 	if (c_f == nil) then
 		error_handler.raise_validation_error(-1,
 						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid integer", debug.getinfo(1));
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	if (false == self:is_valid(c_f)) then
-		local msv = error_handler.reset();
+		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	return c_f;
