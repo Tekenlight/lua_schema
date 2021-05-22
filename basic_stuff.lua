@@ -2054,8 +2054,9 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 		parsing_result_msg = 'Content not valid:'..msv.status.error_message;
 		print(msv.status.source_file, msv.status.line_no);
 		print(msv.status.traceback);
+		--print(msv.status.error_message);
 		--error(msv.status.error_message);
-		return false, nil;
+		return false, msv.status.error_message;
 	end
 	return true, obj;
 end
@@ -2065,6 +2066,7 @@ basic_stuff.parse_xml = function(schema_type_handler, xmlua, xml)
 	parsing_result_msg = nil;
 	local status, obj = low_parse_xml(schema_type_handler, xmlua, xml);
 	if (not status) then
+		parsing_result_msg = obj;
 		obj = nil;
 	else
 		parsing_result_msg = nil;

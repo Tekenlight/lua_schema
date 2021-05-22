@@ -37,6 +37,8 @@ b3dyaSAhISEgIEhlbGxvIFdvcmxkIFNyaXJhbSBhbmQgR293cmkgISEhIQ==</base64Binary>
 <positiveInteger>    1024    </positiveInteger>
 <long>    -9223372036854775807    </long>
 <int>    54775807    </int>
+<nonPositiveInteger>    0    </nonPositiveInteger>
+<negativeInteger>    -1    </negativeInteger>
 </ns1:struct_with_various_types>]=]
 
 mhf = require("message_handler_factory")
@@ -44,11 +46,9 @@ struct_with_various_types = mhf:get_message_handler("struct_with_various_types",
 
 
 local content, msg = struct_with_various_types:from_xml(xml_string)
---[[
 if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
---]]
 
 local ffi = require("ffi");
 

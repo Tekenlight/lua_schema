@@ -55,7 +55,7 @@ error_handler.raise_validation_error = function(error_no, message, d_info)
 		local line = nil;
 		if (d_info ~= nil) then
 			src = d_info.source;
-			line = d_info.line;
+			line = d_info.currentline;
 		end
 		error_handler.set_validation_error(error_no, message, tb, src, line);
 		return false;

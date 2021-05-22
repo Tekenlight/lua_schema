@@ -52,6 +52,8 @@ targetNamespace="http://test_example.com">
 				<xsd:element name="positiveInteger" type="xsd:positiveInteger"/>
 				<xsd:element name="long" type="xsd:long"/>
 				<xsd:element name="int" type="xsd:int"/>
+				<xsd:element name="nonPositiveInteger" type="xsd:nonPositiveInteger"/>
+				<xsd:element name="negativeInteger" type="xsd:negativeInteger"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
