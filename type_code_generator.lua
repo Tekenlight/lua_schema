@@ -64,16 +64,12 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names)
 	local element_type = typedef:get_typedef_type();
 
 	do
-		--element_handler.type_handler = get_type_handler(typedef, element_handler, content_type);
 		element_handler.get_attributes = basic_stuff.get_attributes;
 		element_handler.is_valid = get_is_valid_func(typedef);
 		element_handler.to_xmlua = get_to_xmlua_func(typedef);
 		element_handler.get_unique_namespaces_declared = get_to_unsd_func(typedef);
 		element_handler.parse_xml = basic_stuff.parse_xml;
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-		--print(debug.traceback(1));
 		elem_code_generator.get_type_handler_and_base(typedef, to_generate_names, element_handler);
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	end
 
 	do
@@ -96,17 +92,13 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names)
 			local simple_type_props = typedef:get_typedef_simpletype_dtls();
 			--[[
 			--In case of simple base is populated by elem_code_generator.get_type_handler_and_base
-			--element_handler.base = simple_type_props.base;
 			--]]
 			element_handler.local_facets = simple_type_props.local_facets;
 			element_handler.facets = simple_type_props.facets;
 			element_handler.type_of_simple = simple_type_props.type_of_simple;
-			--require 'pl.pretty'.dump(simple_type_props);
 		end
 		element_handler.properties = props;
 	end
-
-	--require 'pl.pretty'.dump(element_handler);
 
 	return element_handler;
 end
@@ -273,7 +265,6 @@ type_code_generator.gen_lua_schema_code_from_typedef = function(typedef, indent)
 	local code = '';
 	local eh_name = 'element_handler';
 	local element_handler = type_code_generator.get_element_handler(typedef, true);
-	--require 'pl.pretty'.dump(element_handler);
 
 	code = 'local basic_stuff = require("basic_stuff");\n\n';
 	code = code..'local '..eh_name..' = {};\n\n\n\n';
@@ -302,10 +293,8 @@ type_code_generator.gen_lua_schema_code_from_typedef = function(typedef, indent)
 	code = code..indent..'end\n';
 
 	code = code..'\n\nreturn _factory;\n';
-	--print(code);
 
 	local path_parts = elem_code_generator.get_package_name_parts(typedef:get_target_name_space());
-	--require 'pl.pretty'.dump(path_parts);
 	local local_path = '.';
 	for _, v in ipairs(path_parts) do
 		local_path = local_path..'/'..v;

@@ -149,7 +149,6 @@ local get_type_handler = function(defn, dh, content_type)
 	else
 		s =defn:get_typedef_primary_bi_type();
 	end
-	--print(s.name..'_handler');
 	local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
 	return th;
 end
@@ -219,7 +218,6 @@ elem_code_generator.get_attr_decls = function(attrs)
 			if (v.type_of_simple == 'A') then
 				attr.type_handler = basic_stuff.get_type_handler(v.type.ns, v.type.name..'_handler');
 				do
-					--print(debug.getinfo(1).source, debug.getinfo(1).currentline, v.type_of_simple);
 					attr.base = v.base;
 				end
 			elseif (v.type_of_simple == 'U') then
@@ -230,9 +228,7 @@ elem_code_generator.get_attr_decls = function(attrs)
 					for p,q in ipairs(v.member_types) do
 						j = j + 1;
 						attr.union[j] = q;
-						--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 						local s = attr.union[j].typedef:get_typedef_primary_bi_type();
-						--require 'pl.pretty'.dump(s);
 						local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
 						attr.union[j].bi_type = s;
 						attr.union[j].type_handler = th;
@@ -245,13 +241,8 @@ elem_code_generator.get_attr_decls = function(attrs)
 					local ns;
 					local name;
 					attr.base = {}
-					--if (v.base.name == nil) then
-						attr.base.ns = 'http://www.w3.org/2001/XMLSchema';
-						attr.base.name = 'union';
-					--else
-						--attr.base.ns = attr.base.ns;
-						--attr.base.name = attr.base.name;
-					--end
+					attr.base.ns = 'http://www.w3.org/2001/XMLSchema';
+					attr.base.name = 'union';
 				end
 			else
 				attr.type_handler = elem_code_generator.get_list_type_handler();
@@ -267,23 +258,12 @@ elem_code_generator.get_attr_decls = function(attrs)
 				attr.list_item_type.base = v.list_item_type.base;
 				attr.list_item_type.local_facets = v.list_item_type.local_facets;
 				attr.list_item_type.facets = facets.new_from_table(v.list_item_type.facets, th.datatype);
-				--[[
-				attr.list_item_type.super_element_content_type =
-									elem_code_generator.get_super_element_content_type(v.list_item_type.base.ns,
-									v.list_item_type.base.name);
-				--]]
-				--local elem_decl = 
-				--attr.list_item_type.super_element_content_type
 
 			end
-			--require 'pl.pretty'.dump(attr.base);
 			attr.local_facets = v.local_facets;
 			attr.facets = facets.new_from_table(v.facets, attr.type_handler.datatype);
 			local ns = attr.base.ns;
 			local name = attr.base.name;
-			--[[
-			attr.super_element_content_type = elem_code_generator.get_super_element_content_type(ns, name);
-			--]]
 			attr.type_of_simple = v.type_of_simple;
 
 
@@ -295,7 +275,6 @@ elem_code_generator.get_attr_decls = function(attrs)
 	for n,v in pairs(decls) do
 		o_attrs._generated_attr[v.particle_properties.generated_name] = n; -- generated_name
 	end
-	--require 'pl.pretty'.dump(o_attrs);
 
 	return o_attrs;
 end
@@ -312,18 +291,10 @@ elem_code_generator.get_subelement_properties = function(model)
 	local _subelement_properties = {};
 
 	for i, item in ipairs(model) do
-		--if (item.symbol_type == 'cm_begin') then
-		--elseif (item.symbol_type == 'cm_end') then
 		if (item.symbol_type == 'element') then
-			--require 'pl.pretty'.dump(item);
 			local gn = item.generated_name; -- generated_name
 			if (item.ref) then
-				--print(item.ref_name, item.ref_ns);
 				local ths = basic_stuff.get_type_handler_str(item.ref_ns, item.ref_name);
-				--[[
-				_subelement_properties[item.generated_q_name] = (require(ths)):new_instance_as_ref( {root_element=false, 
-											generated_name = gn, min_occurs = item.min_occurs, max_occurs = item.max_occurs });
-				]]
 				_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false);
 				_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
 				_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
@@ -344,12 +315,6 @@ elem_code_generator.get_subelement_properties = function(model)
 			else
 				if (item.explicit_type) then
 					local type_name = basic_stuff.get_type_handler_str(item.named_type_ns, item.named_type);
-					--[[
-					_subelement_properties[item.generated_q_name] = (require(type_name)):new_instance_as_local_element(
-								{ ns = item.ns, local_name = item.name, generated_name = gn,  -- generated_name
-									root_element = false,
-									min_occurs = item.min_occurs, max_occurs = item.max_occurs });
-					]]
 					_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false);
 					_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
 					_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
@@ -456,7 +421,6 @@ elem_code_generator.get_content_fsa_properties = function(model, content_model)
 			cmi = cmi + 1;
 		end
 	end
-	--require 'pl.pretty'.dump(_content_fsa_properties);
 
 	return _content_fsa_properties;
 end
@@ -467,15 +431,12 @@ elem_code_generator.get_generated_subelements = function(props)
 		local generated_name = '';
 		if (v.symbol_type == 'element') then
 			generated_name = props.subelement_properties[v.generated_symbol_name].particle_properties.generated_name;
-			--print("+++++++++++++", tostring(generated_name), "++++++++++++");
 			_generated_subelements[generated_name] = props.subelement_properties[v.generated_symbol_name];
 		elseif (v.symbol_type == 'cm_begin' and v.max_occurs ~= 1) then
 			generated_name = v.generated_symbol_name;
-			--print("+++++++++++++", tostring(generated_name), "++++++++++++");
 			_generated_subelements[generated_name] = {};
 		end
 	end
-	--require 'pl.pretty'.dump(_generated_subelements);
 	return _generated_subelements;
 end
 
@@ -507,15 +468,10 @@ function elem_code_generator.prepare_generated_names(model)
 			item.generated_q_name = elem_code_generator.add_and_get_name(generated_q_names, item_q_name);
 		end
 	end
-	--require 'pl.pretty'.dump(generated_names);
-	--print("-------------------------------------");
-	--require 'pl.pretty'.dump(model);
-	--print("-------------------------------------");
 	return generated_names;
 end
 
 elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names, element_handler)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	local content_type = '';
 	local element_type = '';
 
@@ -530,12 +486,8 @@ elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names
 	local simple_type_props = nil;
 	if (content_type == 'S') then
 		if (defn.class == 'E') then
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-			--require 'pl.pretty'.dump(defn);
 			simple_type_props = defn:get_element_simpletype_dtls();
-			--require 'pl.pretty'.dump(simple_type_props);
 		else
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 			simple_type_props = defn:get_typedef_simpletype_dtls();
 		end
 		if (simple_type_props.type_of_simple == 'A') then
@@ -551,7 +503,6 @@ elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names
 						i = i + 1;
 						element_handler.union[i] = q;
 						local s = element_handler.union[i].typedef:get_typedef_primary_bi_type();
-						--require 'pl.pretty'.dump(s);
 						local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
 						element_handler.union[i].bi_type = s;
 						element_handler.union[i].type_handler = th;
@@ -561,13 +512,9 @@ elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names
 						element_handler.union[i].type_of_simple = 'A';
 					end
 				end
-				--if (simple_type_props.base.name == nil) then
 					element_handler.base = {};
 					element_handler.base.ns = 'http://www.w3.org/2001/XMLSchema';
 					element_handler.base.name = 'union';
-				--else
-					--element_handler.base = simple_type_props.base;
-				--end
 			else
 				element_handler.type_handler = elem_code_generator.get_list_type_handler();
 				element_handler.base = {};
@@ -580,13 +527,11 @@ elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names
 				element_handler.list_item_type.type_handler = th;
 				element_handler.list_item_type.base = simple_type_props.list_item_type.base;
 				element_handler.list_item_type.local_facets = simple_type_props.list_item_type.local_facets;
-				--require 'pl.pretty'.dump(simple_type_props);
 				element_handler.list_item_type.facets =
 							facets.new_from_table(simple_type_props.list_item_type.facets, th.datatype);
 				
 			end
 		end
-		--require 'pl.pretty'.dump(element_handler.base);
 	else
 		element_handler.type_handler = get_type_handler(defn, element_handler, content_type);
 	end
@@ -630,7 +575,6 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 		props.content_type = elem:get_element_content_type();
 		props.schema_type = get_named_schema_type(elem);
 		props.attr = get_element_attr_decls(elem);
-		--require 'pl.pretty'.dump(elem:get_element_attr_decls());
 		if (content_type == 'C') then
 			local model = elem:get_element_content_model();
 			elem_code_generator.prepare_generated_names(model);
@@ -641,7 +585,6 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 			props.declared_subelements = elem_code_generator.get_declared_subelements(model);
 			props.bi_type = {};
 		else
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 			props.bi_type = elem:get_element_primary_bi_type();
 			element_handler.local_facets = simple_type_props.local_facets;
 			element_handler.facets = facets.new_from_table(simple_type_props.facets, element_handler.type_handler.datatype);
@@ -650,22 +593,18 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 		element_handler.properties = props;
 	end
 
-	--require 'pl.pretty'.dump(element_handler);
-
 	return element_handler;
 end
 
 elem_code_generator.gen_lua_schema = function(elem)
 
 	local element_handler = elem_code_generator.get_element_handler(elem, true);
-	--require 'pl.pretty'.dump(element_handler);
 
 	local basic_stuff = require("basic_stuff");
 
 	local mt = { __index = element_handler; };
 	local _factory = {};
 	_factory.new_instance_as_root = function(self)
-		--require 'pl.pretty'.dump(element_handler);
 		return basic_stuff.instantiate_element_as_doc_root(mt);
 	end
 
@@ -742,7 +681,6 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 				code = code..indentation..'    '..attr_props_name..'['..i_n..'].union = {};\n';
 				local prefix = indentation..'    '..attr_props_name..'['..i_n..'].union';
 				for p,q in ipairs(v.union) do
-					--print(debug.getinfo(1).source, debug.getinfo(1).currentline, p);
 					code = code..prefix..'['..p..'] = {};\n';
 					code = code..prefix..'['..p..'].type_of_simple = \'A\';\n';
 					code = code..prefix..'['..p..'].base = {};\n';
@@ -766,7 +704,6 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 						local local_facets = q.local_facets;
 						code = elem_code_generator.gen_code_copy_facets(code, new_prefix, local_facets);
 
-						--print(eh_name);
 						code = code..prefix..'['..p..'].facets = '
 							..'basic_stuff.inherit_facets('..attr_props_name..'['..i_n..']'..'.union['..p..']);\n'
 					end
@@ -789,7 +726,6 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 				do
 					local ns = v.list_item_type.base.ns;
 					local name = v.list_item_type.base.name;
-					--print(debug.getinfo(1).source, debug.getinfo(1).currentline, ns, name);
 					code = code..prefix..'.super_element_content_type = '
 								..elem_code_generator.get_type_handler_code(ns, name)..  ';\n';
 				end
@@ -1014,10 +950,8 @@ elem_code_generator.gen_code_copy_facets = function(code, prefix, facets_set)
 		end
 	end
 	if (facets_set.pattern ~= nil) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		code = code..prefix..'.pattern = {};\n';
 		for i,v in ipairs(facets_set.pattern) do
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, prefix, i);
 			code = code..prefix..'.pattern['..i..'] = {};\n';
 			code = code..prefix..'.pattern['..i..'].str_p = [['..v.str_p..']];\n';
 			code = code..prefix..'.pattern['..i..'].com_p = nil;\n';
@@ -1060,7 +994,6 @@ elem_code_generator.put_union_or_list_code = function(eh_name, element_handler, 
 					local local_facets = q.local_facets;
 					code = elem_code_generator.gen_code_copy_facets(code, prefix, local_facets);
 
-					--print(eh_name);
 					code = code..indentation..eh_name..
 						'.union['..p..'].facets = basic_stuff.inherit_facets('..eh_name..'.union['..p..']);\n'
 				end
@@ -1092,7 +1025,6 @@ elem_code_generator.put_union_or_list_code = function(eh_name, element_handler, 
 				local local_facets = element_handler.list_item_type.local_facets;
 				code = elem_code_generator.gen_code_copy_facets(code, prefix, local_facets);
 
-				--print(eh_name);
 				code = code..indentation..eh_name..
 					'.list_item_type.facets = basic_stuff.inherit_facets('..eh_name..'.list_item_type);\n'
 			end
@@ -1107,13 +1039,11 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 		indent = ''
 	end
 	local code = '';
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 
 	local properties = element_handler.properties;
 	if (element_handler.properties.content_type == 'S') then
 		local ns = element_handler.base.ns;
 		local name = element_handler.base.name;
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, tostring(ns), tostring(name));
 		code = code..eh_name..'.super_element_content_type = '..elem_code_generator.get_type_handler_code(ns, name)..  ';\n\n';
 		code = code..eh_name..'.type_of_simple = \''..element_handler.type_of_simple..  '\';\n\n';
 		code = code..elem_code_generator.put_union_or_list_code(eh_name, element_handler, indent..'    ');
@@ -1243,7 +1173,6 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 		local prefix = indent..'    '..eh_name..'.local_facets';
 		code = elem_code_generator.gen_code_copy_facets(code, prefix, local_facets);
 
-		--print(eh_name);
 		code = code..indent..'    '..eh_name..'.facets = basic_stuff.inherit_facets('..eh_name..');\n'
 		code = code..indent..'end\n\n';
 	end
@@ -1278,17 +1207,14 @@ elem_code_generator.gen_lua_schema_code_named_type = function(elem, indent)
 	if (indent == nil) then
 		indent = ''
 	end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	local code = '';
 	local eh_name = 'element_handler';
 	local element_handler = elem_code_generator.get_element_handler(elem, true);
-	--require 'pl.pretty'.dump(element_handler);
 
 	code = 'local basic_stuff = require("basic_stuff");\n\n';
 
 	local ns = '';
 	if (elem.named_type_ns ~= nil) then ns = elem.named_type_ns; end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, ns);
 	local type_name = elem.named_type;
 	local ths = basic_stuff.get_type_handler_str(ns, type_name);
 	code = code..indent..'local _factory = {};';
@@ -1313,10 +1239,8 @@ elem_code_generator.gen_lua_schema_code_named_type = function(elem, indent)
 	code = code..indent..'end\n';
 
 	code = code..'\n\nreturn _factory;\n';
-	--print(code);
 
 	local path_parts = elem_code_generator.get_package_name_parts(particle_properties.q_name.ns);
-	--require 'pl.pretty'.dump(path_parts);
 	local local_path = '.';
 	for _, v in ipairs(path_parts) do
 		local_path = local_path..'/'..v;
@@ -1339,7 +1263,6 @@ elem_code_generator.gen_lua_schema_code_implicit_type = function(elem, indent)
 	local code = '';
 	local eh_name = 'element_handler';
 	local element_handler = elem_code_generator.get_element_handler(elem, true);
-	--require 'pl.pretty'.dump(element_handler);
 
 	code = 'local basic_stuff = require("basic_stuff");\n\n';
 	code = code..'local '..eh_name..' = {};\n\n\n\n';
@@ -1367,10 +1290,8 @@ elem_code_generator.gen_lua_schema_code_implicit_type = function(elem, indent)
 	code = code..indent..'end\n';
 
 	code = code..'\n\nreturn _factory;\n';
-	--print(code);
 
 	local path_parts = elem_code_generator.get_package_name_parts(particle_properties.q_name.ns);
-	--require 'pl.pretty'.dump(path_parts);
 	local local_path = '.';
 	for _, v in ipairs(path_parts) do
 		local_path = local_path..'/'..v;
@@ -1392,7 +1313,6 @@ elem_code_generator.gen_lua_schema_code = function(elem, indent)
 	--If the type is one of definitions in http://www.w3.org/2001/XMLSchema
 	--Its definition will not be in any XSD
 	--]]
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	if ((elem.named_type == nil) or (named_type_ns == 'http://www.w3.org/2001/XMLSchema')) then
 		elem_code_generator.gen_lua_schema_code_implicit_type(elem, indent);
 	else
