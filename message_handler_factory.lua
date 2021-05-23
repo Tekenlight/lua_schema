@@ -36,7 +36,6 @@ end
 local to_xml_string = function(message_handler_instance, content)
 	local nns = gather_namespace_declarations(message_handler_instance);
 	local doc = message_handler_instance:to_xmlua(nns, content);
-	--require 'pl.pretty'.dump(doc);
 	local document = xmlua.XML.build(doc);
 	local s = document:to_xml();
 	return s;
@@ -44,8 +43,6 @@ end
 
 local to_json_string = function(message_handler_instance, obj)
 	local content = basic_stuff.to_intermediate_json(message_handler_instance, obj);
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-	--(require 'pl.pretty').dump(content);
 	local json_parser = cjson.new();
 	local tag = get_json_tag(message_handler_instance);
 	local table_output = nil;
@@ -85,15 +82,10 @@ local from_json_string = function(schema_type_handler, xmlua, json_input)
 	end
 	if (not status) then return  status, obj, parsing_result_msg; end
 
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-	--require 'pl.pretty'.dump(obj);
 	if (schema_type_handler.properties.element_type == 'S') then
 		obj = obj[schema_type_handler.particle_properties.generated_name];
 	end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, obj);
 	local content = basic_stuff.from_intermediate_json(schema_type_handler, obj);
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-	--require 'pl.pretty'.dump(content);
 
 	return status, content, parsing_result_msg;
 end
@@ -114,12 +106,8 @@ local validate_doc = function(message_handler_instance, content)
 	error_handler.init()
 	result, valid = pcall(basic_stuff.perform_element_validation, message_handler_instance,  content);
 
-	--print(result, msg);
-	--require 'pl.pretty'.dump(valid);
 
 	local message_validation_context = error_handler.reset();
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-	--require 'pl.pretty'.dump(message_validation_context);
 	if (not result) then
 		valid = false;
 	end
@@ -165,10 +153,8 @@ local function form_complete_message_handler(message_handler)
 	function message_handler:to_xml(content)
 		status, msg = validate_doc(self, content)
 		if (status) then
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 			return to_xml_string(self, content);
 		else
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, msg);
 			return nil, msg;
 		end
 	end

@@ -6,7 +6,6 @@ __boolean_handler_class.type_name = 'boolean';
 __boolean_handler_class.datatype = 'boolean';
 
 function __boolean_handler_class:is_deserialized_valid(x)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, x);
 	local i = tonumber(x);
 	if (i == nil) then
 		error_handler.raise_validation_error(-1,
@@ -17,7 +16,6 @@ function __boolean_handler_class:is_deserialized_valid(x)
 end
 
 function __boolean_handler_class:is_valid(i)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i);
 	local valid = true;
 	if(type(i) ~= "boolean") then
 		valid =  false
@@ -28,8 +26,6 @@ function __boolean_handler_class:is_valid(i)
 		return false;
 	end
 	if (self.facets ~= nil) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, i, type(i), self.facets.datatype);
-		--(require 'pl.pretty').dump(self.facets);
 		if (not self.facets:check(i)) then
 			return false;
 		end

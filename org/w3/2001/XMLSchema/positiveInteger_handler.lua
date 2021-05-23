@@ -5,7 +5,7 @@ local error_handler = require("error_handler");
 local nu = require("number_utils");
 local __positive_integer_handler_class = {}
 
-__positive_integer_handler_class.type_name = 'integer';
+__positive_integer_handler_class.type_name = 'positiveInteger';
 __positive_integer_handler_class.datatype = 'integer';
 
 local regex = xmlua.XMLRegexp.new();
@@ -17,7 +17,6 @@ end
 __positive_integer_handler_class.c_positive_integer_str_pattern = out;
 
 function __positive_integer_handler_class:is_deserialized_valid(x)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, x);
 	local f = self:to_type('', x);
 	if (f == nil) then
 		error_handler.raise_validation_error(-1,
@@ -28,19 +27,16 @@ function __positive_integer_handler_class:is_deserialized_valid(x)
 end
 
 function __positive_integer_handler_class:is_valid(f)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f);
 	local valid = true;
 	if (not nu.is_integer(f)) then
 		valid = false;
 	end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f, valid);
 	if (not valid) then
 		error_handler.raise_validation_error(-1,
 						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid positiveInteger", debug.getinfo(1));
 		return false;
 	end
 	if (self.facets ~= nil) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f, valid);
 		if (not self.facets:check(f)) then
 			return false;
 		end
@@ -66,9 +62,7 @@ function __positive_integer_handler_class:to_schema_type(ns, f)
 		error(msv.status.error_message);
 	end
 	local n = math.tointeger(f);
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n, f);
 	if (n == nil) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
 		error_handler.raise_validation_error(-1,
 						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of positiveInteger", debug.getinfo(1));
 		local msv = error_handler.reset_init();
@@ -76,7 +70,6 @@ function __positive_integer_handler_class:to_schema_type(ns, f)
 	end
 	n = ffi.cast("long", n);
 	if (false == self:is_valid(n)) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end

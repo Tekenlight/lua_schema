@@ -70,7 +70,6 @@ local _factory = {};
 
 function _factory:instantiate()
 	local o = {};
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	o = setmetatable(o, mt);
 	o.facets = facets.new('string');
 	o.facets.white_space = 'collapse';

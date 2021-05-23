@@ -17,9 +17,7 @@ end
 __int_handler_class.c_int_str_pattern = out;
 
 function __int_handler_class:is_deserialized_valid(x)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, x);
 	local status, f = pcall(self.to_type, self, '', x);
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, x);
 	if (not status) then
 		error_handler.reset_init();
 		error_handler.raise_validation_error(-1,
@@ -30,28 +28,20 @@ function __int_handler_class:is_deserialized_valid(x)
 end
 
 function __int_handler_class:is_valid(f)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f);
 	local valid = true;
 	if (not nu.is_integer(f)) then
 		valid = false;
 	end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f, valid);
 	if (not valid) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f, valid);
 		error_handler.raise_validation_error(-1,
 						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid int", debug.getinfo(1));
 		return false;
 	end
 	if (self.facets ~= nil) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f, valid);
-		--(require 'pl.pretty').dump(self.facets);
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, type(f));
 		if (not self.facets:check(f)) then
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f, valid);
 			return false;
 		end
 	end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f, valid);
 	return true;
 end
 
@@ -67,16 +57,6 @@ function __int_handler_class:to_schema_type(ns, sf)
 	sf = self.facets:process_white_space(sf);
 	local f, status;
 	f = self.facets:process_white_space(sf);
-	--[[
-	status, f = pcall(string.format, "%d", sf);
-	if (not status) then
-		error_handler.raise_validation_error(-1,
-					"Value of the field {"..error_handler.get_fieldpath().."}: "
-						..f..", is not in the lexical spcae of xsd:int", debug.getinfo(1));
-		local msv = error_handler.reset_init();
-		error(msv.status.error_message);
-	end
-	--]]
 	if (1 ~= self.c_int_str_pattern:check(f)) then
 		error_handler.raise_validation_error(-1,
 					"Value of the field {"..error_handler.get_fieldpath().."}: "
@@ -85,16 +65,13 @@ function __int_handler_class:to_schema_type(ns, sf)
 		error(msv.status.error_message);
 	end
 	local n = math.tointeger(f);
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n, f);
 	if (n == nil) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
 		error_handler.raise_validation_error(-1,
 						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of int", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
-	n = ffi.cast("long", n);
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
+	n = ffi.new("long", n);
 	if (false == self:is_valid(n)) then
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);

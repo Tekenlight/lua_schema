@@ -49,7 +49,8 @@ end
 
 basic_stuff.is_simple_type = function(content)
 	if ((type(content) ~= 'string') and (type(content) ~= 'boolean') and (not ffi.istype("long", content))
-		and (type(content) ~= 'number') and (not ffi.istype("unsigned char *", content))) then
+		and (type(content) ~= 'number') and (not ffi.istype("unsigned char *", content))
+		and (not ffi.istype("unsigned long", content))) then
 		return false;
 	end
 	return true;
@@ -142,7 +143,6 @@ basic_stuff.attributes_are_valid = function(attrs_def, attrs)
 		inp_attr = attrs
 	end
 	for n,v in pairs(attrs_def._attr_properties) do
-		--require 'pl.pretty'.dump(v);
 		error_handler.push_element(v.particle_properties.generated_name);
 		if ((v.properties.use == 'R') and (inp_attr[v.particle_properties.generated_name] == nil)) then
 			error_handler.raise_validation_error(-1, " Attribute: {"..error_handler.get_fieldpath().."} should be present",
@@ -255,7 +255,6 @@ basic_stuff.execute_validation_for_simple = function(schema_type_handler, conten
 				"Element: {"..error_handler.get_fieldpath().."} should be primitive", debug.getinfo(1));
 		return false;
 	end
-	--if (not schema_type_handler.type_handler:is_valid(content)) then
 	if (not basic_stuff.execute_primitive_validation(schema_type_handler, content)) then
 		return false;
 	end
@@ -370,7 +369,6 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 			end
 		elseif(t == 'table') then
 			local xmlc = nil;
-			--if (nil == v.generated_subelement_name) then
 			if (1 == v.max_occurs) then
 				-- No depth
 				xmlc = content;
@@ -408,7 +406,6 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 				]]
 				if (basic_stuff.data_present_within_model(v, xmlc)) then
 					present_count = present_count + 1;
-					--print(present_count);
 					if (present_count > 1) then
 						error_handler.raise_validation_error(-1,
 							"Element: {"..error_handler.get_fieldpath()..
@@ -488,7 +485,6 @@ basic_stuff.execute_validation_for_complex_type_sequence = function(schema_type_
 				end
 				xmlc = content[v.generated_subelement_name]
 				if (xmlc == nil) then
-					--print("REACHED HERE");
 					error_handler.raise_validation_error(-1,
 						"Object field: {"..v.generated_subelement_name.."} should not be null", debug.getinfo(1));
 					return false;
@@ -642,16 +638,13 @@ end
 basic_stuff.inherit_facets = function(handler)
 	local local_facets = handler.local_facets;
 	local super = handler.super_element_content_type;
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	local facets = super.facets;
 	facets:override(local_facets);
-	--require 'pl.pretty'.dump(facets);
 
 	return facets;
 end
 
 basic_stuff.execute_validation_of_atom = function(handler, content)
-	--require 'pl.pretty'.dump(handler);
 	local ret =  handler.type_handler:is_valid(content);
 	if (not ret) then return false; end
 
@@ -693,9 +686,6 @@ end
 basic_stuff.execute_validation_of_list = function(handler, content)
 	local ret = nil;
 
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-	--require 'pl.pretty'.dump(handler.facets);
-
 	ret = false;
 	ret = handler.type_handler:is_valid(content);
 	if (not ret) then return false; end
@@ -733,10 +723,6 @@ basic_stuff.execute_primitive_validation = function(handler, content)
 end
 
 basic_stuff.perform_element_validation = function(handler, content)
-	--require 'pl.pretty'.dump(content);
-	--require 'pl.pretty'.dump(handler.particle_properties);
-	--print("HHHHHHHHHH");
-	--require 'pl.pretty'.dump(handler.particle_properties.generated_name);
 	error_handler.push_element(handler.particle_properties.generated_name);
 	local valid = handler:is_valid(content);
 	error_handler.pop_element();
@@ -889,7 +875,6 @@ basic_stuff.add_model_content_node = function(schema_type_handler, nns, doc, ind
 			end
 		elseif (t == 'table') then -- If a table, another content model
 			local xmlc = nil;
-			--if (nil == v.generated_subelement_name) then
 			if (1 == v.max_occurs) then
 				-- No depth
 				xmlc = content;
@@ -1116,7 +1101,6 @@ end
 basic_stuff.primitive_to_intermediate_json = function(th, content)
 
 	local i_content = content;
-	--(require 'pl.pretty').dump(th);
 	if ('binary' == th.datatype) then 
 		if ('base64Binary' == th.type_name) then
 			i_content = th:to_xmlua(nil, content);
@@ -1128,7 +1112,16 @@ basic_stuff.primitive_to_intermediate_json = function(th, content)
 			i_content = th:to_xmlua('', content);
 		end
 	elseif (th.datatype == 'integer') then
-		i_content = tostring(content);
+		if (th.type_name ~= "int" and
+			th.type_name ~= "unsignedInt" and
+			th.type_name ~= "byte" and
+			th.type_name ~= "unsignedByte" and
+			th.type_name ~= "short" and
+			th.type_name ~= "unsignedShort") then
+			i_content = tostring(content);
+		else
+			i_content = tonumber(content);
+		end
 	end
 	return i_content;
 end
@@ -1216,7 +1209,6 @@ end
 
 basic_stuff.to_intermediate_json = function(schema_type_handler, content)
 	local i_content = basic_stuff.low_to_intermediate_json(schema_type_handler, content);
-	--(require 'pl.pretty').dump(i_content);
 	return i_content;
 end
 
@@ -1238,7 +1230,6 @@ basic_stuff.primitive_from_intermediate_json = function(th, content)
 			content = th:to_type(nil, content);
 		end
 	elseif (th.type_name == 'float' or th.type_name == 'double') then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, type(content));
 		if (type(content) == 'string') then
 			content = th:to_type(nil, content);
 			if (content == nil) then
@@ -1246,7 +1237,17 @@ basic_stuff.primitive_from_intermediate_json = function(th, content)
 			end
 		end
 	elseif (th.datatype == 'integer') then
-		content = th:to_type(nil, content);
+		if (th.type_name ~= "int" and
+			th.type_name ~= "unsignedInt" and
+			th.type_name ~= "byte" and
+			th.type_name ~= "unsignedByte" and
+			th.type_name ~= "short" and
+			th.type_name ~= "unsignedShort") then
+			content = th:to_type(nil, content);
+		else
+			local sn = string.gsub(tostring(content), "([%d]+)[%.]0+", "%1");
+			content = th:to_type(nil, sn);
+		end
 	end
 	return content;
 end
@@ -1311,9 +1312,7 @@ basic_stuff.complex_from_intermediate_json = function(schema_type_handler, conte
 end
 
 basic_stuff.low_from_intermediate_json = function(schema_type_handler, content)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, content);
 	if (content == nil) then return nil; end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	local i_content = nil;
 	if (schema_type_handler.properties.element_type == 'C') then
 		i_content = basic_stuff.complex_from_intermediate_json(schema_type_handler, content);
@@ -1325,7 +1324,6 @@ end
 
 
 basic_stuff.from_intermediate_json = function(schema_type_handler, content)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	local i_content = basic_stuff.low_from_intermediate_json(schema_type_handler, content);
 	return i_content;
 end
@@ -1378,7 +1376,6 @@ end
 local check_element_name_matches = function(reader, sts)
 	local q_doc_element_name = '{'..get_uri(reader:const_namespace_uri())..'}'..reader:const_local_name()
 	local q_schema_element_name = '{'..sts:top().particle_properties.q_name.ns..'}'..sts:top().particle_properties.q_name.local_name
-	--print(q_doc_element_name, q_schema_element_name);
 	return (q_doc_element_name == q_schema_element_name);
 end
 
@@ -1402,7 +1399,6 @@ local read_attributes = function(reader, schema_type_handler, obj)
 								"Field: {"..error_handler.get_fieldpath().."} is not valid, attributes not allowed in the model",
 								debug.getinfo(1));
 					error_handler.pop_element();
-					--error("Field: {"..error_handler.get_fieldpath().."} is not valid, attributes not allowed in the model");
 					return false;
 				end
 				local q_attr_name = '{'..attr_uri..'}'..attr_name;
@@ -1413,10 +1409,8 @@ local read_attributes = function(reader, schema_type_handler, obj)
 								"Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element",
 								debug.getinfo(1));
 					error_handler.pop_element();
-					--error("Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element");
 					return false;
 				end
-				--local converted_value = attr_properties.type_handler:to_type(attr_properties.particle_properties.q_name.ns, attr_value);
 				local converted_value = basic_stuff.get_converted_value(attr_properties, attr_value);
 				error_handler.pop_element();
 				obj['___DATA___']._attr[attr_properties.particle_properties.generated_name] = converted_value;
@@ -1441,7 +1435,6 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 	local q_name = '{'..get_uri(uri)..'}'..name;
 
 	local schema_type_handler = sts:top();
-	--print(depth, typ, name, is_empty, has_value, value);
 
 	local obj = {};
 	obj['___METADATA___'] = {empty = true};
@@ -1481,9 +1474,6 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 					schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
 			obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
 			objs:push(obj);
-			--print("~~~~~~~~~~~~~~~~~~~~~~~~");
-			--(require 'pl.pretty').dump(objs);
-			--print("~~~~~~~~~~~~~~~~~~~~~~~~");
 			top_obj = objs:top();
 			obj = {};
 			obj['___METADATA___'] = {empty = true};
@@ -1528,12 +1518,10 @@ local windup_fsa = function(reader, sts, objs, pss)
 	obj['___DATA___'] = {};
 
 	local i = ps_obj.position;
-	--local i = ps_obj.next_position;
 
 	while (i <= (#schema_type_handler.properties.content_fsa_properties)) do
 		if (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
 			if (schema_type_handler.properties.content_fsa_properties[i].max_occurs ~= 1) then
-				--top_obj['___METADATA___'].element_being_parsed = schema_type_handler.properties.content_fsa_properties[i].symbol_name;
 				top_obj['___METADATA___'].element_being_parsed =
 						schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
 				top_obj['___METADATA___'].element_gqn_being_parsed =
@@ -1578,7 +1566,6 @@ local move_fsa_to_end_of_cm = function(reader, sts, objs, pss)
 	local top_obj = objs:top();
 	local ps_obj = pss:top();
 
-	--local i = ps_obj.position;
 	local i = ps_obj.next_position;
 
 	local begin_end = 0;;
@@ -1629,14 +1616,12 @@ local continue_cm_fsa = function(reader, sts, objs, pss)
 	-- 			another content model.
 	-- 4. Closure of a content model and continuation of the parent content model.
 	local ps_obj = pss:top();
-	--local i = ps_obj.position;
 	local i = ps_obj.next_position;
 	local element_found = false;
 	local symbol = nil;
 	local continue_loop = true;
 	symbol = schema_type_handler.properties.content_fsa_properties[i].symbol_type;
 	while (continue_loop) do
-		--print(i, q_name, schema_type_handler.properties.content_fsa_properties[i].symbol_name);
 		element_found = continue_cm_fsa_i(reader, sts, objs, pss, i)
 		if (element_found) then
 			break;
@@ -1689,7 +1674,6 @@ local process_start_of_element = function(reader, sts, objs, pss)
 				if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
 				error_handler.raise_validation_error(-1,
 					q_name..' not a member in the schema definition of '..st, debug.getinfo(1));
-				--error(q_name..' not a member in the schema definition of '..st);
 				return false;
 			end
 		else
@@ -1700,21 +1684,16 @@ local process_start_of_element = function(reader, sts, objs, pss)
 			if (cm == nil) then
 				cm = l_sth.properties.content_model;
 			end
-			--(require 'pl.pretty').dump(objs);
 			element_found = continue_cm_fsa(reader, sts, objs, pss);
 			if (not element_found) then
 				local st = '';
 				if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
 				error_handler.raise_validation_error(-1,
 					"unable to fit "..q_name..' as a member in the schema '..st, debug.getinfo(1));
-				--error("unable to fit "..q_name..' as a member in the schema '..st);
 				return false;
 			end
 			local content_fsa_item = schema_type_handler.properties.content_fsa_properties[pss:top().position];
-			--local generated_q_name = content_fsa_item.generated_symbol_name;
 			generated_q_name = content_fsa_item.generated_symbol_name;
-			--print(generated_q_name, tostring(element_found));
-			--(require 'pl.pretty').dump(objs);
 			new_schema_type_handler = schema_type_handler.properties.subelement_properties[generated_q_name];
 			if ((not l_top_obj['___METADATA___'].empty) and
 				(cm ~= nil) and
@@ -1729,7 +1708,6 @@ local process_start_of_element = function(reader, sts, objs, pss)
 		end
 		local top_obj = objs:top();
 		(objs:top())['___METADATA___'].element_being_parsed = new_schema_type_handler.particle_properties.generated_name;
-		--print("HERE", tostring(generated_q_name), "HERE", tostring((objs:top())['___METADATA___'].element_being_parsed));
 		(objs:top())['___METADATA___'].element_gqn_being_parsed = generated_q_name;
 		sts:push(new_schema_type_handler);
 	else
@@ -1740,7 +1718,6 @@ local process_start_of_element = function(reader, sts, objs, pss)
 		if (true ~= check_element_name_matches(reader, sts)) then
 			parsing_result_msg = 'Invalid element found '.. q_name;
 			error_handler.raise_validation_error(-1,parsing_result_msg, debug.getinfo(1));
-			--error(parsing_result_msg);
 			return false;
 		end
 		(objs:top())['___METADATA___'].element_being_parsed = schema_type_handler.particle_properties.generated_name;
@@ -1848,11 +1825,9 @@ local process_text = function(reader, sts, objs, pss)
 	local q_name = '{'..get_uri(uri)..'}'..name;
 
 	local schema_type_handler = sts:top();
-	--print(depth, typ, name, is_empty, has_value, value);
 
 	local top_obj = objs:top();
 
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, schema_type_handler.type_of_simple);
 	local converted_value = basic_stuff.get_converted_value(schema_type_handler, value);
 	top_obj['___DATA___']._contained_value = converted_value;
 	top_obj['___METADATA___'].empty = false;
@@ -1871,7 +1846,6 @@ local process_end_of_element = function(reader, sts, objs, pss)
 	local q_name = '{'..get_uri(uri)..'}'..name;
 
 	local schema_type_handler = sts:top();
-	--print(depth, typ, name, is_empty, has_value, value);
 
 	local top_obj = objs:top();
 
@@ -1910,10 +1884,8 @@ local process_end_of_element = function(reader, sts, objs, pss)
 	else
 		if (top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] ~= nil) then
 			error_handler.raise_validation_error(-1, "TWO: "..get_qname(parsed_sth)..' must not repeat', debug.getinfo(1));
-			--error("TWO: "..get_qname(parsed_sth)..' must not repeat');
 			return false;
 		end
-		--(require 'pl.pretty').dump(top_obj);
 		top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] = parsed_output;
 		top_obj['___METADATA___'].empty = false;
 	end
@@ -1966,36 +1938,25 @@ local process_node = function(reader, sts, objs, pss)
 	local ret = false;
 	if (typ == reader.node_types.XML_READER_TYPE_ELEMENT) then
 		if (not reader:node_is_empty_element(reader)) then
-			--print("\tST B", name);
 			error_handler.push_element(q_name);
 			ret = process_start_of_element(reader, sts, objs, pss);
-			--print("\tST E", name);
 		else
-			--print("\tST B", name);
 			ret = true;
-			--print("\tST E", name);
 		end
 	elseif ((typ == reader.node_types.XML_READER_TYPE_TEXT) or
 			(typ == reader.node_types.XML_READER_TYPE_CDATA)) then
-			--print("\tTE B");
 		ret = process_text(reader, sts, objs, pss);
-			--print("\tTE E");
 	elseif (typ == reader.node_types.XML_READER_TYPE_END_ELEMENT) then
-		--print("\tEE B");
 		ret = process_end_of_element(reader, sts, objs, pss);
 		error_handler.pop_element();
-		--print("\tEE E");
 	elseif (typ == reader.node_types.XML_READER_TYPE_SIGNIFICANT_WHITESPACE) then
-		--print("SIGNIFICANT WHITESPACE HANDLED", typ, q_name);
 		ret = true;
 	else
 		print("UNKNOWN HANDLED", typ, q_name);
 		error_handler.raise_validation_error(-1, "Unhandled reader event:".. typ..":"..q_name, debug.getinfo(1));
-		--error("Unhandled reader event:".. typ..":"..q_name);
 		ret = false;
 	end
 
-	--print("HERE ", name, typ,  tostring(ret));
 	return ret;
 end
 
@@ -2006,11 +1967,9 @@ end
 local parse_xml_to_obj = function(reader, sts, objs, pss)
 	local ret = read_ahead(reader);
 	while (ret == 1) do
-		--print("BB B", ret);
 		if (not process_node(reader, sts, objs, pss)) then
 			return false;
 		end
-		--print("BB E");
 		ret = read_ahead(reader);
 	end
 	return true;
@@ -2033,7 +1992,6 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	sts:push(schema_type_handler);
 
 	error_handler.init()
-	--local status, result = pcall(parse_xml_to_obj, reader, sts, objs, pss);
 	local result = false;
 	result = parse_xml_to_obj( reader, sts, objs, pss);
 	local message_validation_context = error_handler.reset_init();
@@ -2041,8 +1999,7 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 		parsing_result_msg = 'Parsing failed: '..message_validation_context.status.error_message;
 		print(message_validation_context.status.source_file, message_validation_context.status.line_no);
 		print(message_validation_context.status.traceback);
-		--error(message_validation_context.status.error_message);
-		return false, nil;
+		return false, parsing_result_msg;
 	end
 
 	local doc = (objs:pop())['___DATA___'];
@@ -2054,8 +2011,6 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 		parsing_result_msg = 'Content not valid:'..msv.status.error_message;
 		print(msv.status.source_file, msv.status.line_no);
 		print(msv.status.traceback);
-		--print(msv.status.error_message);
-		--error(msv.status.error_message);
 		return false, msv.status.error_message;
 	end
 	return true, obj;

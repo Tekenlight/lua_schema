@@ -14,8 +14,6 @@ local loaded, lib = pcall(ffi.load, 'core_utils');
 if(not loaded) then
 	error("Could not load library");
 end
---[=[
---]=]
 
 local number_utils = {
 	--FLOAT_MAX = lib.max_float(),
@@ -30,17 +28,24 @@ local number_utils = {
 	DOUBLE_MAX = 179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.000000,
 	DOUBLE_MIN = -1 * 179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.000000,
 	INTEGER_MAX = ffi.cast("long", 0x7FFFFFFFFFFFFFFF),
-	INTEGER_MIN = ffi.cast("long", -1*0x7FFFFFFFFFFFFFFF)
+	INTEGER_MIN = ffi.cast("long", -1*0x7FFFFFFFFFFFFFFF),
+	UINTEGER_MAX = ffi.cast("unsigned long", 0xFFFFFFFFFFFFFFFF),
+	UINTEGER_MIN = ffi.cast("unsigned long", 0),
 };
 
-function number_utils.is_integer(n)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
-	if ((n > number_utils.INTEGER_MAX) or
-		(n < number_utils.INTEGER_MIN)) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
+function number_utils.is_uinteger(n)
+	if ((n > number_utils.UINTEGER_MAX) or
+		(n < number_utils.UINTEGER_MIN)) then
 		return false;
 	end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
+	return true;
+end
+
+function number_utils.is_integer(n)
+	if ((n > number_utils.INTEGER_MAX) or
+		(n < number_utils.INTEGER_MIN)) then
+		return false;
+	end
 	return true;
 end
 
@@ -63,11 +68,8 @@ function number_utils.is_double(n)
 end
 
 function number_utils.is_float(n)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
-	--ffi.C.printf("%40.8lf\n", n);
 	if (number_utils.compare_num(n, number_utils.FLOAT_MAX) > 0 or
 		number_utils.compare_num(n, number_utils.FLOAT_MIN) < 0) then
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
 		return false;
 	end
 	return true;
@@ -78,22 +80,12 @@ function number_utils.compare_num(n1, n2)
 
 	local dif = (n1 - n2);
 	local dif1 = (n2 - n1);
-	--ffi.C.printf("%40.8lf %40.8lf\n", n1, n2);
-	--ffi.C.printf("%40.8lf %40.8lf\n", epsilon, (n1 - n2));
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n1, n2, dif, epsilon);
-	--if ((dif < epsilon) and (dif1 < epsilon)) then
-
-		--ffi.C.printf("%40.8lf %40.8lf\n", n1, n2);
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n1, n2, dif, epsilon);
 	if ((dif < epsilon) and (dif1 < epsilon)) then
 		-- => -1*epsilon < |dif| < epsilon
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n1, n2, dif, epsilon);
 		return 0
 	elseif (dif < 0) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n1, n2, dif, epsilon);
 		return -1;
 	else
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n1, n2, dif, epsilon);
 		return 1;
 	end
 
@@ -143,7 +135,6 @@ local function check_number_string(s)
 end
 
 function number_utils.to_double(s)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, s, type(s));
 	if (type(s) ~= 'string') then
 		error("INPUT MUST BE STRING");
 	end
@@ -180,7 +171,6 @@ function number_utils.to_double(s)
 		n = n+0.0;
 	end
 
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n, type(n));
 	return n;
 end
 

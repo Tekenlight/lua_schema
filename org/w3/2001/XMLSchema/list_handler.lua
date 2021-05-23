@@ -6,13 +6,6 @@ local __list_handler_class = {}
 __list_handler_class.type_name = 'list';
 __list_handler_class.datatype = 'list';
 
---[[
-__list_handler_class.properties = {};
-__list_handler_class.properties.element_type = 'S';
-__list_handler_class.properties.content_type = 'S';
-__list_handler_class.properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-]]--
-
 function __list_handler_class:is_deserialized_valid(x)
 	local s = tostring(x);
 	return self:is_valid(s);
@@ -24,10 +17,7 @@ function __list_handler_class:is_valid(s)
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid string", debug.getinfo(1));
 		return false
 	end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	if (self.facets ~= nil) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-		--require 'pl.pretty'.dump(self.facets);
 		if (not self.facets:check(s)) then
 			return false;
 		end

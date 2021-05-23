@@ -3,37 +3,38 @@ local xmlua = require("xmlua");
 local facets = require("facets");
 local error_handler = require("error_handler");
 local nu = require("number_utils");
-local __integer_handler_class = {}
+local __short_handler_class = {}
 
-__integer_handler_class.type_name = 'integer';
-__integer_handler_class.datatype = 'integer';
+__short_handler_class.type_name = 'short';
+__short_handler_class.datatype = 'integer';
 
 local regex = xmlua.XMLRegexp.new();
-__integer_handler_class.s_integer_str_pattern = [=[[+-]?[\d]+]=]
-local res, out = pcall(regex.compile, regex, __integer_handler_class.s_integer_str_pattern);
+__short_handler_class.s_short_str_pattern = [=[[+-]?[\d]+]=]
+local res, out = pcall(regex.compile, regex, __short_handler_class.s_short_str_pattern);
 if (not res) then
-	error("Invalid regular expression "..__integer_handler_class.s_integer_str_pattern);
+	error("Invalid regular expression "..__short_handler_class.s_short_str_pattern);
 end
-__integer_handler_class.c_integer_str_pattern = out;
+__short_handler_class.c_short_str_pattern = out;
 
-function __integer_handler_class:is_deserialized_valid(x)
-	local f = self:to_type('', x);
-	if (f == nil) then
+function __short_handler_class:is_deserialized_valid(x)
+	local status, f = pcall(self.to_type, self, '', x);
+	if (not status) then
+		error_handler.reset_init();
 		error_handler.raise_validation_error(-1,
-						"Field:["..x.."]:{"..error_handler.get_fieldpath().."} is not a valid integer", debug.getinfo(1));
+						"Field:["..x.."]:{"..error_handler.get_fieldpath().."} is not a valid short", debug.getinfo(1));
 		return false;
 	end
 	return self:is_valid(f);
 end
 
-function __integer_handler_class:is_valid(f)
+function __short_handler_class:is_valid(f)
 	local valid = true;
 	if (not nu.is_integer(f)) then
 		valid = false;
 	end
 	if (not valid) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid integer", debug.getinfo(1));
+						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid short", debug.getinfo(1));
 		return false;
 	end
 	if (self.facets ~= nil) then
@@ -44,7 +45,7 @@ function __integer_handler_class:is_valid(f)
 	return true;
 end
 
-function __integer_handler_class:to_xmlua(ns, f)
+function __short_handler_class:to_xmlua(ns, f)
 	if (false == self:is_valid(f)) then
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
@@ -52,26 +53,25 @@ function __integer_handler_class:to_xmlua(ns, f)
 	return string.format("%d", tonumber(f));
 end
 
-function __integer_handler_class:to_schema_type(ns, sf)
+function __short_handler_class:to_schema_type(ns, sf)
 	sf = self.facets:process_white_space(sf);
 	local f, status;
 	f = self.facets:process_white_space(sf);
-	f = self.facets:process_white_space(f);
-	if (1 ~= self.c_integer_str_pattern:check(f)) then
+	if (1 ~= self.c_short_str_pattern:check(f)) then
 		error_handler.raise_validation_error(-1,
 					"Value of the field {"..error_handler.get_fieldpath().."}: "
-						..f..", is not in the lexical spcae of xsd:integer", debug.getinfo(1));
+						..f..", is not in the lexical spcae of xsd:short", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	local n = math.tointeger(f);
 	if (n == nil) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of integer", debug.getinfo(1));
+						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of short", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
-	n = ffi.cast("long", n);
+	n = ffi.new("long", n);
 	if (false == self:is_valid(n)) then
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
@@ -79,7 +79,7 @@ function __integer_handler_class:to_schema_type(ns, sf)
 	return n;
 end
 
-function __integer_handler_class:to_cjson_struct(ns, f)
+function __short_handler_class:to_cjson_struct(ns, f)
 	if (false == self:is_valid(f)) then
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
@@ -87,7 +87,7 @@ function __integer_handler_class:to_cjson_struct(ns, f)
 	return f;
 end
 
-function __integer_handler_class:to_type(ns, f)
+function __short_handler_class:to_type(ns, f)
 	if (type(f) ~= 'string') then
 		error_handler.raise_validation_error(-1,
 						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a string", debug.getinfo(1));
@@ -97,7 +97,7 @@ function __integer_handler_class:to_type(ns, f)
 	local c_f = self:to_schema_type(ns, f);
 	if (c_f == nil) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid integer", debug.getinfo(1));
+						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid short", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
@@ -108,7 +108,7 @@ function __integer_handler_class:to_type(ns, f)
 	return c_f;
 end
 
-local mt = { __index = __integer_handler_class; } ;
+local mt = { __index = __short_handler_class; } ;
 local _factory = {};
 
 function _factory:instantiate()
@@ -116,6 +116,8 @@ function _factory:instantiate()
 	o = setmetatable(o, mt);
 	o.facets = facets.new('integer');
 	o.facets.white_space = 'collapse';
+	o.facets.min_inclusive = -32768;
+	o.facets.max_inclusive =  32767;
 	return o;
 end
 

@@ -7,7 +7,6 @@ __double_handler_class.type_name = 'double';
 __double_handler_class.datatype = 'number';
 
 function __double_handler_class:is_deserialized_valid(x)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, x);
 	local f = self:to_type('', x);
 	if (f == nil) then
 		error_handler.raise_validation_error(-1,
@@ -18,19 +17,16 @@ function __double_handler_class:is_deserialized_valid(x)
 end
 
 function __double_handler_class:is_valid(f)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f);
 	local valid = true;
 	if ((not nu.is_nan(f)) and (not nu.is_inf(f)) and (not nu.is_double(f))) then
 		valid = false;
 	end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, f, valid);
 	if (not valid) then
 		error_handler.raise_validation_error(-1,
 						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid double", debug.getinfo(1));
 		return false;
 	end
 	if (self.facets ~= nil) then
-		--(require 'pl.pretty').dump(self.facets);
 		if (not self.facets:check(f)) then
 			return false;
 		end
@@ -52,7 +48,6 @@ end
 function __double_handler_class:to_schema_type(ns, f)
 	f = self.facets:process_white_space(f);
 	local n = nu.to_double(f);
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
 	if (n == nil) then
 		error_handler.raise_validation_error(-1,
 						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of double", debug.getinfo(1));

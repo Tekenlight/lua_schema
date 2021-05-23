@@ -39,6 +39,14 @@ b3dyaSAhISEgIEhlbGxvIFdvcmxkIFNyaXJhbSBhbmQgR293cmkgISEhIQ==</base64Binary>
 <int>    54775807    </int>
 <nonPositiveInteger>    0    </nonPositiveInteger>
 <negativeInteger>    -1    </negativeInteger>
+<nonNegativeInteger>    +0    </nonNegativeInteger>
+<unsignedLong>    +18446744073709551615    </unsignedLong>
+<unsignedLong>    +50    </unsignedLong>
+<unsignedInt>    4294967295    </unsignedInt>
+<unsignedShort>    65534    </unsignedShort>
+<unsignedByte>    +255    </unsignedByte>
+<short>    -32768    </short>
+<byte>    120    </byte>
 </ns1:struct_with_various_types>]=]
 
 mhf = require("message_handler_factory")

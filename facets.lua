@@ -73,13 +73,11 @@ local function count_total_digits(n)
 	local c = nil;
 	while (pos <= len) do
 		c = string.sub(s, pos, pos);
-		--print(pos, pos, c);
 		if (c ~= ".") then
 			i = i + 1;
 		end
 		pos = pos + 1;
 	end
-	--print("total digits = ",i);
 	return i;
 end
 
@@ -99,7 +97,6 @@ local function count_fractional_digits(n)
 		i = i + 1;
 		pos = pos + 1;
 	end
-	--print("frctional digits = ",i);
 	return i;
 end
 
@@ -199,9 +196,7 @@ function _xsd_facets:check_list_facets(s)
 			return false;
 		end
 	end
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, self.max_length, count);
 	if (self.max_length ~= nil) then
-		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		if (count > self.max_length) then
 			error_handler.raise_validation_error(-1,
 						"No. of items in the field {"..error_handler.get_fieldpath().."}: "
@@ -276,7 +271,7 @@ function _xsd_facets:check_number_facets(s)
 		if (nu.compare_num(tonumber(self.max_inclusive), s) < 0) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
-							..s.."] is greater than maxinclusive ["..self.max_inclusive.."]", debug.getinfo(1));
+							..s.."] is greater than maxInclusive ["..self.max_inclusive.."]", debug.getinfo(1));
 			return false;
 		end
 	end
@@ -304,7 +299,7 @@ function _xsd_facets:check_integer_facets(s)
 		return false;
 	end
 	if (self.min_exclusive ~= nil) then
-		if (nu.compare_num(tonumber(self.min_exclusive), s) >= 0) then
+		if (self.min_exclusive >= s) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
 							..tostring(s).."] is less than or equal to minExclusive ["..self.min_exclusive.."]", debug.getinfo(1));
@@ -312,7 +307,7 @@ function _xsd_facets:check_integer_facets(s)
 		end
 	end
 	if (self.min_inclusive ~= nil) then
-		if (nu.compare_num(tonumber(self.min_inclusive), s) > 0) then
+		if (self.min_inclusive > s) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
 							..tostring(s).."] is less than to mininclusive ["..self.min_inclusive.."]", debug.getinfo(1));
@@ -320,7 +315,7 @@ function _xsd_facets:check_integer_facets(s)
 		end
 	end
 	if (self.max_exclusive ~= nil) then
-		if (nu.compare_num(tonumber(self.max_exclusive), s) <= 0) then
+		if (self.max_exclusive <= s) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
 							..tostring(s).."] is greater than or equal to maxExclusive ["..self.max_exclusive.."]", debug.getinfo(1));
@@ -328,7 +323,7 @@ function _xsd_facets:check_integer_facets(s)
 		end
 	end
 	if (self.max_inclusive ~= nil) then
-		if (nu.compare_num(tonumber(self.max_inclusive), s) < 0) then
+		if (self.max_inclusive < s) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
 							..tostring(s).."] is greater than maxinclusive ["..self.max_inclusive.."]", debug.getinfo(1));
@@ -342,18 +337,10 @@ function _xsd_facets:check_integer_facets(s)
 			return false;
 		end
 	end
-	if (self.fractional_digits ~= nil) then
-		if (count_fractional_digits(s) > self.fractional_digits) then
-			error_handler.raise_validation_error(-1,
-						"Fractional digits in ["..tostring(s).."] is greater than ["..self.fractional_digits.."]", debug.getinfo(1));
-			return false;
-		end
-	end
 	return true;
 end
 
 function _xsd_facets:process_white_space(s)
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, s);
 	if (type(s) ~= 'string') then
 		error_handler.raise_validation_error(-1,
 			"Field {"..error_handler.get_fieldpath().."}: Input not a \"string type\"", debug.getinfo(1));
@@ -361,7 +348,6 @@ function _xsd_facets:process_white_space(s)
 		error(msv.status.error_message);
 	end
 	local o = '';
-	--print(debug.getinfo(1).source, debug.getinfo(1).currentline, tostring(self.white_space));
 	if (self.white_space ~= nil) then
 		if (self.white_space == 'preserve') then
 			o = s;
@@ -373,7 +359,6 @@ function _xsd_facets:process_white_space(s)
 			o = string.gsub(o, "\t", ' ');
 		elseif (self.white_space == 'collapse') then
 			o = s;
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, tostring(s));
 			o = string.gsub(o, "\r\n", ' ');
 			o = string.gsub(o, "\n", ' ');
 			o = string.gsub(o, "\r", ' ');
@@ -407,7 +392,6 @@ function _xsd_facets:check(v)
 				return false;
 			end
 		elseif (self.datatype == 'number') then
-			--print(debug.traceback(1));
 			if (not self:check_number_facets(v)) then
 				return false;
 			end
@@ -415,7 +399,6 @@ function _xsd_facets:check(v)
 				return false;
 			end
 		elseif (self.datatype == 'integer') then
-			--print(debug.traceback(1));
 			if (not self:check_integer_facets(v)) then
 				return false;
 			end
@@ -423,12 +406,10 @@ function _xsd_facets:check(v)
 				return false;
 			end
 		elseif (self.datatype == 'union') then
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 			if (not self:check_string_enumerations(v)) then
 				return false;
 			end
 		elseif (self.datatype == 'list') then
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 			if (not self:check_list_facets(v)) then
 				return false;
 			end
@@ -436,7 +417,6 @@ function _xsd_facets:check(v)
 				return false;
 			end
 		elseif (self.datatype == 'boolean') then
-			--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		else
 			error_handler.raise_validation_error(-1, "Unsupported type "..self.datatype, debug.getinfo(1));
 			return false;

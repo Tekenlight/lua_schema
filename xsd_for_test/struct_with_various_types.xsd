@@ -54,6 +54,14 @@ targetNamespace="http://test_example.com">
 				<xsd:element name="int" type="xsd:int"/>
 				<xsd:element name="nonPositiveInteger" type="xsd:nonPositiveInteger"/>
 				<xsd:element name="negativeInteger" type="xsd:negativeInteger"/>
+				<xsd:element name="nonNegativeInteger" type="xsd:nonNegativeInteger"/>
+				<xsd:element name="unsignedLong" type="xsd:unsignedLong"/>
+				<xsd:element name="unsignedLong" type="xsd:unsignedLong"/>
+				<xsd:element name="unsignedInt" type="xsd:unsignedInt"/>
+				<xsd:element name="unsignedShort" type="xsd:unsignedShort"/>
+				<xsd:element name="unsignedByte" type="xsd:unsignedByte"/>
+				<xsd:element name="short" type="xsd:short"/>
+				<xsd:element name="byte" type="xsd:byte"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
