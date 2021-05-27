@@ -199,6 +199,7 @@ elem_code_generator.get_attr_decls = function(attrs)
 		
 			properties.schema_type = get_q_name(v.type.ns, v.type.name);
 			properties.bi_type = v.bi_type;
+			properties.bi_type.id = v.built_in_type_id;
 			properties.type = {};
 			properties.type.name = v.type.name;
 			properties.type.ns = v.type.ns;
@@ -231,9 +232,11 @@ elem_code_generator.get_attr_decls = function(attrs)
 						local s = attr.union[j].typedef:get_typedef_primary_bi_type();
 						local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
 						attr.union[j].bi_type = s;
+						attr.union[j].bi_type.id = attr.union[j].built_in_type_id;
 						attr.union[j].type_handler = th;
-						attr.union[j].local_facets = q.local_facets;
-						attr.union[j].facets = facets.new_from_table(q.facets, th.datatype);
+						attr.union[j].local_facets =
+								facets.massage_local_facets(q.local_facets, th.datatype, th.type_name);
+						attr.union[j].facets = facets.new_from_table(q.facets, th.datatype, th.type_name);
 						attr.union[j].type_of_simple = 'A';
 					end
 				end
@@ -254,14 +257,17 @@ elem_code_generator.get_attr_decls = function(attrs)
 				local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
 				attr.list_item_type.type_of_simple = 'A';
 				attr.list_item_type.bi_type = s;
+				attr.list_item_type.bi_type.id = v.list_item_type.built_in_type_id;
 				attr.list_item_type.type_handler = th;
 				attr.list_item_type.base = v.list_item_type.base;
-				attr.list_item_type.local_facets = v.list_item_type.local_facets;
-				attr.list_item_type.facets = facets.new_from_table(v.list_item_type.facets, th.datatype);
+				attr.list_item_type.local_facets =
+						facets.massage_local_facets(v.list_item_type.local_facets, th.datatype, th.type_name);
+				attr.list_item_type.facets = facets.new_from_table(v.list_item_type.facets, th.datatype, th.type_name);
 
 			end
-			attr.local_facets = v.local_facets;
-			attr.facets = facets.new_from_table(v.facets, attr.type_handler.datatype);
+			attr.local_facets =
+				facets.massage_local_facets(v.local_facets, attr.type_handler.datatype, attr.type_handler.type_name);
+			attr.facets = facets.new_from_table(v.facets, attr.type_handler.datatype, attr.type_handler.type_name);
 			local ns = attr.base.ns;
 			local name = attr.base.name;
 			attr.type_of_simple = v.type_of_simple;
@@ -505,10 +511,12 @@ elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names
 						local s = element_handler.union[i].typedef:get_typedef_primary_bi_type();
 						local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
 						element_handler.union[i].bi_type = s;
+						element_handler.union[i].bi_type.id = element_handler.union[i].built_in_type_id;
 						element_handler.union[i].type_handler = th;
-						element_handler.union[i].local_facets = q.local_facets;
+						element_handler.union[i].local_facets =
+									facets.massage_local_facets(q.local_facets, th.datatype, th.type_name);
 						element_handler.union[i].base = q.base;
-						element_handler.union[i].facets = facets.new_from_table(q.facets, th.datatype);
+						element_handler.union[i].facets = facets.new_from_table(q.facets, th.datatype, th.type_name);
 						element_handler.union[i].type_of_simple = 'A';
 					end
 				end
@@ -524,11 +532,13 @@ elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names
 				local s = element_handler.list_item_type.typedef:get_typedef_primary_bi_type();
 				local th = basic_stuff.get_type_handler(s.ns, s.name..'_handler');
 				element_handler.list_item_type.bi_type = s;
+				element_handler.list_item_type.bi_type.id = element_handler.list_item_type.built_in_type_id;
 				element_handler.list_item_type.type_handler = th;
 				element_handler.list_item_type.base = simple_type_props.list_item_type.base;
-				element_handler.list_item_type.local_facets = simple_type_props.list_item_type.local_facets;
+				element_handler.list_item_type.local_facets =
+						facets.massage_local_facets(simple_type_props.list_item_type.local_facets, th.datatype, th.type_name);
 				element_handler.list_item_type.facets =
-							facets.new_from_table(simple_type_props.list_item_type.facets, th.datatype);
+							facets.new_from_table(simple_type_props.list_item_type.facets, th.datatype, th.type_name);
 				
 			end
 		end
@@ -586,8 +596,14 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 			props.bi_type = {};
 		else
 			props.bi_type = elem:get_element_primary_bi_type();
-			element_handler.local_facets = simple_type_props.local_facets;
-			element_handler.facets = facets.new_from_table(simple_type_props.facets, element_handler.type_handler.datatype);
+			props.bi_type.id = simple_type_props.built_in_type_id;
+			element_handler.local_facets =
+					facets.massage_local_facets(simple_type_props.local_facets, 
+												element_handler.type_handler.datatype,
+												element_handler.type_handler.type_name);
+			element_handler.facets = facets.new_from_table(simple_type_props.facets,
+												element_handler.type_handler.datatype,
+												element_handler.type_handler.type_name);
 			element_handler.type_of_simple = simple_type_props.type_of_simple;
 		end
 		element_handler.properties = props;
@@ -636,6 +652,7 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'].bi_type = {};\n'
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'].bi_type.ns = \''..v.properties.bi_type.ns..'\';\n';
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'].bi_type.name = \''..v.properties.bi_type.name..'\';\n';
+			code = code..indentation..'    '..attr_props_name..'['..i_n..'].bi_type.id = \''..v.properties.bi_type.id..'\';\n';
 
 			code = code..indentation..'    '..attr_props_name..'['..i_n..'].properties = {};\n'
 			code = code..indentation..'    '
@@ -1057,6 +1074,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 		code = code..indent..'    '..eh_name..'.properties.bi_type = {};\n';
 		code = code..indent..'    '..eh_name..'.properties.bi_type.ns = \''..properties.bi_type.ns..'\';\n';
 		code = code..indent..'    '..eh_name..'.properties.bi_type.name = \''..properties.bi_type.name..'\';\n';
+		code = code..indent..'    '..eh_name..'.properties.bi_type.id = \''..properties.bi_type.id..'\';\n';
 	end
 	if (properties.attr ~= nil) then
 		code = code..indent..'    '..eh_name..'.properties.attr = {};\n';

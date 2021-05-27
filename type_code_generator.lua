@@ -4,6 +4,7 @@ local stringx = require("pl.stringx");
 local xmlua = require("xmlua")
 local basic_stuff = require("basic_stuff");
 local elem_code_generator = require("elem_code_generator");
+local facets = require("facets");
 
 local type_code_generator = {};
 
@@ -88,13 +89,20 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names)
 			props.declared_subelements = elem_code_generator.get_declared_subelements(model);
 			props.bi_type = {};
 		else
-			props.bi_type = typedef:get_typedef_primary_bi_type();
 			local simple_type_props = typedef:get_typedef_simpletype_dtls();
+			props.bi_type = typedef:get_typedef_primary_bi_type();
+			props.bi_type.id = simple_type_props.built_in_type_id;
 			--[[
 			--In case of simple base is populated by elem_code_generator.get_type_handler_and_base
 			--]]
-			element_handler.local_facets = simple_type_props.local_facets;
-			element_handler.facets = simple_type_props.facets;
+			element_handler.local_facets =
+					facets.massage_local_facets(simple_type_props.local_facets,
+												element_handler.type_handler.datatype,
+												element_handler.type_handler.type_name);
+			element_handler.facets =
+					facets.massage_local_facets(simple_type_props.facets,
+												element_handler.type_handler.datatype,
+												element_handler.type_handler.type_name);
 			element_handler.type_of_simple = simple_type_props.type_of_simple;
 		end
 		element_handler.properties = props;
@@ -128,6 +136,7 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 		code = code..indent..'    '..eh_name..'.properties.bi_type = {};\n';
 		code = code..indent..'    '..eh_name..'.properties.bi_type.ns = \''..properties.bi_type.ns..'\';\n';
 		code = code..indent..'    '..eh_name..'.properties.bi_type.name = \''..properties.bi_type.name..'\';\n';
+		code = code..indent..'    '..eh_name..'.properties.bi_type.id = \''..properties.bi_type.id..'\';\n';
 	end
 	code = code..'\n';
 	code = code..indent..'    -- No particle properties for a typedef\n\n';

@@ -46,7 +46,7 @@ end
 error_handler.raise_validation_error = function(error_no, message, d_info)
 	local tb = debug.traceback();
 	if (_G.message_validation_context == nil) then
-		print(tb);
+		--print(tb);
 		error(message);
 		return false;
 	else
@@ -60,6 +60,12 @@ error_handler.raise_validation_error = function(error_no, message, d_info)
 		error_handler.set_validation_error(error_no, message, tb, src, line);
 		return false;
 	end
+end
+
+error_handler.raise_fatal_error = function(error_no, message, d_info)
+	error_handler.raise_validation_error(error_no, message, d_info);
+	local msv = error_handler.reset_init();
+	error(msv.status.error_message);
 end
 
 error_handler.reset_error = function()

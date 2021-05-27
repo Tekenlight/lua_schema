@@ -91,6 +91,23 @@ function number_utils.compare_num(n1, n2)
 
 end
 
+--[[
+--Stack-overflow:
+--If your Lua uses double precision IEC-559 (aka IEEE-754) floats, as most do,
+--and your numbers are relatively small (the method is guaranteed to work for
+--inputs between -251 and 251), the following efficient code will perform rounding
+--using your FPU's current rounding mode, which is usually round to nearest, ties
+--to even:
+--]]
+function number_utils.round_to_long(num)
+	return num + (2^52 + 2^51) - (2^52 + 2^51)
+end
+
+function number_utils.round(exact, quantum)
+	local quant,frac = math.modf(exact/quantum)
+	return quantum * (quant + (frac > 0.5 and 1 or 0))
+end
+
 local function check_number_string(s)
 	local i = 0;
 	if (nil ~= string.match(s, '[^0-9Ee.+-]')) then
