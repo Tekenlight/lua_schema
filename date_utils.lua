@@ -412,7 +412,7 @@ date_utils.to_xml_duration = function(s)
 	local hours = math.floor((dur.sec / (60*60)));
 	days = days + math.floor((hours / 24));
 	hours = math.floor((hours % 24));
-	local balance = math.floor(dur.sec % (60*60));
+	local balance = (dur.sec % (60*60));
 	local minutes = math.floor(balance / 60);
 	local secs = (balance % 60);
 	local fsecs = nu.round((secs % 1), 0.001);
@@ -482,7 +482,7 @@ local o = date_utils.add_duration_to_date(dt1, dur);
 print(date_utils.to_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, o));
 print(date_utils.to_xml_duration(dur));
 
-s_dur = 'P2Y6M5DT12H35M30S';
+s_dur = 'P2Y6M5DT12H35M30.123S';
 dur = date_utils.from_xml_duration(s_dur);
 print(s_dur);
 print(date_utils.to_xml_duration(dur));
