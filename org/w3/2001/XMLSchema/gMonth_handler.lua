@@ -4,22 +4,22 @@ local du = require("date_utils");
 local basic_stuff = require("basic_stuff");
 local error_handler = require("error_handler");
 
-local xml_datetime_utils = xmlua.XMLDateUtils.new();
-local __datetime_handler_class = {}
+local xml_gMonth_utils = xmlua.XMLDateUtils.new();
+local __gMonth_handler_class = {}
 
-__datetime_handler_class.type_id = xml_datetime_utils.value_type.XML_SCHEMAS_DATETIME;
-__datetime_handler_class.type_name = 'dateTime';
-__datetime_handler_class.datatype = 'datetime';
+__gMonth_handler_class.type_id = xml_gMonth_utils.value_type.XML_SCHEMAS_GMONTH
+__gMonth_handler_class.type_name = 'gMonth';
+__gMonth_handler_class.datatype = 'datetime';
 
-function __datetime_handler_class:is_deserialized_valid(x)
+function __gMonth_handler_class:is_deserialized_valid(x)
 	local s = tostring(x);
 	return self:is_valid(s);
 end
 
-function __datetime_handler_class:is_valid(s)
+function __gMonth_handler_class:is_valid(s)
 	if((s ~= nil) and (type(s) ~= "string")) then
 		error_handler.raise_validation_error(-1,
-						"Field: {"..error_handler.get_fieldpath().."} is not a valid datetime", debug.getinfo(1));
+						"Field: {"..error_handler.get_fieldpath().."} is not a valid gMonth", debug.getinfo(1));
 		return false
 	end
 	if (not du.is_valid_date(self.type_id, s)) then
@@ -33,7 +33,7 @@ function __datetime_handler_class:is_valid(s)
 	return true;
 end
 
-function __datetime_handler_class:to_xmlua(ns, s)
+function __gMonth_handler_class:to_xmlua(ns, s)
 	if (false == self:is_valid(s)) then
 		local msv = error_handler.reset_init();
 		error_handler.raise_fatal_error(-1, msv.status.error_message, debug.getinfo(1));
@@ -41,7 +41,7 @@ function __datetime_handler_class:to_xmlua(ns, s)
 	return du.to_xml_date_field(self.type_id, s);
 end
 
-function __datetime_handler_class:to_schema_type(ns, s)
+function __gMonth_handler_class:to_schema_type(ns, s)
 	if (false == basic_stuff.is_simple_type(s)) then
 		error_handler.raise_fatal_error(-1,
 				"Field: {"..error_handler.get_fieldpath().."} Input not a primitive", debug.getinfo(1));
@@ -51,7 +51,7 @@ function __datetime_handler_class:to_schema_type(ns, s)
 	return temp_s;
 end
 
-function __datetime_handler_class:to_cjson_struct(ns, s)
+function __gMonth_handler_class:to_cjson_struct(ns, s)
 	if (false == self:is_valid(s)) then
 		local msv = error_handler.reset_init();
 		error_handler.raise_fatal_error(-1, msv.status.error_message, debug.getinfo(1));
@@ -59,10 +59,10 @@ function __datetime_handler_class:to_cjson_struct(ns, s)
 	return du.to_xml_date_field(self.type_ids);
 end
 
-function __datetime_handler_class:to_type(ns, i)
+function __gMonth_handler_class:to_type(ns, i)
 	if ('string' ~= type(i)) then
 		error_handler.raise_fatal_error(-1,
-				"Field: {"..error_handler.get_fieldpath().."} Input not a valid datetime", debug.getinfo(1));
+			"Field: {"..error_handler.get_fieldpath().."} Input not a valid gMonth", debug.getinfo(1));
 	end
 	local s =  self:to_schema_type(ns, i);
 	if (s == nil) then
@@ -76,7 +76,7 @@ function __datetime_handler_class:to_type(ns, i)
 	return s;
 end
 
-local mt = { __index = __datetime_handler_class; } ;
+local mt = { __index = __gMonth_handler_class; } ;
 local _factory = {};
 
 function _factory:instantiate()

@@ -114,7 +114,7 @@ local _factory = {};
 function _factory:instantiate()
 	local o = {};
 	o = setmetatable(o, mt);
-	o.facets = facets.new('integer');
+	o.facets = facets.new(mt.__index);
 	o.facets.white_space = 'collapse';
 	o.facets.min_inclusive = -2147483648;
 	o.facets.max_inclusive =  2147483647;

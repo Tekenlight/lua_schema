@@ -119,7 +119,7 @@ local _factory = {};
 function _factory:instantiate()
 	local o = {};
 	o = setmetatable(o, mt);
-	o.facets = facets.new('boolean');
+	o.facets = facets.new(mt.__index);
 	o.facets.white_space = 'collapse';
 	return o;
 end

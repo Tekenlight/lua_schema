@@ -63,7 +63,7 @@ local _factory = {};
 function _factory:instantiate()
 	local o = {};
 	o = setmetatable(o, mt);
-	o.facets = facets.new('string');
+	o.facets = facets.new(mt.__index);
 	o.facets.white_space = 'replace';
 	return o;
 end

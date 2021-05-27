@@ -73,7 +73,7 @@ local _factory = {};
 function _factory:instantiate()
 	local o = {};
 	o = setmetatable(o, mt);
-	o.facets = facets.new('string');
+	o.facets = facets.new(mt.__index);
 	o.facets.white_space = 'collapse';
 	o.facets.pattern[1] = {};
 	o.facets.pattern[1].str_p = [=[([a-zA-Z]{1,8})(-[a-zA-Z0-9]{1,8})*]=];

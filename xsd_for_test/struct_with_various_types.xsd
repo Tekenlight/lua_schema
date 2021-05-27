@@ -62,6 +62,14 @@ targetNamespace="http://test_example.com">
 				<xsd:element name="unsignedByte" type="xsd:unsignedByte"/>
 				<xsd:element name="short" type="xsd:short"/>
 				<xsd:element name="byte" type="xsd:byte"/>
+				<xsd:element name="date" type="xsd:date"/>
+				<xsd:element name="dateTime" type="xsd:dateTime"/>
+				<xsd:element name="time" type="xsd:time"/>
+				<xsd:element name="gYear" type="xsd:gYear"/>
+				<xsd:element name="gYearMonth" type="xsd:gYearMonth"/>
+				<xsd:element name="gMonth" type="xsd:gMonth"/>
+				<xsd:element name="gMonthDay" type="xsd:gMonthDay"/>
+				<xsd:element name="gDay" type="xsd:gDay"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>

@@ -44,9 +44,17 @@ b3dyaSAhISEgIEhlbGxvIFdvcmxkIFNyaXJhbSBhbmQgR293cmkgISEhIQ==</base64Binary>
 <unsignedLong>    +50    </unsignedLong>
 <unsignedInt>    4294967295    </unsignedInt>
 <unsignedShort>    65534    </unsignedShort>
-<unsignedByte>    +255    </unsignedByte>
+<unsignedByte>    255    </unsignedByte>
 <short>    -32768    </short>
 <byte>    120    </byte>
+<date>    1973-04-26    </date>
+<dateTime>    1973-04-26T00:00:00    </dateTime>
+<time>    07:30:00    </time>
+<gYear>    1973    </gYear>
+<gYearMonth>    1973-04    </gYearMonth>
+<gMonth>    --04    </gMonth>
+<gMonthDay>    --04-26    </gMonthDay>
+<gDay>    ---26    </gDay>
 </ns1:struct_with_various_types>]=]
 
 mhf = require("message_handler_factory")

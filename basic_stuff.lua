@@ -1111,6 +1111,8 @@ basic_stuff.primitive_to_intermediate_json = function(th, content)
 		if (nu.is_nan(content) or nu.is_inf(content)) then
 			i_content = th:to_xmlua('', content);
 		end
+	elseif (th.datatype == 'datetime') then
+		i_content = th:to_xmlua(nil, content);
 	elseif (th.datatype == 'integer') then
 		if (th.type_name ~= "int" and
 			th.type_name ~= "unsignedInt" and
@@ -1236,6 +1238,8 @@ basic_stuff.primitive_from_intermediate_json = function(th, content)
 				error("INVALID FLOATING POINT NUMBER");
 			end
 		end
+	elseif (th.datatype == 'datetime') then
+		content = th:to_type(nil, content);
 	elseif (th.datatype == 'integer') then
 		if (th.type_name ~= "int" and
 			th.type_name ~= "unsignedInt" and

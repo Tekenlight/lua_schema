@@ -1,0 +1,36 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://test_example.com" targetNamespace="http://test_example.com">
+	<xsd:simpleType name="very_basic_dateTime">
+		<xsd:restriction base="xsd:dateTime">
+			<xsd:minExclusive value="1945-09-02T00:00:00"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="basic_dateTime">
+		<xsd:simpleType>
+			<xsd:restriction base="ns:very_basic_dateTime">
+				<xsd:minExclusive value="1973-04-25T00:00:00"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:element name="birth_day">
+		<xsd:simpleType>
+			<xsd:restriction base="ns:very_basic_dateTime">
+				<xsd:enumeration value="2008-09-04T00:00:00"/>
+				<xsd:enumeration value="2004-03-24T00:00:00"/>
+				<xsd:enumeration value="1977-03-26T00:00:00"/>
+				<xsd:enumeration value="1973-04-26T00:00:00"/>
+			</xsd:restriction>
+		</xsd:simpleType>
+	</xsd:element>
+	<xsd:simpleType name="very_basic_time">
+		<xsd:restriction base="xsd:time">
+			<xsd:minExclusive value="07:00:00"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="basic_time" type="ns:very_basic_time"/>
+	<xsd:simpleType name="very_basic_gYear">
+		<xsd:restriction base="xsd:gYear">
+			<xsd:minExclusive value="1972"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="basic_gYear" type="ns:very_basic_gYear"/>
+</xsd:schema>
