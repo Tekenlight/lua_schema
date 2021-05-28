@@ -33,4 +33,10 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:element name="basic_gYear" type="ns:very_basic_gYear"/>
+	<xsd:simpleType name="very_basic_duration">
+		<xsd:restriction base="xsd:duration">
+			<xsd:minExclusive value="P1Y"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:element name="basic_duration" type="ns:very_basic_duration"/>
 </xsd:schema>

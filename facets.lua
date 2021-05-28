@@ -16,6 +16,7 @@ local supported_datatypes = {
 	,['binary'] = 1
 	,['integer'] = 1
 	,['datetime'] = 1
+	,['duration'] = 1
 }
 
 local valid_facet_names = {
@@ -411,6 +412,69 @@ function _xsd_facets:check_date_enumerations(v)
 	return found;
 end
 
+function _xsd_facets:check_duration_facets(s)
+	if (type(s) ~= 'string') then
+		error_handler.raise_validation_error(-1,
+			"Field {"..error_handler.get_fieldpath().."}: Input not a \"duration type\"", debug.getinfo(1));
+		return false;
+	end
+	if (self.min_exclusive ~= nil) then
+		if (not (du.compare_durations(self.min_exclusive, s) < 0)) then
+			error_handler.raise_validation_error(-1,
+						"Value of the field {"..error_handler.get_fieldpath().."}: ["
+							..du.to_xml_duration(s).."] is less than or equal to minExclusive ["
+										..du.to_xml_duration(self.min_exclusive).."]", debug.getinfo(1));
+			return false;
+		end
+	end
+	if (self.min_inclusive ~= nil) then
+		if (not (du.compare_durations(self.min_inclusive, s) <= 0)) then
+			error_handler.raise_validation_error(-1,
+						"Value of the field {"..error_handler.get_fieldpath().."}: ["
+							..du.to_xml_duration(s).."] is less than to mininclusive ["
+												..du.to_xml_duration(self.min_inclusive).."]", debug.getinfo(1));
+			return false;
+		end
+	end
+	if (self.max_exclusive ~= nil) then
+		if (not (du.compare_durations(s, self.max_exclusive) < 0)) then
+			error_handler.raise_validation_error(-1,
+						"Value of the field {"..error_handler.get_fieldpath().."}: ["
+							..du.to_xml_duration(s).."] is greater than or equal to maxExclusive ["
+								..du.to_xml_duration(self.max_exclusive).."]", debug.getinfo(1));
+			return false;
+		end
+	end
+	if (self.max_inclusive ~= nil) then
+		if (not (du.compare_durations(s, self.max_inclusive) <= 0)) then
+			error_handler.raise_validation_error(-1,
+						"Value of the field {"..error_handler.get_fieldpath().."}: ["
+							..du.to_xml_duration(s).."] is greater than maxinclusive ["
+										..du.to_xml_duration(self.max_inclusive).."]", debug.getinfo(1));
+			return false;
+		end
+	end
+	return true;
+end
+
+function _xsd_facets:check_duration_enumerations(v)
+	local e = self.enumeration;
+	if (e == nil or #e == 0) then return true; end
+	local found = false;
+	for p,q in ipairs(e) do
+		if (tostring(q) == tostring(v)) then
+			found = true;
+			break;
+		end
+	end
+	if (found == false) then
+		error_handler.raise_validation_error(-1,
+					"Value of {"..error_handler.get_fieldpath().."} "
+					..du.to_xml_duration(v)..": is not valid", debug.getinfo(1));
+	end
+	return found;
+end
+
 function _xsd_facets:process_white_space(s)
 	if (type(s) ~= 'string') then
 		error_handler.raise_validation_error(-1,
@@ -493,6 +557,13 @@ function _xsd_facets:check(v)
 				return false;
 			end
 			if (not self:check_date_enumerations(v)) then
+				return false;
+			end
+		elseif (self.datatype == 'duration') then
+			if (not self:check_duration_facets(v)) then
+				return false;
+			end
+			if (not self:check_duration_enumerations(v)) then
 				return false;
 			end
 		else
@@ -607,6 +678,26 @@ _xsd_facets.massage_local_facets = function(t, ft, tn)
 			elseif (n == 'pattern') then
 			else
 				error_handler.raise_fatal_error(-1, "Facet {"..n.."} not applicable for (date and time) types", debug.getinfo(1));
+			end
+		end
+	end
+	local function to_dur(s)
+		return du.from_xml_duration(s);
+	end
+	if (ft == 'duration') then
+		for n,v in pairs(o) do
+			if ((n == 'min_inclusive') or
+				(n == 'min_exclusive') or
+				(n == 'max_inclusive') or
+				(n == 'max_exclusive')) then
+				o[n] = to_dur(v);
+			elseif (n == 'enumeration') then
+				for p,q in ipairs(v) do
+					v[p] = to_dur(q);
+				end
+			elseif (n == 'pattern') then
+			else
+				error_handler.raise_fatal_error(-1, "Facet {"..n.."} not applicable for (duration) types", debug.getinfo(1));
 			end
 		end
 	end

@@ -43,6 +43,21 @@ date_utils.tid_name_map = {
 	,[xml_date_utils.value_type.XML_SCHEMAS_GDAY] = 'gDay'
 };
 
+date_utils.DAYRANGE = {
+	 {0, 0}
+	,{28, 31}
+	,{59, 62}
+	,{89, 92}
+	,{120, 123}
+	,{150, 153}
+	,{181, 184}
+	,{212, 215}
+	,{242, 245}
+	,{273, 276}
+	,{303, 306}
+	,{334, 337}
+};
+
 date_utils.num_from_dto = function(dto)
 	local num = dto.daynum * 24 * 60 * 60 * date.ticks() + dto.dayfrc
 	return num;
@@ -376,6 +391,92 @@ date_utils.add_duration_to_date = function(dt, s_dur)
 	return ret;
 end
 
+date_utils.compare_durations = function(s_dur1, s_dur2)
+	if (s_dur1 == nil or type(s_dur1) ~= 'string') then
+		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+	end
+	if (s_dur2 == nil or type(s_dur2) ~= 'string') then
+		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+	end
+	local dur1 = date_utils.split_duration(s_dur1);
+	local dur2 = date_utils.split_duration(s_dur2);
+
+	local invert = 1;
+	local minday = nil
+	local maxday = nil
+	local xmon = nil;
+	local xday = nil;
+	local myear = nil;
+
+	local months = dur1.mon - dur2.mon;
+	local secs = dur1.sec - dur2.sec;
+	local day_incr = math.floor(secs / (24*60*60));
+	secs = (secs % (24*60*60));
+	local days = dur1.day - dur2.day + day_incr;
+
+	if (months == 0) then
+		if (days == 0) then
+			if (nu.compare_num(secs, 0) == 0) then
+				return 0;
+			elseif (nu.compare_num(secs, 0) < 0) then
+				return -1;
+			else
+				return 1;
+			end
+		elseif (days < 0) then
+			return -1;
+		else
+			return 1;
+		end
+	end
+
+	if (months > 0) then
+		if (days >=0 and (nu.compare_num(secs, 0) > 0)) then
+			return 1;
+		else
+			xmon = months;
+			xday = -1 * days;
+		end
+	elseif (days <=0 and (nu.compare_num(secs, 0) < 0)) then
+		return -1;
+	else
+		invert = -1;
+		xmon = -months;
+		xday = days;
+	end
+
+	local myear = math.floor(xmon / 12);
+	if (myear == 0) then
+		minday = 0;
+		maxday = 0;
+	else
+		maxday = 365 * myear + ((myear+3)/4);
+		minday = maxday - 1;
+	end
+
+	xmon = xmon % 12;
+	minday = minday + date_utils.DAYRANGE[xmon+1][1];
+	maxday = maxday + date_utils.DAYRANGE[xmon+1][2];
+
+	assert((maxday ~= nil) and (minday ~= nil) and (xday ~= nil));
+
+	if ((maxday == minday) and (maxday == xday)) then
+		return 0;
+	end
+
+	assert(invert ~= nil);
+	if (maxday < xday) then
+		return (-1 * invert);
+	end
+
+	if (minday > xday) then
+		return invert;
+	end
+
+	return 2;
+
+end
+
 date_utils.str_from_dur = function(dur)
 	local str = '';
 	str = dur.mon..'|'..dur.day..'|'..dur.sec;
@@ -470,8 +571,14 @@ local dt2 = date_utils.from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS
 
 print(date_utils.compare_dates(dt1, dt2));
 --
+local d = date.from_dnum_and_frac(0, 0)
+require 'pl.pretty'.dump(d);
+print(d);
+print(d:spandays());
+--
 --local s_dur = 'P2Y6M5DT12H35M30S';
 --]]
+--[[
 local s_dur = 'P1Y'
 local dur = date_utils.from_xml_duration(s_dur);
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, dur);
@@ -487,5 +594,11 @@ dur = date_utils.from_xml_duration(s_dur);
 print(s_dur);
 print(date_utils.to_xml_duration(dur));
 --]]
+--
+local D1 = 'P1Y1DT1M';
+local D2 = 'P1Y1DT1S';
+local dur1 = date_utils.from_xml_duration(D1);
+local dur2 = date_utils.from_xml_duration(D2);
+print(date_utils.compare_durations(dur1, dur2));
 
 return date_utils;

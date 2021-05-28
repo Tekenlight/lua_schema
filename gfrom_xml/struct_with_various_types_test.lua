@@ -55,6 +55,7 @@ b3dyaSAhISEgIEhlbGxvIFdvcmxkIFNyaXJhbSBhbmQgR293cmkgISEhIQ==</base64Binary>
 <gMonth>    --04    </gMonth>
 <gMonthDay>    --04-26    </gMonthDay>
 <gDay>    ---26    </gDay>
+<duration>    P100Y    </duration>
 </ns1:struct_with_various_types>]=]
 
 mhf = require("message_handler_factory")

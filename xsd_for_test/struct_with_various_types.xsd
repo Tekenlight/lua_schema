@@ -70,6 +70,7 @@ targetNamespace="http://test_example.com">
 				<xsd:element name="gMonth" type="xsd:gMonth"/>
 				<xsd:element name="gMonthDay" type="xsd:gMonthDay"/>
 				<xsd:element name="gDay" type="xsd:gDay"/>
+				<xsd:element name="duration" type="xsd:duration"/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
