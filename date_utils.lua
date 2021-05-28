@@ -593,12 +593,12 @@ s_dur = 'P2Y6M5DT12H35M30.123S';
 dur = date_utils.from_xml_duration(s_dur);
 print(s_dur);
 print(date_utils.to_xml_duration(dur));
---]]
 --
 local D1 = 'P1Y1DT1M';
 local D2 = 'P1Y1DT1S';
 local dur1 = date_utils.from_xml_duration(D1);
 local dur2 = date_utils.from_xml_duration(D2);
 print(date_utils.compare_durations(dur1, dur2));
+--]]
 
 return date_utils;
