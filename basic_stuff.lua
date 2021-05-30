@@ -610,6 +610,9 @@ basic_stuff.carryout_element_validation = function(schema_type_handler, val_func
 		return ret;
 	else
 		local ret = val_func(schema_type_handler, content, content_model);
+		--if (not ret) then
+			--error_handler.dump();
+		--end
 		return ret;
 	end
 
@@ -1203,10 +1206,21 @@ end
 basic_stuff.low_to_intermediate_json = function(schema_type_handler, content)
 	if (content == nil) then return nil; end
 	local i_content = nil;
-	if (schema_type_handler.properties.element_type == 'C') then
-		i_content = basic_stuff.complex_to_intermediate_json(schema_type_handler, content);
+	if (schema_type_handler.particle_properties.max_occurs ~= 1) then
+		i_content = {};
+		for i, v in ipairs(content) do
+			if (schema_type_handler.properties.element_type == 'C') then
+				i_content[i] = basic_stuff.complex_to_intermediate_json(schema_type_handler, v);
+			else
+				i_content[i] = basic_stuff.simple_to_intermediate_json(schema_type_handler, v);
+			end
+		end
 	else
-		i_content = basic_stuff.simple_to_intermediate_json(schema_type_handler, content);
+		if (schema_type_handler.properties.element_type == 'C') then
+			i_content = basic_stuff.complex_to_intermediate_json(schema_type_handler, content);
+		else
+			i_content = basic_stuff.simple_to_intermediate_json(schema_type_handler, content);
+		end
 	end
 	return i_content;
 end
@@ -1322,10 +1336,21 @@ end
 basic_stuff.low_from_intermediate_json = function(schema_type_handler, content)
 	if (content == nil) then return nil; end
 	local i_content = nil;
-	if (schema_type_handler.properties.element_type == 'C') then
-		i_content = basic_stuff.complex_from_intermediate_json(schema_type_handler, content);
+	if (schema_type_handler.particle_properties.max_occurs ~= 1) then
+		i_content = {};
+		for i, v in ipairs(content) do
+			if (schema_type_handler.properties.element_type == 'C') then
+				i_content[i] = basic_stuff.complex_from_intermediate_json(schema_type_handler, v);
+			else
+				i_content[i] = basic_stuff.simple_from_intermediate_json(schema_type_handler, v);
+			end
+		end
 	else
-		i_content = basic_stuff.simple_from_intermediate_json(schema_type_handler, content);
+		if (schema_type_handler.properties.element_type == 'C') then
+			i_content = basic_stuff.complex_from_intermediate_json(schema_type_handler, content);
+		else
+			i_content = basic_stuff.simple_from_intermediate_json(schema_type_handler, content);
+		end
 	end
 	return i_content;
 end
