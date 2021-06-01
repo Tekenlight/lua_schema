@@ -1,0 +1,3 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://test_example.com" targetNamespace="http://test_example.com">
+	<xsd:element name="basic_ast" type="xsd:anySimpleType"/>
+</xsd:schema>
