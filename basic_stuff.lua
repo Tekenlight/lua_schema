@@ -638,6 +638,10 @@ basic_stuff.complex_type_simple_content_is_valid = function(schema_type_handler,
 	return ret;
 end
 
+basic_stuff.any_is_valid = function(schema_type_handler, content)
+	return true;
+end
+
 basic_stuff.inherit_facets = function(handler)
 	local local_facets = handler.local_facets;
 	local super = handler.super_element_content_type;
@@ -852,6 +856,18 @@ basic_stuff.add_model_content_all = function(schema_type_handler, nns, doc, inde
 		end
 	end
 	return i;
+end
+
+basic_stuff.any_to_xmlua = function(sth, nns, content)
+	if (type(content) ~= 'string') then
+		error_handler.raise_fatal_error(-1, "Invalid inputs ", debug.getinfo(1));
+	end
+	local json_parser = require('cjson.safe').new();
+	local status, obj, err =  pcall(json_parser.decode, content);
+	if (not status) then
+		error_handler.raise_fatal_error(-1, "could not parse JSON "..content, debug.getinfo(1));
+	end
+	return obj;
 end
 
 basic_stuff.add_model_content_node = function(schema_type_handler, nns, doc, index, content, content_model)
@@ -1175,7 +1191,9 @@ basic_stuff.complex_to_intermediate_json = function(schema_type_handler, content
 	local i_content = {};
 	if (schema_type_handler.properties.content_type == 'C') then
 		local content_model = schema_type_handler.properties.content_model;
-		if (content_model.max_occurs ~= 1) then
+		if (schema_type_handler.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
+			i_content = content;
+		elseif (content_model.max_occurs ~= 1) then
 			local generated_subelement_name = content_model.generated_subelement_name;
 			i_content[generated_subelement_name] = {};
 			for i,v in ipairs(content[schema_type_handler.properties.content_model[generated_subelement_name]]) do
@@ -1307,7 +1325,8 @@ end
 basic_stuff.complex_from_intermediate_json = function(schema_type_handler, content)
 	local content_model = schema_type_handler.properties.content_model;
 	if (schema_type_handler.properties.content_type == 'C') then
-		if (content_model.max_occurs ~= 1) then
+		if (schema_type_handler.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
+		elseif (content_model.max_occurs ~= 1) then
 			local generated_subelement_name = content_model.generated_subelement_name;
 			for i,v in ipairs(content[schema_type_handler.properties.content_model[generated_subelement_name]]) do
 				content[generated_subelement_name][i] =
@@ -1499,6 +1518,7 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 		end
 		pss:top().group_stack:top().element_found = true;
 		return true;
+	elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'any') then
 	elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
 		if (schema_type_handler.properties.content_fsa_properties[i].max_occurs ~= 1) then
 			top_obj['___METADATA___'].element_being_parsed =
@@ -1724,18 +1744,20 @@ local process_start_of_element = function(reader, sts, objs, pss)
 				error_handler.raise_validation_error(-1,
 					"unable to fit "..q_name..' as a member in the schema '..st, debug.getinfo(1));
 				return false;
-			end
-			local content_fsa_item = schema_type_handler.properties.content_fsa_properties[pss:top().position];
-			generated_q_name = content_fsa_item.generated_symbol_name;
-			new_schema_type_handler = schema_type_handler.properties.subelement_properties[generated_q_name];
-			if ((not l_top_obj['___METADATA___'].empty) and
-				(cm ~= nil) and
-				(cm.group_type == 'C') ) then
+			else
+				local content_fsa_item = schema_type_handler.properties.content_fsa_properties[pss:top().position];
+				generated_q_name = content_fsa_item.generated_symbol_name;
+				new_schema_type_handler = schema_type_handler.properties.subelement_properties[generated_q_name];
+				if (new_schema_type_handler.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
+				elseif ((not l_top_obj['___METADATA___'].empty) and
+					(cm ~= nil) and
+					(cm.group_type == 'C') ) then
 
-				if ((l_top_obj['___METADATA___'].element_gqn_being_parsed ~= nil) and
-					(l_top_obj['___METADATA___'].element_gqn_being_parsed ~= generated_q_name)) then 
+					if ((l_top_obj['___METADATA___'].element_gqn_being_parsed ~= nil) and
+						(l_top_obj['___METADATA___'].element_gqn_being_parsed ~= generated_q_name)) then 
 
-					move_fsa_to_end_of_cm(reader, sts, objs, pss)
+						move_fsa_to_end_of_cm(reader, sts, objs, pss)
+					end
 				end
 			end
 		end
@@ -1766,7 +1788,8 @@ local process_start_of_element = function(reader, sts, objs, pss)
 	if (sth.properties.element_type == 'S') then
 		obj['___METADATA___'].content_model_type = 'SS';
 	else
-		if (not read_attributes(reader, sth, obj)) then
+		if (sth.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
+		elseif (not read_attributes(reader, sth, obj)) then
 			return false;
 		end
 		if(sth.properties.content_type == 'C') then
@@ -1799,7 +1822,10 @@ end
 
 basic_stuff.get_converted_value = function (schema_type_handler, value)
 	local converted_value = '';
-	if (schema_type_handler.type_of_simple == 'U') then
+	if (schema_type_handler.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "TO PUT CODE HERE");
+		converted_value = tostring(value);
+	elseif (schema_type_handler.type_of_simple == 'U') then
 		local status = false;
 
 		status = schema_type_handler.type_handler:is_valid(content);
@@ -1882,9 +1908,10 @@ local process_end_of_element = function(reader, sts, objs, pss)
 
 	local top_obj = objs:top();
 
-	if ((sts:top().properties.element_type == 'C') and
+	if ((sts:top().properties.schema_type ~= '{http://www.w3.org/2001/XMLSchema}anyType') and
+		((sts:top().properties.element_type == 'C') and
 		(sts:top().properties.content_type == 'C') and
-		(sts:top().properties.content_model.group_type ~= 'A')) then
+		(sts:top().properties.content_model.group_type ~= 'A'))) then
 		windup_fsa(reader, sts, objs, pss);
 	end
 
@@ -1893,7 +1920,9 @@ local process_end_of_element = function(reader, sts, objs, pss)
 	local parsed_sth = sts:pop();
 	local parsed_output = nil;
 	if (parsed_sth.properties.element_type == 'C') then
-		if ((not parsed_element['___METADATA___'].empty) or (top_obj['___METADATA___'].covering_object) ) then
+		if (parsed_sth.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
+			parsed_output = parsed_element['___DATA___']._contained_value;
+		elseif ((not parsed_element['___METADATA___'].empty) or (top_obj['___METADATA___'].covering_object) ) then
 			parsed_output = parsed_element['___DATA___'];
 		end
 	else
@@ -1952,6 +1981,124 @@ local process_end_of_element = function(reader, sts, objs, pss)
 
 	return true;
 end
+--[[
+-- This function parses the content of anyType element
+-- No schematic restrictions.
+--
+--]]
+local parse_any = function(reader, sts, objs, pss)
+	local doc = {};
+	local st = (require('stack')).new();
+	st:push(doc);
+
+	local ns_collection = { nsc = {}};
+	local function count_elements(t)
+		local i = 0;
+		for n,v in pairs(t) do
+			i = i+1;
+		end
+		return i;
+	end
+	function ns_collection:add_namespace(ns)
+		if (ns == nil) then return nil; end
+		if (self.nsc[ns] == nil) then
+			local idx = count_elements(self.nsc) + 1;
+			self.nsc[ns] = 'ns'..idx;
+		end
+	end
+	function ns_collection:get_nsid(ns)
+		return self.nsc[ns];
+	end
+
+	local function inner_process_node(reader)
+		local name = reader:const_local_name()
+		local uri = reader:const_namespace_uri();
+		local value = reader:const_value();
+		local depth = reader:node_depth();
+		local typ = reader:node_type();
+		local is_empty = reader:node_is_empty_element();
+		local has_value = reader:node_reader_has_value();
+
+		--print(depth, typ, name, is_empty, has_value, value);
+		if (typ == reader.node_types.XML_READER_TYPE_ELEMENT) then
+			local node = {};
+
+			ns_collection:add_namespace(uri)
+			local ns_id = ns_collection:get_nsid(uri);
+			local node_name = name;
+			if (ns_id == nil) then
+				node_name = name;
+			else
+				node_name = ns_id..':'..name;
+			end
+			node[1] = node_name;
+
+			local attr = {}
+			local n = reader:get_attr_count();
+			if (n >0) then
+				for i=0,n-1 do
+					reader:move_to_attr_no(i);
+					if (not reader:is_namespace_decl()) then
+						local attr_name = reader:const_local_name()
+						local attr_value = reader:const_value();
+						local attr_uri = reader:const_namespace_uri();
+						local ns_id = ns_collection:get_nsid(attr_uri);
+						if (ns_id ~= nil and attr_uri ~= 'http://www.w3.org/2000/xmlns/') then
+							attr_name = ns_id..':'..attr_name;
+						end
+						attr[attr_name] = attr_value;
+					else
+						local attr_value = reader:const_value();
+						ns_collection:add_namespace(attr_value)
+					end
+				end
+			end
+
+			node[2] = attr; -- Attributes
+			st:push(node);
+		elseif (typ == reader.node_types.XML_READER_TYPE_TEXT) then
+			local va = st:top();
+			va[#va+1] = value;
+		elseif (typ == reader.node_types.XML_READER_TYPE_CDATA) then
+			local va = st:top();
+			va[#va+1] = value;
+		elseif (typ == reader.node_types.XML_READER_TYPE_END_ELEMENT) then
+			local node = st:pop();
+			local va = st:top();
+			va[#va+1] = node;
+		end
+	end
+
+	local function read_ahead(reader)
+		local s, ret = pcall(reader.read, reader);
+		if (s == false) then
+			error("Failed to parse document");
+		end
+		return ret;
+	end
+
+	local ret = 1;
+	while (ret == 1) do
+		inner_process_node(reader);
+		if (st:height() == 1) then
+			break;
+		end
+		ret = read_ahead(reader);
+	end
+
+	local obj = doc[1];
+
+	for n,v in pairs(ns_collection.nsc) do
+		obj[2][v] = n;
+	end
+
+	local json_parser = require('cjson.safe').new();
+	local flg, json_output, err = pcall(json_parser.encode, obj);
+	if (json_output == nil or json_output == '') then
+		json_output = '{}';
+	end
+	return json_output;
+end
 
 --[[
 --Anything other than element begining, text or
@@ -1973,6 +2120,18 @@ local process_node = function(reader, sts, objs, pss)
 		if (not reader:node_is_empty_element(reader)) then
 			error_handler.push_element(q_name);
 			ret = process_start_of_element(reader, sts, objs, pss);
+			do
+				local sth = sts:top();
+				if (sth.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
+					local obj = parse_any(reader, sts, objs, pss);
+					local schema_type_handler = sts:top();
+					local top_obj = objs:top();
+					top_obj['___DATA___']._contained_value = obj;
+					top_obj['___METADATA___'].empty = false;
+					ret = process_end_of_element(reader, sts, objs, pss);
+					error_handler.pop_element();
+				end
+			end
 		else
 			ret = true;
 		end

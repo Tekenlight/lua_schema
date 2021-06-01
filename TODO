@@ -1,7 +1,12 @@
-1. Implement inhereitence of simple types vis-a-vis facets => DONE
-2. Implement enumerations => DONE
-3. Implement pattern matching mechanism to validate data. => DONE
-4. Implement union types
-5. Implelent list types
-6. Implement all the 49 built-in-types of XMLSchema 1.0
+1.  Implement inhereitence of simple types vis-a-vis facets => DONE
+2.  Implement enumerations => DONE
+3.  Implement pattern matching mechanism to validate data. => DONE
+4.  Implement union types => DONE
+5.  Implelent list types => DONE
+6.  Implement all the 49 built-in-types of XMLSchema 1.0 => DONE
+29-May-2021
+7.  Implement anySimpleType => DONE
+8.  Implement anyAttribute
+9.  Implement anyType
+10. Implement any
 

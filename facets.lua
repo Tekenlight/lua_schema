@@ -17,6 +17,7 @@ local supported_datatypes = {
 	,['integer'] = 1
 	,['datetime'] = 1
 	,['duration'] = 1
+	,['anySimpleType'] = 1
 }
 
 local valid_facet_names = {
@@ -552,6 +553,7 @@ function _xsd_facets:check(v)
 				return false;
 			end
 		elseif (self.datatype == 'boolean') then
+		elseif (self.datatype == 'anySimpleType') then
 		elseif (self.datatype == 'datetime') then
 			if (not self:check_date_facets(v)) then
 				return false;

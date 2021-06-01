@@ -12,5 +12,17 @@ if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
 
+--print(basic_string:to_xml(content))
+if (nil ~= content) then
+	local json_str = basic_string:to_json(content);
+	print(json_str);
+	local lua_obj = basic_string:from_json(json_str);
+	local xml_str, msg = basic_string:to_xml(lua_obj);
+	print(xml_str);
+	content = basic_string:from_xml(xml_str);
+	require 'pl.pretty'.dump(content);
+
+end
+
 if (content ~= nil) then os.exit(true); else os.exit(false); end
 

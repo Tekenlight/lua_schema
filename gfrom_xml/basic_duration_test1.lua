@@ -1,7 +1,7 @@
 #!/opt/local/bin/lua
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
-<ns1:basic_duration xmlns:ns1="http://test_example.com">P13MT1H</ns1:basic_duration>]=]
+<ns1:basic_duration xmlns:ns1="http://test_example.com">P15MT1H</ns1:basic_duration>]=]
 
 mhf = require("message_handler_factory")
 

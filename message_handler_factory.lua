@@ -36,6 +36,8 @@ end
 local to_xml_string = function(message_handler_instance, content)
 	local nns = gather_namespace_declarations(message_handler_instance);
 	local doc = message_handler_instance:to_xmlua(nns, content);
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	--require 'pl.pretty'.dump(doc);
 	local document = xmlua.XML.build(doc);
 	local s = document:to_xml();
 	return s;
@@ -144,7 +146,8 @@ end
 local function form_complete_message_handler(message_handler)
 	function message_handler:to_json(content)
 		status, msg = validate_doc(self, content)
-		if (status) then return to_json_string(self, content);
+		if (status) then
+			return to_json_string(self, content);
 		else
 			return nil, msg;
 		end

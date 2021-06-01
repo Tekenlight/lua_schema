@@ -41,8 +41,10 @@ if (nil ~= content) then
 	local json_str = example_struct:to_json(content);
 	print(json_str);
 	local lua_obj = example_struct:from_json(json_str);
-	local xml_str = example_struct:to_xml(lua_obj);
+	local xml_str, msg = example_struct:to_xml(lua_obj);
 	print(xml_str);
+	content = example_struct:from_xml(xml_str);
+	require 'pl.pretty'.dump(content);
 
 end
 

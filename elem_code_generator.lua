@@ -321,7 +321,16 @@ elem_code_generator.get_subelement_properties = function(model)
 			else
 				if (item.explicit_type) then
 					local type_name = basic_stuff.get_type_handler_str(item.named_type_ns, item.named_type);
-					_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false);
+					if (('http://www.w3.org/2001/XMLSchema' == item.named_type_ns) and
+						('anyType' == item.named_type) ) then
+						_subelement_properties[item.generated_q_name] =
+								require('org.w3.2001.XMLSchema.anyType'):new_instance_as_local_element(
+									{ns = item.ns, local_name = item.name, generated_name = gn,
+									root_element = false, min_occurs = item.min_occurs,
+														max_occurs = item.max_occurs});
+					else
+						_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false);
+					end
 					_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
 					_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
 					_subelement_properties[item.generated_q_name].particle_properties.root_element = false;
@@ -329,6 +338,10 @@ elem_code_generator.get_subelement_properties = function(model)
 					_subelement_properties[item.generated_q_name].decl_props = {};
 					_subelement_properties[item.generated_q_name].decl_props.type = 'explicit_type';
 					_subelement_properties[item.generated_q_name].decl_props.def = type_name;
+					if (('http://www.w3.org/2001/XMLSchema' == item.named_type_ns) and
+						('anyType' == item.named_type) ) then
+						_subelement_properties[item.generated_q_name].decl_props.wild_card_type = 1;
+					end
 				else
 					_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false);
 					_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
@@ -369,6 +382,9 @@ local function low_get_content_model(model, i)
 		local cm_index = #_content_model+1;
 		if (model[i].symbol_type == 'element') then
 			_content_model[cm_index] = model[i].generated_name; -- generated_name
+		elseif (model[i].symbol_type == 'any') then
+			--_content_model[cm_index] = model[i].generated_name; -- generated_name
+			_content_model[cm_index] = 2; -- wild_card_type = 2;
 		else
 			_content_model[cm_index], i = low_get_content_model(model, i);
 		end
@@ -418,12 +434,25 @@ elem_code_generator.get_content_fsa_properties = function(model, content_model)
 			cmps:pop();
 			cmi = nil;
 			cmi = cmis:pop();
+		elseif (item.symbol_type == 'any') then
+			_content_fsa_properties[index].min_occurs = item.min_occurs;
+			_content_fsa_properties[index].max_occurs = item.max_occurs;
+			_content_fsa_properties[index].symbol_name = get_q_name(item.ns, item.name);
+			_content_fsa_properties[index].cm = cmps:top();
+			_content_fsa_properties[index].generated_symbol_name = item.generated_q_name;
+			_content_fsa_properties[index].wild_card_type = 2;
 		else
 			_content_fsa_properties[index].min_occurs = item.min_occurs;
 			_content_fsa_properties[index].max_occurs = item.max_occurs;
 			_content_fsa_properties[index].symbol_name = get_q_name(item.ns, item.name);
 			_content_fsa_properties[index].cm = cmps:top();
 			_content_fsa_properties[index].generated_symbol_name = item.generated_q_name;
+			if (('http://www.w3.org/2001/XMLSchema' == item.named_type_ns) and
+				('anyType' == item.named_type) ) then
+				_content_fsa_properties[index].wild_card_type = 1;
+			else
+				_content_fsa_properties[index].wild_card_type = 0;
+			end
 			cmi = cmi + 1;
 		end
 	end
@@ -439,6 +468,9 @@ elem_code_generator.get_generated_subelements = function(props)
 			generated_name = props.subelement_properties[v.generated_symbol_name].particle_properties.generated_name;
 			_generated_subelements[generated_name] = props.subelement_properties[v.generated_symbol_name];
 		elseif (v.symbol_type == 'cm_begin' and v.max_occurs ~= 1) then
+			generated_name = v.generated_symbol_name;
+			_generated_subelements[generated_name] = {};
+		elseif (v.symbol_type == 'any') then
 			generated_name = v.generated_symbol_name;
 			_generated_subelements[generated_name] = {};
 		end
@@ -464,12 +496,16 @@ function elem_code_generator.prepare_generated_names(model)
 			local begin_index = bis:pop();
 			item.generated_name = model[begin_index].generated_name;
 			item.generated_q_name = item.generated_name;
-		else
+		elseif (item.symbol_type == 'element') then
 			if (item.ref) then
 				item_q_name = get_q_name(item.ref_ns, item.ref_name);
 			else
 				item_q_name = get_q_name(item.ns, item.name);
 			end
+			item.generated_name = elem_code_generator.add_and_get_name(generated_names, item.symbol_name);
+			item.generated_q_name = elem_code_generator.add_and_get_name(generated_q_names, item_q_name);
+		else
+			item_q_name = '{http://www.w3.org/2001/XMLSchema}any'
 			item.generated_name = elem_code_generator.add_and_get_name(generated_names, item.symbol_name);
 			item.generated_q_name = elem_code_generator.add_and_get_name(generated_q_names, item_q_name);
 		end
@@ -587,6 +623,7 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 		props.attr = get_element_attr_decls(elem);
 		if (content_type == 'C') then
 			local model = elem:get_element_content_model();
+			--require 'pl.pretty'.dump(model);
 			elem_code_generator.prepare_generated_names(model);
 			props.content_model = elem_code_generator.get_content_model(model);
 			props.content_fsa_properties = elem_code_generator.get_content_fsa_properties(model, props.content_model);
@@ -794,7 +831,8 @@ function elem_code_generator.put_content_model_code(content_model, indentation)
 	local code = '';
 	for n,v in pairs(content_model) do
 		if (type(n) ~= 'number') then
-			if (type(v) == 'number') then
+			--if (type(v) == 'number') then
+			if (n == 'max_occurs' or n == 'min_occurs') then
 				code = code..indentation..'    '..n..' = '..v..',\n';
 			else
 				code = code..indentation..'    '..n..' = \''..v..'\',\n';
@@ -807,7 +845,13 @@ function elem_code_generator.put_content_model_code(content_model, indentation)
 			code = code..elem_code_generator.put_content_model_code(v, indentation..'    ');
 			code = code..indentation..'    },\n';
 		else
-			code = code..indentation..'    \''..v..'\',\n';
+			if (type(v) == 'string') then
+				code = code..indentation..'    \''..v..'\',\n';
+			elseif (type(v) == 'number') then
+				code = code..indentation..'    '..v..',\n';
+			else
+				error("Unsupported type");
+			end
 		end
 	end
 	return code;
@@ -865,6 +909,9 @@ function elem_code_generator.put_content_fsa_properties_code(content_fsa_propert
 		if (item.symbol_type ~= 'cm_end') then
 			code = code..', min_occurs = '..item.min_occurs;
 			code = code..', max_occurs = '..item.max_occurs;
+			if (item.symbol_type == 'element') then
+				code = code..', wild_card_type = '..item.wild_card_type;
+			end
 		else
 			code = code..', cm_begin_index = '..item.cm_begin_index;
 		end

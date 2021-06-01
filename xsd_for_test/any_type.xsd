@@ -1,0 +1,11 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+targetNamespace="http://test_example.com">
+
+	<xsd:element name="any_type">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="one" type="xsd:anyType"/>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
