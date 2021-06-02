@@ -297,7 +297,7 @@ elem_code_generator.get_subelement_properties = function(model)
 	local _subelement_properties = {};
 
 	for i, item in ipairs(model) do
-		if (item.symbol_type == 'element') then
+		if (item.symbol_type == 'element' or item.symbol_type == 'any') then
 			local gn = item.generated_name; -- generated_name
 			if (item.ref) then
 				local ths = basic_stuff.get_type_handler_str(item.ref_ns, item.ref_name);
@@ -361,7 +361,7 @@ end
 elem_code_generator.get_declared_subelements = function(model)
 	local _declared_subelments = {};
 	for i, item in ipairs(model) do
-		if (item.symbol_type == 'element') then
+		if (item.symbol_type == 'element' or item.symbol_type == 'any') then
 			_declared_subelments[#_declared_subelments+1] = item.generated_q_name;
 		end
 	end
@@ -383,8 +383,7 @@ local function low_get_content_model(model, i)
 		if (model[i].symbol_type == 'element') then
 			_content_model[cm_index] = model[i].generated_name; -- generated_name
 		elseif (model[i].symbol_type == 'any') then
-			--_content_model[cm_index] = model[i].generated_name; -- generated_name
-			_content_model[cm_index] = 2; -- wild_card_type = 2;
+			_content_model[cm_index] = model[i].generated_name; -- generated_name
 		else
 			_content_model[cm_index], i = low_get_content_model(model, i);
 		end
@@ -440,7 +439,7 @@ elem_code_generator.get_content_fsa_properties = function(model, content_model)
 			_content_fsa_properties[index].symbol_name = get_q_name(item.ns, item.name);
 			_content_fsa_properties[index].cm = cmps:top();
 			_content_fsa_properties[index].generated_symbol_name = item.generated_q_name;
-			_content_fsa_properties[index].wild_card_type = 2;
+			_content_fsa_properties[index].wild_card_type = 1;
 		else
 			_content_fsa_properties[index].min_occurs = item.min_occurs;
 			_content_fsa_properties[index].max_occurs = item.max_occurs;
@@ -471,8 +470,8 @@ elem_code_generator.get_generated_subelements = function(props)
 			generated_name = v.generated_symbol_name;
 			_generated_subelements[generated_name] = {};
 		elseif (v.symbol_type == 'any') then
-			generated_name = v.generated_symbol_name;
-			_generated_subelements[generated_name] = {};
+			generated_name = props.subelement_properties[v.generated_symbol_name].particle_properties.generated_name;
+			_generated_subelements[generated_name] = props.subelement_properties[v.generated_symbol_name];
 		end
 	end
 	return _generated_subelements;
@@ -496,7 +495,7 @@ function elem_code_generator.prepare_generated_names(model)
 			local begin_index = bis:pop();
 			item.generated_name = model[begin_index].generated_name;
 			item.generated_q_name = item.generated_name;
-		elseif (item.symbol_type == 'element') then
+		elseif (item.symbol_type == 'element' or item.symbol_type == 'any') then
 			if (item.ref) then
 				item_q_name = get_q_name(item.ref_ns, item.ref_name);
 			else
@@ -505,7 +504,7 @@ function elem_code_generator.prepare_generated_names(model)
 			item.generated_name = elem_code_generator.add_and_get_name(generated_names, item.symbol_name);
 			item.generated_q_name = elem_code_generator.add_and_get_name(generated_q_names, item_q_name);
 		else
-			item_q_name = '{http://www.w3.org/2001/XMLSchema}any'
+			item_q_name = get_q_name(item.ns, item.name);
 			item.generated_name = elem_code_generator.add_and_get_name(generated_names, item.symbol_name);
 			item.generated_q_name = elem_code_generator.add_and_get_name(generated_q_names, item_q_name);
 		end
@@ -909,7 +908,7 @@ function elem_code_generator.put_content_fsa_properties_code(content_fsa_propert
 		if (item.symbol_type ~= 'cm_end') then
 			code = code..', min_occurs = '..item.min_occurs;
 			code = code..', max_occurs = '..item.max_occurs;
-			if (item.symbol_type == 'element') then
+			if (item.symbol_type == 'element' or item.symbol_type == 'any') then
 				code = code..', wild_card_type = '..item.wild_card_type;
 			end
 		else
@@ -1191,7 +1190,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 		local rhs = '';
 		local generated_name = '';
 		for i,v in ipairs(element_handler.properties.content_fsa_properties) do
-			if (v.symbol_type == 'element') then
+			if (v.symbol_type == 'element' or v.symbol_type == 'any') then
 				generated_name =
 					element_handler.properties.subelement_properties[v.generated_symbol_name].particle_properties.generated_name;
 				lhs = '[\''..generated_name..'\']';

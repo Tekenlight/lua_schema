@@ -1497,8 +1497,9 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 	local top_obj = objs:top();
 
 	local ps_obj = pss:top();
-	if ((schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'element') and
-		(schema_type_handler.properties.content_fsa_properties[i].symbol_name == q_name)) then
+	if (((schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'element') and
+		(schema_type_handler.properties.content_fsa_properties[i].symbol_name == q_name)) or
+		((schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'any'))) then
 		ps_obj.position = i;
 		if (schema_type_handler.properties.content_fsa_properties[i].max_occurs ~= 1) then
 			local sep_key = schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
@@ -1518,7 +1519,8 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 		end
 		pss:top().group_stack:top().element_found = true;
 		return true;
-	elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'any') then
+	--elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'any') then
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
 		if (schema_type_handler.properties.content_fsa_properties[i].max_occurs ~= 1) then
 			top_obj['___METADATA___'].element_being_parsed =
