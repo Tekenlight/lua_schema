@@ -4,8 +4,8 @@ targetNamespace="http://test_example.com">
 	<xsd:element name="other_any">
 		<xsd:complexType>
 			<xsd:sequence>
+				<xsd:any minOccurs="2" maxOccurs="2"/>
 				<xsd:element name="one" type="xsd:string"/>
-				<xsd:any/>
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
