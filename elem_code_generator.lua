@@ -621,6 +621,7 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 		props.schema_type = get_named_schema_type(elem);
 		props.attr = get_element_attr_decls(elem);
 		if (content_type == 'C') then
+			props.attr.attr_wildcard = elem.attr_wildcard;
 			local model = elem:get_element_content_model();
 			--require 'pl.pretty'.dump(model);
 			elem_code_generator.prepare_generated_names(model);
@@ -1125,6 +1126,21 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 	if (properties.attr ~= nil) then
 		code = code..indent..'    '..eh_name..'.properties.attr = {};\n';
 		code = code..elem_code_generator.get_attr_code(eh_name..'.properties.attr', element_handler, indent..'    ');
+		if (properties.attr.attr_wildcard ~= nil) then
+			code = code..indent..'    '..eh_name..'.properties.attr.attr_wildcard = {};\n';
+			code = code..indent..'    '..eh_name..
+					'.properties.attr.attr_wildcard.any = '..properties.attr.attr_wildcard.any..';\n';
+			code = code..indent..'    '..eh_name..
+				'.properties.attr.attr_wildcard.process_contents = '..properties.attr.attr_wildcard.process_contents..';\n';
+			code = code..indent..'    '..eh_name..'.properties.attr.attr_wildcard.ns_set = {};\n';
+			for n,v in pairs(properties.attr.attr_wildcard.ns_set) do
+				code = code..indent..'    '..eh_name..'.properties.attr.attr_wildcard.ns_set.'..n..' = \''..v..'\';\n';
+			end
+			code = code..indent..'    '..eh_name..'.properties.attr.attr_wildcard.neg_ns_set = {};\n';
+			for n,v in pairs(properties.attr.attr_wildcard.neg_ns_set) do
+				code = code..indent..'    '..eh_name..'.properties.attr.attr_wildcard.neg_ns_set.'..n..' = \''..v..'\';\n';
+			end
+		end
 	else
 		code = code..indent..'    '..eh_name..'.properties.attr = nil;\n';
 	end

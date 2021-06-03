@@ -1,0 +1,21 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"  targetNamespace="http://test_example.com" xmlns:ns="http://test_example.com">
+	<xsd:complexType name="any_attr_t">
+		<xsd:sequence>
+			<xsd:element name="one" type="xsd:string"/>
+		</xsd:sequence>
+		<xsd:attribute name="attr1" type="xsd:string"/>
+		<xsd:attribute name="attr2" type="xsd:string"/>
+		<xsd:anyAttribute namespace="##any" processContents="lax"/>
+	</xsd:complexType>
+	<xsd:element name="any_attr" type="ns:any_attr_t"/>
+	<xsd:element name="any_attr_element">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="one" type="xsd:string"/>
+			</xsd:sequence>
+			<xsd:attribute name="attr1" type="xsd:string"/>
+			<xsd:attribute name="attr2" type="xsd:string"/>
+			<xsd:anyAttribute namespace="##any" processContents="lax"/>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

@@ -80,6 +80,7 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names)
 		props.schema_type = get_schema_type_name(typedef);
 		props.attr = get_typedef_attr_decls(typedef);
 		if (content_type == 'C') then
+			props.attr.attr_wildcard = typedef.attr_wildcard;
 			local model = typedef:get_typedef_content_model();
 			elem_code_generator.prepare_generated_names(model);
 			props.content_model = elem_code_generator.get_content_model(model);
@@ -143,6 +144,21 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 	if (properties.attr ~= nil) then
 		code = code..indent..'    '..eh_name..'.properties.attr = {};\n';
 		code = code..elem_code_generator.get_attr_code(eh_name..'.properties.attr', element_handler, indent..'    ');
+		if (properties.attr.attr_wildcard ~= nil) then
+			code = code..indent..'    '..eh_name..'.properties.attr.attr_wildcard = {};\n';
+			code = code..indent..'    '..eh_name..
+					'.properties.attr.attr_wildcard.any = '..properties.attr.attr_wildcard.any..';\n';
+			code = code..indent..'    '..eh_name..
+				'.properties.attr.attr_wildcard.process_contents = '..properties.attr.attr_wildcard.process_contents..';\n';
+			code = code..indent..'    '..eh_name..'.properties.attr.attr_wildcard.ns_set = {};\n';
+			for n,v in pairs(properties.attr.attr_wildcard.ns_set) do
+				code = code..indent..'    '..eh_name..'.properties.attr.attr_wildcard.ns_set.'..n..' = \''..v..'\';\n';
+			end
+			code = code..indent..'    '..eh_name..'.properties.attr.attr_wildcard.neg_ns_set = {};\n';
+			for n,v in pairs(properties.attr.attr_wildcard.neg_ns_set) do
+				code = code..indent..'    '..eh_name..'.properties.attr.attr_wildcard.neg_ns_set.'..n..' = \''..v..'\';\n';
+			end
+		end
 	else
 		code = code..indent..'    '..eh_name..'.properties.attr = nil;\n';
 	end

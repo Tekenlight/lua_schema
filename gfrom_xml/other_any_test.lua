@@ -13,6 +13,7 @@ if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
 
+print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 local xml = other_any:to_xml(content);
 local json = other_any:to_json(content);
 local obj = other_any:from_json(json);

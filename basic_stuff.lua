@@ -167,10 +167,35 @@ basic_stuff.attributes_are_valid = function(attrs_def, attrs)
 	for n,v in pairs(inp_attr) do
 		error_handler.push_element(n);
 		if (attrs_def._generated_attr[n] == nil) then
-			print("ONE");
-			error_handler.raise_validation_error(-1, " Attribute: {"..error_handler.get_fieldpath().."} should not be present",
-													debug.getinfo(1));
-			return false
+			if (attrs_def.attr_wildcard == nil) then
+				print("ONE");
+				error_handler.raise_validation_error(-1, " Attribute: {"..error_handler.get_fieldpath().."} should not be present",
+														debug.getinfo(1));
+				return false
+			else
+				if (type(v) ~= 'table') then
+					error_handler.raise_validation_error(-1, 
+						"Attribute: {"..error_handler.get_fieldpath().."} should not be present", debug.getinfo(1));
+					return false
+				end
+				if (v.value == nil or v.name == nil) then
+					error_handler.raise_validation_error(-1,
+						"Attribute: {"..error_handler.get_fieldpath().."} is an invalid custom attribute", debug.getinfo(1));
+					return false
+				end
+				for p,q in pairs(v) do
+					if (p ~= 'ns' and p ~= 'name' and p ~= 'value') then
+						error_handler.raise_validation_error(-1,
+							"Attribute: {"..error_handler.get_fieldpath().."} should not be present", debug.getinfo(1));
+						return false
+					end
+					if (type(q) ~= 'string') then
+						error_handler.raise_validation_error(-1,
+							"Attribute: {"..error_handler.get_fieldpath().."} is an invalid custom attribute", debug.getinfo(1));
+						return false
+					end
+				end
+			end
 		end
 		error_handler.pop_element();
 	end
@@ -751,6 +776,27 @@ basic_stuff.get_attributes = function(schema_type_handler, nns, content)
 				end
 			end
 		end
+		if (schema_type_handler.properties.attr.attr_wildcard ~= nil and nil ~= content._attr) then
+			for n,v in pairs(content._attr) do
+				if (type(v) == 'table') then
+					local ns = nil;
+					if (v.ns ~= nil) then
+						local prefix = nns.ns[v.ns];
+						if (prefix ~= nil) then
+							attributes[prefix..':'..v.name] = v.value
+						else
+							nns.count = nns.count+1;;
+							prefix = 'ns'..nns.count;
+							nns.ns[v.ns] = prefix;
+							attributes[prefix..':'..v.name] = v.value;
+							attributes['xmlns:'..prefix] = v.ns;
+						end
+					else
+						attributes[n] = v.value;
+					end
+				end
+			end
+		end
 	end
 	return attributes;
 end
@@ -1212,10 +1258,15 @@ basic_stuff.complex_to_intermediate_json = function(schema_type_handler, content
 		for n,v in pairs(content._attr) do
 			local q_name = schema_type_handler.properties.attr._generated_attr[n];
 			if (q_name == nil) then
-				error("INVALID ATTR "..tostring(n));
+				if (schema_type_handler.properties.attr.attr_wildcard == nil) then
+					error("INVALID ATTR "..tostring(n));
+				else
+					i_content._attr[n] = v;
+				end
+			else
+				local sth = schema_type_handler.properties.attr._attr_properties[q_name] ;
+				i_content._attr[n] = basic_stuff.primitive_to_intermediate_json(sth.type_handler, v);
 			end
-			local sth = schema_type_handler.properties.attr._attr_properties[q_name] ;
-			i_content._attr[n] = basic_stuff.primitive_to_intermediate_json(sth.type_handler, v);
 		end
 	end
 	return i_content;
@@ -1343,10 +1394,15 @@ basic_stuff.complex_from_intermediate_json = function(schema_type_handler, conte
 		for n,v in pairs(content._attr) do
 			local q_name = schema_type_handler.properties.attr._generated_attr[n];
 			if (q_name == nil) then
-				error("INVALID ATTR "..tostring(n));
+				if (schema_type_handler.properties.attr.attr_wildcard == nil) then
+					error("INVALID ATTR "..tostring(n));
+				else
+					content._attr[n] = v;
+				end
+			else
+				local sth = schema_type_handler.properties.attr._attr_properties[q_name] ;
+				content._attr[n] = basic_stuff.primitive_to_intermediate_json(sth.type_handler, v);
 			end
-			local sth = schema_type_handler.properties.attr._attr_properties[q_name] ;
-			content._attr[n] = basic_stuff.primitive_from_intermediate_json(sth.type_handler, v);
 		end
 	end
 	return content;
@@ -1442,6 +1498,7 @@ local read_attributes = function(reader, schema_type_handler, obj)
 			local attr_name = reader:const_local_name()
 			local attr_value = reader:const_value();
 			local attr_uri = reader:const_namespace_uri();
+			local attr_ns_uri = attr_uri;
 			if attr_uri == nil then
 				attr_uri = ''
 			end
@@ -1457,16 +1514,33 @@ local read_attributes = function(reader, schema_type_handler, obj)
 				local attr_properties = schema_type_handler.properties.attr._attr_properties[q_attr_name];
 				error_handler.push_element(attr_name);
 				if (attr_properties == nil) then
-					error_handler.raise_validation_error(-1,
-								"Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element",
-								debug.getinfo(1));
+					if (schema_type_handler.properties.attr.attr_wildcard == nil) then
+						error_handler.raise_validation_error(-1,
+									"Field: {"..error_handler.get_fieldpath().."} is not a valid attribute of the element",
+									debug.getinfo(1));
+						error_handler.pop_element();
+						return false;
+					else
+						local converted_value = attr_value;
+						error_handler.pop_element();
+						local aname = attr_name;
+						local i = 0;
+						while (obj['___DATA___']._attr[aname] ~= nil)  do
+							i = i + 1;
+							aname = attr_name..'_'..i;
+						end
+						obj['___DATA___']._attr[aname] = {};
+						obj['___DATA___']._attr[aname].ns = attr_ns_uri;
+						obj['___DATA___']._attr[aname].name = attr_name;
+						obj['___DATA___']._attr[aname].value = converted_value;
+						count = count + 1;
+					end
+				else
+					local converted_value = basic_stuff.get_converted_value(attr_properties, attr_value);
 					error_handler.pop_element();
-					return false;
+					obj['___DATA___']._attr[attr_properties.particle_properties.generated_name] = converted_value;
+					count = count + 1;
 				end
-				local converted_value = basic_stuff.get_converted_value(attr_properties, attr_value);
-				error_handler.pop_element();
-				obj['___DATA___']._attr[attr_properties.particle_properties.generated_name] = converted_value;
-				count = count + 1;
 			end
 		end
 	end
@@ -2005,7 +2079,7 @@ local parse_any = function(reader, sts, objs, pss)
 		if (ns == nil) then return nil; end
 		if (self.nsc[ns] == nil) then
 			local idx = count_elements(self.nsc) + 1;
-			self.nsc[ns] = 'ns'..idx;
+			self.nsc[ns] = 'any_ns'..idx;
 		end
 	end
 	function ns_collection:get_nsid(ns)
