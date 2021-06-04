@@ -1401,7 +1401,7 @@ basic_stuff.complex_from_intermediate_json = function(schema_type_handler, conte
 				end
 			else
 				local sth = schema_type_handler.properties.attr._attr_properties[q_name] ;
-				content._attr[n] = basic_stuff.primitive_to_intermediate_json(sth.type_handler, v);
+				content._attr[n] = basic_stuff.primitive_from_intermediate_json(sth.type_handler, v);
 			end
 		end
 	end
