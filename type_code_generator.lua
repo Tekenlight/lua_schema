@@ -5,6 +5,7 @@ local xmlua = require("xmlua")
 local basic_stuff = require("basic_stuff");
 local elem_code_generator = require("elem_code_generator");
 local facets = require("facets");
+local eh_cache = require("eh_cache");
 
 local type_code_generator = {};
 
@@ -59,7 +60,11 @@ local get_typedef_attr_decls = function(typedef)
 end
 
 type_code_generator.get_element_handler = function(typedef, to_generate_names)
-	local element_handler = {};
+	local element_handler = nil;
+	element_handler = eh_cache.get(get_schema_type_name(typedef));
+	if (element_handler ~= nil) then return element_handler; end;
+
+	element_handler = {};
 
 	local content_type = typedef:get_typedef_content_type();
 	local element_type = typedef:get_typedef_type();
@@ -74,7 +79,8 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names)
 	end
 
 	do
-		local props = {};
+		element_handler.properties = {};
+		local props = element_handler.properties;
 		props.element_type = typedef:get_typedef_type();
 		props.content_type = typedef:get_typedef_content_type();
 		props.schema_type = get_schema_type_name(typedef);
@@ -106,9 +112,10 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names)
 												element_handler.type_handler.type_name);
 			element_handler.type_of_simple = simple_type_props.type_of_simple;
 		end
-		element_handler.properties = props;
+		--element_handler.properties = props;
 	end
 
+	eh_cache.add(element_handler.properties.schema_type, element_handler);
 	return element_handler;
 end
 

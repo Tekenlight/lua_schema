@@ -2,6 +2,7 @@ local xmlua = require("xmlua")
 local mhf = require("message_handler_factory")
 local xsd = xmlua.XSD.new();
 
+_G.handler_cache = {};
 
 local function generate_schema_for_typedef(typedef)
 	print(debug.getinfo(1).source, debug.getinfo(1).currentline, typedef.name);
@@ -39,3 +40,4 @@ if (types ~= nil) then
 	end
 end
 
+_G.handler_cache = nil;

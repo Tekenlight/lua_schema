@@ -4,6 +4,7 @@ local stringx = require("pl.stringx");
 local xmlua = require("xmlua")
 local basic_stuff = require("basic_stuff");
 local facets = require("facets");
+local eh_cache = require("eh_cache");
 
 local elem_code_generator = {};
 
@@ -370,6 +371,9 @@ end
 
 local function low_get_content_model(model, i)
 	local _content_model = {};
+	if (#model == 0) then
+		return content_model, i;
+	end
 	if (model[i].symbol_type ~= 'cm_begin') then
 		error("cm_begin expected in the begining to be able to generate a content model");
 	end
@@ -585,7 +589,17 @@ elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names
 end
 
 elem_code_generator.get_element_handler = function(elem, to_generate_names)
-	local element_handler = {};
+	local element_handler = nil;
+	--[[
+	--]]
+	element_handler = eh_cache.get(elem.q_name);
+	if (element_handler ~= nil) then
+		return element_handler;
+	end;
+
+	element_handler = {};
+	assert(elem.q_name ~= nil);
+	eh_cache.add(elem.q_name, element_handler);
 
 	local content_type = elem:get_element_content_type();
 	local element_type = elem:get_element_type();
@@ -615,7 +629,8 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 	end
 
 	do
-		local props = {};
+		element_handler.properties = {};
+		local props = element_handler.properties;
 		props.element_type = elem:get_element_type();
 		props.content_type = elem:get_element_content_type();
 		props.schema_type = get_named_schema_type(elem);
@@ -623,7 +638,6 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 		if (content_type == 'C') then
 			props.attr.attr_wildcard = elem.attr_wildcard;
 			local model = elem:get_element_content_model();
-			--require 'pl.pretty'.dump(model);
 			elem_code_generator.prepare_generated_names(model);
 			props.content_model = elem_code_generator.get_content_model(model);
 			props.content_fsa_properties = elem_code_generator.get_content_fsa_properties(model, props.content_model);
@@ -643,9 +657,10 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 												element_handler.type_handler.type_name);
 			element_handler.type_of_simple = simple_type_props.type_of_simple;
 		end
-		element_handler.properties = props;
+		--element_handler.properties = props;
 	end
 
+	--eh_cache.add(elem.q_name, element_handler);
 	return element_handler;
 end
 
@@ -829,6 +844,9 @@ end
 
 function elem_code_generator.put_content_model_code(content_model, indentation)
 	local code = '';
+	if (nil == content_model) then
+		return code;
+	end
 	for n,v in pairs(content_model) do
 		if (type(n) ~= 'number') then
 			--if (type(v) == 'number') then
