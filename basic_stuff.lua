@@ -11,7 +11,7 @@ basic_stuff.is_complex_type_simple_content = function(content)
 		return false;
 	elseif ((content._contained_value ~= nil) and (type(content._contained_value) ~= 'string') and
 			(type(content._contained_value) ~= 'boolean') and (type(content._contained_value) ~= 'number')
-			and (not ffi.istype("unsigned char *", content))) then
+			and (not ffi.istype("unsigned char *", content._contained_value))) then
 			print(debug.getinfo(1).source, debug.getinfo(1).currentline, type(content._contained_value));
 		return false;
 	end
