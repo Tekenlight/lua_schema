@@ -1,6 +1,7 @@
 local xmlua = require("xmlua")
 local cjson = require('cjson.safe');
 local basic_stuff = require("basic_stuff");
+local nsd_cache = require("nsd_cache");
 local error_handler = require("error_handler");
 
 local _message_handler_factory = {};
@@ -20,7 +21,14 @@ local get_json_tag = function(message_handler_instance)
 end
 
 local gather_namespace_declarations = function(message_handler_instance)
-	local lns = message_handler_instance:get_unique_namespaces_declared();
+	local q_name = message_handler_instance.particle_properties.q_name;
+	local s_q_name = basic_stuff.get_q_name(q_name.ns, q_name.local_name);
+	local lns = nsd_cache.get(s_q_name);
+	if (lns == nil) then
+		lns = {};
+		message_handler_instance:get_unique_namespaces_declared({}, lns);
+		nsd_cache.add(s_q_name, lns);
+	end
 	local i = 0;
 	local ns_prefix = '';
 	for n,v in pairs(lns) do
@@ -246,7 +254,7 @@ function _message_handler_factory:generate_lua_schema(xsd_name, element_name)
 end
 
 function _message_handler_factory:get_message_handler(type_name, name_space)
-	local message_handler_base = basic_stuff.get_root_element_handler(name_space, type_name);
+	local message_handler_base = basic_stuff.get_element_handler(name_space, type_name);
 	local message_handler = message_handler_base.new_instance_as_root();
 
 	return form_complete_message_handler(message_handler);

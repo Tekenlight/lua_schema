@@ -4,7 +4,7 @@ local stringx = require("pl.stringx");
 local xmlua = require("xmlua")
 local basic_stuff = require("basic_stuff");
 local facets = require("facets");
-local eh_cache = require("eh_cache");
+local codegen_eh_cache = require("codegen_eh_cache");
 
 local elem_code_generator = {};
 
@@ -294,15 +294,20 @@ local get_attr_decls_code = function(elem)
 	return 'nil';
 end
 
-elem_code_generator.get_subelement_properties = function(model)
+elem_code_generator.get_subelement_properties = function(model, dbg)
 	local _subelement_properties = {};
 
+	if (dbg == nil) then ddebug = false; else ddebug = dbg; end
+	if (ddebug) then print(debug.getinfo(1).source, debug.getinfo(1).currentline); end
+	--if (ddebug) then require 'pl.pretty'.dump(model); end
 	for i, item in ipairs(model) do
 		if (item.symbol_type == 'element' or item.symbol_type == 'any') then
+			if (ddebug) then print(debug.getinfo(1).source, debug.getinfo(1).currentline); end
 			local gn = item.generated_name; -- generated_name
 			if (item.ref) then
 				local ths = basic_stuff.get_type_handler_str(item.ref_ns, item.ref_name);
-				_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false);
+				if (ddebug) then print(debug.getinfo(1).source, debug.getinfo(1).currentline, item.element:get_name()); end
+				_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false, true);
 				_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
 				_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
 				_subelement_properties[item.generated_q_name].particle_properties.root_element = false;
@@ -310,8 +315,12 @@ elem_code_generator.get_subelement_properties = function(model)
 				_subelement_properties[item.generated_q_name].decl_props = {};
 				_subelement_properties[item.generated_q_name].decl_props.type = 'ref';
 				_subelement_properties[item.generated_q_name].decl_props.def = ths;
+				_subelement_properties[item.generated_q_name].decl_props.def_q_name = {};
+				_subelement_properties[item.generated_q_name].decl_props.def_q_name.ns = item.ref_ns
+				_subelement_properties[item.generated_q_name].decl_props.def_q_name.local_name = item.ref_name
 			elseif (item.content_type == 'S') then
-				_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false);
+				if (ddebug) then print(debug.getinfo(1).source, debug.getinfo(1).currentline, item.element:get_name()); end
+				_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false, false);
 				_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
 				_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
 				_subelement_properties[item.generated_q_name].particle_properties.root_element = false;
@@ -321,6 +330,11 @@ elem_code_generator.get_subelement_properties = function(model)
 				_subelement_properties[item.generated_q_name].decl_props.def = 'implicit';
 			else
 				if (item.explicit_type) then
+					if (item.element == nil) then
+						--require 'pl.pretty'.dump(item);
+					else
+						if (ddebug) then print(debug.getinfo(1).source, debug.getinfo(1).currentline, item.element:get_name()); end
+					end
 					local type_name = basic_stuff.get_type_handler_str(item.named_type_ns, item.named_type);
 					if (('http://www.w3.org/2001/XMLSchema' == item.named_type_ns) and
 						('anyType' == item.named_type) ) then
@@ -330,7 +344,9 @@ elem_code_generator.get_subelement_properties = function(model)
 									root_element = false, min_occurs = item.min_occurs,
 														max_occurs = item.max_occurs});
 					else
-						_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false);
+						--print(debug.getinfo(1).source, debug.getinfo(1).currentline, item.named_type_ns, item.named_type);
+						--require 'pl.pretty'.dump(item);
+						_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false, false);
 					end
 					_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
 					_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
@@ -339,12 +355,16 @@ elem_code_generator.get_subelement_properties = function(model)
 					_subelement_properties[item.generated_q_name].decl_props = {};
 					_subelement_properties[item.generated_q_name].decl_props.type = 'explicit_type';
 					_subelement_properties[item.generated_q_name].decl_props.def = type_name;
+					_subelement_properties[item.generated_q_name].decl_props.def_q_name = {};
+					_subelement_properties[item.generated_q_name].decl_props.def_q_name.ns = item.named_type_ns;
+					_subelement_properties[item.generated_q_name].decl_props.def_q_name.local_name = item.named_type;
 					if (('http://www.w3.org/2001/XMLSchema' == item.named_type_ns) and
 						('anyType' == item.named_type) ) then
 						_subelement_properties[item.generated_q_name].decl_props.wild_card_type = 1;
 					end
 				else
-					_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false);
+					if (ddebug) then print(debug.getinfo(1).source, debug.getinfo(1).currentline, item.element:get_name()); end
+					_subelement_properties[item.generated_q_name] = elem_code_generator.get_element_handler(item.element, false, false);
 					_subelement_properties[item.generated_q_name].particle_properties.min_occurs = item.min_occurs;
 					_subelement_properties[item.generated_q_name].particle_properties.max_occurs = item.max_occurs;
 					_subelement_properties[item.generated_q_name].particle_properties.root_element = false;
@@ -356,6 +376,7 @@ elem_code_generator.get_subelement_properties = function(model)
 			end
 		end
 	end
+	if (ddebug) then print(debug.getinfo(1).source, debug.getinfo(1).currentline); end
 	return _subelement_properties;
 end
 
@@ -588,18 +609,23 @@ elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names
 	return;
 end
 
-elem_code_generator.get_element_handler = function(elem, to_generate_names)
+elem_code_generator.get_element_handler = function(elem, to_generate_names, global)
+	local dbg = false;
+	if (elem:get_name() == 'IssuerParty') then
+		dbg = false;
+	end
+	if (dbg) then print(debug.getinfo(1).source, debug.getinfo(1).currentline); end
 	local element_handler = nil;
-	--[[
-	--]]
-	element_handler = eh_cache.get(elem.q_name);
+	element_handler = codegen_eh_cache.get('E:'..elem.q_name);
 	if (element_handler ~= nil) then
 		return element_handler;
 	end;
 
 	element_handler = {};
 	assert(elem.q_name ~= nil);
-	eh_cache.add(elem.q_name, element_handler);
+	if (global) then
+		codegen_eh_cache.add('E:'..elem.q_name, element_handler);
+	end
 
 	local content_type = elem:get_element_content_type();
 	local element_type = elem:get_element_type();
@@ -635,13 +661,16 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 		props.content_type = elem:get_element_content_type();
 		props.schema_type = get_named_schema_type(elem);
 		props.attr = get_element_attr_decls(elem);
+		if (elem.type_q_name ~= nil) then
+			props.type_q_name = elem.type_q_name;
+		end
 		if (content_type == 'C') then
 			props.attr.attr_wildcard = elem.attr_wildcard;
 			local model = elem:get_element_content_model();
 			elem_code_generator.prepare_generated_names(model);
 			props.content_model = elem_code_generator.get_content_model(model);
 			props.content_fsa_properties = elem_code_generator.get_content_fsa_properties(model, props.content_model);
-			props.subelement_properties = elem_code_generator.get_subelement_properties(model);
+			props.subelement_properties = elem_code_generator.get_subelement_properties(model, dbg);
 			props.generated_subelements = elem_code_generator.get_generated_subelements(props)
 			props.declared_subelements = elem_code_generator.get_declared_subelements(model);
 			props.bi_type = {};
@@ -660,13 +689,18 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names)
 		--element_handler.properties = props;
 	end
 
-	--eh_cache.add(elem.q_name, element_handler);
+	--codegen_eh_cache.add(elem.q_name, element_handler);
 	return element_handler;
 end
 
 elem_code_generator.gen_lua_schema = function(elem)
 
-	local element_handler = elem_code_generator.get_element_handler(elem, true);
+	local element_handler = elem_code_generator.get_element_handler(elem, true, true);
+	local lns = {};
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	element_handler:get_unique_namespaces_declared({}, lns);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	element_handler.particle_properties.nns = lns;
 
 	local basic_stuff = require("basic_stuff");
 
@@ -948,7 +982,8 @@ function elem_code_generator.put_subelement_properties_code(base_name, subelemen
 		local item_name = base_name..'[\''..n..'\']';
 		if (item.decl_props.type == 'ref') then
 			code = code..indent..'do\n';
-			code = code..'    '..indent..item_name..' = \n'..indent..indent..'(require(\''..item.decl_props.def..'\'):\n'
+			code = code..'    '..indent..item_name..' = \n'..indent..indent..'(basic_stuff.get_element_handler(\''
+									..item.decl_props.def_q_name.ns..'\', \''..item.decl_props.def_q_name.local_name..'\'):\n'
 									..'    '..indent..indent..'new_instance_as_ref({root_element=false, generated_name = \''
 									..item.particle_properties.generated_name..'\',\n'
 									..'    '..indent..indent..indent..indent..'min_occurs = '
@@ -956,6 +991,10 @@ function elem_code_generator.put_subelement_properties_code(base_name, subelemen
 									..'max_occurs = '..item.particle_properties.max_occurs..'}));\n';
 			code = code..indent..'end\n\n';
 		elseif (item.properties.content_type == 'S') then
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, n);
+			--require 'pl.pretty'.dump(item);
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, "min", item.particle_properties.min_occurs);
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, "max", item.particle_properties.max_occurs);
 			code = code..indent..item_name..' = {};\n';
 			code = code..indent..'do\n';
 			code = code..elem_code_generator.put_element_handler_code(item_name, item, indent..'    ');
@@ -967,8 +1006,8 @@ function elem_code_generator.put_subelement_properties_code(base_name, subelemen
 		else
 			if (item.decl_props.type == 'explicit_type') then
 				code = code..indent..'do\n';
-				code = code..'    '..indent..item_name..' = \n'..'    '..indent..indent..'(require(\''
-										..item.decl_props.def..'\'):\n'
+				code = code..'    '..indent..item_name..' = \n'..'    '..indent..indent..'(basic_stuff.get_element_handler(\''
+										..item.decl_props.def_q_name.ns..'\', \''..item.decl_props.def_q_name.local_name..'\'):\n'
 										..'    '..indent..indent..'new_instance_as_local_element({ns = \''
 										..item.particle_properties.q_name.ns..'\', local_name = \''
 										..item.particle_properties.q_name.local_name..'\', generated_name = \''
@@ -1170,7 +1209,11 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 	code = code..indent..'    '..eh_name..'.particle_properties.q_name = {};\n'
 	code = code..indent..'    '..eh_name..'.particle_properties.q_name.ns = \''..particle_properties.q_name.ns..'\';\n';
 	code = code..indent..'    '..eh_name..'.particle_properties.q_name.local_name = \''..particle_properties.q_name.local_name..'\';\n';
-	code = code..indent..'    '..eh_name..'.particle_properties.generated_name = \''..particle_properties.generated_name..'\';\n'; -- generated_name
+	code = code..indent..'    '..eh_name..'.particle_properties.generated_name = \''..particle_properties.generated_name..'\';\n';
+	--code = code..indent..'    '..eh_name..'.particle_properties.nns = {};\n';
+	--for n,v in pairs(particle_properties.nns) do
+		--code = code..indent..'    '..eh_name..'.particle_properties.nns[\''..n..'\'] = \''..v..'\';\n';
+	--end
 	code = code..indent..'end\n\n';
 
 	if (element_handler.properties.content_type == 'C') then
@@ -1307,33 +1350,62 @@ elem_code_generator.gen_lua_schema_code_named_type = function(elem, indent)
 	end
 	local code = '';
 	local eh_name = 'element_handler';
-	local element_handler = elem_code_generator.get_element_handler(elem, true);
+	local element_handler = elem_code_generator.get_element_handler(elem, true, true);
+	--local lns = {};
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	--element_handler:get_unique_namespaces_declared({}, lns);
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	--element_handler.particle_properties.nns = lns;
 
-	code = 'local basic_stuff = require("basic_stuff");\n\n';
+	code = code..'local basic_stuff = require("basic_stuff");\n\n';
+	code = code..'local eh_cache = require("eh_cache");\n\n';
 
 	local ns = '';
 	if (elem.named_type_ns ~= nil) then ns = elem.named_type_ns; end
 	local type_name = elem.named_type;
 	local ths = basic_stuff.get_type_handler_str(ns, type_name);
-	code = code..indent..'local _factory = {};';
-	code = code..indent..'\n\nfunction _factory:new_instance_as_root()\n';
-	code = code..indent..'    return require(\''..ths..'\'):new_instance_as_global_element('..[=[{
+
+	code = code..indent..'local _factory = {};\n';
+	code = code..indent..'eh_cache.add(\''..get_elem_q_name(elem)..'\', _factory);\n';
+	code = code..'\n';
+
+	code = code..'\n';
+	code = code..'\n';
+
+	local particle_properties = element_handler.particle_properties;
+	code = code..indent..'function _factory:new_instance_as_root()\n';
+	code = code..indent..'    local type_handler = basic_stuff.get_element_handler(\''
+							..element_handler.properties.type_q_name.ns..'\', \''
+							..element_handler.properties.type_q_name.local_name ..'\');\n';
+	--code = code..indent..'    local lnns = {};\n';
+	--for n,v in pairs(particle_properties.nns) do
+		--code = code..indent..'    lnns[\''..n..'\'] = \''..v..'\';\n';
+	--end
+	code = code..indent..'    local obj =  type_handler:new_instance_as_global_element('..[=[{
                                         ns = ']=]..element_handler.particle_properties.q_name.ns..[=[',
                                         local_name = ']=]..element_handler.particle_properties.q_name.local_name..[=[',
                                         generated_name = ']=]..element_handler.particle_properties.generated_name..[=[',
                                         root_element = true,
                                         min_occurs = 1,
                                         max_occurs = 1});]=]..'\n';
+	code = code..indent..'    return obj;\n';
 	code = code..indent..'end\n';
 
-	local particle_properties = element_handler.particle_properties;
 	code = code..'\n\nfunction _factory:new_instance_as_ref(element_ref_properties)\n';
-	code = code..indent..'    return require(\''..ths..'\'):new_instance_as_local_element({ ns = \''..particle_properties.q_name.ns..'\',\n';
-	code = code..indent..'                                                        local_name = \''..particle_properties.q_name.local_name..'\',\n';
-	code = code..indent..'                                                        generated_name = element_ref_properties.generated_name,\n'; -- generated_name
-	code = code..indent..'                                                        min_occurs = element_ref_properties.min_occurs,\n';
-	code = code..indent..'                                                        max_occurs = element_ref_properties.max_occurs,\n';
-	code = code..indent..'                                                        root_element = element_ref_properties.root_element});\n';
+	code = code..indent..'    local type_handler = basic_stuff.get_element_handler(\''
+							..element_handler.properties.type_q_name.ns..'\', \''
+							..element_handler.properties.type_q_name.local_name ..'\');\n';
+	--code = code..indent..'    local lnns = {};\n';
+	--for n,v in pairs(particle_properties.nns) do
+		--code = code..indent..'    lnns[\''..n..'\'] = \''..v..'\';\n';
+	--end
+	code = code..indent..'    local obj = type_handler:new_instance_as_local_element({ ns = \''..particle_properties.q_name.ns..'\',\n';
+	code = code..indent..'                                               local_name = \''..particle_properties.q_name.local_name..'\',\n';
+	code = code..indent..'                                               generated_name = element_ref_properties.generated_name,\n';
+	code = code..indent..'                                               min_occurs = element_ref_properties.min_occurs,\n';
+	code = code..indent..'                                               max_occurs = element_ref_properties.max_occurs,\n';
+	code = code..indent..'                                               root_element = element_ref_properties.root_element});\n';
+	code = code..indent..'    return obj;\n';
 	code = code..indent..'end\n';
 
 	code = code..'\n\nreturn _factory;\n';
@@ -1360,25 +1432,32 @@ elem_code_generator.gen_lua_schema_code_implicit_type = function(elem, indent)
 	end
 	local code = '';
 	local eh_name = 'element_handler';
-	local element_handler = elem_code_generator.get_element_handler(elem, true);
+	local element_handler = elem_code_generator.get_element_handler(elem, true, true);
+	--local lns = {};
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	--element_handler:get_unique_namespaces_declared({}, lns);
+	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	--element_handler.particle_properties.nns = lns;
 
-	code = 'local basic_stuff = require("basic_stuff");\n\n';
-	code = code..'local '..eh_name..' = {};\n\n\n\n';
-
-	-- This point onwards is where recursion starts
-
-	code = code..elem_code_generator.put_element_handler_code(eh_name, element_handler, indent)
-
-	-- This point onwards the generated code will be only for the top level element
+	code = code..'local basic_stuff = require("basic_stuff");\n';
+	code = code..'local eh_cache = require("eh_cache");\n';
+	code = code..'\n';
+	code = code..'local '..eh_name..' = {};\n';
+	code = code..'\n';
+	code = code..'\n';
+	code = code..'\n';
 
 	code = code..indent..'local mt = { __index = element_handler; };\n';
 	code = code..indent..'local _factory = {};';
-	code = code..indent..'\n\n_factory.new_instance_as_root = function(self)\n';
+	code = code..'\n';
+	code = code..'\n';
+	code = code..indent..'_factory.new_instance_as_root = function(self)\n';
 	code = code..indent..'    return basic_stuff.instantiate_element_as_doc_root(mt);\n';
 	code = code..indent..'end\n';
 
 	local particle_properties = element_handler.particle_properties;
-	code = code..'\n\n_factory.new_instance_as_ref = function(self, element_ref_properties)\n';
+	code = code..'\n';
+	code = code..'_factory.new_instance_as_ref = function(self, element_ref_properties)\n';
 	code = code..indent..'    return basic_stuff.instantiate_element_as_ref(mt, { ns = \''..particle_properties.q_name.ns..'\',\n';
 	code = code..indent..'                                                        local_name = \''..particle_properties.q_name.local_name..'\',\n';
 	code = code..indent..'                                                        generated_name = element_ref_properties.generated_name,\n'; -- generated_name
@@ -1386,6 +1465,12 @@ elem_code_generator.gen_lua_schema_code_implicit_type = function(elem, indent)
 	code = code..indent..'                                                        max_occurs = element_ref_properties.max_occurs,\n';
 	code = code..indent..'                                                        root_element = element_ref_properties.root_element});\n';
 	code = code..indent..'end\n';
+	code = code..'\n';
+
+	code = code..'eh_cache.add(\''..get_elem_q_name(elem)..'\', _factory);\n';
+	code = code..'\n';
+
+	code = code..elem_code_generator.put_element_handler_code(eh_name, element_handler, indent)
 
 	code = code..'\n\nreturn _factory;\n';
 

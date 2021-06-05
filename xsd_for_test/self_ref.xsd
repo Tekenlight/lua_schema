@@ -1,0 +1,16 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"  targetNamespace="http://test_example.com" xmlns:ns="http://test_example.com">
+	<xsd:element name="sot" type="ns:one_type"/>
+	<!--xsd:element name="sot1" type="ns:one_type"/>
+	<xsd:element name="sot2" type="ns:one_type"/>
+	<xsd:element name="sot3" type="ns:one_type"/>
+	<xsd:element name="sot4" type="ns:one_type"/-->
+	<xsd:complexType name="one_type">
+		<xsd:sequence>
+			<xsd:element name="one" type="xsd:string"/>
+			<xsd:element name="two" type="xsd:string"/>
+			<xsd:element ref="ns:sot" minOccurs="0"/>
+			<!--xsd:element name="sot" type="ns:one_type" minOccurs="0"/-->
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>
+

@@ -4,12 +4,15 @@ local basic_stuff = {};
 local URI = require("uri");
 local stringx = require("pl.stringx");
 local nu = require("number_utils");
+local eh_cache = require("eh_cache");
 
 basic_stuff.is_complex_type_simple_content = function(content)
 	if ((content._attr == nil) or (type(content._attr) ~= 'table')) then
 		return false;
 	elseif ((content._contained_value ~= nil) and (type(content._contained_value) ~= 'string') and
-			(type(content._contained_value) ~= 'boolean') and (type(content._contained_value) ~= 'number')) then
+			(type(content._contained_value) ~= 'boolean') and (type(content._contained_value) ~= 'number')
+			and (not ffi.istype("unsigned char *", content))) then
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline, type(content._contained_value));
 		return false;
 	end
 	for n,_ in pairs(content) do
@@ -127,12 +130,32 @@ basic_stuff.get_type_handler_str = function(namespace, tn)
 	return handler;
 end
 
-basic_stuff.get_root_element_handler = function(namespace, tn)
-	return require(basic_stuff.get_type_handler_str(namespace, tn));
+basic_stuff.get_q_name = function(ns, name)
+	local l_ns = '';
+	if (ns ~= nil) then l_ns = ns; end
+	return '{'..l_ns..'}'..name;
+end
+
+basic_stuff.get_element_handler = function(namespace, tn)
+	local q_name = basic_stuff.get_q_name(namespace, tn);
+	local obj = eh_cache.get(q_name);
+	if (obj == nil) then
+		obj = require(basic_stuff.get_type_handler_str(namespace, tn));
+		eh_cache.add(q_name, obj);
+	else
+	end
+	return obj;
 end
 
 basic_stuff.get_type_handler = function(namespace, tn)
-	return require(basic_stuff.get_type_handler_str(namespace, tn)):instantiate();
+	local q_name = basic_stuff.get_q_name(namespace, tn);
+	local obj = eh_cache.get(q_name);
+	if (obj == nil) then
+		obj = require(basic_stuff.get_type_handler_str(namespace, tn));
+		eh_cache.add(q_name, obj);
+	else
+	end
+	return obj:instantiate();
 end
 
 basic_stuff.attributes_are_valid = function(attrs_def, attrs)
@@ -1043,36 +1066,34 @@ basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
 	return doc;
 end
 
-basic_stuff.complex_get_unique_namespaces_declared = function(schema_type_handler)
-	local namespaces = nil
+basic_stuff.complex_get_unique_namespaces_declared = function(schema_type_handler, namespaces_map, namespaces)
+	local q_name = basic_stuff.get_q_name(schema_type_handler.particle_properties.q_name.ns,
+									schema_type_handler.particle_properties.q_name.local_name);
+	if (namespaces_map[q_name] ~= nil) then
+		return ;
+	end
 
 	if (not basic_stuff.is_nil(schema_type_handler.particle_properties.q_name.ns)) then
-		namespaces = { [schema_type_handler.particle_properties.q_name.ns] = ""};
-	else
-		namespaces = {}
+		namespaces[schema_type_handler.particle_properties.q_name.ns] = "";
 	end
+
+	namespaces_map[q_name] = 1;
 
 	for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
-			local child_ns = {};
-			child_ns = schema_type_handler.properties.subelement_properties[v]:get_unique_namespaces_declared();
-			for n,v in pairs(child_ns) do
-				namespaces[n] = v;
-			end
+		if (schema_type_handler ~= schema_type_handler.properties.subelement_properties[v]) then
+			schema_type_handler.properties.subelement_properties[v]:get_unique_namespaces_declared(namespaces_map, namespaces);
+		end
 	end
 
-	return namespaces;
+	return ;
 end
 
-basic_stuff.simple_get_unique_namespaces_declared = function(schema_type_handler)
-	local namespaces = nil;
-
+basic_stuff.simple_get_unique_namespaces_declared = function(schema_type_handler, namespaces_map, namespaces)
 	if (not basic_stuff.is_nil(schema_type_handler.particle_properties.q_name.ns)) then
-		namespaces = { [schema_type_handler.particle_properties.q_name.ns] = ""};
-	else
-		namespaces = {}
+		namespaces[schema_type_handler.particle_properties.q_name.ns] = "";
 	end
 
-	return namespaces;
+	return ;
 end
 
 basic_stuff.deepcopy = function (orig, debug)
@@ -1109,6 +1130,7 @@ basic_stuff.instantiate_element_as_doc_root = function(mt)
 	ip.generated_name = o.particle_properties.generated_name;
 	ip.root_element = true;
 	o.particle_properties = ip;
+	--o.particle_properties.nns = mt.__index.particle_properties.nns;
 	return o;
 end
 
@@ -1123,6 +1145,7 @@ basic_stuff.instantiate_element_as_ref = function(mt, element_ref_properties)
 	o.particle_properties.min_occurs = element_ref_properties.min_occurs;
 	o.particle_properties.max_occurs = element_ref_properties.max_occurs;
 	o.particle_properties.root_element = element_ref_properties.root_element;
+	--o.particle_properties.nns = mt.__index.particle_properties.nns;
 	return o;
 end
 
@@ -1137,6 +1160,7 @@ basic_stuff.instantiate_type_as_doc_root = function(mt, root_element_properties)
 	o.particle_properties.min_occurs = 1;
 	o.particle_properties.max_occurs = 1;
 	o.particle_properties.root_element = root_element_properties.root_element;
+	--o.particle_properties.nns = root_element_properties.nns;
 	return o;
 end
 
@@ -1151,6 +1175,7 @@ basic_stuff.instantiate_type_as_local_element = function(mt, local_element_prope
 	o.particle_properties.min_occurs = local_element_properties.min_occurs;
 	o.particle_properties.max_occurs = local_element_properties.max_occurs;
 	o.particle_properties.root_element = local_element_properties.root_element;
+	--o.particle_properties.nns = local_element_properties.nns;
 	return o;
 end
 
@@ -1867,6 +1892,9 @@ local process_start_of_element = function(reader, sts, objs, pss)
 		if (sth.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
 		elseif (not read_attributes(reader, sth, obj)) then
 			return false;
+		end
+		if (obj['___DATA___']._attr == nil) then
+			obj['___DATA___']._attr = {};
 		end
 		if(sth.properties.content_type == 'C') then
 			obj['___METADATA___'].cm = sth.properties.content_model;

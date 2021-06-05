@@ -5,7 +5,7 @@ local xmlua = require("xmlua")
 local basic_stuff = require("basic_stuff");
 local elem_code_generator = require("elem_code_generator");
 local facets = require("facets");
-local eh_cache = require("eh_cache");
+local codegen_eh_cache = require("codegen_eh_cache");
 
 local type_code_generator = {};
 
@@ -59,12 +59,16 @@ local get_typedef_attr_decls = function(typedef)
 	return(elem_code_generator.get_attr_decls(typedef:get_typedef_attr_decls()));
 end
 
-type_code_generator.get_element_handler = function(typedef, to_generate_names)
+type_code_generator.get_element_handler = function(typedef, to_generate_names, global)
 	local element_handler = nil;
-	element_handler = eh_cache.get(get_schema_type_name(typedef));
+	element_handler = codegen_eh_cache.get('T:'..get_schema_type_name(typedef));
+	element_handler = codegen_eh_cache.get(get_schema_type_name(typedef));
 	if (element_handler ~= nil) then return element_handler; end;
 
 	element_handler = {};
+	if (global) then
+		codegen_eh_cache.add('T:'..get_schema_type_name(typedef), element_handler);
+	end
 
 	local content_type = typedef:get_typedef_content_type();
 	local element_type = typedef:get_typedef_type();
@@ -84,6 +88,11 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names)
 		props.element_type = typedef:get_typedef_type();
 		props.content_type = typedef:get_typedef_content_type();
 		props.schema_type = get_schema_type_name(typedef);
+		props.q_name = {};
+		local tns = typedef:get_target_name_space();
+		if (tns == nil) then tns = ''; end
+		props.q_name.ns = tns;
+		props.q_name.local_name = typedef.name;
 		props.attr = get_typedef_attr_decls(typedef);
 		if (content_type == 'C') then
 			props.attr.attr_wildcard = typedef.attr_wildcard;
@@ -115,7 +124,6 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names)
 		--element_handler.properties = props;
 	end
 
-	eh_cache.add(element_handler.properties.schema_type, element_handler);
 	return element_handler;
 end
 
@@ -140,6 +148,9 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 	code = code..indent..'    '..eh_name..'.properties.element_type = \''..properties.element_type..'\';\n';
 	code = code..indent..'    '..eh_name..'.properties.content_type = \''..properties.content_type..'\';\n';
 	code = code..indent..'    '..eh_name..'.properties.schema_type = \''..properties.schema_type..'\';\n';
+	code = code..indent..'    '..eh_name..'.properties.q_name = {};\n';
+	code = code..indent..'    '..eh_name..'.properties.q_name.ns = \''..properties.q_name.ns..'\'\n';
+	code = code..indent..'    '..eh_name..'.properties.q_name.local_name = \''..properties.q_name.local_name..'\'\n';
 	if (element_handler.properties.content_type == 'S') then
 		code = code..indent..'    '..eh_name..'.properties.bi_type = {};\n';
 		code = code..indent..'    '..eh_name..'.properties.bi_type.ns = \''..properties.bi_type.ns..'\';\n';
@@ -296,33 +307,36 @@ type_code_generator.gen_lua_schema_code_from_typedef = function(typedef, indent)
 	end
 	local code = '';
 	local eh_name = 'element_handler';
-	local element_handler = type_code_generator.get_element_handler(typedef, true);
+	local element_handler = type_code_generator.get_element_handler(typedef, true, true);
 
-	code = 'local basic_stuff = require("basic_stuff");\n\n';
-	code = code..'local '..eh_name..' = {};\n\n\n\n';
-	code = code..eh_name..'.__name__ = \''..typedef:get_name()..'\';\n\n\n\n';
-
-	-- This point onwards is where recursion starts
-
-	code = code..type_code_generator.put_element_handler_code(eh_name, element_handler, indent)
-
-	-- This point onwards the generated code will be only for the top level element
-
+	code = code..'local basic_stuff = require("basic_stuff");\n';
+	code = code..'local eh_cache = require("eh_cache");\n';
+	code = code..'\n';
+	code = code..'local '..eh_name..' = {};\n';
+	code = code..eh_name..'.__name__ = \''..typedef:get_name()..'\';\n';
+	code = code..'\n';
 	code = code..indent..'local mt = { __index = element_handler; };\n';
-	code = code..indent..'local _factory = {};';
-	code = code..indent..'\n\nfunction _factory:new_instance_as_global_element(global_element_properties)\n';
+	code = code..indent..'local _factory = {};\n';
+	code = code..'\n';
+	code = code..indent..'function _factory:new_instance_as_global_element(global_element_properties)\n';
 	code = code..indent..'    return basic_stuff.instantiate_type_as_doc_root(mt, global_element_properties);\n';
 	code = code..indent..'end\n';
-
-	code = code..'\n\nfunction _factory:new_instance_as_local_element(local_element_properties)\n';
+	code = code..'\n';
+	code = code..'function _factory:new_instance_as_local_element(local_element_properties)\n';
 	code = code..indent..'    return basic_stuff.instantiate_type_as_local_element(mt, local_element_properties);\n';
 	code = code..indent..'end\n';
-
-	code = code..'\n\nfunction _factory:instantiate()\n';
+	code = code..'\n';
+	code = code..'function _factory:instantiate()\n';
 	code = code..indent..'    local o = {};\n';
 	code = code..indent..'    local o = setmetatable(o,mt);\n';
 	code = code..indent..'    return(o);\n';
 	code = code..indent..'end\n';
+	code = code..'\n';
+	local type_name = '{'..element_handler.properties.q_name.ns..'}'..element_handler.properties.q_name.local_name;
+	code = code..'eh_cache.add(\''..type_name..'\', _factory);\n';
+	code = code..'\n';
+	code = code..'\n';
+	code = code..type_code_generator.put_element_handler_code(eh_name, element_handler, indent)
 
 	code = code..'\n\nreturn _factory;\n';
 

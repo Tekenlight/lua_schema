@@ -30,7 +30,8 @@
         targetNamespace="http://www.w3.org/2009/xmldsig11#"
         version="0.1" elementFormDefault="qualified">
 
-  <import namespace="http://www.w3.org/2000/09/xmldsig#"/>
+  <import namespace="http://www.w3.org/2000/09/xmldsig#"
+   schemaLocation="../common/UBL-xmldsig-core-schema-2.3.xsd"/>
 
   <element name="ECKeyValue" type="dsig11:ECKeyValueType"/>
   <complexType name="ECKeyValueType">

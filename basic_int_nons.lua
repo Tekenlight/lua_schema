@@ -1,8 +1,27 @@
 local basic_stuff = require("basic_stuff");
+local eh_cache = require("eh_cache");
 
 local element_handler = {};
 
 
+
+local mt = { __index = element_handler; };
+local _factory = {};
+
+_factory.new_instance_as_root = function(self)
+    return basic_stuff.instantiate_element_as_doc_root(mt);
+end
+
+_factory.new_instance_as_ref = function(self, element_ref_properties)
+    return basic_stuff.instantiate_element_as_ref(mt, { ns = '',
+                                                        local_name = 'basic_int_nons',
+                                                        generated_name = element_ref_properties.generated_name,
+                                                        min_occurs = element_ref_properties.min_occurs,
+                                                        max_occurs = element_ref_properties.max_occurs,
+                                                        root_element = element_ref_properties.root_element});
+end
+
+eh_cache.add('{}basic_int_nons', _factory);
 
 element_handler.super_element_content_type = require('org.w3.2001.XMLSchema.int_handler'):instantiate();
 
@@ -50,22 +69,6 @@ do
     element_handler.parse_xml = basic_stuff.parse_xml;
 end
 
-local mt = { __index = element_handler; };
-local _factory = {};
-
-_factory.new_instance_as_root = function(self)
-    return basic_stuff.instantiate_element_as_doc_root(mt);
-end
-
-
-_factory.new_instance_as_ref = function(self, element_ref_properties)
-    return basic_stuff.instantiate_element_as_ref(mt, { ns = '',
-                                                        local_name = 'basic_int_nons',
-                                                        generated_name = element_ref_properties.generated_name,
-                                                        min_occurs = element_ref_properties.min_occurs,
-                                                        max_occurs = element_ref_properties.max_occurs,
-                                                        root_element = element_ref_properties.root_element});
-end
 
 
 return _factory;
