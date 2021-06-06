@@ -7,7 +7,7 @@ local nu = require("number_utils");
 local eh_cache = require("eh_cache");
 
 basic_stuff.is_complex_type_simple_content = function(content)
-	if ((content._attr == nil) or (type(content._attr) ~= 'table')) then
+	if ((content._attr ~= nil) and (type(content._attr) ~= 'table')) then
 		return false;
 	elseif ((content._contained_value ~= nil) and (type(content._contained_value) ~= 'string') and
 			(type(content._contained_value) ~= 'boolean') and (type(content._contained_value) ~= 'number')
@@ -786,9 +786,9 @@ end
 
 basic_stuff.get_attributes = function(schema_type_handler, nns, content)
 	local attributes = {};
-	if (schema_type_handler.properties.attr ~= nil) then
+	if (nil ~= content._attr and schema_type_handler.properties.attr ~= nil) then
 		for n,v in pairs(schema_type_handler.properties.attr._attr_properties) do
-			if (nil ~= content._attr[v.particle_properties.generated_name]) then
+			if (nil ~= content._attr and nil ~= content._attr[v.particle_properties.generated_name]) then
 				if (v.properties.form == 'U') then
 					attributes[v.particle_properties.q_name.local_name] =
 									v.type_handler:to_xmlua(nns, content._attr[v.particle_properties.generated_name]);
@@ -822,6 +822,41 @@ basic_stuff.get_attributes = function(schema_type_handler, nns, content)
 		end
 	end
 	return attributes;
+end
+
+function basic_stuff.empty_to_xmlua(schema_type_handler, nns, content)
+
+	local doc = {};
+	if (not basic_stuff.is_nil(schema_type_handler.particle_properties.q_name.ns)) then
+		local prefix = nns.ns[schema_type_handler.particle_properties.q_name.ns];
+		doc[1]=prefix..":"..schema_type_handler.particle_properties.q_name.local_name;
+		doc[2] = {};
+		if (not nns.ns_decl_printed) then
+			nns.ns_decl_printed = true;
+			for n,v in pairs(nns.ns) do
+				if (not basic_stuff.is_nil(n)) then
+					local prefix = v;
+					doc[2]["xmlns:"..prefix] = n;
+				else
+					error("SHOULD NOT COME HERE NOW");
+				end
+			end
+		end
+	else
+		doc[1] = schema_type_handler.particle_properties.q_name.local_name;
+		doc[2] = {};
+	end
+	local attr =  nil;
+	if (nil ~= content) then
+		attr = schema_type_handler:get_attributes(nns, content);
+	else
+		attr = {}
+	end
+	for n,v in pairs(attr) do
+		doc[2][n] = tostring(v);
+	end
+	doc[3]=nil;
+	return doc;
 end
 
 function basic_stuff.simple_to_xmlua(schema_type_handler, nns, content)
@@ -1004,7 +1039,12 @@ basic_stuff.add_model_content_s_or_c = function(schema_type_handler, nns, doc, i
 end
 
 basic_stuff.add_model_content = function(schema_type_handler, nns, doc, index, content, content_model)
-	if (content_model.group_type == 'A') then
+	local i = index;
+	if (content_model.group_type == nil) then
+		local cont = '';
+		if (content ~= nil) then cont = content; end
+		return basic_stuff.empty_to_xmlua(schema_type_handler, nns, cont);
+	elseif (content_model.group_type == 'A') then
 		return basic_stuff.add_model_content_all(schema_type_handler, nns, doc, index, content, content_model);
 	elseif (content_model.group_type == 'S' or content_model.group_type == 'C') then
 		local xmlc = nil;
@@ -1015,7 +1055,7 @@ basic_stuff.add_model_content = function(schema_type_handler, nns, doc, index, c
 		end
 		return basic_stuff.add_model_content_s_or_c(schema_type_handler, nns, doc, index, xmlc, content_model);
 	else
-		error("INVALID CONTENT MODEL TYPE ");
+		error("INVALID CONTENT MODEL TYPE "..content_model.group_type);
 	end
 end
 
@@ -1260,24 +1300,27 @@ end
 
 basic_stuff.complex_to_intermediate_json = function(schema_type_handler, content)
 	local i_content = {};
-	if (schema_type_handler.properties.content_type == 'C') then
-		local content_model = schema_type_handler.properties.content_model;
-		if (schema_type_handler.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
-			i_content = content;
-		elseif (content_model.max_occurs ~= 1) then
-			local generated_subelement_name = content_model.generated_subelement_name;
-			i_content[generated_subelement_name] = {};
-			for i,v in ipairs(content[schema_type_handler.properties.content_model[generated_subelement_name]]) do
-				i_content[generated_subelement_name][i] =
-								basic_stuff.inner_complex_to_intermediate_json(schema_type_handler, v, content_model, nil);
+		if (schema_type_handler.properties.content_type == 'C') then
+			local content_model = schema_type_handler.properties.content_model;
+			local n = #(schema_type_handler.properties.content_fsa_properties);
+			if (n ~= 0) then
+				if (schema_type_handler.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
+					i_content = content;
+				elseif (content_model.max_occurs ~= 1) then
+					local generated_subelement_name = content_model.generated_subelement_name;
+					i_content[generated_subelement_name] = {};
+					for i,v in ipairs(content[schema_type_handler.properties.content_model[generated_subelement_name]]) do
+						i_content[generated_subelement_name][i] =
+										basic_stuff.inner_complex_to_intermediate_json(schema_type_handler, v, content_model, nil);
+					end
+				else
+					i_content = basic_stuff.inner_complex_to_intermediate_json(schema_type_handler, content, content_model, nil);
+				end
 			end
 		else
-			i_content = basic_stuff.inner_complex_to_intermediate_json(schema_type_handler, content, content_model, nil);
+			i_content._contained_value =
+				basic_stuff.primitive_to_intermediate_json(schema_type_handler.type_handler, content._contained_value);
 		end
-	else
-		i_content._contained_value =
-			basic_stuff.primitive_to_intermediate_json(schema_type_handler.type_handler, content._contained_value);
-	end
 	if (content._attr ~= nil) then
 		i_content._attr = {};
 		for n,v in pairs(content._attr) do
@@ -1401,15 +1444,18 @@ end
 basic_stuff.complex_from_intermediate_json = function(schema_type_handler, content)
 	local content_model = schema_type_handler.properties.content_model;
 	if (schema_type_handler.properties.content_type == 'C') then
-		if (schema_type_handler.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
-		elseif (content_model.max_occurs ~= 1) then
-			local generated_subelement_name = content_model.generated_subelement_name;
-			for i,v in ipairs(content[schema_type_handler.properties.content_model[generated_subelement_name]]) do
-				content[generated_subelement_name][i] =
-					basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, v, content_model);
+		local n = #(schema_type_handler.properties.content_fsa_properties);
+		if (n ~= 0) then
+			if (schema_type_handler.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
+			elseif (content_model.max_occurs ~= 1) then
+				local generated_subelement_name = content_model.generated_subelement_name;
+				for i,v in ipairs(content[schema_type_handler.properties.content_model[generated_subelement_name]]) do
+					content[generated_subelement_name][i] =
+						basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, v, content_model);
+				end
+			else
+				basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, content, content_model);
 			end
-		else
-			basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, content, content_model);
 		end
 	else
 		content._contained_value =
@@ -1893,9 +1939,9 @@ local process_start_of_element = function(reader, sts, objs, pss)
 		elseif (not read_attributes(reader, sth, obj)) then
 			return false;
 		end
-		if (obj['___DATA___']._attr == nil) then
-			obj['___DATA___']._attr = {};
-		end
+		--if (obj['___DATA___']._attr == nil) then
+			--obj['___DATA___']._attr = {};
+		--end
 		if(sth.properties.content_type == 'C') then
 			obj['___METADATA___'].cm = sth.properties.content_model;
 			obj['___METADATA___'].content_model_type = 'CC';
