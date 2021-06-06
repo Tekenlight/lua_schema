@@ -47,7 +47,7 @@ local get_to_unsd_func = function(typedef)
 end
 
 local get_type_handler = function(typedef, dh, content_type)
-	if (content_type == 'C') then
+	if (content_type ~= 'S') then
 		return dh;
 	end
 	local s = typedef:get_typedef_primary_bi_type();
@@ -94,7 +94,7 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names, g
 		props.q_name.ns = tns;
 		props.q_name.local_name = typedef.name;
 		props.attr = get_typedef_attr_decls(typedef);
-		if (content_type == 'C') then
+		if (content_type ~= 'S') then
 			props.attr.attr_wildcard = typedef.attr_wildcard;
 			local model = typedef:get_typedef_content_model();
 			elem_code_generator.prepare_generated_names(model);
@@ -182,7 +182,7 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 	end
 	code = code..indent..'end\n\n';
 
-	if (element_handler.properties.content_type == 'C') then
+	if (element_handler.properties.content_type ~= 'S') then
 
 		-- Content model
 		local content_model = element_handler.properties.content_model;
@@ -274,7 +274,7 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
 	end
 
 	code = code..indent..'do\n';
-	if (properties.content_type == 'C') then
+	if (properties.content_type ~= 'S') then
 		code = code..indent..'    '..eh_name..'.type_handler = '..eh_name..';\n';
 	else
 		local ns = properties.bi_type.ns;

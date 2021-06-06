@@ -141,7 +141,7 @@ elem_code_generator.get_union_type_handler = function()
 end
 
 local get_type_handler = function(defn, dh, content_type)
-	if (content_type == 'C') then
+	if (content_type ~= 'S') then
 		return dh;
 	end
 	local s = '';
@@ -664,7 +664,7 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names, glob
 		if (elem.type_q_name ~= nil) then
 			props.type_q_name = elem.type_q_name;
 		end
-		if (content_type == 'C') then
+		if (content_type ~= 'S') then
 			props.attr.attr_wildcard = elem.attr_wildcard;
 			local model = elem:get_element_content_model();
 			elem_code_generator.prepare_generated_names(model);
@@ -1216,7 +1216,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 	--end
 	code = code..indent..'end\n\n';
 
-	if (element_handler.properties.content_type == 'C') then
+	if (element_handler.properties.content_type ~= 'S') then
 
 		-- Content model
 		local content_model = element_handler.properties.content_model;
@@ -1319,7 +1319,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
 	end
 
 	code = code..indent..'do\n';
-	if (properties.content_type == 'C') then
+	if (properties.content_type ~= 'S') then
 		code = code..indent..'    '..eh_name..'.type_handler = '..eh_name..';\n';
 	else
 		local ns = properties.bi_type.ns;

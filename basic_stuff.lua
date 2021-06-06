@@ -786,7 +786,7 @@ end
 
 basic_stuff.get_attributes = function(schema_type_handler, nns, content)
 	local attributes = {};
-	if (nil ~= content._attr and schema_type_handler.properties.attr ~= nil) then
+	if (type(content) == 'table' and schema_type_handler.properties.attr ~= nil and nil ~= content._attr) then
 		for n,v in pairs(schema_type_handler.properties.attr._attr_properties) do
 			if (nil ~= content._attr and nil ~= content._attr[v.particle_properties.generated_name]) then
 				if (v.properties.form == 'U') then
@@ -1300,7 +1300,7 @@ end
 
 basic_stuff.complex_to_intermediate_json = function(schema_type_handler, content)
 	local i_content = {};
-		if (schema_type_handler.properties.content_type == 'C') then
+		if (schema_type_handler.properties.content_type ~= 'S') then
 			local content_model = schema_type_handler.properties.content_model;
 			local n = #(schema_type_handler.properties.content_fsa_properties);
 			if (n ~= 0) then
@@ -1443,7 +1443,7 @@ end
 
 basic_stuff.complex_from_intermediate_json = function(schema_type_handler, content)
 	local content_model = schema_type_handler.properties.content_model;
-	if (schema_type_handler.properties.content_type == 'C') then
+	if (schema_type_handler.properties.content_type ~= 'S') then
 		local n = #(schema_type_handler.properties.content_fsa_properties);
 		if (n ~= 0) then
 			if (schema_type_handler.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
@@ -1942,7 +1942,7 @@ local process_start_of_element = function(reader, sts, objs, pss)
 		--if (obj['___DATA___']._attr == nil) then
 			--obj['___DATA___']._attr = {};
 		--end
-		if(sth.properties.content_type == 'C') then
+		if(sth.properties.content_type ~= 'S') then
 			obj['___METADATA___'].cm = sth.properties.content_model;
 			obj['___METADATA___'].content_model_type = 'CC';
 		else
@@ -2060,7 +2060,7 @@ local process_end_of_element = function(reader, sts, objs, pss)
 
 	if ((sts:top().properties.schema_type ~= '{http://www.w3.org/2001/XMLSchema}anyType') and
 		((sts:top().properties.element_type == 'C') and
-		(sts:top().properties.content_type == 'C') and
+		(sts:top().properties.content_type ~= 'S') and
 		(sts:top().properties.content_model.group_type ~= 'A'))) then
 		windup_fsa(reader, sts, objs, pss);
 	end
