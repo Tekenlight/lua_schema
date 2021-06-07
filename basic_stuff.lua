@@ -312,14 +312,16 @@ end
 basic_stuff.all_elements_part_of_declaration = function(schema_type_handler, content, content_model)
 
 	for n,v in pairs(content) do
-		error_handler.push_element(n);
-		if ((n ~= "_attr") and (schema_type_handler.properties.generated_subelements[n] == nil)) then
-			print("TWO", n);
-			error_handler.raise_validation_error(-1,
-					"Element: {"..error_handler.get_fieldpath().."} should not be present", debug.getinfo(1));
-			return false;
+		if (schema_type_handler.properties.content_type ~= 'M' or type(n) ~= 'number') then
+			error_handler.push_element(n);
+			if ((n ~= "_attr") and (schema_type_handler.properties.generated_subelements[n] == nil)) then
+				print("TWO", n);
+				error_handler.raise_validation_error(-1,
+						"Element: {"..error_handler.get_fieldpath().."} should not be present", debug.getinfo(1));
+				return false;
+			end
+			error_handler.pop_element();
 		end
-		error_handler.pop_element();
 	end
 
 	return true;
@@ -531,7 +533,7 @@ basic_stuff.execute_validation_for_complex_type_sequence = function(schema_type_
 				if (nil == v.generated_subelement_name) then
 					error("The model group should contain a generated name");
 				end
-				xmlc = content[v.generated_subelement_name]
+				xmlc = content[v.generated_subelement_name];
 				if (xmlc == nil) then
 					error_handler.raise_validation_error(-1,
 						"Object field: {"..v.generated_subelement_name.."} should not be null", debug.getinfo(1));
@@ -583,6 +585,26 @@ basic_stuff.execute_validation_for_complex_type_s_or_c = function(schema_type_ha
 	return true;
 end
 
+basic_stuff.struct_from_loe = require("struct_from_loe");
+
+basic_stuff.extract_element_content_from_mixed = function(schema_type_handler, content)
+	if (content == nil) then
+		return nil;
+	end
+	local l_content = {};
+	for i,v in ipairs(content) do
+		if (type(v) == 'table') then
+			l_content[#l_content+1] = v;
+		elseif (type(v) ~= 'string') then
+			error_handler.raise_validation_error(-1,
+				"Object field: {"..schema_type_handler.particle_properties.generated_name.."} Only strings and elements allowd",
+				debug.getinfo(1));
+			return false;
+		end
+	end
+	return basic_stuff.struct_from_loe(schema_type_handler, l_content);
+end
+
 basic_stuff.execute_validation_for_complex_type = function(schema_type_handler, content, content_model)
 
 	if (type(content) ~= 'table') then
@@ -597,8 +619,15 @@ basic_stuff.execute_validation_for_complex_type = function(schema_type_handler, 
 	end
 	error_handler.pop_element();
 
+	local e_content = nil;
+	if (schema_type_handler.properties.content_type == 'M') then
+		e_content = basic_stuff.extract_element_content_from_mixed(schema_type_handler, content);
+	else
+		e_content = content;
+	end
+
 	if (schema_type_handler.properties.content_model.group_type == 'A') then
-		return basic_stuff.execute_validation_for_complex_type_all(schema_type_handler, content, content_model);
+		return basic_stuff.execute_validation_for_complex_type_all(schema_type_handler, e_content, content_model);
 	elseif (schema_type_handler.properties.content_model.group_type == 'S' or
 					schema_type_handler.properties.content_model.group_type == 'C') then
 		local xmlc = nil;
@@ -606,14 +635,14 @@ basic_stuff.execute_validation_for_complex_type = function(schema_type_handler, 
 			if (content_model.generated_subelement_name == nil) then
 				error("content["..content_model.generated_subelement_name.."] is nil");
 			end
-			xmlc = content[content_model.generated_subelement_name];
+			xmlc = e_content[content_model.generated_subelement_name];
 			if (xmlc == nil) then
 				error_handler.raise_validation_error(-1,
 					"Element: {"..content_model.generated_subelement_name.."} not found in the object", debug.getinfo(1));
 				return false;
 			end
 		else
-			xmlc = content;
+			xmlc = e_content;
 		end
 		local ret = basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, content_model);
 		return ret;
@@ -658,9 +687,6 @@ basic_stuff.carryout_element_validation = function(schema_type_handler, val_func
 		return ret;
 	else
 		local ret = val_func(schema_type_handler, content, content_model);
-		--if (not ret) then
-			--error_handler.dump();
-		--end
 		return ret;
 	end
 
@@ -1044,19 +1070,46 @@ basic_stuff.add_model_content = function(schema_type_handler, nns, doc, index, c
 		local cont = '';
 		if (content ~= nil) then cont = content; end
 		return basic_stuff.empty_to_xmlua(schema_type_handler, nns, cont);
-	elseif (content_model.group_type == 'A') then
-		return basic_stuff.add_model_content_all(schema_type_handler, nns, doc, index, content, content_model);
-	elseif (content_model.group_type == 'S' or content_model.group_type == 'C') then
-		local xmlc = nil;
-		if (content_model.max_occurs ~= 1) then
-			xmlc = content[content_model.generated_subelement_name];
-		else
-			xmlc = content;
-		end
-		return basic_stuff.add_model_content_s_or_c(schema_type_handler, nns, doc, index, xmlc, content_model);
 	else
-		error("INVALID CONTENT MODEL TYPE "..content_model.group_type);
+		if (content_model.group_type == 'A') then
+			return basic_stuff.add_model_content_all(schema_type_handler, nns, doc, index, content, content_model);
+		elseif (content_model.group_type == 'S' or content_model.group_type == 'C') then
+			local xmlc = nil;
+			if (content_model.max_occurs ~= 1) then
+				xmlc = content[content_model.generated_subelement_name];
+			else
+				xmlc = content;
+			end
+			return basic_stuff.add_model_content_s_or_c(schema_type_handler, nns, doc, index, xmlc, content_model);
+		else
+			error("INVALID CONTENT MODEL TYPE "..content_model.group_type);
+		end
 	end
+end
+
+basic_stuff.mix_to_xmlua = function(schema_type_handler, nns, doc, index, content, content_model)
+	local i = index;
+	for p,q in ipairs(content) do
+		if (type(q) == 'string') then
+			doc[i] = q;
+			i = i+1;
+		else
+			local n,v;
+			for nn,vv in pairs(q) do
+				n = nn;
+				v = vv;
+				break;
+			end
+			local sth = schema_type_handler.properties.generated_subelements[n];
+			doc[i] = sth:to_xmlua(nns, v);
+			i = i+1;
+		end
+	end
+	return i;
+end
+
+basic_stuff.elements_to_xmlua = function(schema_type_handler, nns, doc, index, content, content_model)
+	return basic_stuff.add_model_content(schema_type_handler, nns,  doc, index, content, schema_type_handler.properties.content_model);
 end
 
 basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
@@ -1098,7 +1151,11 @@ basic_stuff.struct_to_xmlua = function(schema_type_handler, nns, content)
 
 	local i = 3;
 	if (content ~= nil) then
-		i = basic_stuff.add_model_content(schema_type_handler, nns,  doc, i, content, schema_type_handler.properties.content_model);
+		if (schema_type_handler.properties.content_type == 'M') then
+			i = basic_stuff.mix_to_xmlua(schema_type_handler, nns,  doc, i, content, schema_type_handler.properties.content_model);
+		else
+			i = basic_stuff.elements_to_xmlua(schema_type_handler, nns,  doc, i, content, schema_type_handler.properties.content_model);
+		end
 	else
 		doc[3] = nil;
 	end
@@ -1300,13 +1357,14 @@ end
 
 basic_stuff.complex_to_intermediate_json = function(schema_type_handler, content)
 	local i_content = {};
+	if (schema_type_handler.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
+		i_content = content;
+	else
 		if (schema_type_handler.properties.content_type ~= 'S') then
 			local content_model = schema_type_handler.properties.content_model;
 			local n = #(schema_type_handler.properties.content_fsa_properties);
 			if (n ~= 0) then
-				if (schema_type_handler.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
-					i_content = content;
-				elseif (content_model.max_occurs ~= 1) then
+				if (content_model.max_occurs ~= 1) then
 					local generated_subelement_name = content_model.generated_subelement_name;
 					i_content[generated_subelement_name] = {};
 					for i,v in ipairs(content[schema_type_handler.properties.content_model[generated_subelement_name]]) do
@@ -1321,6 +1379,7 @@ basic_stuff.complex_to_intermediate_json = function(schema_type_handler, content
 			i_content._contained_value =
 				basic_stuff.primitive_to_intermediate_json(schema_type_handler.type_handler, content._contained_value);
 		end
+	end
 	if (content._attr ~= nil) then
 		i_content._attr = {};
 		for n,v in pairs(content._attr) do
@@ -1443,23 +1502,24 @@ end
 
 basic_stuff.complex_from_intermediate_json = function(schema_type_handler, content)
 	local content_model = schema_type_handler.properties.content_model;
-	if (schema_type_handler.properties.content_type ~= 'S') then
-		local n = #(schema_type_handler.properties.content_fsa_properties);
-		if (n ~= 0) then
-			if (schema_type_handler.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
-			elseif (content_model.max_occurs ~= 1) then
-				local generated_subelement_name = content_model.generated_subelement_name;
-				for i,v in ipairs(content[schema_type_handler.properties.content_model[generated_subelement_name]]) do
-					content[generated_subelement_name][i] =
-						basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, v, content_model);
+	if (schema_type_handler.properties.schema_type ~= '{http://www.w3.org/2001/XMLSchema}anyType') then
+		if (schema_type_handler.properties.content_type ~= 'S') then
+			local n = #(schema_type_handler.properties.content_fsa_properties);
+			if (n ~= 0) then
+				if (content_model.max_occurs ~= 1) then
+					local generated_subelement_name = content_model.generated_subelement_name;
+					for i,v in ipairs(content[schema_type_handler.properties.content_model[generated_subelement_name]]) do
+						content[generated_subelement_name][i] =
+							basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, v, content_model);
+					end
+				else
+					basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, content, content_model);
 				end
-			else
-				basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, content, content_model);
 			end
+		else
+			content._contained_value =
+				basic_stuff.primitive_from_intermediate_json(schema_type_handler.type_handler, content._contained_value);
 		end
-	else
-		content._contained_value =
-			basic_stuff.primitive_from_intermediate_json(schema_type_handler.type_handler, content._contained_value);
 	end
 	if (content._attr ~= nil) then
 		for n,v in pairs(content._attr) do
@@ -1621,14 +1681,12 @@ local read_attributes = function(reader, schema_type_handler, obj)
 	return true;
 end
 
-local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
+basic_stuff.continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 	local name = reader:const_local_name()
 	local uri = reader:const_namespace_uri();
 	local value = reader:const_value();
 	local depth = reader:node_depth();
 	local typ = reader:node_type();
-	local is_empty = reader:node_is_empty_element();
-	local has_value = reader:node_reader_has_value();
 	local q_name = '{'..get_uri(uri)..'}'..name;
 
 	local schema_type_handler = sts:top();
@@ -1637,6 +1695,7 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 	obj['___METADATA___'] = {empty = true};
 	obj['___METADATA___'].cms = (require('stack')).new();
 	obj['___METADATA___'].covering_object = false;
+	obj['___METADATA___'].cm_cardinality_obj = true;;
 	obj['___DATA___'] = {};
 
 	local top_obj = objs:top();
@@ -1673,12 +1732,16 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 			top_obj['___METADATA___'].element_gqn_being_parsed =
 					schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
 			obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
+			obj['___METADATA___'].cm_cardinality_obj = true;;
+			obj['___METADATA___'].content_type = top_obj['___METADATA___'].content_type;
+			--obj['___METADATA___'].part_of_mixed = top_obj['___METADATA___'].part_of_mixed;
 			objs:push(obj);
 			top_obj = objs:top();
 			obj = {};
 			obj['___METADATA___'] = {empty = true};
 			obj['___METADATA___'].cms = (require('stack')).new();
 			obj['___METADATA___'].covering_object = false;
+			obj['___METADATA___'].cm_cardinality_obj = true;;
 			obj['___DATA___'] = {};
 		else
 			top_obj['___METADATA___'].cms:push(obj['___METADATA___'].cm);
@@ -1706,7 +1769,7 @@ local continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 	return false;
 end
 
-local windup_fsa = function(reader, sts, objs, pss)
+basic_stuff.windup_fsa = function(reader, sts, objs, pss)
 
 	local schema_type_handler = sts:top();
 	local top_obj = objs:top();
@@ -1715,6 +1778,7 @@ local windup_fsa = function(reader, sts, objs, pss)
 	obj['___METADATA___'] = {empty = true};
 	obj['___METADATA___'].cms = (require('stack')).new();
 	obj['___METADATA___'].covering_object = false;
+	obj['___METADATA___'].cm_cardinality_obj = true;;
 	obj['___DATA___'] = {};
 
 	local i = ps_obj.position;
@@ -1727,12 +1791,16 @@ local windup_fsa = function(reader, sts, objs, pss)
 				top_obj['___METADATA___'].element_gqn_being_parsed =
 						schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
 				obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
+				obj['___METADATA___'].cm_cardinality_obj = true;;
+				obj['___METADATA___'].content_type = top_obj['___METADATA___'].content_type;
+				--obj['___METADATA___'].part_of_mixed = top_obj['___METADATA___'].part_of_mixed;
 				objs:push(obj);
 				top_obj = objs:top();
 				obj = {};
 				obj['___METADATA___'] = {empty = true};
 				obj['___METADATA___'].cms = (require('stack')).new();
 				obj['___METADATA___'].covering_object = false;
+				obj['___METADATA___'].cm_cardinality_obj = true;;
 				obj['___DATA___'] = {};
 			else
 				top_obj['___METADATA___'].cms:push(obj['___METADATA___'].cm);
@@ -1761,7 +1829,7 @@ local windup_fsa = function(reader, sts, objs, pss)
 	end
 end
 
-local move_fsa_to_end_of_cm = function(reader, sts, objs, pss)
+basic_stuff.move_fsa_to_end_of_cm = function(reader, sts, objs, pss)
 	local schema_type_handler = sts:top();
 	local top_obj = objs:top();
 	local ps_obj = pss:top();
@@ -1797,7 +1865,7 @@ local move_fsa_to_end_of_cm = function(reader, sts, objs, pss)
 
 end
 
-local continue_cm_fsa = function(reader, sts, objs, pss)
+basic_stuff.continue_cm_fsa = function(reader, sts, objs, pss)
 	local schema_type_handler = sts:top();
 
 	local obj = {};
@@ -1822,7 +1890,7 @@ local continue_cm_fsa = function(reader, sts, objs, pss)
 	local continue_loop = true;
 	symbol = schema_type_handler.properties.content_fsa_properties[i].symbol_type;
 	while (continue_loop) do
-		element_found = continue_cm_fsa_i(reader, sts, objs, pss, i)
+		element_found = basic_stuff.continue_cm_fsa_i(reader, sts, objs, pss, i)
 		if (element_found) then
 			break;
 		end
@@ -1852,14 +1920,11 @@ local continue_cm_fsa = function(reader, sts, objs, pss)
 	return element_found;
 end
 
-local process_start_of_element = function(reader, sts, objs, pss)
+local process_start_of_element = function(reader, sts, objs, pss, mcos)
 	local name = reader:const_local_name()
 	local uri = reader:const_namespace_uri();
 	local value = reader:const_value();
-	local depth = reader:node_depth();
 	local typ = reader:node_type();
-	local is_empty = reader:node_is_empty_element();
-	local has_value = reader:node_reader_has_value();
 	local q_name = '{'..get_uri(uri)..'}'..name;
 
 	local schema_type_handler = sts:top();
@@ -1884,7 +1949,7 @@ local process_start_of_element = function(reader, sts, objs, pss)
 			if (cm == nil) then
 				cm = l_sth.properties.content_model;
 			end
-			element_found = continue_cm_fsa(reader, sts, objs, pss);
+			element_found = basic_stuff.continue_cm_fsa(reader, sts, objs, pss);
 			if (not element_found) then
 				local st = '';
 				if (schema_type_handler.properties.schema_type ~= nil) then st = schema_type_handler.properties.schema_type; end
@@ -1903,7 +1968,7 @@ local process_start_of_element = function(reader, sts, objs, pss)
 					if ((l_top_obj['___METADATA___'].element_gqn_being_parsed ~= nil) and
 						(l_top_obj['___METADATA___'].element_gqn_being_parsed ~= generated_q_name)) then 
 
-						move_fsa_to_end_of_cm(reader, sts, objs, pss)
+						basic_stuff.move_fsa_to_end_of_cm(reader, sts, objs, pss)
 					end
 				end
 			end
@@ -1925,13 +1990,14 @@ local process_start_of_element = function(reader, sts, objs, pss)
 		(objs:top())['___METADATA___'].element_being_parsed = schema_type_handler.particle_properties.generated_name;
 		(objs:top())['___METADATA___'].element_gqn_being_parsed = schema_type_handler.particle_properties.generated_name;
 	end
-	pss:push({position = 1, next_position = 1, group_stack = (require('stack')).new()});
 	local sth = sts:top();
 	local obj = {};
 	obj['___METADATA___'] = {empty = true};
 	obj['___METADATA___'].cms = (require('stack')).new();
 	obj['___METADATA___'].covering_object = false;
+	obj['___METADATA___'].cm_cardinality_obj = false;;
 	obj['___DATA___'] = {};
+	obj['___METADATA___'].content_type = sth.properties.content_type;
 	if (sth.properties.element_type == 'S') then
 		obj['___METADATA___'].content_model_type = 'SS';
 	else
@@ -1942,15 +2008,33 @@ local process_start_of_element = function(reader, sts, objs, pss)
 		--if (obj['___DATA___']._attr == nil) then
 			--obj['___DATA___']._attr = {};
 		--end
-		if(sth.properties.content_type ~= 'S') then
+		if(sth.properties.content_type == 'C') then
 			obj['___METADATA___'].cm = sth.properties.content_model;
 			obj['___METADATA___'].content_model_type = 'CC';
+		elseif(sth.properties.content_type == 'E') then
+			obj['___METADATA___'].cm = sth.properties.content_model;
+			obj['___METADATA___'].content_model_type = 'CE';
+		elseif(sth.properties.content_type == 'M') then
+			obj['___METADATA___'].cm = sth.properties.content_model;
+			obj['___METADATA___'].content_model_type = 'CM';
 		else
 			-- The element is a complex type simple content.
 			obj['___METADATA___'].content_model_type = 'CS';
 		end
 	end
+	do
+		local top_obj = objs:top();
+		if (top_obj['___METADATA___'].content_type == 'M') then
+			obj['___METADATA___'].part_of_mixed = true;
+		else
+			obj['___METADATA___'].part_of_mixed = false;
+		end
+	end
 	objs:push(obj);
+	pss:push({position = 1, next_position = 1, base_obj = obj, group_stack = (require('stack')).new()});
+	if (sth.properties.content_type == 'M' and sth.properties.element_type == 'C') then
+		mcos:push({base_obj = obj});
+	end
 
 	return true;
 end
@@ -1973,7 +2057,6 @@ end
 basic_stuff.get_converted_value = function (schema_type_handler, value)
 	local converted_value = '';
 	if (schema_type_handler.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, "TO PUT CODE HERE");
 		converted_value = tostring(value);
 	elseif (schema_type_handler.type_of_simple == 'U') then
 		local status = false;
@@ -2018,40 +2101,49 @@ basic_stuff.get_converted_value = function (schema_type_handler, value)
 		end
 		converted_value = schema_type_handler.type_handler:to_type('', value);
 	else
-		converted_value = schema_type_handler.type_handler:to_type('', value);
+		if (schema_type_handler.properties.content_type == 'M') then
+			converted_value = tostring(value);
+		else
+			converted_value = schema_type_handler.type_handler:to_type('', value);
+		end
 	end
 	return converted_value;
 end
 
-local process_text = function(reader, sts, objs, pss)
+local process_text = function(reader, sts, objs, pss, mcos)
 	local name = reader:const_local_name()
 	local uri = reader:const_namespace_uri();
 	local value = reader:const_value();
-	local depth = reader:node_depth();
 	local typ = reader:node_type();
-	local is_empty = reader:node_is_empty_element();
-	local has_value = reader:node_reader_has_value();
 	local q_name = '{'..get_uri(uri)..'}'..name;
 
 	local schema_type_handler = sts:top();
 
-	local top_obj = objs:top();
 
 	local converted_value = basic_stuff.get_converted_value(schema_type_handler, value);
-	top_obj['___DATA___']._contained_value = converted_value;
-	top_obj['___METADATA___'].empty = false;
+	if (schema_type_handler.properties.content_type == 'M') then
+		local top_obj = (mcos:top()).base_obj;
+		if (top_obj['___DATA___']._contained_value == nil) then
+			top_obj['___DATA___']._contained_value = {};
+		end
+		local i = #(top_obj['___DATA___']._contained_value);
+		i = i + 1;
+		top_obj['___DATA___']._contained_value[i] = converted_value;
+		top_obj['___METADATA___'].empty = false;
+	else
+		local top_obj = objs:top();
+		top_obj['___DATA___']._contained_value = converted_value;
+		top_obj['___METADATA___'].empty = false;
+	end
 
 	return true;
 end
 
-local process_end_of_element = function(reader, sts, objs, pss)
+local process_end_of_element = function(reader, sts, objs, pss, mcos)
 	local name = reader:const_local_name()
 	local uri = reader:const_namespace_uri();
 	local value = reader:const_value();
-	local depth = reader:node_depth();
 	local typ = reader:node_type();
-	local is_empty = reader:node_is_empty_element();
-	local has_value = reader:node_reader_has_value();
 	local q_name = '{'..get_uri(uri)..'}'..name;
 
 	local schema_type_handler = sts:top();
@@ -2062,7 +2154,7 @@ local process_end_of_element = function(reader, sts, objs, pss)
 		((sts:top().properties.element_type == 'C') and
 		(sts:top().properties.content_type ~= 'S') and
 		(sts:top().properties.content_model.group_type ~= 'A'))) then
-		windup_fsa(reader, sts, objs, pss);
+		basic_stuff.windup_fsa(reader, sts, objs, pss);
 	end
 
 	local parsed_element = objs:pop();
@@ -2090,7 +2182,12 @@ local process_end_of_element = function(reader, sts, objs, pss)
 				top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] = {}
 			end
 			local ebp = top_obj['___METADATA___'].element_being_parsed
-			top_obj['___DATA___'][ebp][#(top_obj['___DATA___'][ebp])+1] = parsed_output;
+			if (parsed_sth.properties.content_type ~= 'M') then
+				top_obj['___DATA___'][ebp][#(top_obj['___DATA___'][ebp])+1] = parsed_output;
+			else
+				top_obj['___DATA___'][ebp][#(top_obj['___DATA___'][ebp])+1] = parsed_output._contained_value;
+				mcos:pop();
+			end
 			top_obj['___METADATA___'].empty = false;
 		end
 	else
@@ -2098,7 +2195,12 @@ local process_end_of_element = function(reader, sts, objs, pss)
 			error_handler.raise_validation_error(-1, "TWO: "..get_qname(parsed_sth)..' must not repeat', debug.getinfo(1));
 			return false;
 		end
-		top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] = parsed_output;
+		if (parsed_sth.properties.content_type ~= 'M') then
+			top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] = parsed_output;
+		else
+			top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] = parsed_output._contained_value;
+			mcos:pop();
+		end
 		top_obj['___METADATA___'].empty = false;
 	end
 	pss:pop();
@@ -2108,12 +2210,12 @@ local process_end_of_element = function(reader, sts, objs, pss)
 		if (top_obj['___METADATA___'].cm.group_type == 'C') then
 
 			if (parsed_sth.particle_properties.max_occurs == 1) then
-				move_fsa_to_end_of_cm(reader, sts, objs, pss)
+				basic_stuff.move_fsa_to_end_of_cm(reader, sts, objs, pss)
 			elseif (parsed_sth.particle_properties.max_occurs ~= -1) then
 				local ebp = top_obj['___METADATA___'].element_being_parsed
 				local count = #(top_obj['___DATA___'][ebp])
 				if (count == parsed_sth.particle_properties.max_occurs) then
-					move_fsa_to_end_of_cm(reader, sts, objs, pss)
+					basic_stuff.move_fsa_to_end_of_cm(reader, sts, objs, pss)
 				end
 			end
 		elseif (top_obj['___METADATA___'].cm.group_type == 'S') then
@@ -2126,6 +2228,24 @@ local process_end_of_element = function(reader, sts, objs, pss)
 					pss:top().next_position = i+1;
 				end
 			end
+		end
+	end
+	if (parsed_element['___METADATA___'].part_of_mixed) then
+		local ebp = top_obj['___METADATA___'].element_being_parsed
+		local ref_obj = (mcos:top()).base_obj;
+		if (ref_obj == nil) then
+			error_handler.raise_fatal_error(-1, "THIS CONDITION MUST NOT HAPPEN", debug.getinfo(1));
+		end
+		if (ref_obj['___DATA___']._contained_value == nil) then
+			ref_obj['___DATA___']._contained_value = {};
+		end
+		local i = #(ref_obj['___DATA___']._contained_value);
+		i = i + 1;
+		ref_obj['___DATA___']._contained_value[i] = {};
+		if (parsed_sth.properties.content_type == 'M') then
+			ref_obj['___DATA___']._contained_value[i][ebp] = parsed_output._contained_value;
+		else
+			ref_obj['___DATA___']._contained_value[i][ebp] = parsed_output;
 		end
 	end
 
@@ -2164,12 +2284,8 @@ local parse_any = function(reader, sts, objs, pss)
 		local name = reader:const_local_name()
 		local uri = reader:const_namespace_uri();
 		local value = reader:const_value();
-		local depth = reader:node_depth();
 		local typ = reader:node_type();
-		local is_empty = reader:node_is_empty_element();
-		local has_value = reader:node_reader_has_value();
 
-		--print(depth, typ, name, is_empty, has_value, value);
 		if (typ == reader.node_types.XML_READER_TYPE_ELEMENT) then
 			local node = {};
 
@@ -2257,7 +2373,7 @@ end
 --content is still TBD handling of mixed content
 --itself is TBD
 --]]
-local process_node = function(reader, sts, objs, pss)
+local process_node = function(reader, sts, objs, pss, mcos)
 	local name = reader:const_local_name()
 	local uri = reader:const_namespace_uri();
 	local value = reader:const_value();
@@ -2269,7 +2385,7 @@ local process_node = function(reader, sts, objs, pss)
 	if (typ == reader.node_types.XML_READER_TYPE_ELEMENT) then
 		if (not reader:node_is_empty_element(reader)) then
 			error_handler.push_element(q_name);
-			ret = process_start_of_element(reader, sts, objs, pss);
+			ret = process_start_of_element(reader, sts, objs, pss, mcos);
 			do
 				local sth = sts:top();
 				if (sth.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
@@ -2278,7 +2394,7 @@ local process_node = function(reader, sts, objs, pss)
 					local top_obj = objs:top();
 					top_obj['___DATA___']._contained_value = obj;
 					top_obj['___METADATA___'].empty = false;
-					ret = process_end_of_element(reader, sts, objs, pss);
+					ret = process_end_of_element(reader, sts, objs, pss, mcos);
 					error_handler.pop_element();
 				end
 			end
@@ -2287,9 +2403,9 @@ local process_node = function(reader, sts, objs, pss)
 		end
 	elseif ((typ == reader.node_types.XML_READER_TYPE_TEXT) or
 			(typ == reader.node_types.XML_READER_TYPE_CDATA)) then
-		ret = process_text(reader, sts, objs, pss);
+		ret = process_text(reader, sts, objs, pss, mcos);
 	elseif (typ == reader.node_types.XML_READER_TYPE_END_ELEMENT) then
-		ret = process_end_of_element(reader, sts, objs, pss);
+		ret = process_end_of_element(reader, sts, objs, pss, mcos);
 		error_handler.pop_element();
 	elseif (typ == reader.node_types.XML_READER_TYPE_SIGNIFICANT_WHITESPACE) then
 		ret = true;
@@ -2306,10 +2422,10 @@ end
 --Carryout depth first traversal of XML tree
 --and process each node
 --]]
-local parse_xml_to_obj = function(reader, sts, objs, pss)
+local parse_xml_to_obj = function(reader, sts, objs, pss, mcos)
 	local ret = read_ahead(reader);
 	while (ret == 1) do
-		if (not process_node(reader, sts, objs, pss)) then
+		if (not process_node(reader, sts, objs, pss, mcos)) then
 			return false;
 		end
 		ret = read_ahead(reader);
@@ -2323,19 +2439,22 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	obj['___METADATA___'] = {empty = true;};
 	obj['___METADATA___'].cms = (require('stack')).new();
 	obj['___METADATA___'].covering_object = true;
+	obj['___METADATA___'].cm_cardinality_obj = false;;
+	obj['___METADATA___'].mixed = false;;
 	-- We dont populate cm, simce cm is that of the parent and this is the root
 	-- element
 	obj['___DATA___'] = {};
 	local objs = (require('stack')).new();
 	local sts = (require('stack')).new();
 	local pss = (require('stack')).new();
+	local mcos = (require('stack')).new();
 
 	objs:push(obj);
 	sts:push(schema_type_handler);
 
 	error_handler.init()
 	local result = false;
-	result = parse_xml_to_obj( reader, sts, objs, pss);
+	result = parse_xml_to_obj( reader, sts, objs, pss, mcos);
 	local message_validation_context = error_handler.reset_init();
 	if (not result) then
 		parsing_result_msg = 'Parsing failed: '..message_validation_context.status.error_message;

@@ -1,0 +1,18 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"  targetNamespace="http://test_example.com" xmlns:ns="http://test_example.com">
+	<xsd:element name="v2_mix">
+		<xsd:complexType mixed="true">
+			<xsd:sequence maxOccurs="unbounded">
+				<xsd:element name="one" type="xsd:string"/>
+				<xsd:element name="two" type="xsd:string"/>
+				<xsd:element name="TWO">
+					<xsd:complexType mixed="true">
+						<xsd:sequence>
+							<xsd:element name="three" type="xsd:string"/>
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
+

@@ -465,12 +465,14 @@ elem_code_generator.get_content_fsa_properties = function(model, content_model)
 			_content_fsa_properties[index].cm = cmps:top();
 			_content_fsa_properties[index].generated_symbol_name = item.generated_q_name;
 			_content_fsa_properties[index].wild_card_type = 1;
+			_content_fsa_properties[index].generated_name = item.generated_name;
 		else
 			_content_fsa_properties[index].min_occurs = item.min_occurs;
 			_content_fsa_properties[index].max_occurs = item.max_occurs;
 			_content_fsa_properties[index].symbol_name = get_q_name(item.ns, item.name);
 			_content_fsa_properties[index].cm = cmps:top();
 			_content_fsa_properties[index].generated_symbol_name = item.generated_q_name;
+			_content_fsa_properties[index].generated_name = item.generated_name;
 			if (('http://www.w3.org/2001/XMLSchema' == item.named_type_ns) and
 				('anyType' == item.named_type) ) then
 				_content_fsa_properties[index].wild_card_type = 1;
@@ -963,6 +965,7 @@ function elem_code_generator.put_content_fsa_properties_code(content_fsa_propert
 			code = code..', max_occurs = '..item.max_occurs;
 			if (item.symbol_type == 'element' or item.symbol_type == 'any') then
 				code = code..', wild_card_type = '..item.wild_card_type;
+				code = code..', generated_name = \''..item.generated_name..'\'';
 			end
 		else
 			code = code..', cm_begin_index = '..item.cm_begin_index;
