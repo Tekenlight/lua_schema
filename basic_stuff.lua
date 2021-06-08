@@ -1684,7 +1684,6 @@ end
 basic_stuff.continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 	local name = reader:const_local_name()
 	local uri = reader:const_namespace_uri();
-	local value = reader:const_value();
 	local depth = reader:node_depth();
 	local typ = reader:node_type();
 	local q_name = '{'..get_uri(uri)..'}'..name;
@@ -1917,7 +1916,6 @@ end
 local process_start_of_element = function(reader, sts, objs, pss, mcos)
 	local name = reader:const_local_name()
 	local uri = reader:const_namespace_uri();
-	local value = reader:const_value();
 	local typ = reader:node_type();
 	local q_name = '{'..get_uri(uri)..'}'..name;
 
@@ -2135,7 +2133,6 @@ end
 local process_end_of_element = function(reader, sts, objs, pss, mcos)
 	local name = reader:const_local_name()
 	local uri = reader:const_namespace_uri();
-	local value = reader:const_value();
 	local typ = reader:node_type();
 	local q_name = '{'..get_uri(uri)..'}'..name;
 
@@ -2369,7 +2366,6 @@ end
 local process_node = function(reader, sts, objs, pss, mcos)
 	local name = reader:const_local_name()
 	local uri = reader:const_namespace_uri();
-	local value = reader:const_value();
 	local typ = reader:node_type();
 	local q_name = '{'..get_uri(uri)..'}'..name;
 
