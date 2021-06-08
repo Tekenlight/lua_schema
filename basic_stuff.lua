@@ -1695,7 +1695,6 @@ basic_stuff.continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 	obj['___METADATA___'] = {empty = true};
 	obj['___METADATA___'].cms = (require('stack')).new();
 	obj['___METADATA___'].covering_object = false;
-	obj['___METADATA___'].cm_cardinality_obj = true;;
 	obj['___DATA___'] = {};
 
 	local top_obj = objs:top();
@@ -1732,7 +1731,6 @@ basic_stuff.continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 			top_obj['___METADATA___'].element_gqn_being_parsed =
 					schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
 			obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
-			obj['___METADATA___'].cm_cardinality_obj = true;;
 			obj['___METADATA___'].content_type = top_obj['___METADATA___'].content_type;
 			--obj['___METADATA___'].part_of_mixed = top_obj['___METADATA___'].part_of_mixed;
 			objs:push(obj);
@@ -1741,7 +1739,6 @@ basic_stuff.continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 			obj['___METADATA___'] = {empty = true};
 			obj['___METADATA___'].cms = (require('stack')).new();
 			obj['___METADATA___'].covering_object = false;
-			obj['___METADATA___'].cm_cardinality_obj = true;;
 			obj['___DATA___'] = {};
 		else
 			top_obj['___METADATA___'].cms:push(obj['___METADATA___'].cm);
@@ -1778,7 +1775,6 @@ basic_stuff.windup_fsa = function(reader, sts, objs, pss)
 	obj['___METADATA___'] = {empty = true};
 	obj['___METADATA___'].cms = (require('stack')).new();
 	obj['___METADATA___'].covering_object = false;
-	obj['___METADATA___'].cm_cardinality_obj = true;;
 	obj['___DATA___'] = {};
 
 	local i = ps_obj.position;
@@ -1791,7 +1787,6 @@ basic_stuff.windup_fsa = function(reader, sts, objs, pss)
 				top_obj['___METADATA___'].element_gqn_being_parsed =
 						schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
 				obj['___METADATA___'].cm = schema_type_handler.properties.content_fsa_properties[i].cm;
-				obj['___METADATA___'].cm_cardinality_obj = true;;
 				obj['___METADATA___'].content_type = top_obj['___METADATA___'].content_type;
 				--obj['___METADATA___'].part_of_mixed = top_obj['___METADATA___'].part_of_mixed;
 				objs:push(obj);
@@ -1800,7 +1795,6 @@ basic_stuff.windup_fsa = function(reader, sts, objs, pss)
 				obj['___METADATA___'] = {empty = true};
 				obj['___METADATA___'].cms = (require('stack')).new();
 				obj['___METADATA___'].covering_object = false;
-				obj['___METADATA___'].cm_cardinality_obj = true;;
 				obj['___DATA___'] = {};
 			else
 				top_obj['___METADATA___'].cms:push(obj['___METADATA___'].cm);
@@ -1995,7 +1989,6 @@ local process_start_of_element = function(reader, sts, objs, pss, mcos)
 	obj['___METADATA___'] = {empty = true};
 	obj['___METADATA___'].cms = (require('stack')).new();
 	obj['___METADATA___'].covering_object = false;
-	obj['___METADATA___'].cm_cardinality_obj = false;;
 	obj['___DATA___'] = {};
 	obj['___METADATA___'].content_type = sth.properties.content_type;
 	if (sth.properties.element_type == 'S') then
@@ -2443,7 +2436,6 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	obj['___METADATA___'] = {empty = true;};
 	obj['___METADATA___'].cms = (require('stack')).new();
 	obj['___METADATA___'].covering_object = true;
-	obj['___METADATA___'].cm_cardinality_obj = false;;
 	obj['___METADATA___'].mixed = false;;
 	-- We dont populate cm, simce cm is that of the parent and this is the root
 	-- element
