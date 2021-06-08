@@ -2,7 +2,7 @@
 	<xsd:element name="mix">
 		<xsd:complexType mixed="true">
 			<xsd:choice maxOccurs="unbounded">
-				<xsd:element name="one" type="xsd:string"/>
+				<xsd:element name="one" type="xsd:string" minOccurs="2" maxOccurs="2"/>
 				<xsd:element name="two" type="xsd:string"/>
 			</xsd:choice>
 		</xsd:complexType>
