@@ -89,7 +89,7 @@ local struct_from_loe = function(schema_type_handler, list)
 						arr[count+1] = obj;
 					end
 					if (begin_item.max_occurs ~= -1) then
-						if (#arr == begin_item.max_occurs) then
+						if (not meta.element_found or #arr == begin_item.max_occurs) then
 							i = i+1;
 						else
 							i = begin_idx;
@@ -104,7 +104,6 @@ local struct_from_loe = function(schema_type_handler, list)
 				else
 					i = i+1;
 				end
-				local top_obj = objs:top();
 				break;
 			end
 		end
