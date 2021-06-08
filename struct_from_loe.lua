@@ -41,21 +41,30 @@ local struct_from_loe = function(schema_type_handler, list)
 				end
 				if (name == item.generated_name) then
 					local sth = schema_type_handler.properties.generated_subelements[item.generated_name];
+					local count = 0;
+					local element_complete = false;
 					if (sth.particle_properties.max_occurs ~= 1) then
 						if ((objs:top())[item.generated_name] == nil) then
 							(objs:top())[item.generated_name] = {};
 						end
-						local count = #((objs:top())[item.generated_name]);
+						count = #((objs:top())[item.generated_name]);
 						(objs:top())[item.generated_name][count+1] = value;
+						count = count+1;
+						if (sth.particle_properties.max_occurs ~= -1 and
+							count == sth.particle_properties.max_occurs) then
+							i = i+1;
+							element_complete = true;
+						end
 					else
 						(objs:top())[item.generated_name] = value;
+						i = i+1;
+						element_complete = true;
 					end
-					list_index = list_index + 1;
-					i = i+1;
 					if (item.cm.max_occurs ~= 1) then
 						(metas:top()).element_found = true;
 					end
-					if (item.cm.group_type == 'C') then
+					list_index = list_index + 1;
+					if (element_complete and item.cm.group_type == 'C') then
 						item = schema_type_handler.properties.content_fsa_properties[i];
 						while (item.symbol_type ~= 'cm_end') do
 							i = i+1;
