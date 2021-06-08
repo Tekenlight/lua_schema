@@ -1996,9 +1996,6 @@ local process_start_of_element = function(reader, sts, objs, pss, mcos)
 		elseif (not read_attributes(reader, sth, obj)) then
 			return false;
 		end
-		--if (obj['___DATA___']._attr == nil) then
-			--obj['___DATA___']._attr = {};
-		--end
 		if(sth.properties.content_type == 'C') then
 			obj['___METADATA___'].cm = sth.properties.content_model;
 			obj['___METADATA___'].content_model_type = 'CC';
