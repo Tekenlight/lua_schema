@@ -2408,7 +2408,11 @@ local process_node = function(reader, sts, objs, pss, mcos)
 		ret = process_end_of_element(reader, sts, objs, pss, mcos);
 		error_handler.pop_element();
 	elseif (typ == reader.node_types.XML_READER_TYPE_SIGNIFICANT_WHITESPACE) then
-		ret = true;
+		if (schema_type_handler.properties.content_type == 'M') then
+			ret = process_text(reader, sts, objs, pss, mcos);
+		else
+			ret = true;
+		end
 	else
 		print("UNKNOWN HANDLED", typ, q_name);
 		error_handler.raise_validation_error(-1, "Unhandled reader event:".. typ..":"..q_name, debug.getinfo(1));
