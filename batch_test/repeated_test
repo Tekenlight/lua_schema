@@ -1,0 +1,24 @@
+#!/bin/ksh
+. $HOME/.env
+i=0
+while [ $i -lt 30000 ]
+do
+i=`expr $i + 1`
+#lua gfrom_xml/basic_string_nons_test.lua  > /dev/null # works
+lua gfrom_xml/struct_with_various_types_test.lua > /dev/null
+#lua gfrom_xml/basic_string_simple_content_test.lua > /dev/null
+#lua gfrom_xml/element_struct3_test.lua > /dev/null #
+#lua gfrom_xml/example_struct_test.lua > /dev/null # works
+#lua gfrom_xml/la_basic_string_simple_content_test.lua >/dev/null
+#lua gfrom_xml/wvt_test.lua > /dev/null
+if [ $? -ne 0 ]
+then
+	echo $i
+	exit 1;
+fi
+j=`expr $i % 100`
+if [ $j -eq 1 ]
+then
+	echo $i
+fi
+done

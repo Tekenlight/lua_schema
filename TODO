@@ -6,7 +6,9 @@
 6.  Implement all the 49 built-in-types of XMLSchema 1.0 => DONE
 29-May-2021
 7.  Implement anySimpleType => DONE
-8.  Implement anyAttribute
+8.  Implement anyAttribute => DONE
 9.  Implement anyType => DONE
 10. Implement any => DONE
+11. Implement mixed content => DONE
+11. Implement empty content => DONE
 
