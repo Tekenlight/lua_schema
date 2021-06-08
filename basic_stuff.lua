@@ -2359,9 +2359,7 @@ end
 --[[
 --Anything other than element begining, text or
 --element ending is not handled in this module
---White space is ignored. Impact of this on mixed
---content is still TBD handling of mixed content
---itself is TBD
+--White space is ignored except in mixed content type
 --]]
 local process_node = function(reader, sts, objs, pss, mcos)
 	local name = reader:const_local_name()
