@@ -17,7 +17,6 @@ end
 nsd_cache.get = function(q_name)
 	nsd_cache.init();
 	local o = _G.nsd_cache[q_name];
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	return o;
 end
 
