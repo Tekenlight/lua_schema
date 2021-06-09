@@ -95,6 +95,17 @@ local from_json_string = function(schema_type_handler, xmlua, json_input)
 	end
 	local content = basic_stuff.from_intermediate_json(schema_type_handler, obj);
 
+	error_handler.init()
+	if (not schema_type_handler:is_valid(content)) then
+		status = false;
+		content = nil;
+		parsing_result_msg = (error_handler.reset()).status.error_message;
+	else
+		status = true;
+		parsing_result_msg = nil;
+		error_handler.reset();
+	end
+
 	return status, content, parsing_result_msg;
 end
 

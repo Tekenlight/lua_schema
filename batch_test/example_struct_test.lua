@@ -57,9 +57,11 @@ if (nil ~= content) then
 		content = example_struct:from_xml(xml_str);
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, xml_str);
 		i = i + 1;
-		print(i);
-		local ts = { tv_sec = 0, tv_nsec = 1000000 } ;
-		t.nanosleep(ts);
+		if (i%1000 == 1) then
+			print(i);
+		end
+		--local ts = { tv_sec = 0, tv_nsec = 1000000 } ;
+		--t.nanosleep(ts);
 	end
 end
 

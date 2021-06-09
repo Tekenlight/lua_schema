@@ -15,7 +15,7 @@ end
 
 
 local json_str = nil;
-local lua_obj = nil;
+local lua_obj = content;
 local xml_str = xml_string
 local i = 0;
 if (nil ~= content) then
@@ -26,9 +26,9 @@ if (nil ~= content) then
 		lua_obj = invoice:from_json(json_str);
 		--require 'pl.pretty'.dump(lua_obj);
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-		xml_str = invoice:to_xml(content);
+		--xml_str = invoice:to_xml(content);
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-		content = invoice:from_xml(xml_str);
+		--content = invoice:from_xml(xml_str);
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, xml_str);
 		i = i + 1;
 		if (i%1000 == 1) then

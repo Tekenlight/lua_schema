@@ -48,20 +48,20 @@ print(t.nanosleep);
 --print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 
 local json_str = nil;
-local lua_obj = nil;
-local xml_str = nil;
+local lua_obj = content;
+local xml_str = xml_string;
 local i = 0;
 if (nil ~= content) then
 	print("+++++++++++++++");
-	while (i < 1000000) do
+	while (i < 10000) do
 		json_str = element_struct3:to_json(content);
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, json_str);
 		lua_obj = element_struct3:from_json(json_str);
 		--require 'pl.pretty'.dump(lua_obj);
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-		xml_str = element_struct3:to_xml(lua_obj);
+		--xml_str = element_struct3:to_xml(lua_obj);
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-		content = element_struct3:from_xml(xml_str);
+		--content = element_struct3:from_xml(xml_str);
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, xml_str);
 		i = i + 1;
 		if ( i % 1000 == 1) then
