@@ -2,7 +2,7 @@ for file in `ls -1 xsd_for_test/*.xsd`
 do
 	echo "Generating "$file
 	echo "--------------"
-	lua generate_schema.lua $file
+	lua ../generate_schema.lua $file
 	if [ $? -ne 0 ]
 	then
 		exit 1;
