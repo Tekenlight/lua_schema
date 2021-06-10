@@ -1,5 +1,25 @@
-for file in `ls -1 xsd_for_test/*.xsd`
-do
+#/usr/bin/sh
+
+if [ $# -eq 0 ]
+then
+	echo "Usage: gxsd [ all | <xsd_file_name> ]"
+	exit 1
+fi
+
+if [ $1 = "all" ]
+then
+	for file in `ls -1 xsd_for_test/*.xsd`
+	do
+		echo "Generating "$file
+		echo "--------------"
+		lua ../generate_schema.lua $file
+		if [ $? -ne 0 ]
+		then
+			exit 1;
+		fi
+	done
+else
+	file=$1
 	echo "Generating "$file
 	echo "--------------"
 	lua ../generate_schema.lua $file
@@ -7,4 +27,5 @@ do
 	then
 		exit 1;
 	fi
-done
+	
+fi
