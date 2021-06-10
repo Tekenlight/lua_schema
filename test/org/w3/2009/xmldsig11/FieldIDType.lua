@@ -1,5 +1,5 @@
-local basic_stuff = require("basic_stuff");
-local eh_cache = require("eh_cache");
+local basic_stuff = require("lua_schema.basic_stuff");
+local eh_cache = require("lua_schema.eh_cache");
 
 local element_handler = {};
 element_handler.__name__ = 'FieldIDType';
@@ -43,10 +43,10 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        max_occurs = 1,
+        group_type = 'C',
         generated_subelement_name = '_choice_group',
         min_occurs = 1,
-        group_type = 'C',
+        max_occurs = 1,
         'Prime',
         'TnB',
         'PnB',
@@ -81,20 +81,6 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}PnB'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'PnB'):
-            new_instance_as_ref({root_element=false, generated_name = 'PnB',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{}any'] = 
-            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
-            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
-                    root_element = false, min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
         element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}Prime'] = 
         (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'Prime'):
             new_instance_as_ref({root_element=false, generated_name = 'Prime',
@@ -109,9 +95,23 @@ do
     end
 
     do
+        element_handler.properties.subelement_properties['{}any'] = 
+            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
+            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
+                    root_element = false, min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
         element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}TnB'] = 
         (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'TnB'):
             new_instance_as_ref({root_element=false, generated_name = 'TnB',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}PnB'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'PnB'):
+            new_instance_as_ref({root_element=false, generated_name = 'PnB',
                     min_occurs = 1, max_occurs = 1}));
     end
 

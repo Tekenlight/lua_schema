@@ -3,7 +3,7 @@
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 <ns1:enumerated_basic_string xmlns:ns1="http://test_example.com">world</ns1:enumerated_basic_string>]=]
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 
 enumerated_basic_string = mhf:get_message_handler("enumerated_basic_string", "http://test_example.com");
 

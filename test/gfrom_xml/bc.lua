@@ -3,7 +3,7 @@ local file = io.open("common/UBL-BusinessCard-2.2-Example.xml");
 local xml_string = file:read("a");
 
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 
 business_card = mhf:get_message_handler("BusinessCard", "urn:oasis:names:specification:ubl:schema:xsd:BusinessCard-2");
 

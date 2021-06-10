@@ -1,5 +1,5 @@
 local xmlua = require("xmlua")
-local mhf = require("message_handler_factory")
+local mhf = require("schema_processor")
 local xsd = xmlua.XSD.new();
 
 _G.handler_cache = {};

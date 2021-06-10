@@ -1,4 +1,4 @@
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 unistd = require("posix.unistd");
 
 
@@ -23,7 +23,7 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 </ns1:seq_struct>]=]
 
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 seq_struct = mhf:get_message_handler("seq_struct", "http://test_example.com");
 
 

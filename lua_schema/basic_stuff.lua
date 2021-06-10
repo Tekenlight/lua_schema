@@ -1,10 +1,11 @@
 local ffi = require("ffi");
-local error_handler = require("error_handler");
-local basic_stuff = {};
+local error_handler = require("lua_schema.error_handler");
 local URI = require("uri");
 local stringx = require("pl.stringx");
-local nu = require("number_utils");
-local eh_cache = require("eh_cache");
+local nu = require("lua_schema.number_utils");
+local eh_cache = require("lua_schema.eh_cache");
+
+local basic_stuff = {};
 
 basic_stuff.is_complex_type_simple_content = function(content)
 	if ((content._attr ~= nil) and (type(content._attr) ~= 'table')) then
@@ -585,7 +586,7 @@ basic_stuff.execute_validation_for_complex_type_s_or_c = function(schema_type_ha
 	return true;
 end
 
-basic_stuff.struct_from_loe = require("struct_from_loe");
+basic_stuff.struct_from_loe = require("lua_schema.struct_from_loe");
 
 basic_stuff.extract_element_content_from_mixed = function(schema_type_handler, content)
 	if (content == nil) then
@@ -1692,7 +1693,7 @@ basic_stuff.continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 
 	local obj = {};
 	obj['___METADATA___'] = {empty = true};
-	obj['___METADATA___'].cms = (require('stack')).new();
+	obj['___METADATA___'].cms = (require('lua_schema.stack')).new();
 	obj['___METADATA___'].covering_object = false;
 	obj['___DATA___'] = {};
 
@@ -1736,7 +1737,7 @@ basic_stuff.continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 			top_obj = objs:top();
 			obj = {};
 			obj['___METADATA___'] = {empty = true};
-			obj['___METADATA___'].cms = (require('stack')).new();
+			obj['___METADATA___'].cms = (require('lua_schema.stack')).new();
 			obj['___METADATA___'].covering_object = false;
 			obj['___DATA___'] = {};
 		else
@@ -1772,7 +1773,7 @@ basic_stuff.windup_fsa = function(reader, sts, objs, pss)
 	local ps_obj = pss:top();
 	local obj = {};
 	obj['___METADATA___'] = {empty = true};
-	obj['___METADATA___'].cms = (require('stack')).new();
+	obj['___METADATA___'].cms = (require('lua_schema.stack')).new();
 	obj['___METADATA___'].covering_object = false;
 	obj['___DATA___'] = {};
 
@@ -1792,7 +1793,7 @@ basic_stuff.windup_fsa = function(reader, sts, objs, pss)
 				top_obj = objs:top();
 				obj = {};
 				obj['___METADATA___'] = {empty = true};
-				obj['___METADATA___'].cms = (require('stack')).new();
+				obj['___METADATA___'].cms = (require('lua_schema.stack')).new();
 				obj['___METADATA___'].covering_object = false;
 				obj['___DATA___'] = {};
 			else
@@ -1863,7 +1864,7 @@ basic_stuff.continue_cm_fsa = function(reader, sts, objs, pss)
 
 	local obj = {};
 	obj['___METADATA___'] = {empty = true};
-	obj['___METADATA___'].cms = (require('stack')).new();
+	obj['___METADATA___'].cms = (require('lua_schema.stack')).new();
 	obj['___DATA___'] = {};
 	local top_obj = objs:top();
 
@@ -1985,7 +1986,7 @@ local process_start_of_element = function(reader, sts, objs, pss, mcos)
 	local sth = sts:top();
 	local obj = {};
 	obj['___METADATA___'] = {empty = true};
-	obj['___METADATA___'].cms = (require('stack')).new();
+	obj['___METADATA___'].cms = (require('lua_schema.stack')).new();
 	obj['___METADATA___'].covering_object = false;
 	obj['___DATA___'] = {};
 	obj['___METADATA___'].content_type = sth.properties.content_type;
@@ -2019,7 +2020,7 @@ local process_start_of_element = function(reader, sts, objs, pss, mcos)
 		end
 	end
 	objs:push(obj);
-	pss:push({position = 1, next_position = 1, base_obj = obj, group_stack = (require('stack')).new()});
+	pss:push({position = 1, next_position = 1, base_obj = obj, group_stack = (require('lua_schema.stack')).new()});
 	if (sth.properties.content_type == 'M' and sth.properties.element_type == 'C') then
 		mcos:push({base_obj = obj});
 	end
@@ -2245,7 +2246,7 @@ end
 --]]
 local parse_any = function(reader, sts, objs, pss)
 	local doc = {};
-	local st = (require('stack')).new();
+	local st = (require('lua_schema.stack')).new();
 	st:push(doc);
 
 	local ns_collection = { nsc = {}};
@@ -2425,16 +2426,16 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	local reader = xmlua.XMLReader.new(xml);
 	local obj = {};
 	obj['___METADATA___'] = {empty = true;};
-	obj['___METADATA___'].cms = (require('stack')).new();
+	obj['___METADATA___'].cms = (require('lua_schema.stack')).new();
 	obj['___METADATA___'].covering_object = true;
 	obj['___METADATA___'].mixed = false;;
 	-- We dont populate cm, simce cm is that of the parent and this is the root
 	-- element
 	obj['___DATA___'] = {};
-	local objs = (require('stack')).new();
-	local sts = (require('stack')).new();
-	local pss = (require('stack')).new();
-	local mcos = (require('stack')).new();
+	local objs = (require('lua_schema.stack')).new();
+	local sts = (require('lua_schema.stack')).new();
+	local pss = (require('lua_schema.stack')).new();
+	local mcos = (require('lua_schema.stack')).new();
 
 	objs:push(obj);
 	sts:push(schema_type_handler);

@@ -3,7 +3,7 @@
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 <ns1:regex_basic_string xmlns:ns1="http://test_example.com">hello</ns1:regex_basic_string>]=]
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 
 regex_basic_string = mhf:get_message_handler("regex_basic_string", "http://test_example.com");
 

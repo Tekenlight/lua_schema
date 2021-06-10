@@ -1,5 +1,5 @@
-local facets = require("facets");
-local error_handler = require("error_handler");
+local facets = require("lua_schema.facets");
+local error_handler = require("lua_schema.error_handler");
 local __boolean_handler_class = {}
 
 __boolean_handler_class.type_name = 'boolean';

@@ -1,4 +1,4 @@
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 unistd = require("posix.unistd");
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>                                      
@@ -8,7 +8,7 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
   <genre>adfas</genre>
 </ns1:sequence_ina_choice_struct>]=]
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 sequence_ina_choice_struct = mhf:get_message_handler("sequence_ina_choice_struct", "http://test_example.com");
 
 

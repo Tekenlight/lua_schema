@@ -1,11 +1,11 @@
-local error_handler = require("error_handler");
+local error_handler = require("lua_schema.error_handler");
 local URI = require("uri");
 local stringx = require("pl.stringx");
 local xmlua = require("xmlua")
-local basic_stuff = require("basic_stuff");
-local elem_code_generator = require("elem_code_generator");
-local facets = require("facets");
-local codegen_eh_cache = require("codegen_eh_cache");
+local basic_stuff = require("lua_schema.basic_stuff");
+local elem_code_generator = require("lua_schema.elem_code_generator");
+local facets = require("lua_schema.facets");
+local codegen_eh_cache = require("lua_schema.codegen_eh_cache");
 
 local type_code_generator = {};
 
@@ -309,8 +309,8 @@ type_code_generator.gen_lua_schema_code_from_typedef = function(typedef, indent)
 	local eh_name = 'element_handler';
 	local element_handler = type_code_generator.get_element_handler(typedef, true, true);
 
-	code = code..'local basic_stuff = require("basic_stuff");\n';
-	code = code..'local eh_cache = require("eh_cache");\n';
+	code = code..'local basic_stuff = require("lua_schema.basic_stuff");\n';
+	code = code..'local eh_cache = require("lua_schema.eh_cache");\n';
 	code = code..'\n';
 	code = code..'local '..eh_name..' = {};\n';
 	code = code..eh_name..'.__name__ = \''..typedef:get_name()..'\';\n';

@@ -1,4 +1,4 @@
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 unistd = require("posix.unistd");
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
@@ -26,7 +26,7 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
   <ns2:basic_string_simple_content attr1="123" attr2="CHA">GOWRI</ns2:basic_string_simple_content>
 </ns2:example_struct>]=]
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 example_struct = mhf:get_message_handler("example_struct", "http://test_example.com");
 
 

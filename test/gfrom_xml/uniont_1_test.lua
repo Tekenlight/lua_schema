@@ -1,6 +1,6 @@
 #!/opt/local/bin/lua
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 <ns2:uniont_1 xmlns:ns2="http://test_example.com" xmlns:ns1="http://test_example1.com">   123   </ns2:uniont_1>]=]
@@ -9,7 +9,7 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 <ns2:uniont_1 xmlns:ns2="http://test_example.com" xmlns:ns1="http://test_example1.com">   Hell ooo   </ns2:uniont_1>]=]
 ]]
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 --uniont_1 = mhf:get_message_handler_using_xsd("./temp/uniont_1.xsd", "uniont_1");
 uniont_1 = mhf:get_message_handler("uniont_1", "http://test_example.com");
 

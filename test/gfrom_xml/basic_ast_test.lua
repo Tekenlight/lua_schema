@@ -3,7 +3,7 @@
 local xml_ast = [=[<?xml version="1.0" encoding="UTF-8"?>
 <ns1:basic_ast xmlns:ns1="http://test_example.com">hello world</ns1:basic_ast>]=]
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 
 basic_ast = mhf:get_message_handler("basic_ast", "http://test_example.com");
 

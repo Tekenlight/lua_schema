@@ -1,5 +1,5 @@
 #!/opt/local/bin/lua
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 <basic_int_nons>123</basic_int_nons>]=]

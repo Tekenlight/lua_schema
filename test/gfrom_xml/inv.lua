@@ -3,7 +3,7 @@ local file = io.open("common/UBL-Invoice-2.1-Example.xml");
 local xml_string = file:read("a");
 
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 
 invoice = mhf:get_message_handler("Invoice", "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2");
 local content, msg = invoice:from_xml(xml_string);

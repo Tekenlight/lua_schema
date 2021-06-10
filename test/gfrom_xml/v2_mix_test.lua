@@ -3,7 +3,7 @@
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 <ns1:v2_mix xmlns:ns1="http://test_example.com">Hello <one>a</one>World<two>b</two><TWO>Namaste <three>3</three> Sir!!</TWO></ns1:v2_mix>]=]
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 
 v2_mix = mhf:get_message_handler("v2_mix", "http://test_example.com");
 

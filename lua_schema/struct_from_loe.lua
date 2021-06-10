@@ -1,8 +1,8 @@
 local struct_from_loe = function(schema_type_handler, list)
 	local out_struct = {};
 	local list_index = 1;
-	local objs = (require('stack')).new();
-	local metas = (require('stack')).new();
+	local objs = (require('lua_schema.stack')).new();
+	local metas = (require('lua_schema.stack')).new();
 	objs:push(out_struct);
 	metas:push({top_obj = nil;});
 	local i = 1;

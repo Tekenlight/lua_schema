@@ -3,7 +3,7 @@
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 <ns1:birth_day xmlns:ns1="http://test_example.com">1947-08-14T00:00:00</ns1:birth_day>]=]
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 
 birth_day = mhf:get_message_handler("birth_day", "http://test_example.com");
 

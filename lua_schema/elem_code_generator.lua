@@ -1,10 +1,10 @@
-local error_handler = require("error_handler");
+local error_handler = require("lua_schema.error_handler");
 local URI = require("uri");
 local stringx = require("pl.stringx");
 local xmlua = require("xmlua")
-local basic_stuff = require("basic_stuff");
-local facets = require("facets");
-local codegen_eh_cache = require("codegen_eh_cache");
+local basic_stuff = require("lua_schema.basic_stuff");
+local facets = require("lua_schema.facets");
+local codegen_eh_cache = require("lua_schema.codegen_eh_cache");
 
 local elem_code_generator = {};
 
@@ -299,7 +299,6 @@ elem_code_generator.get_subelement_properties = function(model, dbg)
 
 	if (dbg == nil) then ddebug = false; else ddebug = dbg; end
 	if (ddebug) then print(debug.getinfo(1).source, debug.getinfo(1).currentline); end
-	--if (ddebug) then require 'pl.pretty'.dump(model); end
 	for i, item in ipairs(model) do
 		if (item.symbol_type == 'element' or item.symbol_type == 'any') then
 			if (ddebug) then print(debug.getinfo(1).source, debug.getinfo(1).currentline); end
@@ -426,9 +425,9 @@ end
 
 elem_code_generator.get_content_fsa_properties = function(model, content_model)
 	local _content_fsa_properties = {};
-	local bis = (require('stack')).new();
-	local cmps = (require('stack')).new();
-	local cmis = (require('stack')).new();
+	local bis = (require('lua_schema.stack')).new();
+	local cmps = (require('lua_schema.stack')).new();
+	local cmis = (require('lua_schema.stack')).new();
 	local cmi = 0;
 
 	for i, item in ipairs(model) do
@@ -511,7 +510,7 @@ end
 function elem_code_generator.prepare_generated_names(model)
 	local generated_names = {};
 	local generated_q_names = {};
-	local bis = (require('stack')).new();
+	local bis = (require('lua_schema.stack')).new();
 
 	for i, item in ipairs(model) do
 		if (item.symbol_type == 'cm_begin') then
@@ -704,7 +703,7 @@ elem_code_generator.gen_lua_schema = function(elem)
 	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	element_handler.particle_properties.nns = lns;
 
-	local basic_stuff = require("basic_stuff");
+	local basic_stuff = require("lua_schema.basic_stuff");
 
 	local mt = { __index = element_handler; };
 	local _factory = {};
@@ -926,7 +925,7 @@ end
 function elem_code_generator.put_content_fsa_properties_code(content_fsa_properties, content_model, indentation)
 	local code = '';
 	local cmi = 0;
-	local cmis = (require('stack')).new();
+	local cmis = (require('lua_schema.stack')).new();
 	local content_model_rval = {};
 	local cm_ref = nil;
 	for i, item in ipairs(content_fsa_properties) do
@@ -1360,8 +1359,8 @@ elem_code_generator.gen_lua_schema_code_named_type = function(elem, indent)
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	--element_handler.particle_properties.nns = lns;
 
-	code = code..'local basic_stuff = require("basic_stuff");\n\n';
-	code = code..'local eh_cache = require("eh_cache");\n\n';
+	code = code..'local basic_stuff = require("lua_schema.basic_stuff");\n\n';
+	code = code..'local eh_cache = require("lua_schema.eh_cache");\n\n';
 
 	local ns = '';
 	if (elem.named_type_ns ~= nil) then ns = elem.named_type_ns; end
@@ -1442,8 +1441,8 @@ elem_code_generator.gen_lua_schema_code_implicit_type = function(elem, indent)
 	--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	--element_handler.particle_properties.nns = lns;
 
-	code = code..'local basic_stuff = require("basic_stuff");\n';
-	code = code..'local eh_cache = require("eh_cache");\n';
+	code = code..'local basic_stuff = require("lua_schema.basic_stuff");\n';
+	code = code..'local eh_cache = require("lua_schema.eh_cache");\n';
 	code = code..'\n';
 	code = code..'local '..eh_name..' = {};\n';
 	code = code..'\n';

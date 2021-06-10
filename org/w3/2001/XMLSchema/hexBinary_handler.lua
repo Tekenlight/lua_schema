@@ -1,9 +1,9 @@
 local ffi = require("ffi");
-local facets = require("facets");
-local basic_stuff = require("basic_stuff");
-local error_handler = require("error_handler");
+local facets = require("lua_schema.facets");
+local basic_stuff = require("lua_schema.basic_stuff");
+local error_handler = require("lua_schema.error_handler");
 local __hexBinary_handler_class = {}
-local core_utils = require("core_utils");
+local core_utils = require("lua_schema.core_utils");
 
 __hexBinary_handler_class.type_name = 'hexBinary';
 __hexBinary_handler_class.datatype = 'binary';

@@ -1,7 +1,7 @@
 local xmlua = require("xmlua");
-local facets = require("facets");
-local error_handler = require("error_handler");
-local nu = require("number_utils");
+local facets = require("lua_schema.facets");
+local error_handler = require("lua_schema.error_handler");
+local nu = require("lua_schema.number_utils");
 local __decimal_handler_class = {}
 
 __decimal_handler_class.type_name = 'decimal';

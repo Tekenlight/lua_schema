@@ -1,6 +1,6 @@
-local basic_stuff = require("basic_stuff");
+local basic_stuff = require("lua_schema.basic_stuff");
 
-local eh_cache = require("eh_cache");
+local eh_cache = require("lua_schema.eh_cache");
 
 local _factory = {};
 eh_cache.add('{http://www.w3.org/2000/09/xmldsig#}KeyInfo', _factory);

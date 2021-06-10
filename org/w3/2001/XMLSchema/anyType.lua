@@ -1,4 +1,4 @@
-local basic_stuff = require("basic_stuff");
+local basic_stuff = require("lua_schema.basic_stuff");
 
 local element_handler = {};
 

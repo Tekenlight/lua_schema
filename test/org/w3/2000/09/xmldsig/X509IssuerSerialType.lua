@@ -1,5 +1,5 @@
-local basic_stuff = require("basic_stuff");
-local eh_cache = require("eh_cache");
+local basic_stuff = require("lua_schema.basic_stuff");
+local eh_cache = require("lua_schema.eh_cache");
 
 local element_handler = {};
 element_handler.__name__ = 'X509IssuerSerialType';
@@ -43,10 +43,10 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        generated_subelement_name = '_sequence_group',
-        group_type = 'S',
         max_occurs = 1,
+        group_type = 'S',
         min_occurs = 1,
+        generated_subelement_name = '_sequence_group',
         'X509IssuerName',
         'X509SerialNumber',
     };

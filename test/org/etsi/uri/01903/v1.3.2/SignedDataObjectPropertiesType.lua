@@ -1,5 +1,5 @@
-local basic_stuff = require("basic_stuff");
-local eh_cache = require("eh_cache");
+local basic_stuff = require("lua_schema.basic_stuff");
+local eh_cache = require("lua_schema.eh_cache");
 
 local element_handler = {};
 element_handler.__name__ = 'SignedDataObjectPropertiesType';
@@ -74,10 +74,10 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        min_occurs = 1,
+        generated_subelement_name = '_sequence_group',
         group_type = 'S',
         max_occurs = 1,
-        generated_subelement_name = '_sequence_group',
-        min_occurs = 1,
         'DataObjectFormat',
         'CommitmentTypeIndication',
         'AllDataObjectsTimeStamp',
@@ -119,13 +119,6 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CommitmentTypeIndication'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CommitmentTypeIndication'):
-            new_instance_as_ref({root_element=false, generated_name = 'CommitmentTypeIndication',
-                    min_occurs = 0, max_occurs = -1}));
-    end
-
-    do
         element_handler.properties.subelement_properties['{}any'] = 
             (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
             new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
@@ -133,9 +126,9 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}DataObjectFormat'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'DataObjectFormat'):
-            new_instance_as_ref({root_element=false, generated_name = 'DataObjectFormat',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CommitmentTypeIndication'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CommitmentTypeIndication'):
+            new_instance_as_ref({root_element=false, generated_name = 'CommitmentTypeIndication',
                     min_occurs = 0, max_occurs = -1}));
     end
 
@@ -143,6 +136,13 @@ do
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}AllDataObjectsTimeStamp'] = 
         (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'AllDataObjectsTimeStamp'):
             new_instance_as_ref({root_element=false, generated_name = 'AllDataObjectsTimeStamp',
+                    min_occurs = 0, max_occurs = -1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}DataObjectFormat'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'DataObjectFormat'):
+            new_instance_as_ref({root_element=false, generated_name = 'DataObjectFormat',
                     min_occurs = 0, max_occurs = -1}));
     end
 

@@ -1,8 +1,8 @@
 local xmlua = require("xmlua")
 local cjson = require('cjson.safe');
-local basic_stuff = require("basic_stuff");
-local nsd_cache = require("nsd_cache");
-local error_handler = require("error_handler");
+local basic_stuff = require("lua_schema.basic_stuff");
+local nsd_cache = require("lua_schema.nsd_cache");
+local error_handler = require("lua_schema.error_handler");
 
 local _message_handler_factory = {};
 
@@ -220,20 +220,20 @@ function _message_handler_factory:get_message_handler_using_xsd(xsd_name, elemen
 		error("Element: "..element_name.." not found in "..xsd_name);
 	end
 
-	local elem_code_generator = require("elem_code_generator");
+	local elem_code_generator = require("lua_schema.elem_code_generator");
 	local mh_base = elem_code_generator.gen_lua_schema(element);
 	message_handler = mh_base.new_instance_as_root();
 	return form_complete_message_handler(message_handler);
 end
 
 function _message_handler_factory:generate_lua_schema_from_element(element)
-	local elem_code_generator = require("elem_code_generator");
+	local elem_code_generator = require("lua_schema.elem_code_generator");
 	elem_code_generator.gen_lua_schema_code(element);
 	return;
 end
 
 function _message_handler_factory:generate_lua_schema_from_typedef(typedef)
-	local type_code_generator = require("type_code_generator");
+	local type_code_generator = require("lua_schema.type_code_generator");
 	type_code_generator.gen_lua_schema_code_from_typedef(typedef);
 	return;
 end
@@ -259,7 +259,7 @@ function _message_handler_factory:generate_lua_schema(xsd_name, element_name)
 	if (element == nil) then
 		error("Element: "..element_name.." not found in "..xsd_name);
 	end
-	local elem_code_generator = require("elem_code_generator");
+	local elem_code_generator = require("lua_schema.elem_code_generator");
 	elem_code_generator.gen_lua_schema_code(element);
 	return;
 end

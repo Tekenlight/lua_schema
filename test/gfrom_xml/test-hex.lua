@@ -1,4 +1,4 @@
-local cu = require("core_utils");
+local cu = require("lua_schema.core_utils");
 local ffi = require("ffi");
 
 local s = [[Hello World Sriram and Gowri !!! Hello World Sriram and Gowri !!!  Hello World Sriram and Gowri !!!!]];

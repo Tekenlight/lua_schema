@@ -3,7 +3,7 @@
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 <ns1:any_type xmlns:ns1="http://test_example.com"><one xmlns:ans="http://tekenlight.com"><ns1:a att="3">hello</ns1:a><ans:b>world</ans:b><c>all over once again</c></one></ns1:any_type>]=]
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 
 any_type = mhf:get_message_handler("any_type", "http://test_example.com");
 

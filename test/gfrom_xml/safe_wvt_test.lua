@@ -1,4 +1,4 @@
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 unistd = require("posix.unistd");
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>                                      
@@ -39,7 +39,7 @@ b3dyaSAhISEgIEhlbGxvIFdvcmxkIFNyaXJhbSBhbmQgR293cmkgISEhIQ==</base64Binary>
 <int>    54775807    </int>
 </ns1:wvt>]=]
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 wvt = mhf:get_message_handler("wvt", "http://test_example.com");
 
 

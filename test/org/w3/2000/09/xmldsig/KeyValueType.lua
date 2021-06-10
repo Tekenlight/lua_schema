@@ -1,5 +1,5 @@
-local basic_stuff = require("basic_stuff");
-local eh_cache = require("eh_cache");
+local basic_stuff = require("lua_schema.basic_stuff");
+local eh_cache = require("lua_schema.eh_cache");
 
 local element_handler = {};
 element_handler.__name__ = 'KeyValueType';
@@ -43,10 +43,10 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        min_occurs = 1,
-        group_type = 'C',
-        generated_subelement_name = '_choice_group',
         max_occurs = 1,
+        group_type = 'C',
+        min_occurs = 1,
+        generated_subelement_name = '_choice_group',
         'DSAKeyValue',
         'RSAKeyValue',
         'any',
@@ -75,10 +75,10 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{}any'] = 
-            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
-            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
-                    root_element = false, min_occurs = 1, max_occurs = 1}));
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}DSAKeyValue'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'DSAKeyValue'):
+            new_instance_as_ref({root_element=false, generated_name = 'DSAKeyValue',
+                    min_occurs = 1, max_occurs = 1}));
     end
 
     do
@@ -89,10 +89,10 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}DSAKeyValue'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'DSAKeyValue'):
-            new_instance_as_ref({root_element=false, generated_name = 'DSAKeyValue',
-                    min_occurs = 1, max_occurs = 1}));
+        element_handler.properties.subelement_properties['{}any'] = 
+            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
+            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
+                    root_element = false, min_occurs = 1, max_occurs = 1}));
     end
 
 end

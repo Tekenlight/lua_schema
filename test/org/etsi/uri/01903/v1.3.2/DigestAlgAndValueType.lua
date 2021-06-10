@@ -1,5 +1,5 @@
-local basic_stuff = require("basic_stuff");
-local eh_cache = require("eh_cache");
+local basic_stuff = require("lua_schema.basic_stuff");
+local eh_cache = require("lua_schema.eh_cache");
 
 local element_handler = {};
 element_handler.__name__ = 'DigestAlgAndValueType';
@@ -43,10 +43,10 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        min_occurs = 1,
+        generated_subelement_name = '_sequence_group',
         group_type = 'S',
         max_occurs = 1,
-        generated_subelement_name = '_sequence_group',
-        min_occurs = 1,
         'DigestMethod',
         'DigestValue',
     };
@@ -72,16 +72,16 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}DigestMethod'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'DigestMethod'):
-            new_instance_as_ref({root_element=false, generated_name = 'DigestMethod',
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}DigestValue'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'DigestValue'):
+            new_instance_as_ref({root_element=false, generated_name = 'DigestValue',
                     min_occurs = 1, max_occurs = 1}));
     end
 
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}DigestValue'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'DigestValue'):
-            new_instance_as_ref({root_element=false, generated_name = 'DigestValue',
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}DigestMethod'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'DigestMethod'):
+            new_instance_as_ref({root_element=false, generated_name = 'DigestMethod',
                     min_occurs = 1, max_occurs = 1}));
     end
 

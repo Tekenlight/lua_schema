@@ -1,5 +1,5 @@
-local basic_stuff = require("basic_stuff");
-local eh_cache = require("eh_cache");
+local basic_stuff = require("lua_schema.basic_stuff");
+local eh_cache = require("lua_schema.eh_cache");
 
 local element_handler = {};
 element_handler.__name__ = 'SignatureMethodType';
@@ -74,10 +74,10 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        generated_subelement_name = '_sequence_group',
-        group_type = 'S',
         max_occurs = 1,
+        group_type = 'S',
         min_occurs = 1,
+        generated_subelement_name = '_sequence_group',
         'HMACOutputLength',
         'any',
     };
@@ -102,6 +102,13 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
+    do
+        element_handler.properties.subelement_properties['{}any'] = 
+            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
+            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
+                    root_element = false, min_occurs = 0, max_occurs = -1}));
+    end
+
     element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}HMACOutputLength'] = {};
     do
 element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}HMACOutputLength'].super_element_content_type = require('org.w3.2001.XMLSchema.integer_handler'):instantiate();
@@ -151,13 +158,6 @@ element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xml
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}HMACOutputLength'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}HMACOutputLength'].particle_properties.min_occurs = 0;
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}HMACOutputLength'].particle_properties.max_occurs = 1;
-    end
-
-    do
-        element_handler.properties.subelement_properties['{}any'] = 
-            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
-            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
-                    root_element = false, min_occurs = 0, max_occurs = -1}));
     end
 
 end

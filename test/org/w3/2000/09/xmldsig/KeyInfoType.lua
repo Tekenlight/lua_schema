@@ -1,5 +1,5 @@
-local basic_stuff = require("basic_stuff");
-local eh_cache = require("eh_cache");
+local basic_stuff = require("lua_schema.basic_stuff");
+local eh_cache = require("lua_schema.eh_cache");
 
 local element_handler = {};
 element_handler.__name__ = 'KeyInfoType';
@@ -121,9 +121,9 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}KeyValue'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'KeyValue'):
-            new_instance_as_ref({root_element=false, generated_name = 'KeyValue',
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}PGPData'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'PGPData'):
+            new_instance_as_ref({root_element=false, generated_name = 'PGPData',
                     min_occurs = 1, max_occurs = 1}));
     end
 
@@ -135,30 +135,9 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SPKIData'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'SPKIData'):
-            new_instance_as_ref({root_element=false, generated_name = 'SPKIData',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}KeyName'] = 
         (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'KeyName'):
             new_instance_as_ref({root_element=false, generated_name = 'KeyName',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}X509Data'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'X509Data'):
-            new_instance_as_ref({root_element=false, generated_name = 'X509Data',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}PGPData'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'PGPData'):
-            new_instance_as_ref({root_element=false, generated_name = 'PGPData',
                     min_occurs = 1, max_occurs = 1}));
     end
 
@@ -173,6 +152,27 @@ do
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}RetrievalMethod'] = 
         (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'RetrievalMethod'):
             new_instance_as_ref({root_element=false, generated_name = 'RetrievalMethod',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SPKIData'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'SPKIData'):
+            new_instance_as_ref({root_element=false, generated_name = 'SPKIData',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}X509Data'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'X509Data'):
+            new_instance_as_ref({root_element=false, generated_name = 'X509Data',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}KeyValue'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'KeyValue'):
+            new_instance_as_ref({root_element=false, generated_name = 'KeyValue',
                     min_occurs = 1, max_occurs = 1}));
     end
 

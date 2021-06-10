@@ -2,7 +2,7 @@
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?><basic_string_nons>hello hello</basic_string_nons>]=]
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 
 basic_string = mhf:get_message_handler("basic_string_nons");
 

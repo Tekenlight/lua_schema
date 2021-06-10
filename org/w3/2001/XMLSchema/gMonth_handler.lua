@@ -1,8 +1,8 @@
 local xmlua = require("xmlua");
-local facets = require("facets");
-local du = require("date_utils");
-local basic_stuff = require("basic_stuff");
-local error_handler = require("error_handler");
+local facets = require("lua_schema.facets");
+local du = require("lua_schema.date_utils");
+local basic_stuff = require("lua_schema.basic_stuff");
+local error_handler = require("lua_schema.error_handler");
 
 local xml_gMonth_utils = xmlua.XMLDateUtils.new();
 local __gMonth_handler_class = {}

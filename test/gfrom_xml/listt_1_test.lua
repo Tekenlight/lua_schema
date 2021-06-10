@@ -1,11 +1,11 @@
 #!/opt/local/bin/lua
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
 <ns2:listt_1 xmlns:ns2="http://test_example.com" xmlns:ns1="http://test_example1.com">99 100 </ns2:listt_1>]=]
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 --listt_1 = mhf:get_message_handler_using_xsd("./temp/listt_1.xsd", "listt_1");
 listt_1 = mhf:get_message_handler("listt_1", "http://test_example.com");
 

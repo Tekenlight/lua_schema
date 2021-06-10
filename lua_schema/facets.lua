@@ -1,10 +1,10 @@
 local xmlua = require("xmlua")
 local regex = xmlua.XMLRegexp.new();
-local du = require("date_utils");
-local nu = require("number_utils");
+local du = require("lua_schema.date_utils");
+local nu = require("lua_schema.number_utils");
 
 
-local error_handler = require("error_handler");
+local error_handler = require("lua_schema.error_handler");
 
 local supported_datatypes = {
 	 ['string'] = 1

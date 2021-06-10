@@ -1,5 +1,5 @@
-local basic_stuff = require("basic_stuff");
-local eh_cache = require("eh_cache");
+local basic_stuff = require("lua_schema.basic_stuff");
+local eh_cache = require("lua_schema.eh_cache");
 
 local element_handler = {};
 element_handler.__name__ = 'RevocationValuesType';
@@ -74,10 +74,10 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        max_occurs = 1,
-        group_type = 'S',
         generated_subelement_name = '_sequence_group',
         min_occurs = 1,
+        max_occurs = 1,
+        group_type = 'S',
         'CRLValues',
         'OCSPValues',
         'OtherValues',
@@ -113,16 +113,16 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CRLValues'] = 
-            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CRLValuesType'):
-            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'CRLValues', generated_name = 'CRLValues',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}OCSPValues'] = 
+            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'OCSPValuesType'):
+            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'OCSPValues', generated_name = 'OCSPValues',
                     root_element = false, min_occurs = 0, max_occurs = 1}));
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}OCSPValues'] = 
-            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'OCSPValuesType'):
-            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'OCSPValues', generated_name = 'OCSPValues',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CRLValues'] = 
+            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CRLValuesType'):
+            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'CRLValues', generated_name = 'CRLValues',
                     root_element = false, min_occurs = 0, max_occurs = 1}));
     end
 

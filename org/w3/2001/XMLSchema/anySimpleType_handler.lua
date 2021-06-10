@@ -1,6 +1,6 @@
-local facets = require("facets");
-local basic_stuff = require("basic_stuff");
-local error_handler = require("error_handler");
+local facets = require("lua_schema.facets");
+local basic_stuff = require("lua_schema.basic_stuff");
+local error_handler = require("lua_schema.error_handler");
 local __anySimpleType_handler_class = {}
 
 __anySimpleType_handler_class.type_name = 'anySimpleType';

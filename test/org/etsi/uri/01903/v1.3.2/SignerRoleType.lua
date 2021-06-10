@@ -1,5 +1,5 @@
-local basic_stuff = require("basic_stuff");
-local eh_cache = require("eh_cache");
+local basic_stuff = require("lua_schema.basic_stuff");
+local eh_cache = require("lua_schema.eh_cache");
 
 local element_handler = {};
 element_handler.__name__ = 'SignerRoleType';
@@ -43,10 +43,10 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        min_occurs = 1,
+        generated_subelement_name = '_sequence_group',
         group_type = 'S',
         max_occurs = 1,
-        generated_subelement_name = '_sequence_group',
-        min_occurs = 1,
         'ClaimedRoles',
         'CertifiedRoles',
     };
@@ -72,16 +72,16 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CertifiedRoles'] = 
-            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CertifiedRolesListType'):
-            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'CertifiedRoles', generated_name = 'CertifiedRoles',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ClaimedRoles'] = 
+            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'ClaimedRolesListType'):
+            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'ClaimedRoles', generated_name = 'ClaimedRoles',
                     root_element = false, min_occurs = 0, max_occurs = 1}));
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ClaimedRoles'] = 
-            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'ClaimedRolesListType'):
-            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'ClaimedRoles', generated_name = 'ClaimedRoles',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CertifiedRoles'] = 
+            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CertifiedRolesListType'):
+            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'CertifiedRoles', generated_name = 'CertifiedRoles',
                     root_element = false, min_occurs = 0, max_occurs = 1}));
     end
 

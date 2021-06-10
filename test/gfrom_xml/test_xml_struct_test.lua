@@ -1,5 +1,5 @@
 #!/opt/local/bin/lua
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>                                      
 <ns1:xml_struct xmlns:ns2="http://test_example1.com" xmlns:ns1="http://test_example.com">
@@ -32,7 +32,7 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
   </included_struct>
 </ns1:xml_struct>]=]
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 
 xml_struct = mhf:get_message_handler("xml_struct", "http://test_example.com");
 

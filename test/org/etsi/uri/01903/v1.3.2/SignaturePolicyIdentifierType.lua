@@ -1,5 +1,5 @@
-local basic_stuff = require("basic_stuff");
-local eh_cache = require("eh_cache");
+local basic_stuff = require("lua_schema.basic_stuff");
+local eh_cache = require("lua_schema.eh_cache");
 
 local element_handler = {};
 element_handler.__name__ = 'SignaturePolicyIdentifierType';
@@ -43,10 +43,10 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        min_occurs = 1,
+        generated_subelement_name = '_choice_group',
         group_type = 'C',
         max_occurs = 1,
-        generated_subelement_name = '_choice_group',
-        min_occurs = 1,
         'SignaturePolicyId',
         'SignaturePolicyImplied',
     };
@@ -71,13 +71,6 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
-    do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignaturePolicyId'] = 
-            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignaturePolicyIdType'):
-            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'SignaturePolicyId', generated_name = 'SignaturePolicyId',
-                    root_element = false, min_occurs = 1, max_occurs = 1}));
-    end
-
     element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignaturePolicyImplied'] = {};
     do
         do
@@ -106,10 +99,10 @@ do
 -- element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignaturePolicyImplied'].properties.content_model
         do
             element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignaturePolicyImplied'].properties.content_model = {
-                max_occurs = 1,
-                group_type = 'S',
                 generated_subelement_name = '_sequence_group',
                 min_occurs = 1,
+                max_occurs = 1,
+                group_type = 'S',
                 'any',
             };
         end
@@ -158,6 +151,13 @@ do
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignaturePolicyImplied'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignaturePolicyImplied'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignaturePolicyImplied'].particle_properties.max_occurs = 1;
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignaturePolicyId'] = 
+            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignaturePolicyIdType'):
+            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'SignaturePolicyId', generated_name = 'SignaturePolicyId',
+                    root_element = false, min_occurs = 1, max_occurs = 1}));
     end
 
 end

@@ -1,9 +1,9 @@
 local date = require("date");
 local xmlua = require("xmlua");
 local xml_date_utils = xmlua.XMLDateUtils.new();
-local nu = require("number_utils");
+local nu = require("lua_schema.number_utils");
 
-local error_handler = require("error_handler");
+local error_handler = require("lua_schema.error_handler");
 
 local date_utils = {};
 date_utils.MIN_TIME_ZONE = -840;

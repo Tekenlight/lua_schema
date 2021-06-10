@@ -1,6 +1,6 @@
-local basic_stuff = require("basic_stuff");
+local basic_stuff = require("lua_schema.basic_stuff");
 
-local eh_cache = require("eh_cache");
+local eh_cache = require("lua_schema.eh_cache");
 
 local _factory = {};
 eh_cache.add('{http://uri.etsi.org/01903/v1.4.1#}RenewedDigests', _factory);

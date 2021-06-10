@@ -1,5 +1,5 @@
-local basic_stuff = require("basic_stuff");
-local eh_cache = require("eh_cache");
+local basic_stuff = require("lua_schema.basic_stuff");
+local eh_cache = require("lua_schema.eh_cache");
 
 local element_handler = {};
 element_handler.__name__ = 'RetrievalMethodType';
@@ -38,36 +38,6 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
-        element_handler.properties.attr._attr_properties['{}Type'] = {};
-
-        element_handler.properties.attr._attr_properties['{}Type'].base = {};
-        element_handler.properties.attr._attr_properties['{}Type'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}Type'].base.name = 'anyURI';
-        element_handler.properties.attr._attr_properties['{}Type'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}Type'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}Type'].bi_type.name = 'anyURI';
-        element_handler.properties.attr._attr_properties['{}Type'].bi_type.id = '29';
-        element_handler.properties.attr._attr_properties['{}Type'].properties = {};
-        element_handler.properties.attr._attr_properties['{}Type'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}anyURI';
-        element_handler.properties.attr._attr_properties['{}Type'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}Type'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}Type'].properties.use = 'O';
-        element_handler.properties.attr._attr_properties['{}Type'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}Type'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}Type'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}Type'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}Type'].particle_properties.q_name.local_name = 'Type';
-        element_handler.properties.attr._attr_properties['{}Type'].particle_properties.generated_name = 'Type';
-
-        element_handler.properties.attr._attr_properties['{}Type'].type_handler = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}Type'].super_element_content_type = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}Type'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}Type'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}Type'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}Type']);
-    end
-    do
         element_handler.properties.attr._attr_properties['{}URI'] = {};
 
         element_handler.properties.attr._attr_properties['{}URI'].base = {};
@@ -97,9 +67,39 @@ do
         element_handler.properties.attr._attr_properties['{}URI'].local_facets = {}
         element_handler.properties.attr._attr_properties['{}URI'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}URI']);
     end
+    do
+        element_handler.properties.attr._attr_properties['{}Type'] = {};
+
+        element_handler.properties.attr._attr_properties['{}Type'].base = {};
+        element_handler.properties.attr._attr_properties['{}Type'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}Type'].base.name = 'anyURI';
+        element_handler.properties.attr._attr_properties['{}Type'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}Type'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}Type'].bi_type.name = 'anyURI';
+        element_handler.properties.attr._attr_properties['{}Type'].bi_type.id = '29';
+        element_handler.properties.attr._attr_properties['{}Type'].properties = {};
+        element_handler.properties.attr._attr_properties['{}Type'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}anyURI';
+        element_handler.properties.attr._attr_properties['{}Type'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}Type'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}Type'].properties.use = 'O';
+        element_handler.properties.attr._attr_properties['{}Type'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}Type'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}Type'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}Type'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}Type'].particle_properties.q_name.local_name = 'Type';
+        element_handler.properties.attr._attr_properties['{}Type'].particle_properties.generated_name = 'Type';
+
+        element_handler.properties.attr._attr_properties['{}Type'].type_handler = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}Type'].super_element_content_type = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}Type'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}Type'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}Type'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}Type']);
+    end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['Type'] = '{}Type';
     element_handler.properties.attr._generated_attr['URI'] = '{}URI';
+    element_handler.properties.attr._generated_attr['Type'] = '{}Type';
 end
 
 -- element_handler.properties.content_model

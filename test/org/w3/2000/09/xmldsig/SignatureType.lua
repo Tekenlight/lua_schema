@@ -1,5 +1,5 @@
-local basic_stuff = require("basic_stuff");
-local eh_cache = require("eh_cache");
+local basic_stuff = require("lua_schema.basic_stuff");
+local eh_cache = require("lua_schema.eh_cache");
 
 local element_handler = {};
 element_handler.__name__ = 'SignatureType';
@@ -74,10 +74,10 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        min_occurs = 1,
-        group_type = 'S',
-        generated_subelement_name = '_sequence_group',
         max_occurs = 1,
+        group_type = 'S',
+        min_occurs = 1,
+        generated_subelement_name = '_sequence_group',
         'SignedInfo',
         'SignatureValue',
         'KeyInfo',
@@ -109,17 +109,10 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Object'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'Object'):
-            new_instance_as_ref({root_element=false, generated_name = 'Object',
-                    min_occurs = 0, max_occurs = -1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}KeyInfo'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'KeyInfo'):
-            new_instance_as_ref({root_element=false, generated_name = 'KeyInfo',
-                    min_occurs = 0, max_occurs = 1}));
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SignatureValue'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'SignatureValue'):
+            new_instance_as_ref({root_element=false, generated_name = 'SignatureValue',
+                    min_occurs = 1, max_occurs = 1}));
     end
 
     do
@@ -130,10 +123,17 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SignatureValue'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'SignatureValue'):
-            new_instance_as_ref({root_element=false, generated_name = 'SignatureValue',
-                    min_occurs = 1, max_occurs = 1}));
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}KeyInfo'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'KeyInfo'):
+            new_instance_as_ref({root_element=false, generated_name = 'KeyInfo',
+                    min_occurs = 0, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Object'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'Object'):
+            new_instance_as_ref({root_element=false, generated_name = 'Object',
+                    min_occurs = 0, max_occurs = -1}));
     end
 
 end

@@ -1,4 +1,4 @@
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 unistd = require("posix.unistd");
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>                                      
@@ -58,7 +58,7 @@ b3dyaSAhISEgIEhlbGxvIFdvcmxkIFNyaXJhbSBhbmQgR293cmkgISEhIQ==</base64Binary>
 <duration>    P100Y5M10DT10H30M20.5S    </duration>
 </ns1:struct_with_various_types>]=]
 
-mhf = require("message_handler_factory")
+mhf = require("schema_processor")
 struct_with_various_types = mhf:get_message_handler("struct_with_various_types", "http://test_example.com");
 
 
