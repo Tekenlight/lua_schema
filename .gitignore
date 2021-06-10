@@ -3,7 +3,7 @@
 *.dylib
 *.java
 com/
-temp/
+test/temp/
 UBL
 UN
 un/
