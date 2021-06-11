@@ -316,7 +316,6 @@ basic_stuff.all_elements_part_of_declaration = function(schema_type_handler, con
 		if (schema_type_handler.properties.content_type ~= 'M' or type(n) ~= 'number') then
 			error_handler.push_element(n);
 			if ((n ~= "_attr") and (schema_type_handler.properties.generated_subelements[n] == nil)) then
-				print("TWO", n);
 				error_handler.raise_validation_error(-1,
 						"Element: {"..error_handler.get_fieldpath().."} should not be present", debug.getinfo(1));
 				return false;

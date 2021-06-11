@@ -204,10 +204,16 @@ local function form_complete_message_handler(message_handler)
 		return obj, msg;
 	end
 
+	function message_handler:intermediate_json_from_obj(obj)
+		local json_obj = basic_stuff.to_intermediate_json(self, obj);
+		return json_obj;
+	end
+
 	function message_handler:obj_from_intermediate_json(obj)
 		local content = basic_stuff.from_intermediate_json(self, obj);
 		return content;
 	end
+
 	return message_handler;
 end
 
