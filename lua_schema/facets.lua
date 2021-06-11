@@ -305,7 +305,7 @@ end
 function _xsd_facets:check_integer_facets(s)
 	if (type(s) ~= 'cdata') then
 		error_handler.raise_validation_error(-1,
-			"Field {"..error_handler.get_fieldpath().."}: Input not a \"number type\"", debug.getinfo(1));
+			"Field {"..error_handler.get_fieldpath().."}: Input not an \"integer type\"", debug.getinfo(1));
 		return false;
 	end
 	if (self.min_exclusive ~= nil) then

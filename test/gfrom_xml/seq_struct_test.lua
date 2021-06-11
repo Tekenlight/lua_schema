@@ -34,6 +34,10 @@ end
 
 if (nil ~= content) then
 	print(seq_struct:to_xml(content))
+	local json = seq_struct:to_json(content);
+	print(json);
+	local obj = seq_struct:from_json(json);
+	require 'pl.pretty'.dump(obj);
 end
 
 if (content ~= nil) then os.exit(true); else os.exit(false); end

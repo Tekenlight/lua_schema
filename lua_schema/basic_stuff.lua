@@ -1305,10 +1305,17 @@ basic_stuff.primitive_to_intermediate_json = function(th, content)
 		i_content = th:to_xmlua(nil, content);
 	elseif (th.datatype == 'integer') then
 		if (th.type_name ~= "int" and
+			th.type_name ~= "integer" and
 			th.type_name ~= "unsignedInt" and
 			th.type_name ~= "byte" and
 			th.type_name ~= "unsignedByte" and
 			th.type_name ~= "short" and
+			th.type_name ~= "nonPositiveInteger" and
+			th.type_name ~= "nonNegativeInteger" and
+			th.type_name ~= "positiveInteger" and
+			th.type_name ~= "negativeInteger" and
+			th.type_name ~= "long" and
+			th.type_name ~= "unsignedLong" and
 			th.type_name ~= "unsignedShort") then
 			i_content = tostring(content);
 		else
@@ -1368,7 +1375,7 @@ basic_stuff.complex_to_intermediate_json = function(schema_type_handler, content
 				if (content_model.max_occurs ~= 1) then
 					local generated_subelement_name = content_model.generated_subelement_name;
 					i_content[generated_subelement_name] = {};
-					for i,v in ipairs(content[schema_type_handler.properties.content_model[generated_subelement_name]]) do
+					for i,v in ipairs(content[generated_subelement_name]) do
 						i_content[generated_subelement_name][i] =
 										basic_stuff.inner_complex_to_intermediate_json(schema_type_handler, v, content_model, nil);
 					end
@@ -1457,10 +1464,17 @@ basic_stuff.primitive_from_intermediate_json = function(th, content)
 		content = th:to_type(nil, content);
 	elseif (th.datatype == 'integer') then
 		if (th.type_name ~= "int" and
+			th.type_name ~= "integer" and
 			th.type_name ~= "unsignedInt" and
 			th.type_name ~= "byte" and
 			th.type_name ~= "unsignedByte" and
 			th.type_name ~= "short" and
+			th.type_name ~= "nonPositiveInteger" and
+			th.type_name ~= "nonNegativeInteger" and
+			th.type_name ~= "positiveInteger" and
+			th.type_name ~= "negativeInteger" and
+			th.type_name ~= "long" and
+			th.type_name ~= "unsignedLong" and
 			th.type_name ~= "unsignedShort") then
 			content = th:to_type(nil, content);
 		else
@@ -1509,7 +1523,7 @@ basic_stuff.complex_from_intermediate_json = function(schema_type_handler, conte
 			if (n ~= 0) then
 				if (content_model.max_occurs ~= 1) then
 					local generated_subelement_name = content_model.generated_subelement_name;
-					for i,v in ipairs(content[schema_type_handler.properties.content_model[generated_subelement_name]]) do
+					for i,v in ipairs(content[generated_subelement_name]) do
 						content[generated_subelement_name][i] =
 							basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, v, content_model);
 					end

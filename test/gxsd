@@ -12,7 +12,7 @@ then
 	do
 		echo "Generating "$file
 		echo "--------------"
-		lua ../generate_schema.lua $file
+		lua $HOME/.luarocks/share/lua/5.3/generate_schema.lua $file
 		if [ $? -ne 0 ]
 		then
 			exit 1;
@@ -22,7 +22,7 @@ else
 	file=$1
 	echo "Generating "$file
 	echo "--------------"
-	lua ../generate_schema.lua $file
+	lua $HOME/.luarocks/share/lua/5.3/generate_schema.lua $file
 	if [ $? -ne 0 ]
 	then
 		exit 1;

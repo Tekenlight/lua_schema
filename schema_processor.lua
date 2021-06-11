@@ -179,6 +179,15 @@ local function form_complete_message_handler(message_handler)
 		end
 	end
 
+	function message_handler:validate(content)
+		status, msg = validate_doc(self, content)
+		if (status) then
+			return true, nil;
+		else
+			return false, msg;
+		end
+	end
+
 	function message_handler:from_xml(msg)
 		local status, obj, msg = parse_xml(self, msg);
 		if (status ~= true) then
@@ -193,6 +202,11 @@ local function form_complete_message_handler(message_handler)
 			return nil, msg;
 		end
 		return obj, msg;
+	end
+
+	function message_handler:obj_from_intermediate_json(obj)
+		local content = basic_stuff.from_intermediate_json(self, obj);
+		return content;
 	end
 	return message_handler;
 end
