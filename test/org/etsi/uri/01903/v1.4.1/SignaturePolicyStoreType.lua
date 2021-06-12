@@ -75,15 +75,17 @@ end
 do
     element_handler.properties.content_model = {
         group_type = 'S',
-        generated_subelement_name = '_sequence_group',
-        max_occurs = 1,
         min_occurs = 1,
+        generated_subelement_name = '_sequence_group',
+        top_level_group = true,
+        max_occurs = 1,
         'SPDocSpecification',
         {
             group_type = 'C',
-            generated_subelement_name = '_choice_group',
-            max_occurs = 1,
             min_occurs = 1,
+            generated_subelement_name = '_choice_group',
+            top_level_group = false,
+            max_occurs = 1,
             'SignaturePolicyDocument',
             'SigPolDocLocalURI',
         },
@@ -113,6 +115,13 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SPDocSpecification'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.4.1#', 'SPDocSpecification'):
+            new_instance_as_ref({root_element=false, generated_name = 'SPDocSpecification',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
     element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SignaturePolicyDocument'] = {};
     do
 element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SignaturePolicyDocument'].super_element_content_type = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
@@ -213,13 +222,6 @@ element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.max_occurs = 1;
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SPDocSpecification'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.4.1#', 'SPDocSpecification'):
-            new_instance_as_ref({root_element=false, generated_name = 'SPDocSpecification',
-                    min_occurs = 1, max_occurs = 1}));
     end
 
 end

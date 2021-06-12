@@ -75,14 +75,16 @@ end
 do
     element_handler.properties.content_model = {
         group_type = 'S',
+        max_occurs = 1,
+        top_level_group = true,
         generated_subelement_name = '_sequence_group',
         min_occurs = 1,
-        max_occurs = 1,
         {
             group_type = 'C',
+            max_occurs = 1,
+            top_level_group = false,
             generated_subelement_name = '_choice_group',
             min_occurs = 1,
-            max_occurs = 1,
             'ECParameters',
             'NamedCurve',
         },
@@ -117,13 +119,6 @@ do
         element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}NamedCurve'] = 
             (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'NamedCurveType'):
             new_instance_as_local_element({ns = 'http://www.w3.org/2009/xmldsig11#', local_name = 'NamedCurve', generated_name = 'NamedCurve',
-                    root_element = false, min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}ECParameters'] = 
-            (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'ECParametersType'):
-            new_instance_as_local_element({ns = 'http://www.w3.org/2009/xmldsig11#', local_name = 'ECParameters', generated_name = 'ECParameters',
                     root_element = false, min_occurs = 1, max_occurs = 1}));
     end
 
@@ -176,6 +171,13 @@ element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsi
         element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}PublicKey'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}PublicKey'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}PublicKey'].particle_properties.max_occurs = 1;
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}ECParameters'] = 
+            (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'ECParametersType'):
+            new_instance_as_local_element({ns = 'http://www.w3.org/2009/xmldsig11#', local_name = 'ECParameters', generated_name = 'ECParameters',
+                    root_element = false, min_occurs = 1, max_occurs = 1}));
     end
 
 end

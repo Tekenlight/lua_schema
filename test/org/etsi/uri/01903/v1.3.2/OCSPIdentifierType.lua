@@ -74,10 +74,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        top_level_group = true,
         min_occurs = 1,
         generated_subelement_name = '_sequence_group',
-        group_type = 'S',
         max_occurs = 1,
+        group_type = 'S',
         'ResponderID',
         'ProducedAt',
     };
@@ -102,13 +103,6 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
-    do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ResponderID'] = 
-            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'ResponderIDType'):
-            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'ResponderID', generated_name = 'ResponderID',
-                    root_element = false, min_occurs = 1, max_occurs = 1}));
-    end
-
     element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ProducedAt'] = {};
     do
 element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ProducedAt'].super_element_content_type = require('org.w3.2001.XMLSchema.dateTime_handler'):instantiate();
@@ -158,6 +152,13 @@ element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ProducedAt'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ProducedAt'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ProducedAt'].particle_properties.max_occurs = 1;
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ResponderID'] = 
+            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'ResponderIDType'):
+            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'ResponderID', generated_name = 'ResponderID',
+                    root_element = false, min_occurs = 1, max_occurs = 1}));
     end
 
 end

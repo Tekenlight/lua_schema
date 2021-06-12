@@ -74,10 +74,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        max_occurs = -1,
-        group_type = 'C',
-        min_occurs = 0,
         generated_subelement_name = '_choice_group',
+        min_occurs = 0,
+        top_level_group = true,
+        group_type = 'C',
+        max_occurs = -1,
         'any',
         'XPath',
     };

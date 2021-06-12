@@ -74,8 +74,9 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        generated_subelement_name = '_sequence_group',
+        top_level_group = true,
         min_occurs = 1,
+        generated_subelement_name = '_sequence_group',
         max_occurs = 1,
         group_type = 'S',
         'SigningTime',
@@ -124,30 +125,16 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignatureProductionPlaceV2'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignatureProductionPlaceV2'):
-            new_instance_as_ref({root_element=false, generated_name = 'SignatureProductionPlaceV2',
-                    min_occurs = 0, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{}any'] = 
-            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
-            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
-                    root_element = false, min_occurs = 0, max_occurs = -1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignerRole'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignerRole'):
-            new_instance_as_ref({root_element=false, generated_name = 'SignerRole',
-                    min_occurs = 0, max_occurs = 1}));
-    end
-
-    do
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignatureProductionPlace'] = 
         (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignatureProductionPlace'):
             new_instance_as_ref({root_element=false, generated_name = 'SignatureProductionPlace',
+                    min_occurs = 0, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignatureProductionPlaceV2'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignatureProductionPlaceV2'):
+            new_instance_as_ref({root_element=false, generated_name = 'SignatureProductionPlaceV2',
                     min_occurs = 0, max_occurs = 1}));
     end
 
@@ -159,10 +146,17 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SigningCertificateV2'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SigningCertificateV2'):
-            new_instance_as_ref({root_element=false, generated_name = 'SigningCertificateV2',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignerRole'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignerRole'):
+            new_instance_as_ref({root_element=false, generated_name = 'SignerRole',
                     min_occurs = 0, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{}any'] = 
+            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
+            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
+                    root_element = false, min_occurs = 0, max_occurs = -1}));
     end
 
     do
@@ -176,6 +170,13 @@ do
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignerRoleV2'] = 
         (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignerRoleV2'):
             new_instance_as_ref({root_element=false, generated_name = 'SignerRoleV2',
+                    min_occurs = 0, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SigningCertificateV2'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SigningCertificateV2'):
+            new_instance_as_ref({root_element=false, generated_name = 'SigningCertificateV2',
                     min_occurs = 0, max_occurs = 1}));
     end
 

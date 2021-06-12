@@ -98,17 +98,18 @@ do
         element_handler.properties.attr._attr_properties['{}Id'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}Id']);
     end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['Id'] = '{}Id';
     element_handler.properties.attr._generated_attr['Target'] = '{}Target';
+    element_handler.properties.attr._generated_attr['Id'] = '{}Id';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        max_occurs = -1,
-        group_type = 'C',
-        min_occurs = 1,
         generated_subelement_name = '_choice_group',
+        min_occurs = 1,
+        top_level_group = true,
+        group_type = 'C',
+        max_occurs = -1,
         'any',
     };
 end

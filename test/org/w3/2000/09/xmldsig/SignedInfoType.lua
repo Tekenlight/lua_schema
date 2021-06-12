@@ -74,10 +74,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        max_occurs = 1,
-        group_type = 'S',
-        min_occurs = 1,
         generated_subelement_name = '_sequence_group',
+        min_occurs = 1,
+        top_level_group = true,
+        group_type = 'S',
+        max_occurs = 1,
         'CanonicalizationMethod',
         'SignatureMethod',
         'Reference',
@@ -106,10 +107,10 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Reference'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'Reference'):
-            new_instance_as_ref({root_element=false, generated_name = 'Reference',
-                    min_occurs = 1, max_occurs = -1}));
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}CanonicalizationMethod'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'CanonicalizationMethod'):
+            new_instance_as_ref({root_element=false, generated_name = 'CanonicalizationMethod',
+                    min_occurs = 1, max_occurs = 1}));
     end
 
     do
@@ -120,10 +121,10 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}CanonicalizationMethod'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'CanonicalizationMethod'):
-            new_instance_as_ref({root_element=false, generated_name = 'CanonicalizationMethod',
-                    min_occurs = 1, max_occurs = 1}));
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Reference'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'Reference'):
+            new_instance_as_ref({root_element=false, generated_name = 'Reference',
+                    min_occurs = 1, max_occurs = -1}));
     end
 
 end

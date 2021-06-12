@@ -74,10 +74,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        max_occurs = 1,
-        group_type = 'S',
-        min_occurs = 1,
         generated_subelement_name = '_sequence_group',
+        max_occurs = 1,
+        min_occurs = 1,
+        group_type = 'S',
+        top_level_group = true,
         'SignedInfo',
         'SignatureValue',
         'KeyInfo',
@@ -116,10 +117,10 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SignedInfo'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'SignedInfo'):
-            new_instance_as_ref({root_element=false, generated_name = 'SignedInfo',
-                    min_occurs = 1, max_occurs = 1}));
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Object'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'Object'):
+            new_instance_as_ref({root_element=false, generated_name = 'Object',
+                    min_occurs = 0, max_occurs = -1}));
     end
 
     do
@@ -130,10 +131,10 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Object'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'Object'):
-            new_instance_as_ref({root_element=false, generated_name = 'Object',
-                    min_occurs = 0, max_occurs = -1}));
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SignedInfo'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'SignedInfo'):
+            new_instance_as_ref({root_element=false, generated_name = 'SignedInfo',
+                    min_occurs = 1, max_occurs = 1}));
     end
 
 end

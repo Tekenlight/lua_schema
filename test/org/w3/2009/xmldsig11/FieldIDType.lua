@@ -44,9 +44,10 @@ end
 do
     element_handler.properties.content_model = {
         group_type = 'C',
+        max_occurs = 1,
+        top_level_group = true,
         generated_subelement_name = '_choice_group',
         min_occurs = 1,
-        max_occurs = 1,
         'Prime',
         'TnB',
         'PnB',
@@ -88,13 +89,6 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}GnB'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'GnB'):
-            new_instance_as_ref({root_element=false, generated_name = 'GnB',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
         element_handler.properties.subelement_properties['{}any'] = 
             (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
             new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
@@ -105,6 +99,13 @@ do
         element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}TnB'] = 
         (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'TnB'):
             new_instance_as_ref({root_element=false, generated_name = 'TnB',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}GnB'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'GnB'):
+            new_instance_as_ref({root_element=false, generated_name = 'GnB',
                     min_occurs = 1, max_occurs = 1}));
     end
 

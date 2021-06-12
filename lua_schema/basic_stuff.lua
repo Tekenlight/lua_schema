@@ -370,7 +370,11 @@ basic_stuff.data_present_within_model = function(content_model, content)
 				return false;
 			end
 			if (field_name.max_occurs ~= 1) then
-				local items = content[field_name.generated_subelement_name];
+				if (v.top_level_group) then
+					items = content;
+				else
+					items = content[v.generated_subelement_name];
+				end
 				if (#items > 0) then
 					return true;
 				end
@@ -433,7 +437,11 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 				else
 					fields = fields..", "..v.generated_subelement_name;
 				end
-				xmlc = content[v.generated_subelement_name]
+				if (v.top_level_group) then
+					xmlc = content;
+				else
+					xmlc = content[v.generated_subelement_name];
+				end
 				if (#xmlc > 0) then
 					-- Treat the n elements as 1 item present in the content model.
 					count = 1;
@@ -533,7 +541,11 @@ basic_stuff.execute_validation_for_complex_type_sequence = function(schema_type_
 				if (nil == v.generated_subelement_name) then
 					error("The model group should contain a generated name");
 				end
-				xmlc = content[v.generated_subelement_name];
+				if (v.top_level_group) then
+					xmlc = content;
+				else
+					xmlc = content[v.generated_subelement_name];
+				end
 				if (xmlc == nil) then
 					error_handler.raise_validation_error(-1,
 						"Object field: {"..v.generated_subelement_name.."} should not be null", debug.getinfo(1));
@@ -635,7 +647,11 @@ basic_stuff.execute_validation_for_complex_type = function(schema_type_handler, 
 			if (content_model.generated_subelement_name == nil) then
 				error("content["..content_model.generated_subelement_name.."] is nil");
 			end
-			xmlc = e_content[content_model.generated_subelement_name];
+			if (content_model.top_level_group) then
+				xmlc = e_content;
+			else
+				xmlc = e_content[content_model.generated_subelement_name];
+			end
 			if (xmlc == nil) then
 				error_handler.raise_validation_error(-1,
 					"Element: {"..content_model.generated_subelement_name.."} not found in the object", debug.getinfo(1));
@@ -1032,7 +1048,11 @@ basic_stuff.add_model_content_node = function(schema_type_handler, nns, doc, ind
 				if (nil == v.generated_subelement_name) then
 					error("The model group should contain a generated name");
 				end
-				xmlc = content[v.generated_subelement_name]
+				if (v.top_level_group) then
+					xmlc = content;
+				else
+					xmlc = content[v.generated_subelement_name];
+				end
 			end
 			i = basic_stuff.add_model_content_s_or_c(schema_type_handler, nns, doc, i, xmlc, v);
 		else -- invalid
@@ -1076,7 +1096,11 @@ basic_stuff.add_model_content = function(schema_type_handler, nns, doc, index, c
 		elseif (content_model.group_type == 'S' or content_model.group_type == 'C') then
 			local xmlc = nil;
 			if (content_model.max_occurs ~= 1) then
-				xmlc = content[content_model.generated_subelement_name];
+				if (content_model.top_level_group) then
+					xmlc = content;
+				else
+					xmlc = content[content_model.generated_subelement_name];
+				end
 			else
 				xmlc = content;
 			end
@@ -1304,17 +1328,10 @@ basic_stuff.primitive_to_intermediate_json = function(th, content)
 		i_content = th:to_xmlua(nil, content);
 	elseif (th.datatype == 'integer') then
 		if (th.type_name ~= "int" and
-			th.type_name ~= "integer" and
 			th.type_name ~= "unsignedInt" and
 			th.type_name ~= "byte" and
 			th.type_name ~= "unsignedByte" and
 			th.type_name ~= "short" and
-			th.type_name ~= "nonPositiveInteger" and
-			th.type_name ~= "nonNegativeInteger" and
-			th.type_name ~= "positiveInteger" and
-			th.type_name ~= "negativeInteger" and
-			th.type_name ~= "long" and
-			th.type_name ~= "unsignedLong" and
 			th.type_name ~= "unsignedShort") then
 			i_content = tostring(content);
 		else
@@ -1346,9 +1363,18 @@ basic_stuff.inner_complex_to_intermediate_json = function(schema_type_handler, a
 			local generated_subelement_name = inner_content_model.generated_subelement_name;
 			if (inner_content_model.max_occurs ~= 1 and
 					array_element[inner_content_model.generated_subelement_name] ~= nil) then
-				i_content[generated_subelement_name] = {};
-				for i, q in pairs(array_element[inner_content_model.generated_subelement_name]) do
-					i_content[generated_subelement_name][i] =
+				local xmlc = nil;
+				local target_content = nil;
+				if (inner_content_model.top_level_group) then
+					xmlc = array_element;
+					target_content = i_content;
+				else
+					xmlc = array_element[inner_content_model.generated_subelement_name];
+					i_content[generated_subelement_name] = {};
+					target_content = i_content[generated_subelement_name];
+				end
+				for i, q in pairs(xmlc) do
+					target_content[i] =
 						basic_stuff.inner_complex_to_intermediate_json(schema_type_handler, q, inner_content_model, nil);
 				end
 			else
@@ -1373,9 +1399,18 @@ basic_stuff.complex_to_intermediate_json = function(schema_type_handler, content
 			if (n ~= 0) then
 				if (content_model.max_occurs ~= 1) then
 					local generated_subelement_name = content_model.generated_subelement_name;
-					i_content[generated_subelement_name] = {};
-					for i,v in ipairs(content[generated_subelement_name]) do
-						i_content[generated_subelement_name][i] =
+					local xmlc = nil;
+					local target_content = nil;
+					if (content_model.top_level_group) then
+						xmlc = content;
+						target_content = i_content;
+					else
+						xmlc = content[content_model.generated_subelement_name];
+						i_content[generated_subelement_name] = {};
+						target_content = i_content[generated_subelement_name];
+					end
+					for i,v in ipairs(xmlc) do
+						target_content[i] =
 										basic_stuff.inner_complex_to_intermediate_json(schema_type_handler, v, content_model, nil);
 					end
 				else
@@ -1463,17 +1498,10 @@ basic_stuff.primitive_from_intermediate_json = function(th, content)
 		content = th:to_type(nil, content);
 	elseif (th.datatype == 'integer') then
 		if (th.type_name ~= "int" and
-			th.type_name ~= "integer" and
 			th.type_name ~= "unsignedInt" and
 			th.type_name ~= "byte" and
 			th.type_name ~= "unsignedByte" and
 			th.type_name ~= "short" and
-			th.type_name ~= "nonPositiveInteger" and
-			th.type_name ~= "nonNegativeInteger" and
-			th.type_name ~= "positiveInteger" and
-			th.type_name ~= "negativeInteger" and
-			th.type_name ~= "long" and
-			th.type_name ~= "unsignedLong" and
 			th.type_name ~= "unsignedShort") then
 			content = th:to_type(nil, content);
 		else
@@ -1500,8 +1528,14 @@ basic_stuff.inner_complex_from_intermediate_json = function(schema_type_handler,
 			local generated_subelement_name = inner_content_model.generated_subelement_name;
 			if (inner_content_model.max_occurs ~= 1 and
 					array_element[inner_content_model.generated_subelement_name] ~= nil) then
-				for i, q in pairs(array_element[inner_content_model.generated_subelement_name]) do
-					array_element[generated_subelement_name][i] =
+				local xmlc = nil;
+				if (inner_content_model.top_level_group) then
+					xmlc = array_element;
+				else
+					xmlc = array_element[inner_content_model.generated_subelement_name];
+				end
+				for i, q in pairs(xmlc) do
+					xmlc[i] =
 							basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, q, inner_content_model);
 				end
 			else
@@ -1522,8 +1556,18 @@ basic_stuff.complex_from_intermediate_json = function(schema_type_handler, conte
 			if (n ~= 0) then
 				if (content_model.max_occurs ~= 1) then
 					local generated_subelement_name = content_model.generated_subelement_name;
-					for i,v in ipairs(content[generated_subelement_name]) do
-						content[generated_subelement_name][i] =
+					local xmlc = nil;
+					local target_content = nil;
+					if (content_model.top_level_group) then
+						xmlc = content;
+						target_content = content;
+					else
+						xmlc = content[content_model.generated_subelement_name];
+						i_content[generated_subelement_name] = {};
+						target_content = content[generated_subelement_name];
+					end
+					for i,v in ipairs(xmlc) do
+						target_content[i] =
 							basic_stuff.inner_complex_from_intermediate_json(schema_type_handler, v, content_model);
 					end
 				else
@@ -1738,7 +1782,9 @@ basic_stuff.continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 	--elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'any') then
 		--print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
+		local content_model = schema_type_handler.properties.content_fsa_properties[i].cm;
 		if (schema_type_handler.properties.content_fsa_properties[i].max_occurs ~= 1) then
+			--not content_model.top_level_group) then
 			top_obj['___METADATA___'].element_being_parsed =
 					schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
 			top_obj['___METADATA___'].element_gqn_being_parsed =
@@ -1760,7 +1806,9 @@ basic_stuff.continue_cm_fsa_i = function(reader, sts, objs, pss, i)
 	elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_end') then
 		local end_node = schema_type_handler.properties.content_fsa_properties[i]
 		local begin_node = schema_type_handler.properties.content_fsa_properties[end_node.cm_begin_index];
+		local content_model = begin_node.cm;
 		if (begin_node.max_occurs ~= 1) then
+			--not content_model.top_level_group) then
 			local parsed_element = objs:pop();
 			local top_element = objs:top();
 			local ebp = top_element['___METADATA___'].element_being_parsed;
@@ -1794,7 +1842,9 @@ basic_stuff.windup_fsa = function(reader, sts, objs, pss)
 
 	while (i <= (#schema_type_handler.properties.content_fsa_properties)) do
 		if (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_begin') then
+			local content_model = schema_type_handler.properties.content_fsa_properties[i].cm;
 			if (schema_type_handler.properties.content_fsa_properties[i].max_occurs ~= 1) then
+				--not content_model.top_level_group) then
 				top_obj['___METADATA___'].element_being_parsed =
 						schema_type_handler.properties.content_fsa_properties[i].generated_symbol_name;
 				top_obj['___METADATA___'].element_gqn_being_parsed =
@@ -1816,7 +1866,9 @@ basic_stuff.windup_fsa = function(reader, sts, objs, pss)
 		elseif (schema_type_handler.properties.content_fsa_properties[i].symbol_type == 'cm_end') then
 			local end_node = schema_type_handler.properties.content_fsa_properties[i]
 			local begin_node = schema_type_handler.properties.content_fsa_properties[end_node.cm_begin_index];
+			local content_model = begin_node.cm;
 			if (begin_node.max_occurs ~= 1) then
+				--not content_model.top_level_group) then
 				local parsed_element = objs:pop();
 				local top_element = objs:top();
 				local ebp = top_element['___METADATA___'].element_being_parsed;
@@ -2171,6 +2223,16 @@ local process_end_of_element = function(reader, sts, objs, pss, mcos)
 	else
 		if (not parsed_element['___METADATA___'].empty) then
 			parsed_output = parsed_element['___DATA___']._contained_value;
+		end
+	end
+	if ((parsed_sth.properties.schema_type ~= '{http://www.w3.org/2001/XMLSchema}anyType') and
+		(parsed_sth.properties.element_type == 'C') and
+        (parsed_sth.properties.content_type ~= 'S') and
+        (parsed_sth.properties.content_type ~= 'M') and
+        (parsed_sth.properties.content_model.group_type ~= 'A')) then
+		if (parsed_sth.properties.content_model.top_level_group and
+			parsed_sth.properties.content_model.max_occurs ~= 1) then
+			parsed_output = parsed_output[parsed_sth.properties.content_model.generated_subelement_name];
 		end
 	end
 	-- Essentially the variable parsed_output has the complete lua value of the element

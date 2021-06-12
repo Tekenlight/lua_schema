@@ -43,9 +43,10 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        top_level_group = true,
+        max_occurs = 1,
         generated_subelement_name = '_sequence_group',
         min_occurs = 1,
-        max_occurs = 1,
         group_type = 'S',
         'SigPolicyId',
         'Transforms',
@@ -85,13 +86,6 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SigPolicyQualifiers'] = 
-            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SigPolicyQualifiersListType'):
-            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'SigPolicyQualifiers', generated_name = 'SigPolicyQualifiers',
-                    root_element = false, min_occurs = 0, max_occurs = 1}));
-    end
-
-    do
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Transforms'] = 
         (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'Transforms'):
             new_instance_as_ref({root_element=false, generated_name = 'Transforms',
@@ -103,6 +97,13 @@ do
             (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'ObjectIdentifierType'):
             new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'SigPolicyId', generated_name = 'SigPolicyId',
                     root_element = false, min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SigPolicyQualifiers'] = 
+            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SigPolicyQualifiersListType'):
+            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'SigPolicyQualifiers', generated_name = 'SigPolicyQualifiers',
+                    root_element = false, min_occurs = 0, max_occurs = 1}));
     end
 
 end

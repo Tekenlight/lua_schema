@@ -38,36 +38,6 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
-        element_handler.properties.attr._attr_properties['{}URI'] = {};
-
-        element_handler.properties.attr._attr_properties['{}URI'].base = {};
-        element_handler.properties.attr._attr_properties['{}URI'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}URI'].base.name = 'anyURI';
-        element_handler.properties.attr._attr_properties['{}URI'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}URI'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}URI'].bi_type.name = 'anyURI';
-        element_handler.properties.attr._attr_properties['{}URI'].bi_type.id = '29';
-        element_handler.properties.attr._attr_properties['{}URI'].properties = {};
-        element_handler.properties.attr._attr_properties['{}URI'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}anyURI';
-        element_handler.properties.attr._attr_properties['{}URI'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}URI'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}URI'].properties.use = 'R';
-        element_handler.properties.attr._attr_properties['{}URI'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}URI'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}URI'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}URI'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}URI'].particle_properties.q_name.local_name = 'URI';
-        element_handler.properties.attr._attr_properties['{}URI'].particle_properties.generated_name = 'URI';
-
-        element_handler.properties.attr._attr_properties['{}URI'].type_handler = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}URI'].super_element_content_type = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}URI'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}URI'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}URI'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}URI']);
-    end
-    do
         element_handler.properties.attr._attr_properties['{}Id'] = {};
 
         element_handler.properties.attr._attr_properties['{}Id'].base = {};
@@ -96,6 +66,36 @@ do
         element_handler.properties.attr._attr_properties['{}Id'].type_of_simple = 'A';
         element_handler.properties.attr._attr_properties['{}Id'].local_facets = {}
         element_handler.properties.attr._attr_properties['{}Id'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}Id']);
+    end
+    do
+        element_handler.properties.attr._attr_properties['{}URI'] = {};
+
+        element_handler.properties.attr._attr_properties['{}URI'].base = {};
+        element_handler.properties.attr._attr_properties['{}URI'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}URI'].base.name = 'anyURI';
+        element_handler.properties.attr._attr_properties['{}URI'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}URI'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}URI'].bi_type.name = 'anyURI';
+        element_handler.properties.attr._attr_properties['{}URI'].bi_type.id = '29';
+        element_handler.properties.attr._attr_properties['{}URI'].properties = {};
+        element_handler.properties.attr._attr_properties['{}URI'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}anyURI';
+        element_handler.properties.attr._attr_properties['{}URI'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}URI'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}URI'].properties.use = 'R';
+        element_handler.properties.attr._attr_properties['{}URI'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}URI'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}URI'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}URI'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}URI'].particle_properties.q_name.local_name = 'URI';
+        element_handler.properties.attr._attr_properties['{}URI'].particle_properties.generated_name = 'URI';
+
+        element_handler.properties.attr._attr_properties['{}URI'].type_handler = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}URI'].super_element_content_type = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}URI'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}URI'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}URI'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}URI']);
     end
     element_handler.properties.attr._generated_attr = {};
     element_handler.properties.attr._generated_attr['Id'] = '{}Id';

@@ -108,6 +108,15 @@ local struct_from_loe = function(schema_type_handler, list)
 			end
 		end
 	end
+	if ((schema_type_handler.properties.schema_type ~= '{http://www.w3.org/2001/XMLSchema}anyType') and
+		(schema_type_handler.properties.element_type == 'C') and
+        (schema_type_handler.properties.content_type ~= 'S') and
+        (schema_type_handler.properties.content_model.group_type ~= 'A')) then
+		if (schema_type_handler.properties.content_model.top_level_group and
+			schema_type_handler.properties.content_model.max_occurs ~= 1) then
+			out_struct = out_struct[schema_type_handler.properties.content_model.generated_subelement_name];
+		end
+	end
 
 	if (list_index <= n) then
 		return nil;

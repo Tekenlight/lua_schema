@@ -43,10 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        max_occurs = -1,
-        group_type = 'S',
-        min_occurs = 1,
         generated_subelement_name = '_sequence_group',
+        min_occurs = 1,
+        top_level_group = true,
+        group_type = 'S',
+        max_occurs = -1,
         'SPKISexp',
         'any',
     };

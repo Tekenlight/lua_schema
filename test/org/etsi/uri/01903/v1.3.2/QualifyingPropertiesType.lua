@@ -105,10 +105,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        top_level_group = true,
         min_occurs = 1,
         generated_subelement_name = '_sequence_group',
-        group_type = 'S',
         max_occurs = 1,
+        group_type = 'S',
         'SignedProperties',
         'UnsignedProperties',
     };
@@ -134,16 +135,16 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignedProperties'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignedProperties'):
-            new_instance_as_ref({root_element=false, generated_name = 'SignedProperties',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}UnsignedProperties'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'UnsignedProperties'):
+            new_instance_as_ref({root_element=false, generated_name = 'UnsignedProperties',
                     min_occurs = 0, max_occurs = 1}));
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}UnsignedProperties'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'UnsignedProperties'):
-            new_instance_as_ref({root_element=false, generated_name = 'UnsignedProperties',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignedProperties'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignedProperties'):
+            new_instance_as_ref({root_element=false, generated_name = 'SignedProperties',
                     min_occurs = 0, max_occurs = 1}));
     end
 

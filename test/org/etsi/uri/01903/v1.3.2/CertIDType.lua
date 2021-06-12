@@ -74,10 +74,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        top_level_group = true,
         min_occurs = 1,
         generated_subelement_name = '_sequence_group',
-        group_type = 'S',
         max_occurs = 1,
+        group_type = 'S',
         'CertDigest',
         'IssuerSerial',
     };
@@ -103,16 +104,16 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}IssuerSerial'] = 
-            (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'X509IssuerSerialType'):
-            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'IssuerSerial', generated_name = 'IssuerSerial',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CertDigest'] = 
+            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'DigestAlgAndValueType'):
+            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'CertDigest', generated_name = 'CertDigest',
                     root_element = false, min_occurs = 1, max_occurs = 1}));
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CertDigest'] = 
-            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'DigestAlgAndValueType'):
-            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'CertDigest', generated_name = 'CertDigest',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}IssuerSerial'] = 
+            (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'X509IssuerSerialType'):
+            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'IssuerSerial', generated_name = 'IssuerSerial',
                     root_element = false, min_occurs = 1, max_occurs = 1}));
     end
 

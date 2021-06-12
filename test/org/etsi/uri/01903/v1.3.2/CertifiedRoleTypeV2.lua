@@ -43,10 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        top_level_group = true,
         min_occurs = 1,
         generated_subelement_name = '_choice_group',
-        group_type = 'C',
         max_occurs = 1,
+        group_type = 'C',
         'X509AttributeCertificate',
         'OtherAttributeCertificate',
     };
@@ -72,16 +73,16 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}X509AttributeCertificate'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'X509AttributeCertificate'):
-            new_instance_as_ref({root_element=false, generated_name = 'X509AttributeCertificate',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}OtherAttributeCertificate'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'OtherAttributeCertificate'):
+            new_instance_as_ref({root_element=false, generated_name = 'OtherAttributeCertificate',
                     min_occurs = 1, max_occurs = 1}));
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}OtherAttributeCertificate'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'OtherAttributeCertificate'):
-            new_instance_as_ref({root_element=false, generated_name = 'OtherAttributeCertificate',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}X509AttributeCertificate'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'X509AttributeCertificate'):
+            new_instance_as_ref({root_element=false, generated_name = 'X509AttributeCertificate',
                     min_occurs = 1, max_occurs = 1}));
     end
 

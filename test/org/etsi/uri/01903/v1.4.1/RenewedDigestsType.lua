@@ -75,9 +75,10 @@ end
 do
     element_handler.properties.content_model = {
         group_type = 'S',
-        generated_subelement_name = '_sequence_group',
-        max_occurs = 1,
         min_occurs = 1,
+        generated_subelement_name = '_sequence_group',
+        top_level_group = true,
+        max_occurs = 1,
         'DigestMethod',
         'RecomputedDigestValue',
     };

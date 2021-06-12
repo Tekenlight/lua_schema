@@ -43,9 +43,10 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        top_level_group = true,
+        max_occurs = 1,
         generated_subelement_name = '_sequence_group',
         min_occurs = 1,
-        max_occurs = 1,
         group_type = 'S',
         'City',
         'StateOrProvince',

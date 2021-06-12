@@ -401,6 +401,11 @@ local function low_get_content_model(model, i)
 	_content_model.min_occurs = model[i].min_occurs;
 	_content_model.max_occurs = model[i].max_occurs;
 	_content_model.generated_subelement_name = model[i].generated_name; -- generated_name
+	if (i == 1) then
+		_content_model.top_level_group = true;
+	else
+		_content_model.top_level_group = false;
+	end
 	i = i + 1;
 	while (model[i].symbol_type ~= 'cm_end') do
 		local cm_index = #_content_model+1;
@@ -887,6 +892,8 @@ function elem_code_generator.put_content_model_code(content_model, indentation)
 			--if (type(v) == 'number') then
 			if (n == 'max_occurs' or n == 'min_occurs') then
 				code = code..indentation..'    '..n..' = '..v..',\n';
+			elseif (n == 'top_level_group') then
+				code = code..indentation..'    '..n..' = '..tostring(v)..',\n';
 			else
 				code = code..indentation..'    '..n..' = \''..v..'\',\n';
 			end

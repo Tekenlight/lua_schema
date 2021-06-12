@@ -17,8 +17,6 @@ build = {
    type = "builtin",
    modules = {
       generate_schema = "generate_schema.lua",
-      ["lua_schema.basic_int_nons"] = "lua_schema/basic_int_nons.lua",
-      ["lua_schema.basic_string_nons"] = "lua_schema/basic_string_nons.lua",
       ["lua_schema.basic_stuff"] = "lua_schema/basic_stuff.lua",
       ["lua_schema.codegen_eh_cache"] = "lua_schema/codegen_eh_cache.lua",
       ["lua_schema.core_utils"] = "lua_schema/core_utils.lua",
@@ -137,5 +135,10 @@ build = {
       ["xmlua.xml-stream-sax-parser"] = "xmlua/xml-stream-sax-parser.lua",
       ["xmlua.xml_date_utils"] = "xmlua/xml_date_utils.lua",
       ["xmlua.xsd"] = "xmlua/xsd.lua"
+   },
+   install = {
+	   bin = {
+		   gxsd = 'bin/gxsd'
+	   }
    }
 }

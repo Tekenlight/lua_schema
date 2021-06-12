@@ -74,17 +74,19 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        generated_subelement_name = '_sequence_group',
+        top_level_group = true,
         min_occurs = 1,
+        generated_subelement_name = '_sequence_group',
         max_occurs = 1,
         group_type = 'S',
         'ReferenceInfo',
         'CanonicalizationMethod',
         {
+            top_level_group = false,
             min_occurs = 1,
             generated_subelement_name = '_choice_group',
-            group_type = 'C',
             max_occurs = 1,
+            group_type = 'C',
             'EncapsulatedTimeStamp',
             'XMLTimeStamp',
         },
@@ -117,6 +119,13 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}CanonicalizationMethod'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'CanonicalizationMethod'):
+            new_instance_as_ref({root_element=false, generated_name = 'CanonicalizationMethod',
+                    min_occurs = 0, max_occurs = 1}));
+    end
+
+    do
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ReferenceInfo'] = 
         (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'ReferenceInfo'):
             new_instance_as_ref({root_element=false, generated_name = 'ReferenceInfo',
@@ -124,10 +133,10 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}CanonicalizationMethod'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'CanonicalizationMethod'):
-            new_instance_as_ref({root_element=false, generated_name = 'CanonicalizationMethod',
-                    min_occurs = 0, max_occurs = 1}));
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}XMLTimeStamp'] = 
+            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'AnyType'):
+            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'XMLTimeStamp', generated_name = 'XMLTimeStamp',
+                    root_element = false, min_occurs = 1, max_occurs = 1}));
     end
 
     element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'] = {};
@@ -147,36 +156,6 @@ element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.
             element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.bi_type.id = '44';
             element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr = {};
             element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties = {};
-            do
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'] = {};
-
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].base = {};
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].base.name = 'ID';
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].bi_type = {};
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].bi_type.name = 'ID';
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].bi_type.id = '23';
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].properties = {};
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}ID';
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].properties.default = '';
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].properties.fixed = false;
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].properties.use = 'O';
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].properties.form = 'U';
-
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].particle_properties = {};
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].particle_properties.q_name = {};
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].particle_properties.q_name.ns = '';
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].particle_properties.q_name.local_name = 'Id';
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].particle_properties.generated_name = 'Id';
-
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].type_handler = require('org.w3.2001.XMLSchema.ID_handler'):instantiate();
-
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].super_element_content_type = require('org.w3.2001.XMLSchema.ID_handler'):instantiate();
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].type_of_simple = 'A';
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].local_facets = {}
-                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id']);
-            end
             do
                 element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Encoding'] = {};
 
@@ -207,9 +186,39 @@ element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.
                 element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Encoding'].local_facets = {}
                 element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Encoding'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Encoding']);
             end
+            do
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'] = {};
+
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].base = {};
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].base.name = 'ID';
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].bi_type = {};
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].bi_type.name = 'ID';
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].bi_type.id = '23';
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].properties = {};
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}ID';
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].properties.default = '';
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].properties.fixed = false;
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].properties.use = 'O';
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].properties.form = 'U';
+
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].particle_properties = {};
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].particle_properties.q_name = {};
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].particle_properties.q_name.ns = '';
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].particle_properties.q_name.local_name = 'Id';
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].particle_properties.generated_name = 'Id';
+
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].type_handler = require('org.w3.2001.XMLSchema.ID_handler'):instantiate();
+
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].super_element_content_type = require('org.w3.2001.XMLSchema.ID_handler'):instantiate();
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].type_of_simple = 'A';
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].local_facets = {}
+                element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._attr_properties['{}Id']);
+            end
             element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._generated_attr = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._generated_attr['Id'] = '{}Id';
             element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._generated_attr['Encoding'] = '{}Encoding';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].properties.attr._generated_attr['Id'] = '{}Id';
         end
 
         do
@@ -241,13 +250,6 @@ element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'].particle_properties.max_occurs = 1;
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}XMLTimeStamp'] = 
-            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'AnyType'):
-            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'XMLTimeStamp', generated_name = 'XMLTimeStamp',
-                    root_element = false, min_occurs = 1, max_occurs = 1}));
     end
 
 end
