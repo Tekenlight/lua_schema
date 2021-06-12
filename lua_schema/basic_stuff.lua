@@ -1497,6 +1497,7 @@ basic_stuff.primitive_from_intermediate_json = function(th, content)
 	elseif (th.datatype == 'duration') then
 		content = th:to_type(nil, content);
 	elseif (th.datatype == 'integer') then
+		--[[
 		if (th.type_name ~= "int" and
 			th.type_name ~= "unsignedInt" and
 			th.type_name ~= "byte" and
@@ -1508,6 +1509,9 @@ basic_stuff.primitive_from_intermediate_json = function(th, content)
 			local sn = string.gsub(tostring(content), "([%d]+)[%.]0+", "%1");
 			content = th:to_type(nil, sn);
 		end
+		--]]
+		local sn = string.gsub(tostring(content), "([%d]+)[%.]0+", "%1");
+		content = th:to_type(nil, sn);
 	end
 	return content;
 end
@@ -1562,8 +1566,8 @@ basic_stuff.complex_from_intermediate_json = function(schema_type_handler, conte
 						xmlc = content;
 						target_content = content;
 					else
+						content[generated_subelement_name] = {};
 						xmlc = content[content_model.generated_subelement_name];
-						i_content[generated_subelement_name] = {};
 						target_content = content[generated_subelement_name];
 					end
 					for i,v in ipairs(xmlc) do
