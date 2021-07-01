@@ -351,16 +351,19 @@ function _xsd_facets:check_integer_facets(s)
 end
 
 function _xsd_facets:check_date_facets(s)
-	if (type(s) ~= 'string') then
+	if (type(s) ~= 'cdata') then
 		error_handler.raise_validation_error(-1,
 			"Field {"..error_handler.get_fieldpath().."}: Input not a \"date type\"", debug.getinfo(1));
 		return false;
+	end
+	if (not ffi.istype("dt_s_type", s)) then
+		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
 	if (self.min_exclusive ~= nil) then
 		if (not (du.compare_dates(self.min_exclusive, s) < 0)) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
-							..du.to_xml_date_field(self.type_id, s).."] is less than or equal to minExclusive ["
+							..du.to_xml_format(s).."] is less than or equal to minExclusive ["
 										..du.to_xml_date_field(self.type_id, self.min_exclusive).."]", debug.getinfo(1));
 			return false;
 		end
@@ -369,7 +372,7 @@ function _xsd_facets:check_date_facets(s)
 		if (not (du.compare_dates(self.min_inclusive, s) <= 0)) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
-							..du.to_xml_date_field(self.type_id, s).."] is less than to mininclusive ["
+							..du.to_xml_format(s).."] is less than to mininclusive ["
 												..du.to_xml_date_field(self.type_id, self.min_inclusive).."]", debug.getinfo(1));
 			return false;
 		end
@@ -378,7 +381,7 @@ function _xsd_facets:check_date_facets(s)
 		if (not (du.compare_dates(s, self.max_exclusive) < 0)) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
-							..du.to_xml_date_field(self.type_id, s).."] is greater than or equal to maxExclusive ["
+							..du.to_xml_format(s).."] is greater than or equal to maxExclusive ["
 								..du.to_xml_date_field(self.type_id, self.max_exclusive).."]", debug.getinfo(1));
 			return false;
 		end
@@ -387,7 +390,7 @@ function _xsd_facets:check_date_facets(s)
 		if (not (du.compare_dates(s, self.max_inclusive) <= 0)) then
 			error_handler.raise_validation_error(-1,
 						"Value of the field {"..error_handler.get_fieldpath().."}: ["
-							..du.to_xml_date_field(self.type_id, s).."] is greater than maxinclusive ["
+							..du.to_xml_format(s).."] is greater than maxinclusive ["
 										..du.to_xml_date_field(self.type_id, self.max_inclusive).."]", debug.getinfo(1));
 			return false;
 		end
@@ -400,7 +403,7 @@ function _xsd_facets:check_date_enumerations(v)
 	if (e == nil or #e == 0) then return true; end
 	local found = false;
 	for p,q in ipairs(e) do
-		if (tostring(q) == tostring(v)) then
+		if (du.to_xml_date_field(self.type_id, q) == tostring(v)) then
 			found = true;
 			break;
 		end
@@ -408,7 +411,7 @@ function _xsd_facets:check_date_enumerations(v)
 	if (found == false) then
 		error_handler.raise_validation_error(-1,
 					"Value of {"..error_handler.get_fieldpath().."} "
-					..du.to_xml_date_field(self.type_id, v)..": is not valid", debug.getinfo(1));
+					..du.to_xml_format(v)..": is not valid", debug.getinfo(1));
 	end
 	return found;
 end
@@ -574,7 +577,8 @@ function _xsd_facets:check(v)
 		end
 		do
 			if (self.datatype == 'datetime') then
-				v = du.to_xml_date_field(self.type_id, v);
+				--v = du.to_xml_date_field(self.type_id, v);
+				v = du.to_xml_format(v);
 			end
 			if (not self:check_patttern_match(tostring(v))) then
 				return false;
@@ -664,7 +668,7 @@ _xsd_facets.massage_local_facets = function(t, ft, tn)
 	end
 	local function to_dtt(s)
 		local tid = du.tn_tid_map[tn];
-		return du.from_xml_date_field(tid, s);
+		return du.dtt_from_xml_date_field(tid, s);
 	end
 	if (ft == 'datetime') then
 		for n,v in pairs(o) do

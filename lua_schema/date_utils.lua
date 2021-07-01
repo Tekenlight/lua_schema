@@ -1,3 +1,4 @@
+local ffi = require("ffi");
 local date = require("date");
 local xmlua = require("xmlua");
 local xml_date_utils = xmlua.XMLDateUtils.new();
@@ -5,7 +6,21 @@ local nu = require("lua_schema.number_utils");
 
 local error_handler = require("lua_schema.error_handler");
 
+
+
+ffi.cdef [[
+
+typedef struct dt_s {
+	int dtt;
+	char * value;
+} dt_s_type, * dt_p_type;
+
+void free(void *ptr);
+char * strdup(const char *s1);
+]]
+
 local date_utils = {};
+
 date_utils.MIN_TIME_ZONE = -840;
 date_utils.MAX_TIME_ZONE = 840;
 date_utils.TICKS_IN_14H = 14 * 60 * 60 * date.ticks();
@@ -113,9 +128,24 @@ date_utils.split_dtt = function(s)
 	return dt, tzo;
 end
 
-date_utils.is_valid_date = function(date_type_id, s)
+date_utils.is_valid_date = function(date_type_id, _s)
+	local s = '';
+	if (ffi.istype("char *", _s)) then
+		s = ffi.string(_s);
+	elseif (type(_s) == 'string') then
+		s = _s;
+	else
+		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+	end
 	local status, dto, tzo = pcall(date_utils.split_dtt, s);
 	return status;
+end
+
+date_utils.is_valid = function(cdt)
+	if (not ffi.istype("dt_s_type", cdt)) then
+		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+	end
+	return date_utils.is_valid_date(cdt.dtt, cdt.value);
 end
 
 date_utils.is_valid_duration = function(s)
@@ -160,7 +190,10 @@ date_utils.add_tzoffset_to_dn = function(dn, tzo)
 	return dn;
 end
 
-date_utils.from_xml_date_field = function(date_type_id, s)
+--[[
+--This will return the string form of date
+--]]
+date_utils.dtt_from_xml_date_field = function(date_type_id, s)
 	if (date_type_id == nil or type(date_type_id) ~= 'number') then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	elseif (s == nil or type(s) ~= 'string') then
@@ -193,7 +226,16 @@ date_utils.from_xml_date_field = function(date_type_id, s)
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
 
-	return date_utils.dtt_from_date_obj(dto, tzo);
+	return  date_utils.dtt_from_date_obj(dto, tzo);
+end
+
+date_utils.from_xml_date_field = function(date_type_id, s)
+	local ret =  date_utils.dtt_from_xml_date_field(date_type_id, s);
+	local cdt = ffi.new("dt_s_type", 0);
+	cdt.dtt = date_type_id;
+	cdt.value = ffi.C.strdup(ffi.cast("char*", ret));
+
+	return cdt;
 end
 
 date_utils.get_tzo_in_h_m = function(tzo)
@@ -234,7 +276,15 @@ date_utils.append_tz = function(date_part, tzo)
 	return ret;
 end
 
-date_utils.to_xml_date_field = function(tid, s)
+date_utils.to_xml_date_field = function(tid, _s)
+	local s = '';
+	if (ffi.istype("char *", _s)) then
+		s = ffi.string(_s);
+	elseif (type(_s) == 'string') then
+		s = _s;
+	else
+		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+	end
 	local fmt = date_utils.tid_fmt_map[tid];
 	local dto, tzo = date_utils.date_obj_from_dtt(s);
 
@@ -314,7 +364,29 @@ date_utils.compare_dates_ntz_ntz = function(dto1, dto2)
 	return date_utils.compare_dates_both(dto1, dto2);
 end
 
-date_utils.compare_dates = function(s1, s2)
+date_utils.compare_dates = function(cdt1, cdt2)
+	local s1 = '';
+	local s2 = '';
+	if (not ffi.istype("dt_s_type", cdt1)) then
+		if (type(cdt1) == 'string') then
+			s1 = cdt1;
+		else
+			error_handler.raise_fatal_error(-1, "Invalid inputs first argument", debug.getinfo(1));
+		end
+	else
+		s1 = ffi.string(cdt1.value);
+	end
+	if (not ffi.istype("dt_s_type", cdt2)) then
+		if (type(cdt2) == 'string') then
+			s2 = cdt2;
+		else
+			error_handler.raise_fatal_error(-1, "Invalid inputs first argument", debug.getinfo(1));
+		end
+	else
+		s2 = ffi.string(cdt2.value);
+	end
+
+
 	local dto1, tzo1 = date_utils.split_dtt(s1);
 	if (tzo1 ~= nil) then dto1 = date_utils.add_tzoffset_to_dto(dto1, tzo1); end
 	local dto2, tzo2 = date_utils.split_dtt(s2);
@@ -563,6 +635,50 @@ end
 date_utils.to_xml_datetime = function(s)
 	return date_utils.to_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, s);
 end
+
+date_utils.from_xml_time = function(s)
+	return date_utils.from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_TIME, s);
+end
+
+date_utils.to_xml_time = function(s)
+	return date_utils.to_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_TIME, s);
+end
+
+date_utils.to_xml_format = function(cdt)
+	if (not ffi.istype("dt_s_type", cdt)) then
+		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+	end
+	local dt = cdt.dtt;
+	return date_utils.to_xml_date_field(dt, cdt.value);
+end
+
+date_utils.free_cdt = function(cdt)
+	ffi.C.free(cdt.value);
+end
+
+local dt_mt = {
+	__tostring = date_utils.to_xml_format,
+	__gc = date_utils.free_cdt,
+};
+ffi.metatype("dt_s_type", dt_mt);
+
+
+--[[
+local dt1 = date_utils.from_xml_datetime("1973-04-26T07:30:00.001Z");
+local s = tostring(dt1);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, s);
+
+
+local dt2 = date_utils.from_xml_date("1973-04-26");
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, dt2);
+
+
+
+
+
+
+
+--]]
 
 --[[
 local dt1 = date_utils.from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "1973-04-26T07:30:00.001Z");

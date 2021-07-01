@@ -17,12 +17,12 @@ function __gYear_handler_class:is_deserialized_valid(x)
 end
 
 function __gYear_handler_class:is_valid(s)
-	if((s ~= nil) and (type(s) ~= "string")) then
+	if((s ~= nil) and (type(s) ~= "cdata")) then
 		error_handler.raise_validation_error(-1,
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid gYear", debug.getinfo(1));
 		return false
 	end
-	if (not du.is_valid_date(self.type_id, s)) then
+	if (not du.is_valid(s)) then
 		return false
 	end
 	if (self.facets ~= nil) then
@@ -38,7 +38,7 @@ function __gYear_handler_class:to_xmlua(ns, s)
 		local msv = error_handler.reset_init();
 		error_handler.raise_fatal_error(-1, msv.status.error_message, debug.getinfo(1));
 	end
-	return du.to_xml_date_field(self.type_id, s);
+	return du.to_xml_format(s);
 end
 
 function __gYear_handler_class:to_schema_type(ns, s)
@@ -56,7 +56,7 @@ function __gYear_handler_class:to_cjson_struct(ns, s)
 		local msv = error_handler.reset_init();
 		error_handler.raise_fatal_error(-1, msv.status.error_message, debug.getinfo(1));
 	end
-	return du.to_xml_date_field(self.type_ids);
+	return du.to_xml_format(s);
 end
 
 function __gYear_handler_class:to_type(ns, i)

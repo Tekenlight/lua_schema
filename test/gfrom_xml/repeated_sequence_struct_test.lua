@@ -20,6 +20,10 @@ if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
 
+print(repeated_sequence_struct:to_json(content));
+print(repeated_sequence_struct:to_xml(content));
+
+
 --print(repeated_sequence_struct:to_xml(content))
 if (content ~= nil) then os.exit(true); else os.exit(false); end
 
