@@ -91,4 +91,12 @@ if (content ~= nil) then
 	else
 		print(msg);
 	end
+	local content_2, msg = struct_with_various_types:from_xml(xml_str);
+	require 'pl.pretty'.dump(content_2)
+	local xml_str1, msg = struct_with_various_types:to_xml(content_2);
+	if (xml_str1 ~= nil) then
+		print(xml_str1);
+	else
+		print(msg);
+	end
 end
