@@ -19,27 +19,20 @@ basic_stuff.assert_input_is_complex_content = function(content)
 	return true;
 end
 
-basic_stuff.assert_input_is_complex_type_simple_content = function(content)
-	if ((content == nil) or (type(content) ~= 'table')) then
-		error("Input is not a valid lua struture of simplecontent");
-		return false;
-	elseif ((content._attr ~= nil) and (type(content._attr) ~= 'table')) then
-		error("Input is not a valid lua struture of simplecontent");
-		return false;
-	elseif ((content._contained_value ~= nil) and (type(content._contained_value) ~= 'string') and
-			(type(content._contained_value) ~= 'boolean') and (type(content._contained_value) ~= 'number')) then
-		error("Input is not a valid lua struture of simplecontent");
-		return false;
-	end
-	return true;
-end
-
 basic_stuff.is_simple_type = function(content)
 	if ((type(content) ~= 'string') and (type(content) ~= 'boolean') and (not ffi.istype("long", content))
 		and (type(content) ~= 'number') and (not ffi.istype("unsigned char *", content))
 		and (not ffi.istype("unsigned long", content)) and (not ffi.istype("dt_s_type", content))
 		and (not ffi.istype("dur_s_type", content)) and (not ffi.istype("hex_data_s_type", content))
 		and (not ffi.istype("b64_data_s_type", content)) ) then
+		return false;
+	end
+	return true;
+end
+
+basic_stuff.assert_input_is_simple_type = function(content)
+	if (not basic_stuff.is_simple_type(content)) then
+		error("Input is not a valid lua of simpletype");
 		return false;
 	end
 	return true;
@@ -56,6 +49,14 @@ basic_stuff.is_complex_type_simple_content = function(content)
 		if ((n ~= "_attr") and (n ~= "_contained_value")) then
 			return false;
 		end
+	end
+	return true;
+end
+
+basic_stuff.assert_input_is_complex_type_simple_content = function(content)
+	if (not basic_stuff.is_complex_type_simple_content(content)) then
+		error("Input is not a valid lua struture of simplecontent");
+		return false;
 	end
 	return true;
 end
