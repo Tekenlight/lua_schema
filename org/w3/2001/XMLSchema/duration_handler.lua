@@ -17,16 +17,18 @@ function __duration_handler_class:is_deserialized_valid(x)
 end
 
 function __duration_handler_class:is_valid(s)
-	if((s ~= nil) and (type(s) ~= "string")) then
+	if((s ~= nil) and (type(s) ~= "cdata")) then
 		error_handler.raise_validation_error(-1,
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid duration", debug.getinfo(1));
 		return false
 	end
 	if (not du.is_valid_duration(s)) then
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		return false
 	end
 	if (self.facets ~= nil) then
 		if (not self.facets:check(s)) then
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 			return false;
 		end
 	end

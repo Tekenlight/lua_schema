@@ -54,7 +54,8 @@ end
 basic_stuff.is_simple_type = function(content)
 	if ((type(content) ~= 'string') and (type(content) ~= 'boolean') and (not ffi.istype("long", content))
 		and (type(content) ~= 'number') and (not ffi.istype("unsigned char *", content))
-		and (not ffi.istype("unsigned long", content)) and (not ffi.istype("dt_s_type", content))) then
+		and (not ffi.istype("unsigned long", content)) and (not ffi.istype("dt_s_type", content))
+		and (not ffi.istype("dur_s_type", content))) then
 		return false;
 	end
 	return true;
@@ -62,7 +63,8 @@ end
 
 basic_stuff.assert_input_is_simple_type = function(content)
 	if ((type(content) ~= 'string') and (type(content) ~= 'boolean')
-		and (type(content) ~= 'number') and (not ffi.istype("dt_s_type", content))) then
+		and (type(content) ~= 'number') and (not ffi.istype("dt_s_type", content))
+		and (not ffi.istype("dur_s_type", content))) then
 		error("Input is not a valid lua of simpletype");
 		return false;
 	end

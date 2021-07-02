@@ -417,7 +417,7 @@ function _xsd_facets:check_date_enumerations(v)
 end
 
 function _xsd_facets:check_duration_facets(s)
-	if (type(s) ~= 'string') then
+	if ((type(s) ~= 'string') and (not ffi.istype("dur_s_type", s))) then
 		error_handler.raise_validation_error(-1,
 			"Field {"..error_handler.get_fieldpath().."}: Input not a \"duration type\"", debug.getinfo(1));
 		return false;
@@ -688,7 +688,7 @@ _xsd_facets.massage_local_facets = function(t, ft, tn)
 		end
 	end
 	local function to_dur(s)
-		return du.from_xml_duration(s);
+		return du.str_dur_from_xml_duration(s);
 	end
 	if (ft == 'duration') then
 		for n,v in pairs(o) do

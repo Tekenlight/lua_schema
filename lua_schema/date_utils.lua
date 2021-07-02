@@ -15,8 +15,13 @@ typedef struct dt_s {
 	char * value;
 } dt_s_type, * dt_p_type;
 
+typedef struct _dur {
+	char * value;
+} dur_s_type, *dur_p_type;
+
 void free(void *ptr);
 char * strdup(const char *s1);
+
 ]]
 
 local date_utils = {};
@@ -148,7 +153,13 @@ date_utils.is_valid = function(cdt)
 	return date_utils.is_valid_date(cdt.dtt, cdt.value);
 end
 
-date_utils.is_valid_duration = function(s)
+date_utils.is_valid_duration = function(inp)
+	local s = '';
+	if (ffi.istype("dur_s_type", inp)) then
+		s = ffi.string(inp.value);
+	else
+		s = inp;
+	end
 	local status, dto, tzo = pcall(date_utils.split_dtt, s);
 	return status;
 end
@@ -405,7 +416,13 @@ date_utils.compare_dates = function(cdt1, cdt2)
 	return ret;
 end
 
-date_utils.split_duration = function(s)
+date_utils.split_duration = function(inp)
+	local s = '';
+	if (ffi.istype("dur_s_type", inp)) then
+		s = ffi.string(inp.value);
+	else
+		s = inp;
+	end
 	if (s == nil or type(s) ~= 'string') then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
@@ -442,7 +459,13 @@ date_utils.split_duration = function(s)
 	return dur;
 end
 
-date_utils.add_duration_to_date = function(dt, s_dur)
+date_utils.add_duration_to_date = function(dt, inp_dur)
+	local s_dur = '';
+	if (ffi.istype("dur_s_type", inp_dur)) then
+		s_dur = ffi.string(inp_dur.value);
+	else
+		s_dur = inp_dur;
+	end
 	if (dt == nil or type(dt) ~= 'string') then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
@@ -463,7 +486,19 @@ date_utils.add_duration_to_date = function(dt, s_dur)
 	return ret;
 end
 
-date_utils.compare_durations = function(s_dur1, s_dur2)
+date_utils.compare_durations = function(inp_dur1, inp_dur2)
+	local s_dur1 = '';
+	local s_dur2 = '';
+	if (ffi.istype("dur_s_type", inp_dur1)) then
+		s_dur1 = ffi.string(inp_dur1.value);
+	else
+		s_dur1 = inp_dur1;
+	end
+	if (ffi.istype("dur_s_type", inp_dur2)) then
+		s_dur2 = ffi.string(inp_dur2.value);
+	else
+		s_dur2 = inp_dur2;
+	end
 	if (s_dur1 == nil or type(s_dur1) ~= 'string') then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
@@ -555,7 +590,7 @@ date_utils.str_from_dur = function(dur)
 	return str;
 end
 
-date_utils.from_xml_duration = function(s)
+date_utils.str_dur_from_xml_duration = function(s)
 	if (s == nil or type(s) ~= 'string') then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
@@ -570,7 +605,21 @@ date_utils.from_xml_duration = function(s)
 	return date_utils.str_from_dur(dur);
 end
 
-date_utils.to_xml_duration = function(s)
+date_utils.from_xml_duration = function(s)
+	local str_dur = date_utils.str_dur_from_xml_duration(s);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+	local cdur = ffi.new("dur_s_type");
+	cdur.value = ffi.C.strdup(ffi.cast("char*", str_dur));
+	return cdur;
+end
+
+date_utils.to_xml_duration = function(inp)
+	local s = '';
+	if (ffi.istype("dur_s_type", inp)) then
+		s = ffi.string(inp.value);
+	else
+		s = inp;
+	end
 	if (s == nil or type(s) ~= 'string') then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
@@ -656,11 +705,22 @@ date_utils.free_cdt = function(cdt)
 	ffi.C.free(cdt.value);
 end
 
+date_utils.free_cdur = function(cdur)
+	ffi.C.free(cdur.value);
+end
+
 local dt_mt = {
 	__tostring = date_utils.to_xml_format,
 	__gc = date_utils.free_cdt,
 };
 ffi.metatype("dt_s_type", dt_mt);
+
+
+local dur_mt = {
+	__tostring = date_utils.to_xml_duration,
+	__gc = date_utils.free_cdur,
+};
+ffi.metatype("dur_s_type", dur_mt);
 
 
 --[[
