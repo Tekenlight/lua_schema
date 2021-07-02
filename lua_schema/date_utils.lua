@@ -11,7 +11,7 @@ local error_handler = require("lua_schema.error_handler");
 ffi.cdef [[
 
 typedef struct dt_s {
-	int dtt;
+	int format;
 	char * value;
 } dt_s_type, * dt_p_type;
 
@@ -150,7 +150,7 @@ date_utils.is_valid = function(cdt)
 	if (not ffi.istype("dt_s_type", cdt)) then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
-	return date_utils.is_valid_date(cdt.dtt, cdt.value);
+	return date_utils.is_valid_date(cdt.format, cdt.value);
 end
 
 date_utils.is_valid_duration = function(inp)
@@ -206,9 +206,9 @@ end
 --]]
 date_utils.dtt_from_xml_date_field = function(date_type_id, s)
 	if (date_type_id == nil or type(date_type_id) ~= 'number') then
-		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+		error_handler.raise_fatal_error(-1, "Invalid inputs:"..debug.getinfo(1).currentline, debug.getinfo(1));
 	elseif (s == nil or type(s) ~= 'string') then
-		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+		error_handler.raise_fatal_error(-1, "Invalid inputs:"..debug.getinfo(1).currentline, debug.getinfo(1));
 	end
 
 	local d1 = xml_date_utils.str_to_date(date_type_id, s);
@@ -243,7 +243,7 @@ end
 date_utils.from_xml_date_field = function(date_type_id, s)
 	local ret =  date_utils.dtt_from_xml_date_field(date_type_id, s);
 	local cdt = ffi.new("dt_s_type", 0);
-	cdt.dtt = date_type_id;
+	cdt.format = date_type_id;
 	cdt.value = ffi.C.strdup(ffi.cast("char*", ret));
 
 	return cdt;
@@ -459,12 +459,20 @@ date_utils.split_duration = function(inp)
 	return dur;
 end
 
-date_utils.add_duration_to_date = function(dt, inp_dur)
+date_utils.add_duration_to_date = function(inp_dt, inp_dur)
 	local s_dur = '';
 	if (ffi.istype("dur_s_type", inp_dur)) then
 		s_dur = ffi.string(inp_dur.value);
 	else
 		s_dur = inp_dur;
+	end
+	local dt = '';
+	local dt_format = -1;
+	if (ffi.istype("dt_s_type", inp_dt)) then
+		dt = ffi.string(inp_dt.value);
+		dt_format = inp_dt.format;
+	else
+		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
 	if (dt == nil or type(dt) ~= 'string') then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
@@ -483,7 +491,15 @@ date_utils.add_duration_to_date = function(dt, inp_dur)
 
 	local ret = date_utils.dtt_from_date_obj(o_dto, tzo);
 
-	return ret;
+	local cdt = ffi.new("dt_s_type", 0);
+	if (dt_format ~= -1) then
+		cdt.format = dt_format;
+	else
+		cdt.format = 0;
+	end
+	cdt.value = ffi.C.strdup(ffi.cast("char*", ret));
+
+	return cdt;
 end
 
 date_utils.compare_durations = function(inp_dur1, inp_dur2)
@@ -607,7 +623,6 @@ end
 
 date_utils.from_xml_duration = function(s)
 	local str_dur = date_utils.str_dur_from_xml_duration(s);
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	local cdur = ffi.new("dur_s_type");
 	cdur.value = ffi.C.strdup(ffi.cast("char*", str_dur));
 	return cdur;
@@ -697,7 +712,7 @@ date_utils.to_xml_format = function(cdt)
 	if (not ffi.istype("dt_s_type", cdt)) then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
-	local dt = cdt.dtt;
+	local dt = cdt.format;
 	return date_utils.to_xml_date_field(dt, cdt.value);
 end
 
@@ -722,59 +737,54 @@ local dur_mt = {
 };
 ffi.metatype("dur_s_type", dur_mt);
 
-
---[[
-local dt1 = date_utils.from_xml_datetime("1973-04-26T07:30:00.001Z");
-local s = tostring(dt1);
-print(debug.getinfo(1).source, debug.getinfo(1).currentline, s);
-
-
-local dt2 = date_utils.from_xml_date("1973-04-26");
-print(debug.getinfo(1).source, debug.getinfo(1).currentline, dt2);
-
-
-
-
-
-
-
---]]
-
---[[
-local dt1 = date_utils.from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "1973-04-26T07:30:00.001Z");
-local dt2 = date_utils.from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "1973-04-26T07:30:00.001Z");
-
-
-print(date_utils.compare_dates(dt1, dt2));
---
-local d = date.from_dnum_and_frac(0, 0)
-require 'pl.pretty'.dump(d);
-print(d);
-print(d:spandays());
---
---local s_dur = 'P2Y6M5DT12H35M30S';
---]]
 --[[
 local s_dur = 'P1Y'
 local dur = date_utils.from_xml_duration(s_dur);
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, dur);
 local dt1 = date_utils.from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "1973-04-26T07:30:00.001+05:30");
-print(date_utils.to_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, dt1));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, dt1);
 
 local o = date_utils.add_duration_to_date(dt1, dur);
-print(date_utils.to_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, o));
-print(date_utils.to_xml_duration(dur));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, o);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, dur);
+
+local dt1 = date_utils.from_xml_datetime("1973-04-26T07:30:00.001Z");
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, dt1);
+
+local dt2 = date_utils.from_xml_date("1973-04-26");
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, dt2);
+
+local dt1 = date_utils.from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "1973-04-26T07:30:00.002Z");
+local dt2 = date_utils.from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "1973-04-26T07:30:00.002Z");
+
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.compare_dates(dt1, dt2));
+
+local d = date.from_dnum_and_frac(0, 0)
+print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+require 'pl.pretty'.dump(d);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, d, d:spandays());
+
+--local s_dur = 'P2Y6M5DT12H35M30S';
+local s_dur = 'P1Y'
+local dur = date_utils.from_xml_duration(s_dur);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, dur);
+local dt1 = date_utils.from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "1973-04-26T07:30:00.001+05:30");
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, dt1);
+
+local o = date_utils.add_duration_to_date(dt1, dur);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, tostring(o));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, tostring(dur));
 
 s_dur = 'P2Y6M5DT12H35M30.123S';
 dur = date_utils.from_xml_duration(s_dur);
-print(s_dur);
-print(date_utils.to_xml_duration(dur));
---
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, s_dur);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.to_xml_duration(dur));
+
 local D1 = 'P1Y1DT1M';
 local D2 = 'P1Y1DT1S';
 local dur1 = date_utils.from_xml_duration(D1);
 local dur2 = date_utils.from_xml_duration(D2);
-print(date_utils.compare_durations(dur1, dur2));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.compare_durations(dur1, dur2));
 --]]
 
 return date_utils;
