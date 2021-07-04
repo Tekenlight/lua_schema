@@ -19,7 +19,7 @@ size_t binary_data_len(unsigned char *data);
 typedef struct {
 	size_t size;
 	unsigned char* value;
-} binary_data_s1_type, binary_data_p2_type;
+} binary_data_s1_type, binary_data_p1_type;
 
 typedef struct {
 	size_t size;
