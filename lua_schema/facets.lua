@@ -2,6 +2,7 @@ local xmlua = require("xmlua")
 local regex = xmlua.XMLRegexp.new();
 local du = require("lua_schema.date_utils");
 local nu = require("lua_schema.number_utils");
+local bc = require("bigdecimal");
 
 
 local error_handler = require("lua_schema.error_handler");
@@ -245,6 +246,78 @@ function _xsd_facets:check_patttern_match(s)
 	end
 
 	return true;
+end
+
+function _xsd_facets:check_decimal_facets(s)
+	if (type(s) ~= 'userdata' or getmetatable(s).__name ~= 'bc bignumber') then
+		error_handler.raise_validation_error(-1,
+			"Field {"..error_handler.get_fieldpath().."}: Input not a \"decimal type\"", debug.getinfo(1));
+		return false;
+	end
+	if (self.min_exclusive ~= nil) then
+		if (bc.compare(tonumber(self.min_exclusive), s) >= 0) then
+			error_handler.raise_validation_error(-1,
+						"Value of the field {"..error_handler.get_fieldpath().."}: ["
+							..s.."] is less than or equal to minExclusive ["..self.min_exclusive.."]", debug.getinfo(1));
+			return false;
+		end
+	end
+	if (self.min_inclusive ~= nil) then
+		if (bc.compare(tonumber(self.min_inclusive), s) > 0) then
+			error_handler.raise_validation_error(-1,
+						"Value of the field {"..error_handler.get_fieldpath().."}: ["
+							..s.."] is less than to mininclusive ["..self.min_inclusive.."]", debug.getinfo(1));
+			return false;
+		end
+	end
+	if (self.max_exclusive ~= nil) then
+		if (bc.compare(tonumber(self.max_exclusive), s) <= 0) then
+			error_handler.raise_validation_error(-1,
+						"Value of the field {"..error_handler.get_fieldpath().."}: ["
+							..s.."] is greater than or equal to maxExclusive ["..self.max_exclusive.."]", debug.getinfo(1));
+			return false;
+		end
+	end
+	if (self.max_inclusive ~= nil) then
+		if (bc.compare(tonumber(self.max_inclusive), s) < 0) then
+			error_handler.raise_validation_error(-1,
+						"Value of the field {"..error_handler.get_fieldpath().."}: ["
+							..s.."] is greater than maxInclusive ["..self.max_inclusive.."]", debug.getinfo(1));
+			return false;
+		end
+	end
+	if (self.total_digits ~= nil) then
+		if (count_total_digits(s) > self.total_digits) then
+			error_handler.raise_validation_error(-1,
+						"Total number of digits in ["..s.."] is greater than ["..self.total_digits.."]", debug.getinfo(1));
+			return false;
+		end
+	end
+	if (self.fractional_digits ~= nil) then
+		if (count_fractional_digits(s) > self.fractional_digits) then
+			error_handler.raise_validation_error(-1,
+						"Fractional digits in ["..s.."] is greater than ["..self.fractional_digits.."]", debug.getinfo(1));
+			return false;
+		end
+	end
+	return true;
+end
+
+function _xsd_facets:check_decimal_enumerations(v)
+	local e = self.enumeration;
+	if (e == nil or #e == 0) then return true; end
+	local found = false;
+	for p,q in ipairs(e) do
+		if (bc.compare(q, v) == 0) then
+			found = true;
+			break;
+		end
+	end
+	if (found == false) then
+		error_handler.raise_validation_error(-1,
+					"Value of {"..error_handler.get_fieldpath().."} "..tostring(v)..": is not valid", debug.getinfo(1));
+	end
+	return found;
 end
 
 function _xsd_facets:check_number_facets(s)
@@ -531,11 +604,20 @@ function _xsd_facets:check(v)
 				return false;
 			end
 		elseif (self.datatype == 'number') then
-			if (not self:check_number_facets(v)) then
-				return false;
-			end
-			if (not self:check_num_enumerations(v)) then
-				return false;
+			if (self.type_name == 'decimal') then
+				if (not self:check_decimal_facets(v)) then
+					return false;
+				end
+				if (not self:check_decimal_enumerations(v)) then
+					return false;
+				end
+			else
+				if (not self:check_number_facets(v)) then
+					return false;
+				end
+				if (not self:check_num_enumerations(v)) then
+					return false;
+				end
 			end
 		elseif (self.datatype == 'integer') then
 			if (not self:check_integer_facets(v)) then

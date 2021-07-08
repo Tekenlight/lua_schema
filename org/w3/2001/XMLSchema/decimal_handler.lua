@@ -1,8 +1,11 @@
+local bc = require("bigdecimal");
 local xmlua = require("xmlua");
 local facets = require("lua_schema.facets");
 local error_handler = require("lua_schema.error_handler");
 local nu = require("lua_schema.number_utils");
 local __decimal_handler_class = {}
+
+bc.digits(64);
 
 __decimal_handler_class.type_name = 'decimal';
 __decimal_handler_class.datatype = 'number';
@@ -27,10 +30,12 @@ end
 
 function __decimal_handler_class:is_valid(f)
 	local valid = true;
-	if (nu.is_nan(f) or nu.is_inf(f)) then
+	if (f == nil) then
 		valid = false;
-	elseif (not nu.is_double(f)) then
-		valid = false;
+	else
+		if (type(f) ~= 'userdata' or getmetatable(f).__name ~= 'bc bignumber') then
+			valid = false;
+		end
 	end
 	if (not valid) then
 		error_handler.raise_validation_error(-1,
@@ -62,7 +67,7 @@ function __decimal_handler_class:to_schema_type(ns, f)
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
-	local n = nu.to_double(f);
+	local n = bc.new(f);
 	if (n == nil) then
 		error_handler.raise_validation_error(-1,
 						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of decimal", debug.getinfo(1));

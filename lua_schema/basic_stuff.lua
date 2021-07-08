@@ -3,6 +3,7 @@ local error_handler = require("lua_schema.error_handler");
 local URI = require("uri");
 local stringx = require("pl.stringx");
 local nu = require("lua_schema.number_utils");
+local bc = require("bigdecimal");
 local eh_cache = require("lua_schema.eh_cache");
 
 local basic_stuff = {};
@@ -24,7 +25,9 @@ basic_stuff.is_simple_type = function(content)
 		and (type(content) ~= 'number') and (not ffi.istype("unsigned char *", content))
 		and (not ffi.istype("unsigned long", content)) and (not ffi.istype("dt_s_type", content))
 		and (not ffi.istype("dur_s_type", content)) and (not ffi.istype("hex_data_s_type", content))
-		and (not ffi.istype("b64_data_s_type", content)) ) then
+		and (not ffi.istype("b64_data_s_type", content))
+		and (not (type(content) == 'userdata' and getmetatable(content).__name == 'bc bignumber')) ) then
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		return false;
 	end
 	return true;
@@ -42,7 +45,6 @@ basic_stuff.is_complex_type_simple_content = function(content)
 	if ((content._attr ~= nil) and (type(content._attr) ~= 'table')) then
 		return false;
 	elseif (not basic_stuff.is_simple_type(content._contained_value)) then
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, type(content._contained_value));
 		return false;
 	end
 	for n,_ in pairs(content) do
@@ -1315,6 +1317,8 @@ basic_stuff.primitive_to_intermediate_json = function(th, content)
 		if (nu.is_nan(content) or nu.is_inf(content)) then
 			i_content = th:to_xmlua('', content);
 		end
+	elseif (th.type_name == 'decimal') then
+		i_content = th:to_xmlua(nil, content);
 	elseif (th.datatype == 'datetime') then
 		i_content = th:to_xmlua(nil, content);
 	elseif (th.datatype == 'duration') then
@@ -1485,6 +1489,8 @@ basic_stuff.primitive_from_intermediate_json = function(th, content)
 				error("INVALID FLOATING POINT NUMBER");
 			end
 		end
+	elseif (th.type_name == 'decimal') then
+		content = th:to_type(nil, content);
 	elseif (th.datatype == 'datetime') then
 		content = th:to_type(nil, content);
 	elseif (th.datatype == 'duration') then
