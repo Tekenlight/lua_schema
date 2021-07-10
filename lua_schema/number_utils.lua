@@ -33,7 +33,7 @@ local number_utils = {
 	UINTEGER_MIN = ffi.cast("unsigned long", 0),
 };
 
-function number_utils.is_uinteger(n)
+function number_utils.is_uint64(n)
 	if ((n > number_utils.UINTEGER_MAX) or
 		(n < number_utils.UINTEGER_MIN)) then
 		return false;
@@ -41,7 +41,7 @@ function number_utils.is_uinteger(n)
 	return true;
 end
 
-function number_utils.is_integer(n)
+function number_utils.is_int64(n)
 	if ((n > number_utils.INTEGER_MAX) or
 		(n < number_utils.INTEGER_MIN)) then
 		return false;
@@ -190,5 +190,128 @@ function number_utils.to_double(s)
 
 	return n;
 end
+
+local stringx = require('pl.stringx');
+local int_props = {
+	[8] = { ffi.new("unsigned char", 0), ffi.new("unsigned char", 0xFF), ffi.new("char", 0x80), ffi.new("char", 0x7F), 3},
+	[16] = { ffi.new("unsigned short", 0x0), ffi.new("unsigned short", 0xFFFF),
+											ffi.new("short", 0x8000), ffi.new("short", 0x7FFF), 5},
+	[32] = { ffi.new("unsigned int", 0x0), ffi.new("unsigned int", 0xFFFFFFFF),
+											ffi.new("int", 0x80000000), ffi.new("int", 0x7FFFFFFF), 10},
+	[64] = { ffi.new("unsigned long", 0x0), ffi.new("unsigned long", 0xFFFFFFFFFFFFFFFF),
+										ffi.new("long", 0x8000000000000000), ffi.new("long", 0x7FFFFFFFFFFFFFFF), 20},
+}
+
+ffi.cdef[[
+int strcmp(const char *s1, const char *s2);
+]]
+
+local function val_gen_int_str(s, signed, size)
+	local str_len = int_props[size][5];
+	local first_char = string.sub(s, 1, 1);
+	local negative = false;
+	if (first_char == '+') then
+		s = string.sub(s, 2, -1);
+	elseif (first_char == '-') then
+		if (not signed) then
+			return false;
+		end
+		negative = true;
+		s = string.sub(s, 2, -1);
+	end
+	if (string.len(s) > str_len) then
+		return false;
+	end
+	local rs = stringx.rjust(s, str_len, ' ');
+	assert(string.len(rs) == str_len);
+	local max_str = ''
+	if (signed) then
+		if (negative) then
+			max_str = string.sub(tostring(int_props[size][3]), 2, -1);
+		else
+			max_str = tostring(int_props[size][4]);
+		end
+	else
+		max_str = tostring(int_props[size][2]);
+	end
+	if (ffi.C.strcmp(rs, max_str) > 0) then
+		return false;
+	end
+	return true;
+end
+
+number_utils.val_int8_str = function(s)
+	if (type(s) ~= 'string') then
+		return false;
+	end
+	return val_gen_int_str(s, true, 8);
+end
+number_utils.val_uint8_str = function(s)
+	if (type(s) ~= 'string') then
+		return false;
+	end
+	return val_gen_int_str(s, false, 8);
+end
+
+number_utils.val_int16_str = function(s)
+	if (type(s) ~= 'string') then
+		return false;
+	end
+	return val_gen_int_str(s, true, 16);
+end
+number_utils.val_uint16_str = function(s)
+	if (type(s) ~= 'string') then
+		return false;
+	end
+	return val_gen_int_str(s, false, 16);
+end
+
+number_utils.val_int32_str = function(s)
+	if (type(s) ~= 'string') then
+		return false;
+	end
+	return val_gen_int_str(s, true, 32);
+end
+number_utils.val_uint32_str = function(s)
+	if (type(s) ~= 'string') then
+		return false;
+	end
+	return val_gen_int_str(s, false, 32);
+end
+
+number_utils.val_int64_str = function(s)
+	if (type(s) ~= 'string') then
+		return false;
+	end
+	return val_gen_int_str(s, true, 64);
+end
+number_utils.val_uint64_str = function(s)
+	if (type(s) ~= 'string') then
+		return false;
+	end
+	return val_gen_int_str(s, false, 64);
+end
+
+--[[
+local s = "1";
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, val_int8_str(s));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, val_uint8_str(s));
+
+local s = "128";
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, val_int8_str(s));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, val_uint8_str(s));
+
+local s = "-128";
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, val_int8_str(s));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, val_uint8_str(s));
+
+local s = "255";
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, val_int8_str(s));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, val_uint8_str(s));
+
+s = "32768";
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, val_int16_str(s));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, val_uint16_str(s));
+--]]
 
 return number_utils;

@@ -28,7 +28,7 @@ end
 
 function __unsignedByte_handler_class:is_valid(f)
 	local valid = true;
-	if (not nu.is_uinteger(f)) then
+	if (not nu.is_uint64(f)) then
 		valid = false;
 	end
 	if (not valid) then
@@ -69,7 +69,13 @@ function __unsignedByte_handler_class:to_schema_type(ns, sf)
 	end
 	local sn = string.gsub(f, "([%+]?)(%d+)", "%2");
 	sn = string.gsub(sn, "([%d]+)([%.]0+)", "%1");
-	local n = ffi.new("unsigned long", ffi.C.strtoul(sn, NULL, 0));
+	if (not nu.val_uint8_str(f)) then
+		error_handler.raise_validation_error(-1,
+						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of unsignedByte", debug.getinfo(1));
+		local msv = error_handler.reset_init();
+		error(msv.status.error_message);
+	end
+	n = ffi.cast("uint8_t", ffi.C.strtoul(sn, NULL, 0));
 	if (false == self:is_valid(n)) then
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);

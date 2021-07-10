@@ -28,7 +28,7 @@ end
 
 function __non_positive_integer_handler_class:is_valid(f)
 	local valid = true;
-	if (not nu.is_integer(f)) then
+	if (not nu.is_int64(f)) then
 		valid = false;
 	end
 	if (not valid) then
@@ -68,7 +68,13 @@ function __non_positive_integer_handler_class:to_schema_type(ns, f)
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
-	n = ffi.cast("long", n);
+	if (not nu.val_int64_str(f)) then
+		error_handler.raise_validation_error(-1,
+						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of nonPositiveInteger", debug.getinfo(1));
+		local msv = error_handler.reset_init();
+		error(msv.status.error_message);
+	end
+	n = ffi.cast("int64_t", n);
 	if (false == self:is_valid(n)) then
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);

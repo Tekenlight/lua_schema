@@ -21,12 +21,27 @@ basic_stuff.assert_input_is_complex_content = function(content)
 end
 
 basic_stuff.is_simple_type = function(content)
-	if ((type(content) ~= 'string') and (type(content) ~= 'boolean') and (not ffi.istype("long", content))
-		and (type(content) ~= 'number') and (not ffi.istype("unsigned char *", content))
-		and (not ffi.istype("unsigned long", content)) and (not ffi.istype("dt_s_type", content))
-		and (not ffi.istype("dur_s_type", content)) and (not ffi.istype("hex_data_s_type", content))
-		and (not ffi.istype("b64_data_s_type", content))
-		and (not (type(content) == 'userdata' and getmetatable(content).__name == 'bc bignumber')) ) then
+	if (
+		(type(content) ~= 'string') and
+		(type(content) ~= 'boolean') and
+		(not ffi.istype("long", content)) and
+		(not ffi.istype("unsigned long", content)) and
+		(not ffi.istype("int8_t", content)) and
+		(not ffi.istype("uint8_t", content)) and
+		(not ffi.istype("int16_t", content)) and
+		(not ffi.istype("uint16_t", content)) and
+		(not ffi.istype("int32_t", content)) and
+		(not ffi.istype("uint32_t", content)) and
+		(not ffi.istype("int64_t", content)) and
+		(not ffi.istype("uint64_t", content)) and
+		(type(content) ~= 'number') and
+		(not ffi.istype("unsigned char *", content)) and
+		(not ffi.istype("dt_s_type", content)) and
+		(not ffi.istype("dur_s_type", content)) and
+		(not ffi.istype("hex_data_s_type", content)) and
+		(not ffi.istype("b64_data_s_type", content)) and
+		(not (type(content) == 'userdata' and getmetatable(content).__name == 'bc bignumber'))
+		) then
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		return false;
 	end
