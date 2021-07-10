@@ -33,8 +33,8 @@ b3dyaSAhISEgIEhlbGxvIFdvcmxkIFNyaXJhbSBhbmQgR293cmkgISEhIQ==</base64Binary>
 <float>3.3E+38 </float>
 <double>100.15 </double>
 <decimal>    +9999999999999999999999999.15234567890    </decimal>
-<integer>    +20    </integer>
-<positiveInteger>    1024    </positiveInteger>
+<integer>    +20  </integer>
+<positiveInteger>    10945890342589023485902345890234859203458902345823409584239058    </positiveInteger>
 <long>    -9223372036854775807    </long>
 <int>    54775807    </int>
 <nonPositiveInteger>    0    </nonPositiveInteger>
@@ -85,6 +85,7 @@ if (content ~= nil) then
 	print(json_str);
 	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	local content_1, msg = struct_with_various_types:from_json(json_str);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, content_1);
 	local xml_str, msg = struct_with_various_types:to_xml(content_1);
 	if (xml_str ~= nil) then
 		print(xml_str);

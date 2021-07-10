@@ -2,11 +2,11 @@ local ffi = require("ffi");
 local xmlua = require("xmlua");
 local facets = require("lua_schema.facets");
 local error_handler = require("lua_schema.error_handler");
-local nu = require("lua_schema.number_utils");
+local bd = require("bigdecimal");
 local __integer_handler_class = {}
 
 __integer_handler_class.type_name = 'integer';
-__integer_handler_class.datatype = 'integer';
+__integer_handler_class.datatype = 'decimal';
 
 local regex = xmlua.XMLRegexp.new();
 __integer_handler_class.s_integer_str_pattern = [=[[+-]?[\d]+]=]
@@ -28,8 +28,12 @@ end
 
 function __integer_handler_class:is_valid(f)
 	local valid = true;
-	if (not nu.is_int64(f)) then
+	if (f == nil) then
 		valid = false;
+	else
+		if (type(f) ~= 'userdata' or getmetatable(f).__name ~= 'bc bignumber') then
+			valid = false;
+		end
 	end
 	if (not valid) then
 		error_handler.raise_validation_error(-1,
@@ -49,7 +53,7 @@ function __integer_handler_class:to_xmlua(ns, f)
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
-	return string.format("%d", tonumber(f));
+	return tostring(f);
 end
 
 function __integer_handler_class:to_schema_type(ns, sf)
@@ -64,20 +68,13 @@ function __integer_handler_class:to_schema_type(ns, sf)
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
-	local n = math.tointeger(f);
+	local n = bd.new(f);
 	if (n == nil) then
 		error_handler.raise_validation_error(-1,
 						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of integer", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
-	if (not nu.val_int32_str(f)) then
-		error_handler.raise_validation_error(-1,
-						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of integer", debug.getinfo(1));
-		local msv = error_handler.reset_init();
-		error(msv.status.error_message);
-	end
-	n = ffi.cast("int32_t", n);
 	if (false == self:is_valid(n)) then
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);

@@ -5,8 +5,8 @@ local error_handler = require("lua_schema.error_handler");
 local nu = require("lua_schema.number_utils");
 local __long_handler_class = {}
 
-__long_handler_class.type_name = 'integer';
-__long_handler_class.datatype = 'integer';
+__long_handler_class.type_name = 'long';
+__long_handler_class.datatype = 'int';
 
 local regex = xmlua.XMLRegexp.new();
 __long_handler_class.s_long_str_pattern = [=[[+-]?[\d]+]=]

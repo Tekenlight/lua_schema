@@ -6,7 +6,7 @@ local nu = require("lua_schema.number_utils");
 local __int_handler_class = {}
 
 __int_handler_class.type_name = 'int';
-__int_handler_class.datatype = 'integer';
+__int_handler_class.datatype = 'int';
 
 local regex = xmlua.XMLRegexp.new();
 __int_handler_class.s_int_str_pattern = [=[[+-]?[\d]+]=]

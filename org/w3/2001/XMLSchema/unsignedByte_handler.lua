@@ -6,7 +6,7 @@ local nu = require("lua_schema.number_utils");
 local __unsignedByte_handler_class = {}
 
 __unsignedByte_handler_class.type_name = 'unsignedByte';
-__unsignedByte_handler_class.datatype = 'integer';
+__unsignedByte_handler_class.datatype = 'int';
 
 local regex = xmlua.XMLRegexp.new();
 __unsignedByte_handler_class.s_unsignedByte_str_pattern = [=[[+]?[\d]+]=]

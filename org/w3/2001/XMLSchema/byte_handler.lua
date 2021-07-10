@@ -6,7 +6,7 @@ local nu = require("lua_schema.number_utils");
 local __byte_handler_class = {}
 
 __byte_handler_class.type_name = 'byte';
-__byte_handler_class.datatype = 'integer';
+__byte_handler_class.datatype = 'int';
 
 local regex = xmlua.XMLRegexp.new();
 __byte_handler_class.s_byte_str_pattern = [=[[+-]?[\d]+]=]

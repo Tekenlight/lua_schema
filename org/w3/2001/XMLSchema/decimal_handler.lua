@@ -8,7 +8,7 @@ local __decimal_handler_class = {}
 bc.digits(64);
 
 __decimal_handler_class.type_name = 'decimal';
-__decimal_handler_class.datatype = 'number';
+__decimal_handler_class.datatype = 'decimal';
 
 local regex = xmlua.XMLRegexp.new();
 __decimal_handler_class.s_decimal_str_pattern = [=[[\d\.+-]+]=]

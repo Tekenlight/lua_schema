@@ -1332,13 +1332,13 @@ basic_stuff.primitive_to_intermediate_json = function(th, content)
 		if (nu.is_nan(content) or nu.is_inf(content)) then
 			i_content = th:to_xmlua('', content);
 		end
-	elseif (th.type_name == 'decimal') then
+	elseif (th.datatype == 'decimal') then
 		i_content = th:to_xmlua(nil, content);
 	elseif (th.datatype == 'datetime') then
 		i_content = th:to_xmlua(nil, content);
 	elseif (th.datatype == 'duration') then
 		i_content = th:to_xmlua(nil, content);
-	elseif (th.datatype == 'integer') then
+	elseif (th.datatype == 'int') then
 		if (th.type_name ~= "int" and
 			th.type_name ~= "unsignedInt" and
 			th.type_name ~= "byte" and
@@ -1504,13 +1504,13 @@ basic_stuff.primitive_from_intermediate_json = function(th, content)
 				error("INVALID FLOATING POINT NUMBER");
 			end
 		end
-	elseif (th.type_name == 'decimal') then
+	elseif (th.datatype == 'decimal') then
 		content = th:to_type(nil, content);
 	elseif (th.datatype == 'datetime') then
 		content = th:to_type(nil, content);
 	elseif (th.datatype == 'duration') then
 		content = th:to_type(nil, content);
-	elseif (th.datatype == 'integer') then
+	elseif (th.datatype == 'int') then
 		--[[
 		if (th.type_name ~= "int" and
 			th.type_name ~= "unsignedInt" and
