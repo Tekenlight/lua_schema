@@ -13,7 +13,7 @@ void * alloc_binary_data_memory(size_t size);
 
 local s = [[Hello World Sriram and Gowri !!! Hello World Sriram and Gowri !!!  Hello World Sriram and Gowri !!!!]];
 
-local bd = ffi.new("b64_data_s_type", 0);
+local bd = ffi.new("hex_data_s_type", 0);
 bd.size = #s;
 bd.value = lib.alloc_binary_data_memory((#s+1));
 ffi.C.strcpy(bd.value, ffi.cast("char*", s));
