@@ -63,6 +63,8 @@ core_utils.hex_decode = function(input)
 	end
 
 	local ddata = ffi.new("hex_data_s_type", 0);
+	ddata.size = 0;
+	ddata.value = ffi.NULL;
 
 	local decoded_data_len_ptr = ffi.new("size_t[1]", 0);
 	local decoded_data = lib.hex_decode(input, #input, decoded_data_len_ptr);
@@ -106,6 +108,8 @@ core_utils.base64_decode = function(input)
 	end
 
 	local ddata = ffi.new("hex_data_s_type", 0);
+	ddata.size = 0;
+	ddata.value = ffi.NULL;
 
 	local decoded_data_len_ptr = ffi.new("size_t[1]", 0);
 	local decoded_data = lib.base64_decode(input, #input, decoded_data_len_ptr);
@@ -132,7 +136,9 @@ core_utils.binary_size = function(input)
 end
 
 local function binary_data_gc(bd)
-	lib.free_binary_data(bd.value);
+	if (bd.value ~= ffi.NULL) then
+		lib.free_binary_data(bd.value);
+	end
 end
 
 local hex_mt = {
