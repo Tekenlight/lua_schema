@@ -81,7 +81,7 @@ core_utils.base64_encode = function(input)
 		error("Invalid input");
 	end
 
-	local status = ffi.istype("b64_data_s_type", input);
+	local status = ffi.istype("hex_data_s_type", input);
 	if (not status) then
 		error("Invalid input");
 	end
@@ -105,7 +105,7 @@ core_utils.base64_decode = function(input)
 		error("Invalid input");
 	end
 
-	local ddata = ffi.new("b64_data_s_type", 0);
+	local ddata = ffi.new("hex_data_s_type", 0);
 
 	local decoded_data_len_ptr = ffi.new("size_t[1]", 0);
 	local decoded_data = lib.base64_decode(input, #input, decoded_data_len_ptr);

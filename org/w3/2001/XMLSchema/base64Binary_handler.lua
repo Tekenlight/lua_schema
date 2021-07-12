@@ -15,7 +15,7 @@ end
 
 
 function __base64Binary_handler_class:is_valid(s)
-	if((s ~= nil) and (not ffi.istype("b64_data_s_type", s))) then
+	if((s ~= nil) and (not ffi.istype("hex_data_s_type", s))) then
 		error_handler.raise_validation_error(-1,
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:base64Binary", debug.getinfo(1));
 		return false
