@@ -113,6 +113,10 @@ function __boolean_handler_class:to_type(ns, i)
 	return c_i;
 end
 
+function __boolean_handler_class:new(i)
+	return self:to_type(nil, i);
+end
+
 local mt = { __index = __boolean_handler_class; } ;
 local _factory = {};
 

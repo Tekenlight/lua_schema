@@ -57,6 +57,10 @@ function __anySimpleType_handler_class:to_type(ns, i)
 	return s;
 end
 
+function __anySimpleType_handler_class:new(i)
+	return self:to_type(nil, i);
+end
+
 local mt = { __index = __anySimpleType_handler_class; } ;
 local _factory = {};
 

@@ -108,6 +108,10 @@ function __positive_integer_handler_class:to_type(ns, f)
 	return c_f;
 end
 
+function __positive_integer_handler_class:new(i)
+	return self:to_type(nil, i);
+end
+
 local mt = { __index = __positive_integer_handler_class; } ;
 local _factory = {};
 
