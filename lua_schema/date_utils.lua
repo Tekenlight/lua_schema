@@ -78,6 +78,18 @@ date_utils.DAYRANGE = {
 	,{334, 337}
 };
 
+date_utils.time_from_dto = function(dto)
+	local num = ffi.new("int64_t", 0);
+	num = num + dto.dayfrc;
+	return num;
+end
+
+date_utils.daynum_from_dto = function(dto)
+	local num = ffi.new("int32_t", 0);
+	num = num + dto.daynum;
+	return num;
+end
+
 date_utils.num_from_dto = function(dto)
 	local num = ffi.new("int64_t", 0);
 	num = num + dto.daynum * 24 * 60 * 60 * date.ticks() + dto.dayfrc
@@ -729,6 +741,36 @@ date_utils.long_from_dtt = function(dtt)
 	return n, tzo;
 end
 
+date_utils.dtt_from_daynum = function(n, t, tzo)
+	local dto = date.from_dnum_and_frac(tonumber(n), 0);
+	local dtt = date_utils.dtt_from_date_obj(dto, tzo);
+	local cdt = ffi.new("dt_s_type", 0);
+	cdt.type = date_utils.tn_tid_map[t];
+	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
+	return cdt;
+end
+
+date_utils.daynum_from_dtt = function(dtt)
+	local dto, tzo = date_utils.date_obj_from_dtt(dtt)
+	local n = date_utils.daynum_from_dto(dto);
+	return n, tzo;
+end
+
+date_utils.dtt_from_time = function(n, t, tzo)
+	local dto = date.from_dnum_and_frac(0, tonumber(n));
+	local dtt = date_utils.dtt_from_date_obj(dto, tzo);
+	local cdt = ffi.new("dt_s_type", 0);
+	cdt.type = date_utils.tn_tid_map[t];
+	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
+	return cdt;
+end
+
+date_utils.time_from_dtt = function(dtt)
+	local dto, tzo = date_utils.date_obj_from_dtt(dtt)
+	local n = date_utils.time_from_dto(dto);
+	return n, tzo;
+end
+
 date_utils.to_xml_format = function(cdt)
 	if (not ffi.istype("dt_s_type", cdt)) then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
@@ -758,9 +800,19 @@ local dur_mt = {
 };
 ffi.metatype("dur_s_type", dur_mt);
 
-
 --[[
+--TS - 0
+
+local dt = date_utils.from_xml_date("1973-04-26");
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, dt);
+local dto = date_utils.split_dtt(ffi.string(dt.value));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+require 'pl.pretty'.dump(dto);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+--]]
+
 -- TS - 1
+--[[
 local t = date_utils.dtt_from_long(ffi.new("long", 27000001000), 'time', nil)
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, 27000001000);
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, t);
