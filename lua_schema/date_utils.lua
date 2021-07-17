@@ -11,7 +11,7 @@ local error_handler = require("lua_schema.error_handler");
 ffi.cdef [[
 
 typedef struct dt_s {
-	int format;
+	int type;
 	char * value;
 } dt_s_type, * dt_p_type;
 
@@ -79,18 +79,21 @@ date_utils.DAYRANGE = {
 };
 
 date_utils.num_from_dto = function(dto)
-	local num = dto.daynum * 24 * 60 * 60 * date.ticks() + dto.dayfrc
+	local num = ffi.new("int64_t", 0);
+	num = num + dto.daynum * 24 * 60 * 60 * date.ticks() + dto.dayfrc
 	return num;
 end
 
 date_utils.dto_from_num = function(dt_num)
-	dt_num = nu.round(dt_num, 1);
+	--dt_num = nu.round(dt_num, 1);
 
 	local d_day_frc = dt_num % (24 * 60 * 60 * date.ticks());
-	d_day_frc = nu.round(d_day_frc, 1000);
+	--d_day_frc = nu.round(d_day_frc, 1000);
+	d_day_frc = tonumber(d_day_frc);
 
 	local d_day_num = (dt_num - d_day_frc) / (24 * 60 * 60 * date.ticks());
-	d_day_num = nu.round(d_day_num, 1);
+	--d_day_num = nu.round(d_day_num, 1);
+	d_day_num = tonumber(d_day_num);
 
 	return date.from_dnum_and_frac(d_day_num, d_day_frc);
 end
@@ -150,7 +153,7 @@ date_utils.is_valid = function(cdt)
 	if (not ffi.istype("dt_s_type", cdt)) then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
-	return date_utils.is_valid_date(cdt.format, cdt.value);
+	return date_utils.is_valid_date(cdt.type, cdt.value);
 end
 
 date_utils.is_valid_duration = function(inp)
@@ -165,6 +168,9 @@ date_utils.is_valid_duration = function(inp)
 end
 
 date_utils.date_obj_from_dtt = function(s)
+	if (ffi.istype("dt_s_type", s)) then
+		s = ffi.string(s.value);
+	end
 	if (s == nil or type(s) ~= 'string') then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
@@ -178,7 +184,7 @@ end
 
 date_utils.dtt_from_date_obj = function(dto, tzo)
 	local ret = {};
-	ret.num = nu.round(date_utils.num_from_dto(dto), 1);
+	ret.num = nu.round(tonumber(date_utils.num_from_dto(dto)), 1);
 	if (tzo ~= nil) then
 		ret.tz = tzo;
 		ret.str = dto.daynum..'|'..dto.dayfrc..'|'..ret.tz;
@@ -243,7 +249,7 @@ end
 date_utils.from_xml_date_field = function(date_type_id, s)
 	local ret =  date_utils.dtt_from_xml_date_field(date_type_id, s);
 	local cdt = ffi.new("dt_s_type", 0);
-	cdt.format = date_type_id;
+	cdt.type = date_type_id;
 	cdt.value = ffi.C.strdup(ffi.cast("char*", ret));
 
 	return cdt;
@@ -470,7 +476,7 @@ date_utils.add_duration_to_date = function(inp_dt, inp_dur)
 	local dt_format = -1;
 	if (ffi.istype("dt_s_type", inp_dt)) then
 		dt = ffi.string(inp_dt.value);
-		dt_format = inp_dt.format;
+		dt_format = inp_dt.type;
 	else
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
@@ -493,9 +499,9 @@ date_utils.add_duration_to_date = function(inp_dt, inp_dur)
 
 	local cdt = ffi.new("dt_s_type", 0);
 	if (dt_format ~= -1) then
-		cdt.format = dt_format;
+		cdt.type = dt_format;
 	else
-		cdt.format = 0;
+		cdt.type = 0;
 	end
 	cdt.value = ffi.C.strdup(ffi.cast("char*", ret));
 
@@ -708,11 +714,26 @@ date_utils.to_xml_time = function(s)
 	return date_utils.to_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_TIME, s);
 end
 
+date_utils.dtt_from_long = function(n, t, tzo)
+	local dto = date_utils.dto_from_num(n)
+	local dtt = date_utils.dtt_from_date_obj(dto, tzo);
+	local cdt = ffi.new("dt_s_type", 0);
+	cdt.type = date_utils.tn_tid_map[t];
+	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
+	return cdt;
+end
+
+date_utils.long_from_dtt = function(dtt)
+	local dto, tzo = date_utils.date_obj_from_dtt(dtt)
+	local n = date_utils.num_from_dto(dto);
+	return n, tzo;
+end
+
 date_utils.to_xml_format = function(cdt)
 	if (not ffi.istype("dt_s_type", cdt)) then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
-	local dt = cdt.format;
+	local dt = cdt.type;
 	return date_utils.to_xml_date_field(dt, cdt.value);
 end
 
@@ -737,7 +758,31 @@ local dur_mt = {
 };
 ffi.metatype("dur_s_type", dur_mt);
 
+
 --[[
+-- TS - 1
+local t = date_utils.dtt_from_long(ffi.new("long", 27000001000), 'time', nil)
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, 27000001000);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, t);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.long_from_dtt(t));
+
+local dt = date_utils.dtt_from_long(ffi.new("long", 62240254200001000), 'dateTime', nil)
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, dt);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, 62240254200001000);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, dt);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.long_from_dtt(dt));
+
+local d = date_utils.dtt_from_long(ffi.new("long", 62240227200000000), 'date', nil)
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, d);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, 62240227200000000);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, d);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.long_from_dtt(d));
+--]]
+
+
+
+--[[
+-- TS - 2
 local s_dur = 'P1Y'
 local dur = date_utils.from_xml_duration(s_dur);
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, dur);

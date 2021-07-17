@@ -57,7 +57,7 @@ function __normalized_string_handler_class:to_type(ns, i)
 	return n_s;
 end
 
-function __normalozed_string_handler_class:new(i)
+function __normalized_string_handler_class:new(i)
 	return self:to_type(nil, i);
 end
 

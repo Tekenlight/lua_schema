@@ -89,7 +89,7 @@ function __base64Binary_handler_class:to_type(ns, i)
 	return s;
 end
 
-function __bae64Binary_handler_class:new(i)
+function __base64Binary_handler_class:new(i)
 	return self:to_type(nil, i);
 end
 
