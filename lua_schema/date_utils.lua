@@ -22,6 +22,12 @@ typedef struct _dur {
 void free(void *ptr);
 char * strdup(const char *s1);
 
+typedef struct {
+    int64_t usec;
+    int32_t day;
+    int32_t mon;
+} interval_s_type, *interval_p_type;
+
 ]]
 
 local date_utils = {};
@@ -771,6 +777,23 @@ date_utils.time_from_dtt = function(dtt)
 	return n, tzo;
 end
 
+date_utils.dur_from_bin = function(bin)
+	local dur = { mon = tonumber(bin.mon), day = tonumber(bin.day), sec = tonumber(bin.usec)/1000000 } ;
+	local str_dur = date_utils.str_from_dur(dur);
+	local cdur = ffi.new("dur_s_type");
+	cdur.value = ffi.C.strdup(ffi.cast("char*", str_dur));
+	return cdur;
+end
+
+date_utils.bin_from_dur = function(s_dur)
+	local dur = date_utils.split_duration(s_dur)
+	local bin_dur = ffi.new("interval_s_type", 0);
+	bin_dur.day = dur.day;
+	bin_dur.mon = dur.mon;
+	bin_dur.usec = dur.sec * 1000000;
+	return bin_dur;
+end
+
 date_utils.to_xml_format = function(cdt)
 	if (not ffi.istype("dt_s_type", cdt)) then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
@@ -832,9 +855,12 @@ print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.long_fro
 --]]
 
 
-
 --[[
 -- TS - 2
+local s_dur = 'P1Y1M1DT1H1M45S';
+local dur = date_utils.from_xml_duration(s_dur);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, dur, ffi.string(dur.value));
+
 local s_dur = 'P1Y'
 local dur = date_utils.from_xml_duration(s_dur);
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, dur);
