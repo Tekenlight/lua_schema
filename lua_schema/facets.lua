@@ -671,10 +671,17 @@ function _xsd_facets:check(v)
 				return false;
 			end
 		elseif (self.datatype == 'number') then
-			if (not self:check_number_facets(v)) then
+			local val = 0;
+			if (ffi.istype("float", v)) then
+				val = tonumber(v);
+			else
+				val = v;
+			end
+
+			if (not self:check_number_facets(val)) then
 				return false;
 			end
-			if (not self:check_num_enumerations(v)) then
+			if (not self:check_num_enumerations(val)) then
 				return false;
 			end
 		elseif (self.datatype == 'decimal') then

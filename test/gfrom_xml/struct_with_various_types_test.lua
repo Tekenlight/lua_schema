@@ -74,13 +74,6 @@ int printf(const char * restrict format, ...);
 ]]
 
 if (content ~= nil) then
-	--print(ffi.string(content.base64Binary)); print(require("core_utils").binary_size(content.base64Binary));
-	--print(#ffi.string(content.base64Binary));
-	--print(ffi.string(content.hexBinary)); print(require("core_utils").binary_size(content.hexBinary));
-	--print(#ffi.string(content.hexBinary));
-end
-
-if (content ~= nil) then
 	local json_str = struct_with_various_types:to_json(content);
 	print(json_str);
 	print(debug.getinfo(1).source, debug.getinfo(1).currentline);

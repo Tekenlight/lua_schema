@@ -24,6 +24,7 @@ basic_stuff.is_simple_type = function(content)
 	if (
 		(type(content) ~= 'string') and
 		(type(content) ~= 'boolean') and
+		(not ffi.istype("float", content)) and
 		(not ffi.istype("long", content)) and
 		(not ffi.istype("unsigned long", content)) and
 		(not ffi.istype("int8_t", content)) and
@@ -1329,6 +1330,9 @@ basic_stuff.primitive_to_intermediate_json = function(th, content)
 			i_content = th:to_xmlua(nil, content);
 		end
 	elseif (th.type_name == 'float' or th.type_name == 'double') then
+		if (ffi.istype("float", content)) then
+			i_content = tonumber(content);
+		end
 		if (nu.is_nan(content) or nu.is_inf(content)) then
 			i_content = th:to_xmlua('', content);
 		end
@@ -1503,6 +1507,9 @@ basic_stuff.primitive_from_intermediate_json = function(th, content)
 			if (content == nil) then
 				error("INVALID FLOATING POINT NUMBER");
 			end
+		end
+		if (th.type_name == 'float') then
+			content = th:to_type(nil, tostring(content));
 		end
 	elseif (th.datatype == 'decimal') then
 		content = th:to_type(nil, content);

@@ -15,6 +15,7 @@ unsigned char *hex_decode(const unsigned char *data, size_t input_length, size_t
 void free(void *ptr);
 void free_binary_data(unsigned char *data);
 size_t binary_data_len(unsigned char *data);
+void * alloc_binary_data_memory(size_t size);
 
 typedef struct {
 	size_t size;
@@ -32,6 +33,10 @@ typedef binary_data_s2_type b64_data_s_type;
 ]]
 
 local core_utils = {};
+
+core_utils.alloc = function(size)
+	return lib.alloc_binary_data_memory(size);
+end
 
 core_utils.hex_encode = function(input)
 	if (input == nil) then
@@ -123,6 +128,7 @@ core_utils.base64_decode = function(input)
 	end
 end
 
+--[[
 core_utils.binary_size = function(input)
 	if (input == nil) then
 		error("Invalid input");
@@ -134,6 +140,7 @@ core_utils.binary_size = function(input)
 	end
 	return lib.binary_data_len(input);
 end
+--]]
 
 local function binary_data_gc(bd)
 	if (bd.value ~= ffi.NULL) then

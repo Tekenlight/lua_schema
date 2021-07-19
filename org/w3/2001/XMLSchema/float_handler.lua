@@ -2,6 +2,7 @@ local facets = require("lua_schema.facets");
 local error_handler = require("lua_schema.error_handler");
 local nu = require("lua_schema.number_utils");
 local __float_handler_class = {}
+local ffi = require('ffi');
 
 __float_handler_class.type_name = 'float';
 __float_handler_class.datatype = 'number';
@@ -17,17 +18,25 @@ function __float_handler_class:is_deserialized_valid(x)
 end
 
 function __float_handler_class:is_valid(f)
+	local g = 0;
+	if (ffi.istype("float",f)) then
+		g = tonumber(f);
+	elseif (type(f) ~= 'number') then
+		return false;
+	else
+		g = f;
+	end
 	local valid = true;
-	if ((not nu.is_nan(f)) and (not nu.is_inf(f)) and (not nu.is_float(f))) then
+	if ((not nu.is_nan(g)) and (not nu.is_inf(g)) and (not nu.is_float(g))) then
 		valid = false;
 	end
 	if (not valid) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid float", debug.getinfo(1));
+						"Field:["..g.."]:{"..error_handler.get_fieldpath().."} is not a valid float", debug.getinfo(1));
 		return false;
 	end
 	if (self.facets ~= nil) then
-		if (not self.facets:check(f)) then
+		if (not self.facets:check(g)) then
 			return false;
 		end
 	end
@@ -35,13 +44,14 @@ function __float_handler_class:is_valid(f)
 end
 
 function __float_handler_class:to_xmlua(ns, f)
-	if (false == self:is_valid(f)) then
+	local g = tonumber(f);
+	if (false == self:is_valid(g)) then
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
-	if (nu.is_nan(f)) then return 'NaN';
-	elseif (nu.is_inf(f)) then return 'Inf';
-	else return tostring(f);
+	if (nu.is_nan(g)) then return 'NaN';
+	elseif (nu.is_inf(g)) then return 'Inf';
+	else return tostring(g);
 	end
 end
 
@@ -58,15 +68,17 @@ function __float_handler_class:to_schema_type(ns, f)
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
+	n = ffi.new("float", n);
 	return n;
 end
 
 function __float_handler_class:to_cjson_struct(ns, f)
-	if (false == self:is_valid(f)) then
+	local g = tonumber(f);
+	if (false == self:is_valid(tonumber(g))) then
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
-	return f;
+	return g;
 end
 
 function __float_handler_class:to_type(ns, f)
@@ -83,7 +95,8 @@ function __float_handler_class:to_type(ns, f)
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
-	if (false == self:is_valid(c_f)) then
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, c_f);
+	if (false == self:is_valid(tonumber(c_f))) then
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
