@@ -20,7 +20,7 @@ function __negative_integer_handler_class:is_deserialized_valid(x)
 	local f = self:to_type('', x);
 	if (f == nil) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..x.."]:{"..error_handler.get_fieldpath().."} is not a valid negativeInteger", debug.getinfo(1));
+						"Field:["..tostring(x).."]:{"..error_handler.get_fieldpath().."} is not a valid negativeInteger", debug.getinfo(1));
 		return false;
 	end
 	return self:is_valid(f);
@@ -61,7 +61,7 @@ function __negative_integer_handler_class:to_schema_type(ns, f)
 	if (1 ~= self.c_negative_integer_str_pattern:check(f)) then
 		error_handler.raise_validation_error(-1,
 					"Value of the field {"..error_handler.get_fieldpath().."}: "
-						..f..", is not in the lexical spcae of xsd:negativeInteger", debug.getinfo(1));
+						..tostring(f)..", is not in the lexical spcae of xsd:negativeInteger", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
@@ -90,14 +90,14 @@ end
 function __negative_integer_handler_class:to_type(ns, f)
 	if (type(f) ~= 'string') then
 		error_handler.raise_validation_error(-1,
-						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a string", debug.getinfo(1));
+						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a string", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	local c_f = self:to_schema_type(ns, f);
 	if (c_f == nil) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid negativeInteger", debug.getinfo(1));
+						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid negativeInteger", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end

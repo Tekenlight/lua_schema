@@ -11,7 +11,7 @@ function __float_handler_class:is_deserialized_valid(x)
 	local f = self:to_type('', x);
 	if (f == nil) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..x.."]:{"..error_handler.get_fieldpath().."} is not a valid float", debug.getinfo(1));
+						"Field:["..tostring(x).."]:{"..error_handler.get_fieldpath().."} is not a valid float", debug.getinfo(1));
 		return false;
 	end
 	return self:is_valid(f);
@@ -32,7 +32,7 @@ function __float_handler_class:is_valid(f)
 	end
 	if (not valid) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..g.."]:{"..error_handler.get_fieldpath().."} is not a valid float", debug.getinfo(1));
+						"Field:["..tostring(g).."]:{"..error_handler.get_fieldpath().."} is not a valid float", debug.getinfo(1));
 		return false;
 	end
 	if (self.facets ~= nil) then
@@ -60,7 +60,7 @@ function __float_handler_class:to_schema_type(ns, f)
 	local n = nu.to_double(f);
 	if (n == nil) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of float", debug.getinfo(1));
+						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid string representation of float", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
@@ -84,14 +84,14 @@ end
 function __float_handler_class:to_type(ns, f)
 	if (type(f) ~= 'string') then
 		error_handler.raise_validation_error(-1,
-						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a string", debug.getinfo(1));
+						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a string", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	local c_f = self:to_schema_type(ns, f);
 	if (c_f == nil) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid float", debug.getinfo(1));
+						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid float", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end

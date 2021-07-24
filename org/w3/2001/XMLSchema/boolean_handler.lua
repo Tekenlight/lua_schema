@@ -9,7 +9,7 @@ function __boolean_handler_class:is_deserialized_valid(x)
 	local i = tonumber(x);
 	if (i == nil) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..x.."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
+						"Field:["..tostring(x).."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
 		return false;
 	end
 	return self:is_valid(i);
@@ -22,7 +22,7 @@ function __boolean_handler_class:is_valid(i)
 	end
 	if (not valid) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..i.."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
+						"Field:["..tostring(i).."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
 		return false;
 	end
 	if (self.facets ~= nil) then
@@ -44,7 +44,7 @@ end
 function __boolean_handler_class:to_schema_type(ns, x)
 	if (type(x) ~= 'string') then
 		error_handler.raise_validation_error(-1,
-						"Field:["..i.."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
+						"Field:["..tostring(i).."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
@@ -59,7 +59,7 @@ function __boolean_handler_class:to_schema_type(ns, x)
 				n = false;
 			else
 				error_handler.raise_validation_error(-1,
-								"Field:["..i.."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
+								"Field:["..tostring(i).."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
 				status = false;
 			end
 		elseif (type(i) == 'number') then
@@ -69,12 +69,12 @@ function __boolean_handler_class:to_schema_type(ns, x)
 				n = false;
 			else
 				error_handler.raise_validation_error(-1,
-								"Field:["..i.."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
+								"Field:["..tostring(i).."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
 				status = false;
 			end
 		else
 			error_handler.raise_validation_error(-1,
-							"Field:["..i.."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
+							"Field:["..tostring(i).."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
 			status = false;
 		end
 	else
@@ -102,7 +102,7 @@ function __boolean_handler_class:to_type(ns, i)
 	local c_i = self:to_schema_type(ns, i);
 	if (c_i == nil) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..i.."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
+						"Field:["..tostring(i).."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end

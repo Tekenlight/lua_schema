@@ -21,7 +21,7 @@ function __int_handler_class:is_deserialized_valid(x)
 	if (not status) then
 		error_handler.reset_init();
 		error_handler.raise_validation_error(-1,
-						"Field:["..x.."]:{"..error_handler.get_fieldpath().."} is not a valid int", debug.getinfo(1));
+						"Field:["..tostring(x).."]:{"..error_handler.get_fieldpath().."} is not a valid int", debug.getinfo(1));
 		return false;
 	end
 	return self:is_valid(f);
@@ -29,7 +29,11 @@ end
 
 function __int_handler_class:is_valid(f)
 	local valid = true;
-	if (not nu.is_int64(f)) then
+	if (not ffi.istype("int32_t", f)) then
+		error_handler.raise_validation_error(-1,
+						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid int", debug.getinfo(1));
+		return false;
+	elseif (not nu.is_int64(f)) then
 		valid = false;
 	end
 	if (not valid) then
@@ -60,7 +64,7 @@ function __int_handler_class:to_schema_type(ns, sf)
 	if (1 ~= self.c_int_str_pattern:check(f)) then
 		error_handler.raise_validation_error(-1,
 					"Value of the field {"..error_handler.get_fieldpath().."}: "
-						..f..", is not in the lexical spcae of xsd:int", debug.getinfo(1));
+						..tostring(f)..", is not in the lexical spcae of xsd:int", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
@@ -96,14 +100,14 @@ end
 function __int_handler_class:to_type(ns, f)
 	if (type(f) ~= 'string') then
 		error_handler.raise_validation_error(-1,
-						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a string", debug.getinfo(1));
+						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a string", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
 	local c_f = self:to_schema_type(ns, f);
 	if (c_f == nil) then
 		error_handler.raise_validation_error(-1,
-						"Field:["..f.."]:{"..error_handler.get_fieldpath().."} is not a valid int", debug.getinfo(1));
+						"Field:["..tostring(f).."]:{"..error_handler.get_fieldpath().."} is not a valid int", debug.getinfo(1));
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
