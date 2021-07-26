@@ -62,6 +62,10 @@ error_handler.raise_validation_error = function(error_no, message, d_info)
 	end
 end
 
+error_handler.raise_error = function(error_no, message, d_info)
+	return error_handler.raise_validation_error(error_no, message, d_info);
+end
+
 error_handler.raise_fatal_error = function(error_no, message, d_info)
 	error_handler.raise_validation_error(error_no, message, d_info);
 	local msv = error_handler.reset_init();

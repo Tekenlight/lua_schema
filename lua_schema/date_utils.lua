@@ -307,6 +307,8 @@ date_utils.append_tz = function(date_part, tzo)
 		ret = date_part..'Z';
 	elseif (tzo > 0) then
 		ret = date_part..date_utils.get_tzo_in_h_m(tzo);
+	else
+		ret = date_part..date_utils.get_tzo_in_h_m(tzo);
 	end
 	return ret;
 end
@@ -810,6 +812,29 @@ date_utils.free_cdur = function(cdur)
 	ffi.C.free(cdur.value);
 end
 
+date_utils.now = function(utc)
+	if (type(utc) ~= 'boolean') then
+		error("Invalid inputs");
+	end
+	local p = require('posix.sys.time');
+	local t = p.gettimeofday();
+	local dt = date(t.tv_sec+t.tv_usec/1000000);
+	dt.dayfrc = nu.round(dt.dayfrc, 1);
+	local dtt;
+	if (not utc) then
+		local tzb = date(false):getbias();
+		date_utils.add_tzoffset_to_dto(dt, tzb);
+		local tzs = tostring(-1*tzb);
+		dtt = date_utils.dtt_from_date_obj(dt, tzs);
+	else
+		dtt =  date_utils.dtt_from_date_obj(dt, "0");
+	end
+	local cdt = ffi.new("dt_s_type", 0);
+	cdt.type = date_utils.tn_tid_map['dateTime'];
+	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
+	return cdt;
+end
+
 local dt_mt = {
 	__tostring = date_utils.to_xml_format,
 	__gc = date_utils.free_cdt,
@@ -825,6 +850,12 @@ ffi.metatype("dur_s_type", dur_mt);
 
 --[[
 --TS - 0
+
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.now(true));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, date(true));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.now(false));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, date(false));
+
 
 local dt = date_utils.from_xml_date("1973-04-26");
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, dt);
