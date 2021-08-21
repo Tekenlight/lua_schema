@@ -6,6 +6,9 @@ if(not loaded) then
 end
 
 ffi.cdef[[
+void * malloc(size_t size);
+void * memset(void *b, int c, size_t len);
+void * memcpy(void *restrict dst, const void *restrict src, size_t n);
 unsigned char *base64_encode(const unsigned char *data,
 						size_t input_length, size_t *output_length, int add_line_breaks);
 unsigned char *base64_decode(const unsigned char *data,
@@ -62,6 +65,22 @@ core_utils.hex_encode = function(input)
 
 end
 
+core_utils.str_hex_encode = function(input)
+	if (input == nil or type(input) ~= 'string' or #input == 0) then
+		error("Invalid input");
+	end
+	bin_inp = ffi.new("hex_data_s_type", 0);
+	--bin_inp.size = string.len(input) + 1;
+	bin_inp.size = string.len(input);
+	bin_inp.value = ffi.C.malloc(bin_inp.size+1);
+	ffi.C.memset(bin_inp.value, 0, (bin_inp.size+1));
+	ffi.C.memcpy(bin_inp.value, input, bin_inp.size);
+
+	local str = core_utils.hex_encode(bin_inp);
+
+	return str;
+end
+
 core_utils.hex_decode = function(input)
 	if (input == nil or type(input) ~= 'string' or #input == 0) then
 		error("Invalid input");
@@ -77,6 +96,7 @@ core_utils.hex_decode = function(input)
 	if (decoded_data ~= ffi.NULL) then
 		ddata.value = decoded_data;
 		ddata.size = decoded_data_len_ptr[0];
+		ddata.value[ddata.size] = 0;
 		return (ddata);
 	else
 		return nil;
@@ -107,6 +127,22 @@ core_utils.base64_encode = function(input)
 
 end
 
+core_utils.str_base64_encode = function(input)
+	if (input == nil or type(input) ~= 'string' or #input == 0) then
+		error("Invalid input");
+	end
+	bin_inp = ffi.new("hex_data_s_type", 0);
+	--bin_inp.size = string.len(input) + 1;
+	bin_inp.size = string.len(input);
+	bin_inp.value = ffi.C.malloc(bin_inp.size+1);
+	ffi.C.memset(bin_inp.value, 0, (bin_inp.size+1));
+	ffi.C.memcpy(bin_inp.value, input, bin_inp.size);
+
+	local str = core_utils.base64_encode(bin_inp);
+
+	return str;
+end
+
 core_utils.base64_decode = function(input)
 	if (input == nil or type(input) ~= 'string' or #input == 0) then
 		error("Invalid input");
@@ -122,25 +158,12 @@ core_utils.base64_decode = function(input)
 	if (decoded_data ~= ffi.NULL) then
 		ddata.value = decoded_data;
 		ddata.size = decoded_data_len_ptr[0];
+		ddata.value[ddata.size] = 0;
 		return (ddata);
 	else
 		return nil;
 	end
 end
-
---[[
-core_utils.binary_size = function(input)
-	if (input == nil) then
-		error("Invalid input");
-	end
-
-	local status = ffi.istype("unsigned char*", input);
-	if (not status) then
-		error("Invalid input");
-	end
-	return lib.binary_data_len(input);
-end
---]]
 
 local function binary_data_gc(bd)
 	if (bd.value ~= ffi.NULL) then
