@@ -117,7 +117,7 @@ function _xsd_facets:check_num_enumerations(v)
 	if (e == nil or #e == 0) then return true; end
 	local found = false;
 	for p,q in ipairs(e) do
-		print(debug.getinfo(1).source, debug.getinfo(1).currentline, tonumber(q), tonumber(v));
+		--print(debug.getinfo(1).source, debug.getinfo(1).currentline, tonumber(q), tonumber(v));
 		if (nu.compare_num(tonumber(q), tonumber(v)) == 0) then
 			found = true;
 			break;
