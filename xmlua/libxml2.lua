@@ -308,6 +308,10 @@ function libxml2.xmlDocSetRootElement(document, root)
   return xml2.xmlDocSetRootElement(document, root)
 end
 
+function libxml2.xmlCopyNode(node, extended)
+  return xml2.xmlCopyNode(node, extended);
+end
+
 function libxml2.xmlNewNode(namespace, name)
   local new_element = xml2.xmlNewNode(namespace, name)
   return new_element
@@ -846,6 +850,23 @@ function libxml2.xmlSchemaGetElem(schema, name, nsName);
 	return elem_decl;
 end
 
+function libxml2.xmlSchemaGetModelGroupDef(schema, name, nsName);
+	if (name == nil or type(name) ~= 'string') then
+		error('name must be a non nil string');
+		return nil;
+	end
+	if (nsName == nil or nsName == "") then
+		nsName =  ffi.NULL;
+	end
+	if (schema == ffi.NULL) then
+		error('schema  must not be NULL');
+		return nil;
+	end
+	local mgr_def = xml2.xmlSchemaGetModelGroupDef(schema, name, nsName);
+	if (mgr_def == ffi.NULL) then return nil; end
+	return mgr_def;
+end
+
 ffi.cdef[[
 void free(void *ptr);
 ]]
@@ -867,7 +888,17 @@ function libxml2.xmlSchemaGetGlobalTypeDefs(schema);
 	end
 	local type_defs = xml2.xmlSchemaGetGlobalTypeDefs(schema);
 	if (type_defs == ffi.NULL) then return nil; end
-	return ffi.gc(type_defs, free)
+	return ffi.gc(type_defs, ffi.C.free)
+end
+
+function libxml2.xmlSchemaGetGlobalModelGroupDefs(schema);
+	if (schema == ffi.NULL) then
+		error('schema  must not be NULL');
+		return nil;
+	end
+	local mgr_defs = xml2.xmlSchemaGetGlobalModelGroupDefs(schema);
+	if (mgr_defs == ffi.NULL) then return nil; end
+	return ffi.gc(mgr_defs, ffi.C.free)
 end
 
 function libxml2.xmlGetAttributeList(typedef)
@@ -951,4 +982,13 @@ libxml2.xmlSchemaValidateDuration = function(duration)
 		return false, nil;
 	end
 end
+
+libxml2.xmlXPathRegisterNs = function(ctxt, prefix, ns_uri)
+	local ret = xml2.xmlXPathRegisterNs(ctxt, prefix, ns_uri);
+	if (0 ~= tonumber(ret)) then
+		error("xmlXPathRegisterNs failed");
+	end
+	return;
+end
+
 return libxml2

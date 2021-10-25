@@ -156,7 +156,8 @@ Element.new = function(element_ptr, schema_ptr, context_ptr)
 		_context_ptr = context_ptr,
 		name = ffi.string(element_ptr.name),
 		ns = tns,
-		class = 'E'
+		class = 'E',
+		annot = element_ptr.annot
 	};
 	_elem.q_name = '{'.._elem.ns..'}'.._elem.name;
 	local typedef_ptr = element_ptr.subtypes;
@@ -196,6 +197,25 @@ Element.new = function(element_ptr, schema_ptr, context_ptr)
 	end
 	setmetatable(_elem, metatable);
 	return _elem;
+end
+
+MgrDef = {};
+
+MgrDef.new = function(mgredef_ptr, schema_ptr, context_ptr)
+	local tns = '';
+	local name = ''
+	if (ffi.NULL ~= mgredef_ptr.name) then name = ffi.string(mgredef_ptr.name); end
+	if (ffi.NULL ~= mgredef_ptr.targetNamespace) then tns = ffi.string(mgredef_ptr.targetNamespace); end
+	local _mgrdef= {
+		_ptr = mgredef_ptr,
+		_schema_ptr = schema_ptr,
+		_context_ptr = context_ptr,
+		name = name,
+		ns = tns,
+		class = 'M',
+		annot = mgredef_ptr.annot
+	};
+	return _mgrdef;
 end
 
 local TypeDef = {};
@@ -308,6 +328,13 @@ local function assimilate_model_recursively(context_ptr, schema_ptr, particle, m
 	if (particle == ffi.NULL) then return model; end
 	local term = particle.children;
 	if (term == ffi.NULL) then error("Missing term"); end
+	--[[
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, particle);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, particle.annot);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, particle.children);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, particle.children.annot);
+	--]]
+
 
 	local min_occurs = particle.minOccurs;
 	local max_occurs = 0;
@@ -424,6 +451,7 @@ local function assimilate_model_recursively(context_ptr, schema_ptr, particle, m
 		model[begin_index].min_occurs = min_occurs;
 		model[begin_index].max_occurs = max_occurs;
 		model[begin_index].group_type = group_type;
+		model[begin_index].annot = particle.children.annot;
 
 		assimilate_model_recursively(context_ptr, schema_ptr, ffi.cast("xmlSchemaParticlePtr", term.children), model)
 
@@ -874,6 +902,33 @@ function methods:get_element_decl(name, nsName);
 		return nil;
 	end
 	local e = Element.new(elem_decl, self._ptr, self._context_ptr)
+	return e;
+end
+
+function methods:get_model_group_defs()
+	local mgr_defs = libxml2.xmlSchemaGetGlobalModelGroupDefs(self._ptr);
+	if ((mgr_defs == ffi.NULL) or (mgr_defs == nil)) then
+		--error("Could not get modelgroupdefs ");
+		return nil;
+	end
+	local mgrdef_array = {};
+	local i = 0;
+	local mgrdef_ptr = mgr_defs[i];
+	while (mgrdef_ptr ~= ffi.NULL) do
+		mgrdef_array[#mgrdef_array+1] = MgrDef.new(mgrdef_ptr, self._ptr, self._context_ptr);
+		i = i+1;
+		mgrdef_ptr = mgr_defs[i];
+	end
+	return mgrdef_array;
+end
+
+function methods:get_model_group_def(name, nsName);
+	local mgr_def = libxml2.xmlSchemaGetModelGroupDef(self._ptr, name, nsName);
+	if (mgr_def == ffi.NULL or mgr_def == nil) then
+		error("Could not locate model group def {"..nsName.."}"..name);
+		return nil;
+	end
+	local e = MgrDef.new(mgr_def, self._ptr, self._context_ptr)
 	return e;
 end
 

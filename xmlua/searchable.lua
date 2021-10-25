@@ -50,7 +50,7 @@ local ERROR_MESSAGES = {
   [ffi.C.XPATH_FORBID_VARIABLE_ERROR]    = "Forbidden variable\n",
 }
 
-function Searchable:search(xpath)
+function Searchable:search(xpath, ns_urls)
   local document = self.document
   local context = libxml2.xmlXPathNewContext(document)
   if not context then
@@ -60,6 +60,11 @@ function Searchable:search(xpath)
     if not libxml2.xmlXPathSetContextNode(self.node, context) then
       error("failed to set target node: <" .. tostring(self.node) .. ">")
     end
+  end
+  if (ns_urls ~= nil) then
+	  for prefix,href in pairs(ns_urls) do
+		libxml2.xmlXPathRegisterNs(context, prefix, href);
+	  end
   end
   local object = libxml2.xmlXPathEvalExpression(xpath, context)
   if not object then

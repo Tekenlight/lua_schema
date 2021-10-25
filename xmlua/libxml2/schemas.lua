@@ -199,15 +199,19 @@ typedef struct _xmlSchemaType xmlSchemaType;
 typedef xmlSchemaType *xmlSchemaTypePtr;
 
 xmlSchemaTypePtr xmlSchemaGetType(xmlSchemaPtr schema, const xmlChar * name, const xmlChar * nsName);
-
 xmlSchemaTypePtr* xmlSchemaGetGlobalTypeDefs(xmlSchemaPtr schema);
 
 typedef struct _xmlSchemaElement xmlSchemaElement;
 typedef xmlSchemaElement *xmlSchemaElementPtr;
 
 xmlSchemaElementPtr xmlSchemaGetElem(xmlSchemaPtr schema, const xmlChar * name, const xmlChar * nsName);
-
 xmlSchemaElementPtr* xmlSchemaGetGlobalElements(xmlSchemaPtr schema);
+
+typedef struct _xmlSchemaModelGroupDef xmlSchemaModelGroupDef;
+typedef xmlSchemaModelGroupDef *xmlSchemaModelGroupDefPtr;
+
+xmlSchemaModelGroupDefPtr xmlSchemaGetModelGroupDef(xmlSchemaPtr schema, const xmlChar * name, const xmlChar * nsName);
+xmlSchemaModelGroupDefPtr* xmlSchemaGetGlobalModelGroupDefs(xmlSchemaPtr schema);
 
 /*
  * For getting names of definitions/declarations in xsd

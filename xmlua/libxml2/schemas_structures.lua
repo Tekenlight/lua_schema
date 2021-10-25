@@ -1092,5 +1092,24 @@ struct _xmlSchemaParticle {
     xmlNodePtr node;
 };
 
+/**
+ * xmlSchemaModelGroupDef:
+ *
+ * A model group definition component.
+ * (Extends xmlSchemaTreeItem)
+ */
+typedef struct _xmlSchemaModelGroupDef xmlSchemaModelGroupDef;
+typedef xmlSchemaModelGroupDef *xmlSchemaModelGroupDefPtr;
+struct _xmlSchemaModelGroupDef {
+    xmlSchemaTypeType type; /* XML_SCHEMA_TYPE_GROUP */
+    xmlSchemaAnnotPtr annot;
+    xmlSchemaTreeItemPtr next; /* not used */
+    xmlSchemaTreeItemPtr children; /* the "model group" */
+    const xmlChar *name;
+    const xmlChar *targetNamespace;
+    xmlNodePtr node;
+    int flags;
+};
+
 
 ]]

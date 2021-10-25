@@ -5,6 +5,13 @@ local ffi = require("ffi")
 
 local Document = require("xmlua.document")
 
+function XML.document_from_subtree(node)
+  local raw_document = libxml2.xmlNewDoc("1.0")
+  local ret = libxml2.xmlCopyNode(node, 1);
+  libxml2.xmlDocSetRootElement(raw_document, ret);
+  return Document.new(raw_document);
+end
+
 function XML.build(tree)
   local raw_document = libxml2.xmlNewDoc("1.0")
   return Document.build(raw_document, tree)
