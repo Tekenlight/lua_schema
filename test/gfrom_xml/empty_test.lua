@@ -1,7 +1,7 @@
 #!/opt/local/bin/lua
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
-<ns1:empty xmlns:ns1="http://test_example.com"></ns1:empty>]=]
+<ns1:empty xmlns:ns1="http://test_example.com" package=".." name=".." inputs="..."/>]=]
 
 mhf = require("schema_processor")
 

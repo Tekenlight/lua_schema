@@ -355,7 +355,10 @@ elem_code_generator.get_subelement_properties = function(model, dbg)
 					_subelement_properties[item.generated_q_name].decl_props.type = 'explicit_type';
 					_subelement_properties[item.generated_q_name].decl_props.def = type_name;
 					_subelement_properties[item.generated_q_name].decl_props.def_q_name = {};
-					_subelement_properties[item.generated_q_name].decl_props.def_q_name.ns = item.named_type_ns;
+					_subelement_properties[item.generated_q_name].decl_props.def_q_name.ns = '';
+					if (nil ~= item.named_type_ns) then
+						_subelement_properties[item.generated_q_name].decl_props.def_q_name.ns = item.named_type_ns;
+					end
 					_subelement_properties[item.generated_q_name].decl_props.def_q_name.local_name = item.named_type;
 					if (('http://www.w3.org/2001/XMLSchema' == item.named_type_ns) and
 						('anyType' == item.named_type) ) then

@@ -2084,8 +2084,15 @@ local process_start_of_element = function(reader, sts, objs, pss, mcos)
 		obj['___METADATA___'].content_model_type = 'SS';
 	else
 		if (sth.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
-		elseif (not read_attributes(reader, sth, obj)) then
-			return false;
+		else
+			if (not read_attributes(reader, sth, obj)) then
+				return false;
+			else
+				--[[
+				--If attributes are found, object is not empty
+				--]]
+				obj['___METADATA___'].empty = false;
+			end
 		end
 		if(sth.properties.content_type == 'C') then
 			obj['___METADATA___'].cm = sth.properties.content_model;
@@ -2244,6 +2251,8 @@ local process_end_of_element = function(reader, sts, objs, pss, mcos)
 			parsed_output = parsed_element['___DATA___']._contained_value;
 		elseif ((not parsed_element['___METADATA___'].empty) or (top_obj['___METADATA___'].covering_object) ) then
 			parsed_output = parsed_element['___DATA___'];
+		else
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline, "NO CONDITION MET. NO PARSED_OUTPUT");
 		end
 	else
 		if (not parsed_element['___METADATA___'].empty) then
@@ -2454,6 +2463,12 @@ local parse_any = function(reader, sts, objs, pss)
 	return json_output;
 end
 
+local call_process_end_of_element= function(reader, sts, objs, pss, mcos)
+	local ret = process_end_of_element(reader, sts, objs, pss, mcos);
+	error_handler.pop_element();
+	return ret;
+end
+
 --[[
 --Anything other than element begining, text or
 --element ending is not handled in this module
@@ -2468,7 +2483,9 @@ local process_node = function(reader, sts, objs, pss, mcos)
 	local schema_type_handler = sts:top();
 	local ret = false;
 	if (typ == reader.node_types.XML_READER_TYPE_ELEMENT) then
-		if (not reader:node_is_empty_element(reader)) then
+		--if (not reader:node_is_empty_element(reader)) then
+		local empty_element = reader:node_is_empty_element(reader);
+		if ((true)) then
 			error_handler.push_element(q_name);
 			ret = process_start_of_element(reader, sts, objs, pss, mcos);
 			do
@@ -2479,8 +2496,17 @@ local process_node = function(reader, sts, objs, pss, mcos)
 					local top_obj = objs:top();
 					top_obj['___DATA___']._contained_value = obj;
 					top_obj['___METADATA___'].empty = false;
+					--[[
 					ret = process_end_of_element(reader, sts, objs, pss, mcos);
 					error_handler.pop_element();
+					--]]
+					ret = call_process_end_of_element(reader, sts, objs, pss, mcos);
+				else
+					if (empty_element) then
+						ret = call_process_end_of_element(reader, sts, objs, pss, mcos);
+					else
+						ret = true;
+					end
 				end
 			end
 		else
@@ -2490,8 +2516,11 @@ local process_node = function(reader, sts, objs, pss, mcos)
 			(typ == reader.node_types.XML_READER_TYPE_CDATA)) then
 		ret = process_text(reader, sts, objs, pss, mcos);
 	elseif (typ == reader.node_types.XML_READER_TYPE_END_ELEMENT) then
+		--[[
 		ret = process_end_of_element(reader, sts, objs, pss, mcos);
 		error_handler.pop_element();
+		--]]
+		ret = call_process_end_of_element(reader, sts, objs, pss, mcos);
 	elseif (typ == reader.node_types.XML_READER_TYPE_SIGNIFICANT_WHITESPACE) then
 		if (schema_type_handler.properties.content_type == 'M') then
 			ret = process_text(reader, sts, objs, pss, mcos);

@@ -1,6 +1,9 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"  targetNamespace="http://test_example.com" xmlns:ns="http://test_example.com">
 	<xsd:element name="empty">
 		<xsd:complexType>
+			<xsd:attribute name="package" type="xsd:token" use="required"/>
+			<xsd:attribute name="name" type="xsd:token" use="required"/>
+			<xsd:attribute name="inputs" type="xsd:token" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
 </xsd:schema>
