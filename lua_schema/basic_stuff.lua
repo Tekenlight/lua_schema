@@ -2091,7 +2091,9 @@ local process_start_of_element = function(reader, sts, objs, pss, mcos)
 				--[[
 				--If attributes are found, object is not empty
 				--]]
-				obj['___METADATA___'].empty = false;
+				if (obj['___DATA___']._attr ~= nil) then
+					obj['___METADATA___'].empty = false;
+				end
 			end
 		end
 		if(sth.properties.content_type == 'C') then
@@ -2502,10 +2504,8 @@ local process_node = function(reader, sts, objs, pss, mcos)
 					--]]
 					ret = call_process_end_of_element(reader, sts, objs, pss, mcos);
 				else
-					if (empty_element) then
+					if (ret and empty_element) then
 						ret = call_process_end_of_element(reader, sts, objs, pss, mcos);
-					else
-						ret = true;
 					end
 				end
 			end
