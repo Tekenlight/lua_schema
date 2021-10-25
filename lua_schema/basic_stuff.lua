@@ -2254,7 +2254,7 @@ local process_end_of_element = function(reader, sts, objs, pss, mcos)
 		elseif ((not parsed_element['___METADATA___'].empty) or (top_obj['___METADATA___'].covering_object) ) then
 			parsed_output = parsed_element['___DATA___'];
 		else
-			print(debug.getinfo(1).source, debug.getinfo(1).currentline, "NO CONDITION MET. NO PARSED_OUTPUT");
+			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, "NO CONDITION MET. NO PARSED_OUTPUT");
 		end
 	else
 		if (not parsed_element['___METADATA___'].empty) then
