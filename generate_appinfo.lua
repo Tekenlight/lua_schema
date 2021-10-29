@@ -80,6 +80,7 @@ return ]=]..package_parts[n]..[=[;
 ]=]..package_parts[n]..'.'..rule_set._attr.rule_set_name..[=[ = function(context, obj, addnl_obj)
 	local validations_array = {};
 	local j = 1;
+
 ]=];
 	for i,v in ipairs(rule_set.rule) do
 		if (v.assertion ~= nil) then
@@ -93,7 +94,7 @@ return ]=]..package_parts[n]..[=[;
 				local error_msg_inp_elements = '';
 				if (v.error_def.input ~= nil) then
 					for i,v in ipairs(v.error_def.input) do
-						error_msg_inp_elements = error_msg_inp_elements..', '..v;
+						error_msg_inp_elements = error_msg_inp_elements..', tostring('..v..')';
 					end
 				end
 				code = code ..[=[
@@ -105,14 +106,17 @@ return ]=]..package_parts[n]..[=[;
 ]=];
 					else
 						code = code .. [=[
-				msg = ']=].. v.error_def.error_message..[=[';
+				local msg1 = ']=].. v.error_def.error_message..[=[';
+				msg = messages:format_with_string(msg1]=]..error_msg_inp_elements..[=[);
 ]=];
 					end
 					code = code..[=[
 				error_handler.raise_validation_error(-1, msg, debug.getinfo(1));
+				return false;
 ]=];
 				code = code ..[=[
 			end
+			return true;
 		end
 		validations_array[j].ref_element = ']=]..tostring(v._attr.ref_element)..[=[';
 		validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';
@@ -148,9 +152,11 @@ return ]=]..package_parts[n]..[=[;
 					end
 					code = code..[=[
 			error_handler.raise_validation_error(-1, msg, debug.getinfo(1));
+			return false;
 ]=];
 				code = code ..[=[
 		end
+		return true;
 	end
 	validations_array[j].ref_element = ']=]..tostring(v._attr.ref_element)..[=[';
 	validations_array[j].type = ']=]..tostring(v._attr.type)..[=[';

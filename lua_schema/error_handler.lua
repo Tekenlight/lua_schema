@@ -6,20 +6,41 @@ end
 
 error_handler.init = function()
 	_G.message_validation_context = { fieldpath = { level = 0, path = {} },
-							status = { success = true,
+							status = {	set = false;
+										success = true,
 										error_no = 0,
 										error_message = '',
-										traceback = ''} };
+										traceback = ''},
+							status_objs = {}
+						};
 	return;
 end
 
 error_handler.set_validation_error = function(error_no, message, tb, s, ln)
-	_G.message_validation_context.status.success = false;
-	_G.message_validation_context.status.error_no = error_no;
-	_G.message_validation_context.status.error_message = message;
-	_G.message_validation_context.status.traceback = tb;
-	_G.message_validation_context.status.source_file = s;
-	_G.message_validation_context.status.line_no = ln;
+	local path = error_handler.get_fieldpath();
+	if (not _G.message_validation_context.status.set) then
+		-- Capture the first error explicitly
+		_G.message_validation_context.status.set = true
+		_G.message_validation_context.status.success = false;
+		_G.message_validation_context.status.error_no = error_no;
+		_G.message_validation_context.status.error_message = message;
+		_G.message_validation_context.status.traceback = tb;
+		_G.message_validation_context.status.source_file = s;
+		_G.message_validation_context.status.line_no = ln;
+		_G.message_validation_context.status.field_path = path;
+	end
+	local status = {};
+	status.set = true
+	status.success = false;
+	status.error_no = error_no;
+	status.error_message = message;
+	status.traceback = tb;
+	status.source_file = s;
+	status.line_no = ln;
+	status.field_path = path;
+	local n = #(_G.message_validation_context.status_objs);
+	_G.message_validation_context.status_objs[n+1] = status;
+
 	return;
 end
 
