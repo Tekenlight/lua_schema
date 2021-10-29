@@ -200,12 +200,14 @@ local function generate_appinfo_for_typedef(typedef, module_name, code_output)
 			local ah = mhf:get_message_handler("app_info", "http://evpoco.tekenlight.org/message_rules")
 			local app_info, msg = ah:from_xml(app_info_xml);
 			if (app_info == nil) then
-				error(msg);
+				--error(msg);
+				return;
 			end
 			--require 'pl.pretty'.dump(app_info);
 			generate_validation_routine(app_info.rule_set, module_name, code_output);
 		else
-			error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
+			--error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
+			return;
 		end
 	end
 
@@ -226,12 +228,14 @@ local function generate_appinfo_for_element(element, module_name, code_output)
 			local ah = mhf:get_message_handler("app_info", "http://evpoco.tekenlight.org/message_rules")
 			local app_info, msg = ah:from_xml(app_info_xml);
 			if (app_info == nil) then
-				error(msg);
+				--error(msg);
+				return;
 			end
 			--require 'pl.pretty'.dump(app_info);
 			generate_validation_routine(app_info.rule_set, module_name, code_output);
 		else
-			error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
+			--error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
+			return;
 		end
 	end
 end
@@ -251,12 +255,14 @@ local function generate_appinfo_for_mgd(mgr_def, module_name, code_output)
 			local ah = mhf:get_message_handler("app_info", "http://evpoco.tekenlight.org/message_rules")
 			local app_info, msg = ah:from_xml(app_info_xml);
 			if (app_info == nil) then
-				error(msg);
+				--error(msg);
+				return;
 			end
 			--require 'pl.pretty'.dump(app_info);
 			generate_validation_routine(app_info.rule_set, module_name, code_output);
 		else
-			error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
+			--error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
+			return;
 		end
 	end
 end
