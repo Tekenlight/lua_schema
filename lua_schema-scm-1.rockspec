@@ -139,7 +139,8 @@ build = {
    },
    install = {
 	   bin = {
-		   gxsd = 'bin/gxsd'
+		   gxsd = 'bin/gxsd',
+		   gappinfo = 'bin/gappinfo',
 	   }
    }
 }
