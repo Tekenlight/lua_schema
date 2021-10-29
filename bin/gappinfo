@@ -10,6 +10,7 @@ file=$1
 module=$2
 echo "Generating "$file
 echo "--------------"
+echo "lua $HOME/.luarocks/share/lua/5.3/generate_appinfo.lua $file $module_name"
 lua $HOME/.luarocks/share/lua/5.3/generate_appinfo.lua $file $module_name
 if [ $? -ne 0 ]
 then
