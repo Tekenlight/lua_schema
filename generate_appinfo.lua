@@ -186,8 +186,7 @@ end
 end
 
 local function generate_appinfo_for_typedef(typedef, module_name, code_output)
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline, typedef.name);
-	--require 'pl.pretty'.dump(typedef);
+	require 'pl.pretty'.dump(typedef);
 	local annot = typedef.annot;
 	if (annot and annot ~= ffi.NULL) then
 		local nss = { ns = 'http://www.w3.org/2001/XMLSchema', ns1 = 'http://evpoco.tekenlight.org/message_rules' }
@@ -204,7 +203,6 @@ local function generate_appinfo_for_typedef(typedef, module_name, code_output)
 				print(msg);
 				return;
 			end
-			--require 'pl.pretty'.dump(app_info);
 			generate_validation_routine(app_info.rule_set, module_name, code_output);
 		else
 			--error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
@@ -216,7 +214,6 @@ local function generate_appinfo_for_typedef(typedef, module_name, code_output)
 end
 
 local function generate_appinfo_for_element(element, module_name, code_output)
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	require 'pl.pretty'.dump(element);
 	local annot = element.annot;
 	if (annot and annot ~= ffi.NULL) then
@@ -234,7 +231,6 @@ local function generate_appinfo_for_element(element, module_name, code_output)
 				print(msg);
 				return;
 			end
-			--require 'pl.pretty'.dump(app_info);
 			generate_validation_routine(app_info.rule_set, module_name, code_output);
 		else
 			--error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
@@ -245,7 +241,6 @@ local function generate_appinfo_for_element(element, module_name, code_output)
 end
 
 local function generate_appinfo_for_mgd(mgr_def, module_name, code_output)
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 	require 'pl.pretty'.dump(mgr_def);
 	local annot = mgr_def.annot;
 	if (annot and annot ~= ffi.NULL) then
@@ -263,7 +258,6 @@ local function generate_appinfo_for_mgd(mgr_def, module_name, code_output)
 				print(msg);
 				return;
 			end
-			--require 'pl.pretty'.dump(app_info);
 			generate_validation_routine(app_info.rule_set, module_name, code_output);
 		else
 			--error("Path ".."/ns:annotation/ns:appinfo/ns1:app_info".." not present in the document");
