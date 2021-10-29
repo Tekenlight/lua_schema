@@ -17,6 +17,7 @@ build = {
    type = "builtin",
    modules = {
       generate_schema = "generate_schema.lua",
+      generate_appinfo = "generate_appinfo.lua",
       ["lua_schema.basic_stuff"] = "lua_schema/basic_stuff.lua",
       ["lua_schema.codegen_eh_cache"] = "lua_schema/codegen_eh_cache.lua",
       ["lua_schema.core_utils"] = "lua_schema/core_utils.lua",
