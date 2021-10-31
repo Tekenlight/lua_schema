@@ -1,11 +1,11 @@
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"  targetNamespace="http://test_example.com">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"  targetNamespace="http://test_example.com" xmlns:ns="http://test_example.com">
 	<xsd:simpleType name="t_basic_string">
 		<xsd:restriction base="xsd:string">
-			<xsd:length value="7"/>
-			<xsd:pattern value="S[a-zA-Z]*r"/>
-			<xsd:pattern value="S[a-zA-Z]*r"/>
-			<xsd:pattern value="S[a-zA-Z]*r"/>
+			<xsd:maxLength value="10"/>
+			<xsd:pattern value="[A-Z]{5}[\d]{4}[A-Z]"/>
 		</xsd:restriction>
 	</xsd:simpleType>
+
+	<xsd:element name="t_basic_string_element" type="ns:t_basic_string"/>
 
 </xsd:schema>

@@ -1086,7 +1086,7 @@ elem_code_generator.gen_code_copy_facets = function(code, prefix, facets_set)
 		code = code..prefix..'.pattern = {};\n';
 		for i,v in ipairs(facets_set.pattern) do
 			code = code..prefix..'.pattern['..i..'] = {};\n';
-			code = code..prefix..'.pattern['..i..'].str_p = [['..v.str_p..']];\n';
+			code = code..prefix..'.pattern['..i..'].str_p = [=['..v.str_p..']=];\n';
 			code = code..prefix..'.pattern['..i..'].com_p = nil;\n';
 		end
 	end
