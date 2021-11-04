@@ -7,7 +7,7 @@ description = {
    homepage = "https://github.com/Tekenlight/lua_schema",
    license = "MIT"
 }
-dependencies = {"luacs", "date"}
+dependencies = {"luacs", "customized_date"}
 external_dependencies = {
   LIBXML2 = {
     library = "xml2"
