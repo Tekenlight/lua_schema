@@ -228,6 +228,7 @@ TypeDef.new = function(typedef_ptr, schema_ptr, context_ptr)
 		_ptr = typedef_ptr,
 		_schema_ptr = schema_ptr,
 		_context_ptr = context_ptr,
+		annot = typedef_ptr.annot,
 		name = name,
 		ns = tns,
 		class = 'T'
