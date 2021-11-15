@@ -103,9 +103,20 @@ core_utils.hex_decode = function(input)
 	end
 end
 
-core_utils.base64_encode = function(input)
+core_utils.base64_encode = function(input, add_line_breaks)
 	if (input == nil) then
 		error("Invalid input");
+	end
+
+	if (nil == add_line_breaks) then
+		add_line_breaks = 0;
+	else
+		if (type(add_line_breaks) ~= 'number') then
+			error("Invalid input");
+		end
+		if (0 ~= add_line_breaks) then
+			add_line_breaks = 1;
+		end
 	end
 
 	local status = ffi.istype("hex_data_s_type", input);
@@ -115,7 +126,7 @@ core_utils.base64_encode = function(input)
 
 	local encoded_data_len_ptr = ffi.new("size_t[1]", 0);
 
-	local encoded_data = lib.base64_encode(input.value, input.size, encoded_data_len_ptr, 1);
+	local encoded_data = lib.base64_encode(input.value, input.size, encoded_data_len_ptr, add_line_breaks);
 
 	if (encoded_data ~= ffi.NULL) then
 		local e_str = ffi.string(encoded_data);
@@ -127,7 +138,7 @@ core_utils.base64_encode = function(input)
 
 end
 
-core_utils.str_base64_encode = function(input)
+core_utils.str_base64_encode = function(input, add_line_breaks)
 	if (input == nil or type(input) ~= 'string' or #input == 0) then
 		error("Invalid input");
 	end
@@ -138,9 +149,15 @@ core_utils.str_base64_encode = function(input)
 	ffi.C.memset(bin_inp.value, 0, (bin_inp.size+1));
 	ffi.C.memcpy(bin_inp.value, input, bin_inp.size);
 
-	local str = core_utils.base64_encode(bin_inp);
+	local str = core_utils.base64_encode(bin_inp, add_line_breaks);
 
 	return str;
+end
+
+core_utils.str_base64_decode = function(input)
+	local bin_data = core_utils.base64_decode(input);
+	local string_data = ffi.string(bin_data.value, bin_data.size);
+	return string_data;
 end
 
 core_utils.base64_decode = function(input)
