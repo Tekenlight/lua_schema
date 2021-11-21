@@ -100,11 +100,11 @@ local from_json_string = function(schema_type_handler, xmlua, json_input)
 	if (not schema_type_handler:is_valid(content)) then
 		status = false;
 		content = nil;
-		parsing_result_msg = (error_handler.reset()).status.error_message;
+		parsing_result_msg = (error_handler.reset_init()).status.error_message;
 	else
 		status = true;
 		parsing_result_msg = nil;
-		error_handler.reset();
+		error_handler.reset_init();
 	end
 
 	return status, content, parsing_result_msg;
@@ -127,7 +127,7 @@ local validate_doc = function(message_handler_instance, content)
 	result, valid = pcall(basic_stuff.perform_element_validation, message_handler_instance,  content);
 
 
-	local message_validation_context = error_handler.reset();
+	local message_validation_context = error_handler.reset_init();
 	if (not result) then
 		valid = false;
 	end
