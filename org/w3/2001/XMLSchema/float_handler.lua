@@ -95,7 +95,6 @@ function __float_handler_class:to_type(ns, f)
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline, c_f);
 	if (false == self:is_valid(tonumber(c_f))) then
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
