@@ -2527,6 +2527,11 @@ local process_node = function(reader, sts, objs, pss, mcos)
 		else
 			ret = true;
 		end
+	elseif (typ == reader.node_types.XML_READER_TYPE_COMMENT) then
+		--[[
+		If it a comment just ignore the comment node and move on
+		--]]
+		ret = true;
 	else
 		print("UNKNOWN HANDLED", typ, q_name);
 		error_handler.raise_validation_error(-1, "Unhandled reader event:".. typ..":"..q_name, debug.getinfo(1));

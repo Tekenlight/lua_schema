@@ -12,6 +12,7 @@ local content, msg = any_type:from_xml(xml_string)
 if (type(content) == 'table') then require 'pl.pretty'.dump(content);
 else print(content, msg)
 end
+print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 
 local xml = any_type:to_xml(content);
 local json = any_type:to_json(content);

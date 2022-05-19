@@ -36,7 +36,11 @@ else
 	error("FAILED TO DECODE");
 end
 
-local eed = cu.base64_encode(bdd, bdd.size);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, ffi.string(bdd.value));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, #(ffi.string(bdd.value)));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, s);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, #s);
+local eed = cu.base64_encode(bdd, #(ffi.string(bdd.value)));
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, eed, type(eed));
 
 
