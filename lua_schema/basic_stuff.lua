@@ -2529,7 +2529,7 @@ local process_node = function(reader, sts, objs, pss, mcos)
 		end
 	elseif (typ == reader.node_types.XML_READER_TYPE_COMMENT) then
 		--[[
-		If it a comment just ignore the comment node and move on
+		If it is a comment just ignore the comment node and move on
 		--]]
 		ret = true;
 	else
