@@ -1,18 +1,24 @@
 #/usr/bin/sh
 
+output_directory=$2
 if [ $# -eq 0 ]
 then
-	echo "Usage: gxsd [ all | <xsd_file_name> ]"
+	echo "Usage: gxsd [ all | <xsd_file_name> ] <output_directory>"
 	exit 1
 fi
 
 if [ $1 = "all" ]
 then
+	if [ "$output_directory" != "" ]
+	then
+		mkdir -p $output_directory
+		cd $output_directory
+	fi
 	for file in `ls -1 xsd_for_test/*.xsd`
 	do
 		echo "Generating "$file
 		echo "--------------"
-		lua $HOME/.luarocks/share/lua/5.3/generate_schema.lua $file
+		lua $HOME/.luarocks/share/lua/5.3/generate_schema.lua $file $output_directory
 		if [ $? -ne 0 ]
 		then
 			exit 1;
@@ -22,7 +28,12 @@ else
 	file=$1
 	echo "Generating "$file
 	echo "--------------"
-	lua $HOME/.luarocks/share/lua/5.3/generate_schema.lua $file
+	if [ "$output_directory" != "" ]
+	then
+		mkdir -p $output_directory
+		cd $output_directory
+	fi
+	lua $HOME/.luarocks/share/lua/5.3/generate_schema.lua ../$file
 	if [ $? -ne 0 ]
 	then
 		exit 1;
