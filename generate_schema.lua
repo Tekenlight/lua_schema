@@ -3,7 +3,7 @@ local mhf = require("schema_processor")
 local xsd = xmlua.XSD.new();
 local basic_stuff = require("lua_schema.basic_stuff");
 local stringx = require("pl.stringx");
-local c = '';
+local str_mappings = '';
 
 _G.handler_cache = {};
 
@@ -22,10 +22,10 @@ local function generate_mappings(v)
 	end
 	local_path = local_path..".lua";
 	local local_pth = local_path:gsub("build/","");
-	if(c ~= '') then             
-		c = c..",\n"..'\t["'..formatted_path..'"]'..' = '..'"'..local_pth..'"';
+	if(str_mappings ~= '') then             
+		str_mappings = str_mappings..",\n"..'\t["'..formatted_path..'"]'..' = '..'"'..local_pth..'"';
     else
-        c = '\t["'..formatted_path..'"]'..' = '..'"'..local_pth..'"';
+        str_mappings = '\t["'..formatted_path..'"]'..' = '..'"'..local_pth..'"';
     end
 end
 
@@ -67,14 +67,17 @@ if (types ~= nil) then
 	end
 end
 
-header = "local build_mappings = {\n"
-footer = '\n}'.."\n\nreturn build_mappings;"
-c = header..c..footer;
-xsd_file = xsd_name:gsub("xsd/","");
-xsd_file = xsd_file:gsub("%.%.","");
-local module = xsd_file:gsub("_data_structures.xsd","");
-local target_file_path = "com/biop/"..module.."/"..xsd_file:gsub(".xsd$","").."_xsd.lua";
-local file = io.open(target_file_path,"w+");
-file:write(c)
+do
+	local header = "local build_mappings = {\n"
+	local footer = '\n}'.."\n\nreturn build_mappings;"
+	str_mappings = header..str_mappings..footer;
+	xsd_file = xsd_name:gsub("%.%.","");
+	xsd_file = xsd_file:gsub("xsd/","");
+	local module = xsd_file:gsub("_data_structures.xsd","");
+	os.execute("mkdir -p output_files/xsd")
+	local target_file_path = "output_files/xsd/"..xsd_file:gsub(".xsd$","").."_xsd.lua";
+	local file = io.open(target_file_path,"w+");
+	file:write(str_mappings)
+end
 _G.handler_cache = nil;
 
