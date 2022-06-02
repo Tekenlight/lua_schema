@@ -69,7 +69,7 @@ core_utils.str_hex_encode = function(input)
 	if (input == nil or type(input) ~= 'string' or #input == 0) then
 		error("Invalid input");
 	end
-	bin_inp = ffi.new("hex_data_s_type", 0);
+	local bin_inp = ffi.new("hex_data_s_type", 0);
 	--bin_inp.size = string.len(input) + 1;
 	bin_inp.size = string.len(input);
 	bin_inp.value = ffi.C.malloc(bin_inp.size+1);
