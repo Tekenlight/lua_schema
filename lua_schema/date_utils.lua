@@ -835,6 +835,29 @@ date_utils.now = function(utc)
 	return cdt;
 end
 
+date_utils.today = function(utc)
+	if (type(utc) ~= 'boolean') then
+		error("Invalid inputs");
+	end
+	local today = os.date("*t");
+	local dt = date(today.year, today.month, today.day)
+	dt.dayfrc = nu.round(dt.dayfrc, 1);
+	local dtt;
+	if (not utc) then
+		local tzb = date(false):getbias();
+		date_utils.add_tzoffset_to_dto(dt, tzb);
+		dt.dayfrc = 0;
+		local tzs = tostring(-1*tzb);
+		dtt = date_utils.dtt_from_date_obj(dt, tzs);
+	else
+		dtt =  date_utils.dtt_from_date_obj(dt, "0");
+	end
+	local cdt = ffi.new("dt_s_type", 0);
+	cdt.type = date_utils.tn_tid_map['date'];
+	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
+	return cdt;
+end
+
 local dt_mt = {
 	__tostring = date_utils.to_xml_format,
 	__gc = date_utils.free_cdt,
@@ -939,6 +962,16 @@ local D2 = 'P1Y1DT1S';
 local dur1 = date_utils.from_xml_duration(D1);
 local dur2 = date_utils.from_xml_duration(D2);
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.compare_durations(dur1, dur2));
+--]]
+
+--[[
+--TS - 3
+
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.today(true));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, date(true));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.today(false));
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, date(false));
+
 --]]
 
 return date_utils;

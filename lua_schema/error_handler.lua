@@ -64,31 +64,62 @@ error_handler.get_fieldpath = function()
 	return path;
 end
 
-error_handler.raise_validation_error = function(error_no, message, d_info)
+error_handler.low_raise_validation_error = function(error_no, message, d_info)
 	local tb = debug.traceback();
 	if (_G.message_validation_context == nil) then
 		--print(tb);
-		error(message);
+		if (d_info ~= nil) then
+			local path = d_info.source;
+			local src_a = require "pl.stringx".split(path, '/')
+			local src = src_a[#src_a];
+			local line = d_info.currentline;
+			local msg = src..':'..line..':'..message;
+			--error(msg);
+			error(message);
+		else
+			error(message);
+		end
 		return false;
 	else
 		--print(d_info.source, d_info.currentline);
+		--[[
 		local src = nil;
 		local line = nil;
 		if (d_info ~= nil) then
 			src = d_info.source;
 			line = d_info.currentline;
 		end
-		error_handler.set_validation_error(error_no, message, tb, src, line);
+		--]]
+		local msg;
+		if (d_info ~= nil) then
+			local path = d_info.source;
+			local src_a = require "pl.stringx".split(path, '/')
+			local src = src_a[#src_a];
+			local line = d_info.currentline;
+			--msg = src..':'..line..':'..message;
+			msg = message
+		else
+			msg = message;
+		end
+		error_handler.set_validation_error(error_no, msg, tb, src, line);
 		return false;
 	end
 end
 
-error_handler.raise_error = function(error_no, message, d_info)
-	return error_handler.raise_validation_error(error_no, message, d_info);
+error_handler.raise_validation_error = function(error_no, message, i_d_info)
+	local tb = debug.traceback();
+	local d_info = debug.getinfo(2);
+	return error_handler.low_raise_validation_error(error_no, message, d_info);
 end
 
-error_handler.raise_fatal_error = function(error_no, message, d_info)
-	error_handler.raise_validation_error(error_no, message, d_info);
+error_handler.raise_error = function(error_no, message, i_d_info)
+	local d_info = debug.getinfo(2);
+	return error_handler.low_raise_validation_error(error_no, message, d_info);
+end
+
+error_handler.raise_fatal_error = function(error_no, message, i_d_info)
+	local d_info = debug.getinfo(2);
+	error_handler.low_raise_validation_error(error_no, message, d_info);
 	local msv = error_handler.reset_init();
 	error(msv.status.error_message);
 end
