@@ -238,7 +238,7 @@ date_utils.dtt_from_xml_date_field = function(date_type_id, s)
 	local d1 = xml_date_utils.str_to_date(date_type_id, s);
 	if (d1 == nil) then
 		local name = date_utils.tid_name_map[date_type_id];
-		error_handler.raise_validation_error(-1, "{"..s.."} not a valid "..name, debug.getinfo(1));
+		error_handler.raise_fatal_error(-1, "{"..s.."} not a valid "..name, debug.getinfo(1));
 		return nil;
 	end
 	local ticks = (d1.mil_sec*1000);
@@ -638,7 +638,7 @@ date_utils.str_dur_from_xml_duration = function(s)
 	end
 	local x_dur = xml_date_utils.str_to_duration(s);
 	if (x_dur == nil) then
-		error_handler.raise_validation_error(-1, "{"..s.."} not a valid duration", debug.getinfo(1));
+		error_handler.raise_fatal_error(-1, "{"..s.."} not a valid duration", debug.getinfo(1));
 		return nil
 	end
 	--require 'pl.pretty'.dump(x_dur);
