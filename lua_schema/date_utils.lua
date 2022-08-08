@@ -835,6 +835,27 @@ date_utils.now = function(utc)
 	return cdt;
 end
 
+date_utils.set_tz = function(cdt, tzo)
+	if (not ffi.istype("dt_s_type", cdt)) then
+		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+	end
+	assert(tzo ~= nil and type(tzo) == 'number');
+	local dto, tzo_2 = date_utils.date_obj_from_dtt(cdt);
+	local dtt = date_utils.dtt_from_date_obj(dto, nu.round(tzo, 1));
+
+	--[[
+	local o_cdt = ffi.new("dt_s_type", 0);
+	o_cdt.type = cdt.type;
+	o_cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
+	return o_cdt;
+	--]]
+	
+	ffi.C.free(cdt.value);
+	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
+
+	return cdt;
+end
+
 date_utils.today = function(utc)
 	if (type(utc) ~= 'boolean') then
 		error("Invalid inputs");
