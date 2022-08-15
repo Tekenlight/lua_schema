@@ -1,6 +1,4 @@
 local ffi = require("ffi");
-		symbol_type = 'element';
-		group_type = nil;
 local XSD = {}
 
 local methods = {};
@@ -199,7 +197,7 @@ Element.new = function(element_ptr, schema_ptr, context_ptr)
 	return _elem;
 end
 
-MgrDef = {};
+local MgrDef = {};
 
 MgrDef.new = function(mgredef_ptr, schema_ptr, context_ptr)
 	local tns = '';

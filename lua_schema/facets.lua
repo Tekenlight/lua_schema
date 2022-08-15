@@ -3,6 +3,7 @@ local regex = xmlua.XMLRegexp.new();
 local du = require("lua_schema.date_utils");
 local nu = require("lua_schema.number_utils");
 local bc = require("bigdecimal");
+local ffi = require('ffi');
 
 
 local error_handler = require("lua_schema.error_handler");

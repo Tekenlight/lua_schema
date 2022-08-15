@@ -20,7 +20,7 @@ function xml_date_utils.is_valid_date(xml_date_type_id, xml_date_str)
 end
 
 local xml_date = {};
-xml_date_mt = {__index = xml_date };
+local xml_date_mt = {__index = xml_date };
 
 function xml_date.new(xml_date_str, c_date_val, xml_date_type_id)
 	local _date = {};
@@ -53,7 +53,7 @@ function xml_date_utils.str_to_date(xml_date_type_id, xml_date_str)
 end
 
 local xml_duration = {};
-xml_duration_mt = {__index = xml_duration };
+local xml_duration_mt = {__index = xml_duration };
 
 function xml_duration.new(xml_duration_str, c_duration_val)
 	local _duration = {};

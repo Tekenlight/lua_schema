@@ -163,7 +163,7 @@ end
 
 local function form_complete_message_handler(message_handler)
 	function message_handler:to_json(content)
-		status, msg = validate_doc(self, content)
+		local status, msg = validate_doc(self, content)
 		if (status) then
 			return to_json_string(self, content);
 		else
@@ -172,7 +172,7 @@ local function form_complete_message_handler(message_handler)
 	end
 
 	function message_handler:to_xml(content)
-		status, msg = validate_doc(self, content)
+		local status, msg = validate_doc(self, content)
 		if (status) then
 			return to_xml_string(self, content);
 		else
@@ -181,7 +181,7 @@ local function form_complete_message_handler(message_handler)
 	end
 
 	function message_handler:validate(content)
-		status, msg = validate_doc(self, content)
+		local status, msg = validate_doc(self, content)
 		if (status) then
 			return true, nil;
 		else

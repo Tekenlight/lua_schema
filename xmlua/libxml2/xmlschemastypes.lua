@@ -1,4 +1,4 @@
-ffi = require("ffi");
+local ffi = require("ffi");
 ffi.cdef[[
 /*
  * Summary: implementation of XML Schema Datatypes
