@@ -66,13 +66,14 @@ end
 
 error_handler.low_raise_validation_error = function(error_no, message, d_info)
 	local tb = debug.traceback();
+	local src, line;
 	if (_G.message_validation_context == nil) then
 		--print(tb);
 		if (d_info ~= nil) then
 			local path = d_info.source;
 			local src_a = require "pl.stringx".split(path, '/')
-			local src = src_a[#src_a];
-			local line = d_info.currentline;
+			src = src_a[#src_a];
+			line = d_info.currentline;
 			local msg = src..':'..line..':'..message;
 			--error(msg);
 			error(message);
@@ -83,8 +84,8 @@ error_handler.low_raise_validation_error = function(error_no, message, d_info)
 	else
 		--print(d_info.source, d_info.currentline);
 		--[[
-		local src = nil;
-		local line = nil;
+		src = nil;
+		line = nil;
 		if (d_info ~= nil) then
 			src = d_info.source;
 			line = d_info.currentline;
@@ -94,8 +95,8 @@ error_handler.low_raise_validation_error = function(error_no, message, d_info)
 		if (d_info ~= nil) then
 			local path = d_info.source;
 			local src_a = require "pl.stringx".split(path, '/')
-			local src = src_a[#src_a];
-			local line = d_info.currentline;
+			src = src_a[#src_a];
+			line = d_info.currentline;
 			--msg = src..':'..line..':'..message;
 			msg = message
 		else
