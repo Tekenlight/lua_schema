@@ -15,12 +15,22 @@ then
 	export DYLD_LIBRARY_PATH
 fi
 
-output_directory=$2
 if [ $# -lt 1 ]
 then
-	echo "Usage: gxsd [ all | <xsd_file_name> ] <output_directory>"
+	echo "Usage: gxsd  all/<xsd_file_name> [ -b 1/0 ] [ -d <output_directory> ] "
 	exit 1
 fi
+build_mode=0
+# output_directory="./"
+
+while getopts b:d: flag
+do
+	case "${flag}" in
+		b) build_mode=${OPTARG};;
+		d) output_directory=${OPTARG};;
+	esac
+done
+
 if [ -f $HOME/.luarocks/share/lua/5.3/generate_schema.lua ]
 then
 	LUA_FILE="$HOME/.luarocks/share/lua/5.3/generate_schema.lua"
@@ -42,7 +52,7 @@ then
 		do
 			echo "Generating "$file
 			echo "--------------"
-			lua $LUA_FILE ../$file $output_directory
+			lua $LUA_FILE ../$file $build_mode
 			if [ $? -ne 0 ]
 			then
 				exit 1;
@@ -54,7 +64,7 @@ then
 		do
 			echo "Generating "$file
 			echo "--------------"
-			lua $LUA_FILE $file
+			lua $LUA_FILE $file $build_mode
 			if [ $? -ne 0 ]
 			then
 				exit 1;
@@ -69,14 +79,14 @@ else
 	then
 		mkdir -p $output_directory
 		cd $output_directory
-		lua $LUA_FILE ../$file
+		lua $LUA_FILE ../$file $build_mode
 		if [ $? -ne 0 ]
 		then
 			exit 1;
 		fi
 		cd ..
 	else
-		lua $LUA_FILE $file
+		lua $LUA_FILE $file $build_mode
 		if [ $? -ne 0 ]
 		then
 			exit 1;

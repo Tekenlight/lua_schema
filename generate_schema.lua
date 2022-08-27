@@ -50,6 +50,7 @@ end
 --
 local xsd_name = arg[1];
 local schema = xsd:parse(xsd_name);
+local build_mode = (arg[2] ~= nil and arg[2] ~= "0");
 
 local elems = schema:get_element_decls();
 if (elems ~= nil) then
@@ -73,11 +74,12 @@ do
 	str_mappings = header..str_mappings..footer;
 	xsd_file = xsd_name:gsub("%.%.","");
 	xsd_file = xsd_file:gsub("xsd/","");
-	local module = xsd_file:gsub("_data_structures.xsd","");
-	os.execute("mkdir -p output_files/xsd")
-	local target_file_path = "output_files/xsd/"..xsd_file:gsub(".xsd$","").."_xsd.lua";
-	local file = io.open(target_file_path,"w+");
-	file:write(str_mappings)
+	if (build_mode) then
+		os.execute("mkdir -p output_files/xsd")
+		local target_file_path = "output_files/xsd/"..xsd_file:gsub(".xsd$","").."_xsd.lua";
+		local file = io.open(target_file_path,"w+");
+		file:write(str_mappings)
+	end
 end
 _G.handler_cache = nil;
 
