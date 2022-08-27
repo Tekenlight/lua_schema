@@ -21,15 +21,25 @@ then
 	exit 1
 fi
 build_mode=0
-# output_directory="./"
+output_directory=
 
-while getopts b:d: flag
+# while getopts b:d: flag
+while getopts b:d: opt
 do
-	case "${flag}" in
-		b) build_mode=${OPTARG};;
-		d) output_directory=${OPTARG};;
+	case $opt in
+		d) output_directory=$OPTARG;;
+		b) build_mode=$OPTARG;;
+		\?) echo >&2 "usage: cha [-b 0/1] [-d <output_directory>] file"
+			exit 1;;
 	esac
+	echo $OPTIND
 done
+shift `expr $OPTIND - 1`
+
+#echo "---------------"
+#echo "OUTPUT_DIRECTORY:" $output_directory
+#echo "BUILD_MODE:" $build_mode
+#echo "---------------"
 
 if [ -f $HOME/.luarocks/share/lua/5.3/generate_schema.lua ]
 then
