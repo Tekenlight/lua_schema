@@ -79,6 +79,7 @@ do
 		local target_file_path = "output_files/xsd/"..xsd_file:gsub(".xsd$","").."_xsd.lua";
 		local file = io.open(target_file_path,"w+");
 		file:write(str_mappings)
+		file:close();
 	end
 end
 _G.handler_cache = nil;
