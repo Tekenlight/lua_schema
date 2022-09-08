@@ -43,11 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        generated_subelement_name = '_sequence_group',
+        group_type = 'S',
+        min_occurs = 1,
         top_level_group = true,
         max_occurs = 1,
-        generated_subelement_name = '_sequence_group',
-        min_occurs = 1,
-        group_type = 'S',
         'City',
         'StateOrProvince',
         'PostalCode',
@@ -78,55 +78,55 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
-    element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'] = {};
+    element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'] = {};
     do
-element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
 
-element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].type_of_simple = 'A';
+element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].type_of_simple = 'A';
 
         do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.bi_type.name = 'string';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.bi_type.id = '1';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.attr = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.attr._generated_attr = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.bi_type.name = 'string';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.bi_type.id = '1';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.attr = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.attr._generated_attr = {};
         end
 
         do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties.q_name.ns = 'http://uri.etsi.org/01903/v1.3.2#';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties.q_name.local_name = 'PostalCode';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties.generated_name = 'PostalCode';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties.q_name.ns = 'http://uri.etsi.org/01903/v1.3.2#';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties.q_name.local_name = 'StateOrProvince';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties.generated_name = 'StateOrProvince';
         end
 
         -- Simple type properties
         do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].base = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].base.name = 'string';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].local_facets = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode']);
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].base = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].base.name = 'string';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].local_facets = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince']);
         end
 
         do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].parse_xml = basic_stuff.parse_xml;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].parse_xml = basic_stuff.parse_xml;
         end
 
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties.min_occurs = 0;
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties.max_occurs = 1;
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties.min_occurs = 0;
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties.max_occurs = 1;
     end
 
     element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CountryName'] = {};
@@ -180,55 +180,55 @@ element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CountryName'].particle_properties.max_occurs = 1;
     end
 
-    element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'] = {};
+    element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'] = {};
     do
-element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
 
-element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].type_of_simple = 'A';
+element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].type_of_simple = 'A';
 
         do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.bi_type.name = 'string';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.bi_type.id = '1';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.attr = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].properties.attr._generated_attr = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.bi_type.name = 'string';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.bi_type.id = '1';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.attr = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].properties.attr._generated_attr = {};
         end
 
         do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties.q_name.ns = 'http://uri.etsi.org/01903/v1.3.2#';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties.q_name.local_name = 'StateOrProvince';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties.generated_name = 'StateOrProvince';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties.q_name.ns = 'http://uri.etsi.org/01903/v1.3.2#';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties.q_name.local_name = 'PostalCode';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties.generated_name = 'PostalCode';
         end
 
         -- Simple type properties
         do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].base = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].base.name = 'string';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].local_facets = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince']);
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].base = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].base.name = 'string';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].local_facets = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode']);
         end
 
         do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].parse_xml = basic_stuff.parse_xml;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].parse_xml = basic_stuff.parse_xml;
         end
 
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties.min_occurs = 0;
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}StateOrProvince'].particle_properties.max_occurs = 1;
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties.min_occurs = 0;
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}PostalCode'].particle_properties.max_occurs = 1;
     end
 
     element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}City'] = {};

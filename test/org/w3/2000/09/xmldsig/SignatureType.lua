@@ -74,10 +74,10 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        generated_subelement_name = '_sequence_group',
-        max_occurs = 1,
         min_occurs = 1,
         group_type = 'S',
+        generated_subelement_name = '_sequence_group',
+        max_occurs = 1,
         top_level_group = true,
         'SignedInfo',
         'SignatureValue',
@@ -110,20 +110,6 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SignatureValue'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'SignatureValue'):
-            new_instance_as_ref({root_element=false, generated_name = 'SignatureValue',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Object'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'Object'):
-            new_instance_as_ref({root_element=false, generated_name = 'Object',
-                    min_occurs = 0, max_occurs = -1}));
-    end
-
-    do
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}KeyInfo'] = 
         (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'KeyInfo'):
             new_instance_as_ref({root_element=false, generated_name = 'KeyInfo',
@@ -135,6 +121,20 @@ do
         (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'SignedInfo'):
             new_instance_as_ref({root_element=false, generated_name = 'SignedInfo',
                     min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SignatureValue'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'SignatureValue'):
+            new_instance_as_ref({root_element=false, generated_name = 'SignatureValue',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Object'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'Object'):
+            new_instance_as_ref({root_element=false, generated_name = 'Object',
+                    min_occurs = 0, max_occurs = -1}));
     end
 
 end

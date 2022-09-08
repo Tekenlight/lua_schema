@@ -43,11 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        top_level_group = true,
-        min_occurs = 1,
         generated_subelement_name = '_sequence_group',
-        max_occurs = 1,
         group_type = 'S',
+        min_occurs = 1,
+        max_occurs = 1,
+        top_level_group = true,
         'ClaimedRoles',
         'CertifiedRolesV2',
         'SignedAssertions',
@@ -76,16 +76,16 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CertifiedRolesV2'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CertifiedRolesV2'):
-            new_instance_as_ref({root_element=false, generated_name = 'CertifiedRolesV2',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ClaimedRoles'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'ClaimedRoles'):
+            new_instance_as_ref({root_element=false, generated_name = 'ClaimedRoles',
                     min_occurs = 0, max_occurs = 1}));
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ClaimedRoles'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'ClaimedRoles'):
-            new_instance_as_ref({root_element=false, generated_name = 'ClaimedRoles',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CertifiedRolesV2'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CertifiedRolesV2'):
+            new_instance_as_ref({root_element=false, generated_name = 'CertifiedRolesV2',
                     min_occurs = 0, max_occurs = 1}));
     end
 

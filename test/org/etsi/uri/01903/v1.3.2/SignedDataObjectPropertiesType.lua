@@ -74,11 +74,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        generated_subelement_name = '_sequence_group',
+        group_type = 'S',
+        min_occurs = 1,
         top_level_group = true,
         max_occurs = 1,
-        generated_subelement_name = '_sequence_group',
-        min_occurs = 1,
-        group_type = 'S',
         'DataObjectFormat',
         'CommitmentTypeIndication',
         'AllDataObjectsTimeStamp',
@@ -127,6 +127,13 @@ do
     end
 
     do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CommitmentTypeIndication'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CommitmentTypeIndication'):
+            new_instance_as_ref({root_element=false, generated_name = 'CommitmentTypeIndication',
+                    min_occurs = 0, max_occurs = -1}));
+    end
+
+    do
         element_handler.properties.subelement_properties['{}any'] = 
             (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
             new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
@@ -137,13 +144,6 @@ do
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}IndividualDataObjectsTimeStamp'] = 
         (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'IndividualDataObjectsTimeStamp'):
             new_instance_as_ref({root_element=false, generated_name = 'IndividualDataObjectsTimeStamp',
-                    min_occurs = 0, max_occurs = -1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CommitmentTypeIndication'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CommitmentTypeIndication'):
-            new_instance_as_ref({root_element=false, generated_name = 'CommitmentTypeIndication',
                     min_occurs = 0, max_occurs = -1}));
     end
 

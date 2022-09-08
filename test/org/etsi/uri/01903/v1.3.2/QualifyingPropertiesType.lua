@@ -38,36 +38,6 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
-        element_handler.properties.attr._attr_properties['{}Id'] = {};
-
-        element_handler.properties.attr._attr_properties['{}Id'].base = {};
-        element_handler.properties.attr._attr_properties['{}Id'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}Id'].base.name = 'ID';
-        element_handler.properties.attr._attr_properties['{}Id'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}Id'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}Id'].bi_type.name = 'ID';
-        element_handler.properties.attr._attr_properties['{}Id'].bi_type.id = '23';
-        element_handler.properties.attr._attr_properties['{}Id'].properties = {};
-        element_handler.properties.attr._attr_properties['{}Id'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}ID';
-        element_handler.properties.attr._attr_properties['{}Id'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}Id'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}Id'].properties.use = 'O';
-        element_handler.properties.attr._attr_properties['{}Id'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}Id'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}Id'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}Id'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}Id'].particle_properties.q_name.local_name = 'Id';
-        element_handler.properties.attr._attr_properties['{}Id'].particle_properties.generated_name = 'Id';
-
-        element_handler.properties.attr._attr_properties['{}Id'].type_handler = require('org.w3.2001.XMLSchema.ID_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}Id'].super_element_content_type = require('org.w3.2001.XMLSchema.ID_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}Id'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}Id'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}Id'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}Id']);
-    end
-    do
         element_handler.properties.attr._attr_properties['{}Target'] = {};
 
         element_handler.properties.attr._attr_properties['{}Target'].base = {};
@@ -97,19 +67,49 @@ do
         element_handler.properties.attr._attr_properties['{}Target'].local_facets = {}
         element_handler.properties.attr._attr_properties['{}Target'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}Target']);
     end
+    do
+        element_handler.properties.attr._attr_properties['{}Id'] = {};
+
+        element_handler.properties.attr._attr_properties['{}Id'].base = {};
+        element_handler.properties.attr._attr_properties['{}Id'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}Id'].base.name = 'ID';
+        element_handler.properties.attr._attr_properties['{}Id'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}Id'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}Id'].bi_type.name = 'ID';
+        element_handler.properties.attr._attr_properties['{}Id'].bi_type.id = '23';
+        element_handler.properties.attr._attr_properties['{}Id'].properties = {};
+        element_handler.properties.attr._attr_properties['{}Id'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}ID';
+        element_handler.properties.attr._attr_properties['{}Id'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}Id'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}Id'].properties.use = 'O';
+        element_handler.properties.attr._attr_properties['{}Id'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}Id'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}Id'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}Id'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}Id'].particle_properties.q_name.local_name = 'Id';
+        element_handler.properties.attr._attr_properties['{}Id'].particle_properties.generated_name = 'Id';
+
+        element_handler.properties.attr._attr_properties['{}Id'].type_handler = require('org.w3.2001.XMLSchema.ID_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}Id'].super_element_content_type = require('org.w3.2001.XMLSchema.ID_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}Id'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}Id'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}Id'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}Id']);
+    end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['Id'] = '{}Id';
     element_handler.properties.attr._generated_attr['Target'] = '{}Target';
+    element_handler.properties.attr._generated_attr['Id'] = '{}Id';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        top_level_group = true,
-        min_occurs = 1,
         generated_subelement_name = '_sequence_group',
-        max_occurs = 1,
         group_type = 'S',
+        min_occurs = 1,
+        max_occurs = 1,
+        top_level_group = true,
         'SignedProperties',
         'UnsignedProperties',
     };
@@ -135,16 +135,16 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}UnsignedProperties'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'UnsignedProperties'):
-            new_instance_as_ref({root_element=false, generated_name = 'UnsignedProperties',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignedProperties'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignedProperties'):
+            new_instance_as_ref({root_element=false, generated_name = 'SignedProperties',
                     min_occurs = 0, max_occurs = 1}));
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignedProperties'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignedProperties'):
-            new_instance_as_ref({root_element=false, generated_name = 'SignedProperties',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}UnsignedProperties'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'UnsignedProperties'):
+            new_instance_as_ref({root_element=false, generated_name = 'UnsignedProperties',
                     min_occurs = 0, max_occurs = 1}));
     end
 

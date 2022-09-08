@@ -98,18 +98,18 @@ do
         element_handler.properties.attr._attr_properties['{}Id'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}Id']);
     end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['URI'] = '{}URI';
     element_handler.properties.attr._generated_attr['Id'] = '{}Id';
+    element_handler.properties.attr._generated_attr['URI'] = '{}URI';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        top_level_group = true,
-        min_occurs = 1,
         generated_subelement_name = '_sequence_group',
-        max_occurs = 1,
         group_type = 'S',
+        min_occurs = 1,
+        max_occurs = 1,
+        top_level_group = true,
         'DigestMethod',
         'DigestValue',
     };
@@ -135,16 +135,16 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}DigestMethod'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'DigestMethod'):
-            new_instance_as_ref({root_element=false, generated_name = 'DigestMethod',
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}DigestValue'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'DigestValue'):
+            new_instance_as_ref({root_element=false, generated_name = 'DigestValue',
                     min_occurs = 1, max_occurs = 1}));
     end
 
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}DigestValue'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'DigestValue'):
-            new_instance_as_ref({root_element=false, generated_name = 'DigestValue',
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}DigestMethod'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'DigestMethod'):
+            new_instance_as_ref({root_element=false, generated_name = 'DigestMethod',
                     min_occurs = 1, max_occurs = 1}));
     end
 

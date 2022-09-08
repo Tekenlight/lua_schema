@@ -43,11 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        max_occurs = -1,
+        group_type = 'S',
         generated_subelement_name = '_sequence_group',
         min_occurs = 1,
         top_level_group = true,
-        group_type = 'S',
-        max_occurs = -1,
         'SPKISexp',
         'any',
     };
@@ -72,6 +72,13 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
+    do
+        element_handler.properties.subelement_properties['{}any'] = 
+            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
+            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
+                    root_element = false, min_occurs = 0, max_occurs = 1}));
+    end
+
     element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SPKISexp'] = {};
     do
 element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SPKISexp'].super_element_content_type = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
@@ -121,13 +128,6 @@ element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xml
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SPKISexp'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SPKISexp'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SPKISexp'].particle_properties.max_occurs = 1;
-    end
-
-    do
-        element_handler.properties.subelement_properties['{}any'] = 
-            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
-            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
-                    root_element = false, min_occurs = 0, max_occurs = 1}));
     end
 
 end

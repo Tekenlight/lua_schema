@@ -74,11 +74,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        generated_subelement_name = '_sequence_group',
+        group_type = 'S',
+        min_occurs = 1,
         top_level_group = true,
         max_occurs = 1,
-        generated_subelement_name = '_sequence_group',
-        min_occurs = 1,
-        group_type = 'S',
         'Description',
         'ObjectIdentifier',
         'MimeType',
@@ -109,55 +109,11 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
-    element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'] = {};
     do
-element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].super_element_content_type = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}anyURI';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.bi_type.name = 'anyURI';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.bi_type.id = '29';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.attr = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties.q_name.ns = 'http://uri.etsi.org/01903/v1.3.2#';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties.q_name.local_name = 'Encoding';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties.generated_name = 'Encoding';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].base = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].base.name = 'anyURI';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].local_facets = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].type_handler = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties.min_occurs = 0;
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties.max_occurs = 1;
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ObjectIdentifier'] = 
+            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'ObjectIdentifierType'):
+            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'ObjectIdentifier', generated_name = 'ObjectIdentifier',
+                    root_element = false, min_occurs = 0, max_occurs = 1}));
     end
 
     element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}MimeType'] = {};
@@ -211,13 +167,6 @@ element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}MimeType'].particle_properties.max_occurs = 1;
     end
 
-    do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ObjectIdentifier'] = 
-            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'ObjectIdentifierType'):
-            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'ObjectIdentifier', generated_name = 'ObjectIdentifier',
-                    root_element = false, min_occurs = 0, max_occurs = 1}));
-    end
-
     element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Description'] = {};
     do
 element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Description'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
@@ -267,6 +216,57 @@ element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Description'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Description'].particle_properties.min_occurs = 0;
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Description'].particle_properties.max_occurs = 1;
+    end
+
+    element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'] = {};
+    do
+element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].super_element_content_type = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}anyURI';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.bi_type.name = 'anyURI';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.bi_type.id = '29';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.attr = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties.q_name.ns = 'http://uri.etsi.org/01903/v1.3.2#';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties.q_name.local_name = 'Encoding';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties.generated_name = 'Encoding';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].base = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].base.name = 'anyURI';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].local_facets = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].type_handler = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties.min_occurs = 0;
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Encoding'].particle_properties.max_occurs = 1;
     end
 
 end

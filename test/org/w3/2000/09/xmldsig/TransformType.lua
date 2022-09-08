@@ -74,11 +74,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        max_occurs = -1,
+        group_type = 'C',
         generated_subelement_name = '_choice_group',
         min_occurs = 0,
         top_level_group = true,
-        group_type = 'C',
-        max_occurs = -1,
         'any',
         'XPath',
     };
@@ -103,13 +103,6 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
-    do
-        element_handler.properties.subelement_properties['{}any'] = 
-            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
-            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
-                    root_element = false, min_occurs = 1, max_occurs = 1}));
-    end
-
     element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}XPath'] = {};
     do
 element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}XPath'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
@@ -159,6 +152,13 @@ element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xml
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}XPath'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}XPath'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}XPath'].particle_properties.max_occurs = 1;
+    end
+
+    do
+        element_handler.properties.subelement_properties['{}any'] = 
+            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
+            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
+                    root_element = false, min_occurs = 1, max_occurs = 1}));
     end
 
 end

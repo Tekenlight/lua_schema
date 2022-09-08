@@ -43,25 +43,25 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        group_type = 'S',
-        max_occurs = 1,
-        top_level_group = true,
-        generated_subelement_name = '_sequence_group',
         min_occurs = 1,
+        generated_subelement_name = '_sequence_group',
+        group_type = 'S',
+        top_level_group = true,
+        max_occurs = 1,
         {
-            group_type = 'S',
-            max_occurs = 1,
-            top_level_group = false,
-            generated_subelement_name = '_sequence_group_1',
             min_occurs = 1,
+            generated_subelement_name = '_sequence_group_1',
+            group_type = 'S',
+            top_level_group = false,
+            max_occurs = 1,
             'M',
         },
         {
-            group_type = 'S',
-            max_occurs = 1,
-            top_level_group = false,
-            generated_subelement_name = '_sequence_group_2',
             min_occurs = 1,
+            generated_subelement_name = '_sequence_group_2',
+            group_type = 'S',
+            top_level_group = false,
+            max_occurs = 1,
             'K1',
             'K2',
             'K3',
@@ -96,57 +96,6 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
-    element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'] = {};
-    do
-element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].super_element_content_type = require('org.w3.2001.XMLSchema.positiveInteger_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}positiveInteger';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.bi_type.name = 'positiveInteger';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.bi_type.id = '34';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.attr = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties.q_name.ns = 'http://www.w3.org/2009/xmldsig11#';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties.q_name.local_name = 'K1';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties.generated_name = 'K1';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].base = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].base.name = 'positiveInteger';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].local_facets = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].type_handler = require('org.w3.2001.XMLSchema.positiveInteger_handler'):instantiate();
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties.max_occurs = 1;
-    end
-
     element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}M'] = {};
     do
 element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}M'].super_element_content_type = require('org.w3.2001.XMLSchema.positiveInteger_handler'):instantiate();
@@ -196,6 +145,57 @@ element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsi
         element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}M'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}M'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}M'].particle_properties.max_occurs = 1;
+    end
+
+    element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'] = {};
+    do
+element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].super_element_content_type = require('org.w3.2001.XMLSchema.positiveInteger_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}positiveInteger';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.bi_type.name = 'positiveInteger';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.bi_type.id = '34';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.attr = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties.q_name.ns = 'http://www.w3.org/2009/xmldsig11#';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties.q_name.local_name = 'K1';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties.generated_name = 'K1';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].base = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].base.name = 'positiveInteger';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].local_facets = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].type_handler = require('org.w3.2001.XMLSchema.positiveInteger_handler'):instantiate();
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K1'].particle_properties.max_occurs = 1;
     end
 
     element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}K3'] = {};

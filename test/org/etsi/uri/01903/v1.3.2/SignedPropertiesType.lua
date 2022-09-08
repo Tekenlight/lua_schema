@@ -74,11 +74,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        top_level_group = true,
-        min_occurs = 1,
         generated_subelement_name = '_sequence_group',
-        max_occurs = 1,
         group_type = 'S',
+        min_occurs = 1,
+        max_occurs = 1,
+        top_level_group = true,
         'SignedSignatureProperties',
         'SignedDataObjectProperties',
     };
@@ -104,16 +104,16 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignedSignatureProperties'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignedSignatureProperties'):
-            new_instance_as_ref({root_element=false, generated_name = 'SignedSignatureProperties',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignedDataObjectProperties'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignedDataObjectProperties'):
+            new_instance_as_ref({root_element=false, generated_name = 'SignedDataObjectProperties',
                     min_occurs = 0, max_occurs = 1}));
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignedDataObjectProperties'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignedDataObjectProperties'):
-            new_instance_as_ref({root_element=false, generated_name = 'SignedDataObjectProperties',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignedSignatureProperties'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignedSignatureProperties'):
+            new_instance_as_ref({root_element=false, generated_name = 'SignedSignatureProperties',
                     min_occurs = 0, max_occurs = 1}));
     end
 

@@ -74,11 +74,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        max_occurs = -1,
+        group_type = 'C',
         generated_subelement_name = '_choice_group',
         min_occurs = 1,
         top_level_group = true,
-        group_type = 'C',
-        max_occurs = -1,
         'KeyName',
         'KeyValue',
         'RetrievalMethod',
@@ -122,9 +122,9 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SPKIData'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'SPKIData'):
-            new_instance_as_ref({root_element=false, generated_name = 'SPKIData',
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}PGPData'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'PGPData'):
+            new_instance_as_ref({root_element=false, generated_name = 'PGPData',
                     min_occurs = 1, max_occurs = 1}));
     end
 
@@ -143,23 +143,9 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}PGPData'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'PGPData'):
-            new_instance_as_ref({root_element=false, generated_name = 'PGPData',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}KeyName'] = 
         (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'KeyName'):
             new_instance_as_ref({root_element=false, generated_name = 'KeyName',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}RetrievalMethod'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'RetrievalMethod'):
-            new_instance_as_ref({root_element=false, generated_name = 'RetrievalMethod',
                     min_occurs = 1, max_occurs = 1}));
     end
 
@@ -174,6 +160,20 @@ do
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}KeyValue'] = 
         (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'KeyValue'):
             new_instance_as_ref({root_element=false, generated_name = 'KeyValue',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}SPKIData'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'SPKIData'):
+            new_instance_as_ref({root_element=false, generated_name = 'SPKIData',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}RetrievalMethod'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'RetrievalMethod'):
+            new_instance_as_ref({root_element=false, generated_name = 'RetrievalMethod',
                     min_occurs = 1, max_occurs = 1}));
     end
 

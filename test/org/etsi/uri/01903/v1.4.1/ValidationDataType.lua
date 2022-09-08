@@ -98,18 +98,18 @@ do
         element_handler.properties.attr._attr_properties['{}URI'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}URI']);
     end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['URI'] = '{}URI';
     element_handler.properties.attr._generated_attr['Id'] = '{}Id';
+    element_handler.properties.attr._generated_attr['URI'] = '{}URI';
 end
 
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
         group_type = 'S',
-        min_occurs = 1,
         generated_subelement_name = '_sequence_group',
-        top_level_group = true,
+        min_occurs = 1,
         max_occurs = 1,
+        top_level_group = true,
         'CertificateValues',
         'RevocationValues',
     };
@@ -135,16 +135,16 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}RevocationValues'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'RevocationValues'):
-            new_instance_as_ref({root_element=false, generated_name = 'RevocationValues',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CertificateValues'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CertificateValues'):
+            new_instance_as_ref({root_element=false, generated_name = 'CertificateValues',
                     min_occurs = 0, max_occurs = 1}));
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CertificateValues'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CertificateValues'):
-            new_instance_as_ref({root_element=false, generated_name = 'CertificateValues',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}RevocationValues'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'RevocationValues'):
+            new_instance_as_ref({root_element=false, generated_name = 'RevocationValues',
                     min_occurs = 0, max_occurs = 1}));
     end
 

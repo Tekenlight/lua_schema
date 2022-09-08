@@ -75,17 +75,17 @@ end
 do
     element_handler.properties.content_model = {
         group_type = 'S',
-        min_occurs = 1,
         generated_subelement_name = '_sequence_group',
-        top_level_group = true,
+        min_occurs = 1,
         max_occurs = 1,
+        top_level_group = true,
         'SPDocSpecification',
         {
             group_type = 'C',
-            min_occurs = 1,
             generated_subelement_name = '_choice_group',
-            top_level_group = false,
+            min_occurs = 1,
             max_occurs = 1,
+            top_level_group = false,
             'SignaturePolicyDocument',
             'SigPolDocLocalURI',
         },
@@ -115,6 +115,57 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
+    element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'] = {};
+    do
+element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].super_element_content_type = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}anyURI';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.bi_type.name = 'anyURI';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.bi_type.id = '29';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.attr = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.q_name.ns = 'http://uri.etsi.org/01903/v1.4.1#';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.q_name.local_name = 'SigPolDocLocalURI';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.generated_name = 'SigPolDocLocalURI';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].base = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].base.name = 'anyURI';
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].local_facets = {};
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].type_handler = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.max_occurs = 1;
+    end
+
     do
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SPDocSpecification'] = 
         (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.4.1#', 'SPDocSpecification'):
@@ -171,57 +222,6 @@ element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SignaturePolicyDocument'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SignaturePolicyDocument'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SignaturePolicyDocument'].particle_properties.max_occurs = 1;
-    end
-
-    element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'] = {};
-    do
-element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].super_element_content_type = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}anyURI';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.bi_type.name = 'anyURI';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.bi_type.id = '29';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.attr = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.q_name.ns = 'http://uri.etsi.org/01903/v1.4.1#';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.q_name.local_name = 'SigPolDocLocalURI';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.generated_name = 'SigPolDocLocalURI';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].base = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].base.name = 'anyURI';
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].local_facets = {};
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].type_handler = require('org.w3.2001.XMLSchema.anyURI_handler'):instantiate();
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}SigPolDocLocalURI'].particle_properties.max_occurs = 1;
     end
 
 end

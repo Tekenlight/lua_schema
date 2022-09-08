@@ -43,11 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        group_type = 'C',
-        max_occurs = 1,
         top_level_group = true,
-        generated_subelement_name = '_choice_group',
+        max_occurs = 1,
+        group_type = 'C',
         min_occurs = 1,
+        generated_subelement_name = '_choice_group',
         'Prime',
         'TnB',
         'PnB',
@@ -82,9 +82,9 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}Prime'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'Prime'):
-            new_instance_as_ref({root_element=false, generated_name = 'Prime',
+        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}TnB'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'TnB'):
+            new_instance_as_ref({root_element=false, generated_name = 'TnB',
                     min_occurs = 1, max_occurs = 1}));
     end
 
@@ -93,13 +93,6 @@ do
             (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
             new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
                     root_element = false, min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}TnB'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'TnB'):
-            new_instance_as_ref({root_element=false, generated_name = 'TnB',
-                    min_occurs = 1, max_occurs = 1}));
     end
 
     do
@@ -113,6 +106,13 @@ do
         element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}PnB'] = 
         (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'PnB'):
             new_instance_as_ref({root_element=false, generated_name = 'PnB',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}Prime'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'Prime'):
+            new_instance_as_ref({root_element=false, generated_name = 'Prime',
                     min_occurs = 1, max_occurs = 1}));
     end
 

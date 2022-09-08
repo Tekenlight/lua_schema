@@ -74,11 +74,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        top_level_group = true,
-        max_occurs = -1,
         generated_subelement_name = '_choice_group',
-        min_occurs = 1,
         group_type = 'C',
+        min_occurs = 1,
+        max_occurs = -1,
+        top_level_group = true,
         'CounterSignature',
         'SignatureTimeStamp',
         'CompleteCertificateRefs',
@@ -140,9 +140,51 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ArchiveTimeStamp'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'ArchiveTimeStamp'):
+            new_instance_as_ref({root_element=false, generated_name = 'ArchiveTimeStamp',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CompleteCertificateRefs'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CompleteCertificateRefs'):
+            new_instance_as_ref({root_element=false, generated_name = 'CompleteCertificateRefs',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}AttributeRevocationValues'] = 
         (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'AttributeRevocationValues'):
             new_instance_as_ref({root_element=false, generated_name = 'AttributeRevocationValues',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}AttrAuthoritiesCertValues'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'AttrAuthoritiesCertValues'):
+            new_instance_as_ref({root_element=false, generated_name = 'AttrAuthoritiesCertValues',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{}any'] = 
+            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
+            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
+                    root_element = false, min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CompleteRevocationRefs'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CompleteRevocationRefs'):
+            new_instance_as_ref({root_element=false, generated_name = 'CompleteRevocationRefs',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignatureTimeStamp'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignatureTimeStamp'):
+            new_instance_as_ref({root_element=false, generated_name = 'SignatureTimeStamp',
                     min_occurs = 1, max_occurs = 1}));
     end
 
@@ -154,9 +196,23 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CompleteRevocationRefs'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CompleteRevocationRefs'):
-            new_instance_as_ref({root_element=false, generated_name = 'CompleteRevocationRefs',
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CertificateValues'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CertificateValues'):
+            new_instance_as_ref({root_element=false, generated_name = 'CertificateValues',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CounterSignature'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CounterSignature'):
+            new_instance_as_ref({root_element=false, generated_name = 'CounterSignature',
+                    min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}RevocationValues'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'RevocationValues'):
+            new_instance_as_ref({root_element=false, generated_name = 'RevocationValues',
                     min_occurs = 1, max_occurs = 1}));
     end
 
@@ -175,65 +231,9 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CounterSignature'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CounterSignature'):
-            new_instance_as_ref({root_element=false, generated_name = 'CounterSignature',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}AttrAuthoritiesCertValues'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'AttrAuthoritiesCertValues'):
-            new_instance_as_ref({root_element=false, generated_name = 'AttrAuthoritiesCertValues',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}AttributeRevocationRefs'] = 
         (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'AttributeRevocationRefs'):
             new_instance_as_ref({root_element=false, generated_name = 'AttributeRevocationRefs',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{}any'] = 
-            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
-            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
-                    root_element = false, min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ArchiveTimeStamp'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'ArchiveTimeStamp'):
-            new_instance_as_ref({root_element=false, generated_name = 'ArchiveTimeStamp',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CertificateValues'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CertificateValues'):
-            new_instance_as_ref({root_element=false, generated_name = 'CertificateValues',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}CompleteCertificateRefs'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'CompleteCertificateRefs'):
-            new_instance_as_ref({root_element=false, generated_name = 'CompleteCertificateRefs',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}RevocationValues'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'RevocationValues'):
-            new_instance_as_ref({root_element=false, generated_name = 'RevocationValues',
-                    min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}SignatureTimeStamp'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'SignatureTimeStamp'):
-            new_instance_as_ref({root_element=false, generated_name = 'SignatureTimeStamp',
                     min_occurs = 1, max_occurs = 1}));
     end
 

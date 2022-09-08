@@ -43,11 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        top_level_group = true,
-        min_occurs = 1,
         generated_subelement_name = '_sequence_group',
-        max_occurs = 1,
         group_type = 'S',
+        min_occurs = 1,
+        max_occurs = 1,
+        top_level_group = true,
         'NoticeRef',
         'ExplicitText',
     };
@@ -72,6 +72,13 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}NoticeRef'] = 
+            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'NoticeReferenceType'):
+            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'NoticeRef', generated_name = 'NoticeRef',
+                    root_element = false, min_occurs = 0, max_occurs = 1}));
+    end
+
     element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ExplicitText'] = {};
     do
 element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ExplicitText'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
@@ -121,13 +128,6 @@ element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ExplicitText'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ExplicitText'].particle_properties.min_occurs = 0;
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}ExplicitText'].particle_properties.max_occurs = 1;
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}NoticeRef'] = 
-            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'NoticeReferenceType'):
-            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'NoticeRef', generated_name = 'NoticeRef',
-                    root_element = false, min_occurs = 0, max_occurs = 1}));
     end
 
 end

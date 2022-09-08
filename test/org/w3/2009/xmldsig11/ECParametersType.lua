@@ -43,11 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        group_type = 'S',
-        max_occurs = 1,
         top_level_group = true,
-        generated_subelement_name = '_sequence_group',
+        max_occurs = 1,
         min_occurs = 1,
+        group_type = 'S',
+        generated_subelement_name = '_sequence_group',
         'FieldID',
         'Curve',
         'Base',
@@ -84,27 +84,6 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
-    do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}Curve'] = 
-            (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'CurveType'):
-            new_instance_as_local_element({ns = 'http://www.w3.org/2009/xmldsig11#', local_name = 'Curve', generated_name = 'Curve',
-                    root_element = false, min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}FieldID'] = 
-            (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'FieldIDType'):
-            new_instance_as_local_element({ns = 'http://www.w3.org/2009/xmldsig11#', local_name = 'FieldID', generated_name = 'FieldID',
-                    root_element = false, min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}ValidationData'] = 
-            (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'ECValidationDataType'):
-            new_instance_as_local_element({ns = 'http://www.w3.org/2009/xmldsig11#', local_name = 'ValidationData', generated_name = 'ValidationData',
-                    root_element = false, min_occurs = 0, max_occurs = 1}));
-    end
-
     element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}CoFactor'] = {};
     do
 element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}CoFactor'].super_element_content_type = require('org.w3.2001.XMLSchema.integer_handler'):instantiate();
@@ -154,6 +133,27 @@ element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsi
         element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}CoFactor'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}CoFactor'].particle_properties.min_occurs = 0;
         element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}CoFactor'].particle_properties.max_occurs = 1;
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}FieldID'] = 
+            (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'FieldIDType'):
+            new_instance_as_local_element({ns = 'http://www.w3.org/2009/xmldsig11#', local_name = 'FieldID', generated_name = 'FieldID',
+                    root_element = false, min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}Curve'] = 
+            (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'CurveType'):
+            new_instance_as_local_element({ns = 'http://www.w3.org/2009/xmldsig11#', local_name = 'Curve', generated_name = 'Curve',
+                    root_element = false, min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}ValidationData'] = 
+            (basic_stuff.get_element_handler('http://www.w3.org/2009/xmldsig11#', 'ECValidationDataType'):
+            new_instance_as_local_element({ns = 'http://www.w3.org/2009/xmldsig11#', local_name = 'ValidationData', generated_name = 'ValidationData',
+                    root_element = false, min_occurs = 0, max_occurs = 1}));
     end
 
     element_handler.properties.subelement_properties['{http://www.w3.org/2009/xmldsig11#}Order'] = {};

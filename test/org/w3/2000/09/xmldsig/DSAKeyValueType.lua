@@ -43,17 +43,17 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        generated_subelement_name = '_sequence_group',
-        max_occurs = 1,
         min_occurs = 1,
         group_type = 'S',
+        generated_subelement_name = '_sequence_group',
+        max_occurs = 1,
         top_level_group = true,
         {
+            max_occurs = 1,
+            group_type = 'S',
             generated_subelement_name = '_sequence_group_1',
             min_occurs = 0,
             top_level_group = false,
-            group_type = 'S',
-            max_occurs = 1,
             'P',
             'Q',
         },
@@ -61,11 +61,11 @@ do
         'Y',
         'J',
         {
+            max_occurs = 1,
+            group_type = 'S',
             generated_subelement_name = '_sequence_group_2',
             min_occurs = 0,
             top_level_group = false,
-            group_type = 'S',
-            max_occurs = 1,
             'Seed',
             'PgenCounter',
         },
@@ -105,6 +105,57 @@ end
 
 do
     element_handler.properties.subelement_properties = {};
+    element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'] = {};
+    do
+element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].super_element_content_type = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.schema_type = '{http://www.w3.org/2000/09/xmldsig#}CryptoBinary';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.bi_type.name = 'base64Binary';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.bi_type.id = '0';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.attr = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties.q_name.ns = 'http://www.w3.org/2000/09/xmldsig#';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties.q_name.local_name = 'P';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties.generated_name = 'P';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].base = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].base.name = 'base64Binary';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].local_facets = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].type_handler = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties.max_occurs = 1;
+    end
+
     element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}PgenCounter'] = {};
     do
 element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}PgenCounter'].super_element_content_type = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
@@ -154,57 +205,6 @@ element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xml
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}PgenCounter'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}PgenCounter'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}PgenCounter'].particle_properties.max_occurs = 1;
-    end
-
-    element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'] = {};
-    do
-element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].super_element_content_type = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.schema_type = '{http://www.w3.org/2000/09/xmldsig#}CryptoBinary';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.bi_type.name = 'base64Binary';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.bi_type.id = '0';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.attr = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties.q_name.ns = 'http://www.w3.org/2000/09/xmldsig#';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties.q_name.local_name = 'J';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties.generated_name = 'J';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].base = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].base.name = 'base64Binary';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].local_facets = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].type_handler = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties.min_occurs = 0;
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties.max_occurs = 1;
     end
 
     element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Seed'] = {};
@@ -258,57 +258,6 @@ element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xml
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Seed'].particle_properties.max_occurs = 1;
     end
 
-    element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'] = {};
-    do
-element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].super_element_content_type = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.schema_type = '{http://www.w3.org/2000/09/xmldsig#}CryptoBinary';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.bi_type.name = 'base64Binary';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.bi_type.id = '0';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.attr = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties.q_name.ns = 'http://www.w3.org/2000/09/xmldsig#';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties.q_name.local_name = 'Y';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties.generated_name = 'Y';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].base = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].base.name = 'base64Binary';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].local_facets = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].type_handler = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties.max_occurs = 1;
-    end
-
     element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}G'] = {};
     do
 element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}G'].super_element_content_type = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
@@ -360,6 +309,108 @@ element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xml
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}G'].particle_properties.max_occurs = 1;
     end
 
+    element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'] = {};
+    do
+element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].super_element_content_type = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.schema_type = '{http://www.w3.org/2000/09/xmldsig#}CryptoBinary';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.bi_type.name = 'base64Binary';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.bi_type.id = '0';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.attr = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties.q_name.ns = 'http://www.w3.org/2000/09/xmldsig#';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties.q_name.local_name = 'Y';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties.generated_name = 'Y';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].base = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].base.name = 'base64Binary';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].local_facets = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].type_handler = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Y'].particle_properties.max_occurs = 1;
+    end
+
+    element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'] = {};
+    do
+element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].super_element_content_type = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.schema_type = '{http://www.w3.org/2000/09/xmldsig#}CryptoBinary';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.bi_type.name = 'base64Binary';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.bi_type.id = '0';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.attr = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties.q_name.ns = 'http://www.w3.org/2000/09/xmldsig#';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties.q_name.local_name = 'J';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties.generated_name = 'J';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].base = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].base.name = 'base64Binary';
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].local_facets = {};
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].type_handler = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties.min_occurs = 0;
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}J'].particle_properties.max_occurs = 1;
+    end
+
     element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Q'] = {};
     do
 element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Q'].super_element_content_type = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
@@ -409,57 +460,6 @@ element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xml
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Q'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Q'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}Q'].particle_properties.max_occurs = 1;
-    end
-
-    element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'] = {};
-    do
-element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].super_element_content_type = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.schema_type = '{http://www.w3.org/2000/09/xmldsig#}CryptoBinary';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.bi_type.name = 'base64Binary';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.bi_type.id = '0';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.attr = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties.q_name.ns = 'http://www.w3.org/2000/09/xmldsig#';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties.q_name.local_name = 'P';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties.generated_name = 'P';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].base = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].base.name = 'base64Binary';
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].local_facets = {};
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].type_handler = require('org.w3.2001.XMLSchema.base64Binary_handler'):instantiate();
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}P'].particle_properties.max_occurs = 1;
     end
 
 end

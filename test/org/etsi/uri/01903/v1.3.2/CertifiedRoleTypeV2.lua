@@ -43,11 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        top_level_group = true,
-        min_occurs = 1,
         generated_subelement_name = '_choice_group',
-        max_occurs = 1,
         group_type = 'C',
+        min_occurs = 1,
+        max_occurs = 1,
+        top_level_group = true,
         'X509AttributeCertificate',
         'OtherAttributeCertificate',
     };

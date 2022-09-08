@@ -75,10 +75,10 @@ end
 do
     element_handler.properties.content_model = {
         group_type = 'S',
-        min_occurs = 1,
         generated_subelement_name = '_sequence_group',
-        top_level_group = true,
+        min_occurs = 1,
         max_occurs = 1,
+        top_level_group = true,
         'DigestMethod',
         'RecomputedDigestValue',
     };
@@ -104,17 +104,17 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}RecomputedDigestValue'] = 
-        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.4.1#', 'RecomputedDigestValue'):
-            new_instance_as_ref({root_element=false, generated_name = 'RecomputedDigestValue',
-                    min_occurs = 1, max_occurs = -1}));
-    end
-
-    do
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}DigestMethod'] = 
         (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'DigestMethod'):
             new_instance_as_ref({root_element=false, generated_name = 'DigestMethod',
                     min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.4.1#}RecomputedDigestValue'] = 
+        (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.4.1#', 'RecomputedDigestValue'):
+            new_instance_as_ref({root_element=false, generated_name = 'RecomputedDigestValue',
+                    min_occurs = 1, max_occurs = -1}));
     end
 
 end

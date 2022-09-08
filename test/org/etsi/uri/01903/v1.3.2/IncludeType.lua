@@ -38,36 +38,6 @@ do
     element_handler.properties.attr = {};
     element_handler.properties.attr._attr_properties = {};
     do
-        element_handler.properties.attr._attr_properties['{}referencedData'] = {};
-
-        element_handler.properties.attr._attr_properties['{}referencedData'].base = {};
-        element_handler.properties.attr._attr_properties['{}referencedData'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}referencedData'].base.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}referencedData'].bi_type = {};
-        element_handler.properties.attr._attr_properties['{}referencedData'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-        element_handler.properties.attr._attr_properties['{}referencedData'].bi_type.name = 'boolean';
-        element_handler.properties.attr._attr_properties['{}referencedData'].bi_type.id = '15';
-        element_handler.properties.attr._attr_properties['{}referencedData'].properties = {};
-        element_handler.properties.attr._attr_properties['{}referencedData'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
-        element_handler.properties.attr._attr_properties['{}referencedData'].properties.default = '';
-        element_handler.properties.attr._attr_properties['{}referencedData'].properties.fixed = false;
-        element_handler.properties.attr._attr_properties['{}referencedData'].properties.use = 'O';
-        element_handler.properties.attr._attr_properties['{}referencedData'].properties.form = 'U';
-
-        element_handler.properties.attr._attr_properties['{}referencedData'].particle_properties = {};
-        element_handler.properties.attr._attr_properties['{}referencedData'].particle_properties.q_name = {};
-        element_handler.properties.attr._attr_properties['{}referencedData'].particle_properties.q_name.ns = '';
-        element_handler.properties.attr._attr_properties['{}referencedData'].particle_properties.q_name.local_name = 'referencedData';
-        element_handler.properties.attr._attr_properties['{}referencedData'].particle_properties.generated_name = 'referencedData';
-
-        element_handler.properties.attr._attr_properties['{}referencedData'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-
-        element_handler.properties.attr._attr_properties['{}referencedData'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
-        element_handler.properties.attr._attr_properties['{}referencedData'].type_of_simple = 'A';
-        element_handler.properties.attr._attr_properties['{}referencedData'].local_facets = {}
-        element_handler.properties.attr._attr_properties['{}referencedData'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}referencedData']);
-    end
-    do
         element_handler.properties.attr._attr_properties['{}URI'] = {};
 
         element_handler.properties.attr._attr_properties['{}URI'].base = {};
@@ -97,9 +67,39 @@ do
         element_handler.properties.attr._attr_properties['{}URI'].local_facets = {}
         element_handler.properties.attr._attr_properties['{}URI'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}URI']);
     end
+    do
+        element_handler.properties.attr._attr_properties['{}referencedData'] = {};
+
+        element_handler.properties.attr._attr_properties['{}referencedData'].base = {};
+        element_handler.properties.attr._attr_properties['{}referencedData'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}referencedData'].base.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}referencedData'].bi_type = {};
+        element_handler.properties.attr._attr_properties['{}referencedData'].bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+        element_handler.properties.attr._attr_properties['{}referencedData'].bi_type.name = 'boolean';
+        element_handler.properties.attr._attr_properties['{}referencedData'].bi_type.id = '15';
+        element_handler.properties.attr._attr_properties['{}referencedData'].properties = {};
+        element_handler.properties.attr._attr_properties['{}referencedData'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}boolean';
+        element_handler.properties.attr._attr_properties['{}referencedData'].properties.default = '';
+        element_handler.properties.attr._attr_properties['{}referencedData'].properties.fixed = false;
+        element_handler.properties.attr._attr_properties['{}referencedData'].properties.use = 'O';
+        element_handler.properties.attr._attr_properties['{}referencedData'].properties.form = 'U';
+
+        element_handler.properties.attr._attr_properties['{}referencedData'].particle_properties = {};
+        element_handler.properties.attr._attr_properties['{}referencedData'].particle_properties.q_name = {};
+        element_handler.properties.attr._attr_properties['{}referencedData'].particle_properties.q_name.ns = '';
+        element_handler.properties.attr._attr_properties['{}referencedData'].particle_properties.q_name.local_name = 'referencedData';
+        element_handler.properties.attr._attr_properties['{}referencedData'].particle_properties.generated_name = 'referencedData';
+
+        element_handler.properties.attr._attr_properties['{}referencedData'].type_handler = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+
+        element_handler.properties.attr._attr_properties['{}referencedData'].super_element_content_type = require('org.w3.2001.XMLSchema.boolean_handler'):instantiate();
+        element_handler.properties.attr._attr_properties['{}referencedData'].type_of_simple = 'A';
+        element_handler.properties.attr._attr_properties['{}referencedData'].local_facets = {}
+        element_handler.properties.attr._attr_properties['{}referencedData'].facets = basic_stuff.inherit_facets(element_handler.properties.attr._attr_properties['{}referencedData']);
+    end
     element_handler.properties.attr._generated_attr = {};
-    element_handler.properties.attr._generated_attr['URI'] = '{}URI';
     element_handler.properties.attr._generated_attr['referencedData'] = '{}referencedData';
+    element_handler.properties.attr._generated_attr['URI'] = '{}URI';
 end
 
 -- element_handler.properties.content_model

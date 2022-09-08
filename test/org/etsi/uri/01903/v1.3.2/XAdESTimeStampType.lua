@@ -74,19 +74,19 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        top_level_group = true,
-        min_occurs = 1,
         generated_subelement_name = '_sequence_group',
-        max_occurs = 1,
         group_type = 'S',
+        min_occurs = 1,
+        max_occurs = 1,
+        top_level_group = true,
         'Include',
         'CanonicalizationMethod',
         {
-            top_level_group = false,
-            min_occurs = 1,
             generated_subelement_name = '_choice_group',
-            max_occurs = -1,
             group_type = 'C',
+            min_occurs = 1,
+            max_occurs = -1,
+            top_level_group = false,
             'EncapsulatedTimeStamp',
             'XMLTimeStamp',
         },
@@ -119,10 +119,10 @@ end
 do
     element_handler.properties.subelement_properties = {};
     do
-        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}CanonicalizationMethod'] = 
-        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'CanonicalizationMethod'):
-            new_instance_as_ref({root_element=false, generated_name = 'CanonicalizationMethod',
-                    min_occurs = 0, max_occurs = 1}));
+        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}XMLTimeStamp'] = 
+            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'AnyType'):
+            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'XMLTimeStamp', generated_name = 'XMLTimeStamp',
+                    root_element = false, min_occurs = 1, max_occurs = 1}));
     end
 
     element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}EncapsulatedTimeStamp'] = {};
@@ -239,17 +239,17 @@ element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.
     end
 
     do
-        element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}XMLTimeStamp'] = 
-            (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'AnyType'):
-            new_instance_as_local_element({ns = 'http://uri.etsi.org/01903/v1.3.2#', local_name = 'XMLTimeStamp', generated_name = 'XMLTimeStamp',
-                    root_element = false, min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
         element_handler.properties.subelement_properties['{http://uri.etsi.org/01903/v1.3.2#}Include'] = 
         (basic_stuff.get_element_handler('http://uri.etsi.org/01903/v1.3.2#', 'Include'):
             new_instance_as_ref({root_element=false, generated_name = 'Include',
                     min_occurs = 0, max_occurs = -1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}CanonicalizationMethod'] = 
+        (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'CanonicalizationMethod'):
+            new_instance_as_ref({root_element=false, generated_name = 'CanonicalizationMethod',
+                    min_occurs = 0, max_occurs = 1}));
     end
 
 end

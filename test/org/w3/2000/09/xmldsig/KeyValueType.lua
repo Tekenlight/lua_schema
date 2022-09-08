@@ -43,11 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
+        max_occurs = 1,
+        group_type = 'C',
         generated_subelement_name = '_choice_group',
         min_occurs = 1,
         top_level_group = true,
-        group_type = 'C',
-        max_occurs = 1,
         'DSAKeyValue',
         'RSAKeyValue',
         'any',
@@ -83,17 +83,17 @@ do
     end
 
     do
-        element_handler.properties.subelement_properties['{}any'] = 
-            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
-            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
-                    root_element = false, min_occurs = 1, max_occurs = 1}));
-    end
-
-    do
         element_handler.properties.subelement_properties['{http://www.w3.org/2000/09/xmldsig#}RSAKeyValue'] = 
         (basic_stuff.get_element_handler('http://www.w3.org/2000/09/xmldsig#', 'RSAKeyValue'):
             new_instance_as_ref({root_element=false, generated_name = 'RSAKeyValue',
                     min_occurs = 1, max_occurs = 1}));
+    end
+
+    do
+        element_handler.properties.subelement_properties['{}any'] = 
+            (basic_stuff.get_element_handler('http://www.w3.org/2001/XMLSchema', 'anyType'):
+            new_instance_as_local_element({ns = '', local_name = 'any', generated_name = 'any',
+                    root_element = false, min_occurs = 1, max_occurs = 1}));
     end
 
 end
