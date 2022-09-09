@@ -487,11 +487,25 @@ end
 
 date_utils.add_duration_to_date = function(inp_dt, inp_dur)
 	local s_dur = '';
+	local dur;
 	if (ffi.istype("dur_s_type", inp_dur)) then
 		s_dur = ffi.string(inp_dur.value);
+	elseif (type(inp_dur) == 'table') then
+		assert(inp_dur.mon == nil or type(inp_dur.mon) == 'number')
+		assert(inp_dur.day == nil or type(inp_dur.day) == 'number')
+		assert(inp_dur.sec == nil or type(inp_dur.sec) == 'number')
+		dur = inp_dur;
+		if (dur.mon == nil) then dur.mon = 0; end
+		if (dur.day == nil) then dur.day = 0; end
+		if (dur.sec == nil) then dur.sec = 0; end
 	else
 		s_dur = inp_dur;
+		if (s_dur == nil or type(s_dur) ~= 'string') then
+			error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+		end
+		dur = date_utils.split_duration(s_dur);
 	end
+
 	local dt = '';
 	local dt_format = -1;
 	if (ffi.istype("dt_s_type", inp_dt)) then
@@ -500,15 +514,12 @@ date_utils.add_duration_to_date = function(inp_dt, inp_dur)
 	else
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
+
 	if (dt == nil or type(dt) ~= 'string') then
-		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
-	end
-	if (s_dur == nil or type(s_dur) ~= 'string') then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
 
 	local dto, tzo = date_utils.split_dtt(dt);
-	local dur = date_utils.split_duration(s_dur);
 
 	local o_dto = dto:copy();
 	o_dto:addmonths(dur.mon);
