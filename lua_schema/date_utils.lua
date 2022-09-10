@@ -274,7 +274,7 @@ date_utils.from_xml_date_field = function(date_type_id, s)
 end
 
 date_utils.get_tzo_in_h_m = function(tzo)
-	ptzo = math.abs(tzo);
+	local ptzo = math.abs(tzo);
 	local h = math.floor(ptzo / 60);
 	local m = math.floor(ptzo % 60);
 
@@ -499,27 +499,18 @@ local date_from_inp_dt= function(inp_dt)
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
 
-	return date_utils.split_dtt(dt);
+	return date_utils.split_dtt(dt), dt_format;
 end
 
-date_utils.date_diff = function(inp_dt1, inp_dt2)
-	local dto1, tzo1 = date_from_inp_dt(inp_dt1);
-	local dto2, tzo2 = date_from_inp_dt(inp_dt2);
-
-	if (tzo1 ~= nil) then dto1 = date_utils.add_tzoffset_to_dto(dto1, tzo1); end
-	if (tzo2 ~= nil) then dto2 = date_utils.add_tzoffset_to_dto(dto2, tzo2); end
-
-	local loc = (dto1 - dto2);
-	local diff = {mon = 0, day = loc.daynum, sec = nu.round(loc.dayfrc/1000000, 1)}
-
-	return diff;
-end
-
-date_utils.subtract_duration_from_date = function(inp_dt, inp_dur)
+local function duration_from_inp_dur(inp_dur)
 	local s_dur = '';
 	local dur;
 	if (ffi.istype("dur_s_type", inp_dur)) then
 		s_dur = ffi.string(inp_dur.value);
+		if (s_dur == nil or type(s_dur) ~= 'string') then
+			error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+		end
+		dur = date_utils.split_duration(s_dur);
 	elseif (type(inp_dur) == 'table') then
 		assert(inp_dur.mon == nil or type(inp_dur.mon) == 'number')
 		assert(inp_dur.day == nil or type(inp_dur.day) == 'number')
@@ -536,28 +527,53 @@ date_utils.subtract_duration_from_date = function(inp_dt, inp_dur)
 		dur = date_utils.split_duration(s_dur);
 	end
 
-	local dt = '';
-	local dt_format = -1;
-	if (ffi.istype("dt_s_type", inp_dt)) then
-		dt = ffi.string(inp_dt.value);
-		dt_format = inp_dt.type;
+	return dur;
+end
+
+date_utils.date_diff = function(inp_dt1, inp_dt2)
+	local dto1, tzo1, dt_format = date_from_inp_dt(inp_dt1);
+	local dto2, tzo2, dt_format = date_from_inp_dt(inp_dt2);
+
+	if (tzo1 ~= nil) then dto1 = date_utils.add_tzoffset_to_dto(dto1, tzo1); end
+	if (tzo2 ~= nil) then dto2 = date_utils.add_tzoffset_to_dto(dto2, tzo2); end
+
+	local loc = (dto1 - dto2);
+	loc.sec = nu.round(loc.dayfrc/1000000, 1);
+
+	if ((loc.daynum < 0) and (loc.sec > 0)) then
+		loc.daynum = loc.daynum + 1;
+		loc.sec = loc.sec - 24 * 3600;
+	elseif ((loc.daynum > 0) and (loc.sec < 0)) then
+		loc.daynum = loc.daynum - 1;
+		loc.sec = loc.sec + 24 * 3600;
+	end
+
+	local diff = {mon = 0, day = loc.daynum, sec = loc.sec};
+
+	return diff;
+end
+
+local dt_from_dto = function(o_dto, tzo, dt_format)
+	local ret = date_utils.dtt_from_date_obj(o_dto, tzo);
+	local cdt = ffi.new("dt_s_type", 0);
+	if (dt_format ~= -1) then
+		cdt.type = dt_format;
 	else
-		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+		cdt.type = 0;
 	end
+	cdt.value = ffi.C.strdup(ffi.cast("char*", ret));
+end
 
-	if (dt == nil or type(dt) ~= 'string') then
-		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
-	end
-
-	local dto, tzo = date_utils.split_dtt(dt);
+date_utils.add_duration_to_date = function(inp_dt, inp_dur)
+	local dto, tzo, dt_format = date_from_inp_dt(inp_dt);
+	local dur = duration_from_inp_dur(inp_dur);;
 
 	local o_dto = dto:copy();
-	o_dto:addmonths((-1 * dur.mon));
-	o_dto:adddays((-1 *dur.day));
-	o_dto:addseconds((-1 * dur.sec));
+	o_dto:addmonths(dur.mon);
+	o_dto:adddays(dur.day);
+	o_dto:addseconds(dur.sec);
 
 	local ret = date_utils.dtt_from_date_obj(o_dto, tzo);
-
 	local cdt = ffi.new("dt_s_type", 0);
 	if (dt_format ~= -1) then
 		cdt.type = dt_format;
@@ -569,49 +585,16 @@ date_utils.subtract_duration_from_date = function(inp_dt, inp_dur)
 	return cdt;
 end
 
-date_utils.add_duration_to_date = function(inp_dt, inp_dur)
-	local s_dur = '';
-	local dur;
-	if (ffi.istype("dur_s_type", inp_dur)) then
-		s_dur = ffi.string(inp_dur.value);
-	elseif (type(inp_dur) == 'table') then
-		assert(inp_dur.mon == nil or type(inp_dur.mon) == 'number')
-		assert(inp_dur.day == nil or type(inp_dur.day) == 'number')
-		assert(inp_dur.sec == nil or type(inp_dur.sec) == 'number')
-		dur = inp_dur;
-		if (dur.mon == nil) then dur.mon = 0; end
-		if (dur.day == nil) then dur.day = 0; end
-		if (dur.sec == nil) then dur.sec = 0; end
-	else
-		s_dur = inp_dur;
-		if (s_dur == nil or type(s_dur) ~= 'string') then
-			error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
-		end
-		dur = date_utils.split_duration(s_dur);
-	end
-
-	local dt = '';
-	local dt_format = -1;
-	if (ffi.istype("dt_s_type", inp_dt)) then
-		dt = ffi.string(inp_dt.value);
-		dt_format = inp_dt.type;
-	else
-		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
-	end
-
-	if (dt == nil or type(dt) ~= 'string') then
-		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
-	end
-
-	local dto, tzo = date_utils.split_dtt(dt);
+date_utils.subtract_duration_from_date = function(inp_dt, inp_dur)
+	local dto, tzo, dt_format = date_from_inp_dt(inp_dt);
+	local dur = duration_from_inp_dur(inp_dur);;
 
 	local o_dto = dto:copy();
-	o_dto:addmonths(dur.mon);
-	o_dto:adddays(dur.day);
-	o_dto:addseconds(dur.sec);
+	o_dto:addmonths((-1 * dur.mon));
+	o_dto:adddays((-1 *dur.day));
+	o_dto:addseconds((-1 * dur.sec));
 
 	local ret = date_utils.dtt_from_date_obj(o_dto, tzo);
-
 	local cdt = ffi.new("dt_s_type", 0);
 	if (dt_format ~= -1) then
 		cdt.type = dt_format;
@@ -987,9 +970,9 @@ local dur_mt = {
 };
 ffi.metatype("dur_s_type", dur_mt);
 
---[[
 --TS - 0
 
+--[[
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.now(true));
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, date(true));
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.now(false));
@@ -1087,7 +1070,7 @@ print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.today(tr
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, date(true));
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.today(false));
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, date(false));
-
 --]]
+
 
 return date_utils;

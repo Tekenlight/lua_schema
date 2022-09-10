@@ -9,14 +9,14 @@ print(debug.getinfo(1).source, debug.getinfo(1).currentline, a);
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, b);
 
 local d = dt.date_diff(a, b);
-
-
-local c = dt.add_duration_to_date(b, d);
-print(debug.getinfo(1).source, debug.getinfo(1).currentline, c);
-
 print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 require 'pl.pretty'.dump(d);
 print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+
+
+local r = dt.add_duration_to_date(b, d);
+print(debug.getinfo(1).source, debug.getinfo(1).currentline, r);
+
 
 
 
