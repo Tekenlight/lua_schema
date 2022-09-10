@@ -553,17 +553,6 @@ date_utils.date_diff = function(inp_dt1, inp_dt2)
 	return diff;
 end
 
-local dt_from_dto = function(o_dto, tzo, dt_format)
-	local ret = date_utils.dtt_from_date_obj(o_dto, tzo);
-	local cdt = ffi.new("dt_s_type", 0);
-	if (dt_format ~= -1) then
-		cdt.type = dt_format;
-	else
-		cdt.type = 0;
-	end
-	cdt.value = ffi.C.strdup(ffi.cast("char*", ret));
-end
-
 date_utils.add_duration_to_date = function(inp_dt, inp_dur)
 	local dto, tzo, dt_format = date_from_inp_dt(inp_dt);
 	local dur = duration_from_inp_dur(inp_dur);;
