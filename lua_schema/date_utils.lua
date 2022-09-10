@@ -499,7 +499,8 @@ local date_from_inp_dt= function(inp_dt)
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
 
-	return date_utils.split_dtt(dt), dt_format;
+	local dto, tzo = date_utils.split_dtt(dt);
+	return dto, tzo, dt_format;
 end
 
 local function duration_from_inp_dur(inp_dur)
@@ -531,8 +532,8 @@ local function duration_from_inp_dur(inp_dur)
 end
 
 date_utils.date_diff = function(inp_dt1, inp_dt2)
-	local dto1, tzo1, dt_format = date_from_inp_dt(inp_dt1);
-	local dto2, tzo2, dt_format = date_from_inp_dt(inp_dt2);
+	local dto1, tzo1, dt_format1 = date_from_inp_dt(inp_dt1);
+	local dto2, tzo2, dt_format2 = date_from_inp_dt(inp_dt2);
 
 	if (tzo1 ~= nil) then dto1 = date_utils.add_tzoffset_to_dto(dto1, tzo1); end
 	if (tzo2 ~= nil) then dto2 = date_utils.add_tzoffset_to_dto(dto2, tzo2); end
