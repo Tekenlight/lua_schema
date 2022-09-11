@@ -997,7 +997,7 @@ basic_stuff.add_model_content_all = function(schema_type_handler, nns, doc, inde
 	for _, v in ipairs(schema_type_handler.properties.declared_subelements) do
 		local subelement = schema_type_handler.properties.subelement_properties[v];
 		if (subelement.particle_properties.max_occurs ~= 1) then
-			arr = content[subelement.particle_properties.generated_name];
+			local arr = content[subelement.particle_properties.generated_name];
 			if (arr ~= nil) then
 				for j,w in ipairs(arr) do
 					doc[i] = subelement:to_xmlua(nns, w);
@@ -1035,7 +1035,7 @@ basic_stuff.add_model_content_node = function(schema_type_handler, nns, doc, ind
 		if (t == 'string') then -- If a string an element 
 			local subelement = schema_type_handler.properties.generated_subelements[v];
 			if (subelement.particle_properties.max_occurs ~= 1) then
-				arr = content[subelement.particle_properties.generated_name];
+				local arr = content[subelement.particle_properties.generated_name];
 				if (arr ~= nil) then
 					for j,w in ipairs(arr) do
 						doc[i] = subelement:to_xmlua(nns, w);

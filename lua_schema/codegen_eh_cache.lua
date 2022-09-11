@@ -1,8 +1,8 @@
 local codegen_eh_cache = {};
 
 codegen_eh_cache.init = function()
-	if (_G.codegen_cache == nil) then
-		_G.codegen_cache = {};
+	if (rawget(_G, "codegen_cache") == nil) then
+		rawset(_G, "codegen_cache", {});
 	end
 end
 
@@ -11,12 +11,12 @@ codegen_eh_cache.add = function(q_name, handler)
 	if (q_name == nil or type(q_name) ~= 'string' or handler == nil or type(handler) ~= 'table') then
 		error("INVALID INPUTS");
 	end
-	_G.codegen_cache[q_name] = handler;
+	(rawget(_G, "codegen_cache"))[q_name] = handler;
 end
 
 codegen_eh_cache.get = function(q_name)
 	codegen_eh_cache.init();
-	local o = _G.codegen_cache[q_name];
+	local o = (rawget(_G, "codegen_cache"))[q_name];
 	return o;
 end
 

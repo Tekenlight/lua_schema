@@ -65,6 +65,12 @@ core_utils.hex_encode = function(input)
 
 end
 
+core_utils.str_hex_decode = function(input)
+	local bin_data = core_utils.hex_decode(input);
+	local string_data = ffi.string(bin_data.value, bin_data.size);
+	return string_data;
+end
+
 core_utils.str_hex_encode = function(input)
 	if (input == nil or type(input) ~= 'string' or #input == 0) then
 		error("Invalid input");
