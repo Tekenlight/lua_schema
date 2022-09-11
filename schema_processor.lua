@@ -68,6 +68,9 @@ local to_json_string = function(message_handler_instance, obj)
 end
 
 local from_json_string = function(schema_type_handler, xmlua, json_input)
+	assert(type(schema_type_handler) == 'table');
+	assert(type(xmlua) == 'table');
+	assert(type(json_input) == 'string');
 
 	local cjson = require('cjson.safe');
 	local json_parser = cjson.new();
