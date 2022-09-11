@@ -2274,7 +2274,7 @@ local process_end_of_element = function(reader, sts, objs, pss, mcos)
 	-- Essentially the variable parsed_output has the complete lua value of the element
 	-- at this stage.
 	top_obj = objs:top();
-	top_sth = sts:top();
+	local top_sth = sts:top();
 	if (parsed_sth.particle_properties.max_occurs ~= 1) then
 		if (parsed_output ~= nil) then
 			if (top_obj['___DATA___'][top_obj['___METADATA___'].element_being_parsed] == nil) then
