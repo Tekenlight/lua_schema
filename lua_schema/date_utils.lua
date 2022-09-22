@@ -401,6 +401,38 @@ date_utils.compare_dates_ntz_ntz = function(dto1, dto2)
 	return date_utils.compare_dates_both(dto1, dto2);
 end
 
+date_utils.date_diff = function(cdt1, cdt2)
+	local s1 = '';
+	local s2 = '';
+	if (not ffi.istype("dt_s_type", cdt1)) then
+		if (type(cdt1) == 'string') then
+			s1 = cdt1;
+		else
+			error_handler.raise_fatal_error(-1, "Invalid inputs first argument", debug.getinfo(1));
+		end
+	else
+		s1 = ffi.string(cdt1.value);
+	end
+	if (not ffi.istype("dt_s_type", cdt2)) then
+		if (type(cdt2) == 'string') then
+			s2 = cdt2;
+		else
+			error_handler.raise_fatal_error(-1, "Invalid inputs first argument", debug.getinfo(1));
+		end
+	else
+		s2 = ffi.string(cdt2.value);
+	end
+
+
+	local dto1, tzo1 = date_utils.split_dtt(s1);
+	if (tzo1 ~= nil) then dto1 = date_utils.add_tzoffset_to_dto(dto1, tzo1); end
+	local dto2, tzo2 = date_utils.split_dtt(s2);
+	if (tzo2 ~= nil) then dto2 = date_utils.add_tzoffset_to_dto(dto2, tzo2); end
+
+	local ret = dto1 - dto2;;
+	return ret;
+end
+
 date_utils.compare_dates = function(cdt1, cdt2)
 	local s1 = '';
 	local s2 = '';
@@ -950,6 +982,7 @@ end
 local dt_mt = {
 	__tostring = date_utils.to_xml_format,
 	__gc = date_utils.free_cdt,
+	__sub = date_utils.date_diff,
 };
 ffi.metatype("dt_s_type", dt_mt);
 
