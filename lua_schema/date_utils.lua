@@ -549,7 +549,7 @@ date_utils.date_diff = function(inp_dt1, inp_dt2)
 		loc.sec = loc.sec + 24 * 3600;
 	end
 
-	local diff = {mon = 0, day = loc.daynum, sec = loc.sec};
+	local diff = {day = loc.daynum, sec = loc.sec};
 
 	return diff;
 end
