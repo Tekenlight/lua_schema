@@ -554,6 +554,61 @@ date_utils.date_diff = function(inp_dt1, inp_dt2)
 	return diff;
 end
 
+date_utils.eq = function(inp_dt1, inp_dt2)
+	local diff = date_utils.date_diff(inp_dt1, inp_dt2);
+	if (diff.day == 0) then
+		return true;
+	elseif (diff.day == 0 and nu.compare_num(diff.sec, 0) == 0) then
+		return true;
+	else
+		return false;
+	end
+end
+
+date_utils.lt = function(inp_dt1, inp_dt2)
+	local diff = date_utils.date_diff(inp_dt1, inp_dt2);
+	if (diff.day < 0) then
+		return true;
+	elseif (diff.day == 0 and nu.compare_num(diff.sec, 0) < 0) then
+		return true;
+	else
+		return false;
+	end
+end
+
+date_utils.le = function(inp_dt1, inp_dt2)
+	local diff = date_utils.date_diff(inp_dt1, inp_dt2);
+	if (diff.day < 0) then
+		return true;
+	elseif (diff.day == 0 and nu.compare_num(diff.sec, 0) <= 0) then
+		return true;
+	else
+		return false;
+	end
+end
+
+date_utils.gt = function(inp_dt1, inp_dt2)
+	local diff = date_utils.date_diff(inp_dt1, inp_dt2);
+	if (diff.day > 0) then
+		return true;
+	elseif (diff.day == 0 and nu.compare_num(diff.sec, 0) > 0) then
+		return true;
+	else
+		return false;
+	end
+end
+
+date_utils.ge = function(inp_dt1, inp_dt2)
+	local diff = date_utils.date_diff(inp_dt1, inp_dt2);
+	if (diff.day > 0) then
+		return true;
+	elseif (diff.day == 0 and nu.compare_num(diff.sec, 0) >= 0) then
+		return true;
+	else
+		return false;
+	end
+end
+
 date_utils.add_duration_to_date = function(inp_dt, inp_dur)
 	local dto, tzo, dt_format = date_from_inp_dt(inp_dt);
 	local dur = duration_from_inp_dur(inp_dur);;
@@ -951,6 +1006,11 @@ local dt_mt = {
 	__tostring = date_utils.to_xml_format,
 	__gc = date_utils.free_cdt,
 	__sub = date_utils.date_diff,
+	__eq = date_utils.eq,
+	__lt = date_utils.lt,
+	__le = date_utils.le,
+	__gt = date_utils.gt,
+	__ge = date_utils.ge,
 };
 ffi.metatype("dt_s_type", dt_mt);
 

@@ -23,11 +23,13 @@ void * alloc_binary_data_memory(size_t size);
 typedef struct {
 	size_t size;
 	unsigned char* value;
+	int buf_mem_managed;
 } binary_data_s1_type, binary_data_p1_type;
 
 typedef struct {
 	size_t size;
 	unsigned char* value;
+	int buf_mem_managed;
 } binary_data_s2_type, binary_data_p2_type;
 
 typedef binary_data_s1_type hex_data_s_type;
@@ -77,6 +79,7 @@ core_utils.str_hex_encode = function(input)
 	end
 	local bin_inp = ffi.new("hex_data_s_type", 0);
 	--bin_inp.size = string.len(input) + 1;
+	bin_inp.buf_mem_managed = 0;
 	bin_inp.size = string.len(input);
 	bin_inp.value = ffi.C.malloc(bin_inp.size+1);
 	ffi.C.memset(bin_inp.value, 0, (bin_inp.size+1));
@@ -93,6 +96,7 @@ core_utils.hex_decode = function(input)
 	end
 
 	local ddata = ffi.new("hex_data_s_type", 0);
+	ddata.buf_mem_managed = 0;
 	ddata.size = 0;
 	ddata.value = ffi.NULL;
 
@@ -149,7 +153,7 @@ core_utils.str_base64_encode = function(input, add_line_breaks)
 		error("Invalid input");
 	end
 	local bin_inp = ffi.new("hex_data_s_type", 0);
-	--bin_inp.size = string.len(input) + 1;
+	bin_inp.buf_mem_managed = 0;
 	bin_inp.size = string.len(input);
 	bin_inp.value = ffi.C.malloc(bin_inp.size+1);
 	ffi.C.memset(bin_inp.value, 0, (bin_inp.size+1));
@@ -172,6 +176,7 @@ core_utils.base64_decode = function(input)
 	end
 
 	local ddata = ffi.new("hex_data_s_type", 0);
+	ddata.buf_mem_managed = 0;
 	ddata.size = 0;
 	ddata.value = ffi.NULL;
 
@@ -189,7 +194,7 @@ core_utils.base64_decode = function(input)
 end
 
 local function binary_data_gc(bd)
-	if (bd.value ~= ffi.NULL) then
+	if (bd.value ~= ffi.NULL and bd.buf_mem_managed == 0) then
 		lib.free_binary_data(bd.value);
 	end
 end
@@ -207,6 +212,15 @@ local b64_mt = {
 }
 
 ffi.metatype("b64_data_s_type", b64_mt);
+
+core_utils.new_hex_data_s_type = function()
+	local ddata = ffi.new("hex_data_s_type", 0);
+    ddata.buf_mem_managed = 0;
+    ddata.size = 0;
+    ddata.value = ffi.NULL;
+
+	return ddata;
+end
 
 return core_utils;
 
