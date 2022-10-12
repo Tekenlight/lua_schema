@@ -896,6 +896,19 @@ date_utils.dtt_from_time = function(n, t, tzo)
 	return cdt;
 end
 
+date_utils.dtt_from_dto = function(dto, format, tzo)
+	assert(type(dto) == 'table');
+	assert(type(format) == 'string');
+	assert(date_utils.tn_tid_map[format] ~= nil);
+	assert(tzo == nil or type(tzo) == 'number');
+
+	local dtt = date_utils.dtt_from_date_obj(dto, tzo);
+	local cdt = ffi.new("dt_s_type", 0);
+	cdt.type = date_utils.tn_tid_map[format];
+	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
+	return cdt;
+end
+
 date_utils.time_from_dtt = function(dtt)
 	local dto, tzo = date_utils.date_obj_from_dtt(dtt)
 	local n = date_utils.time_from_dto(dto);
