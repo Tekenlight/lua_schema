@@ -896,7 +896,7 @@ date_utils.dtt_from_time = function(n, t, tzo)
 	return cdt;
 end
 
-date_utils.dtt_from_dto = function(dto, format, tzo)
+date_utils.cdt_from_dto = function(dto, format, tzo)
 	assert(type(dto) == 'table');
 	assert(type(format) == 'string');
 	assert(date_utils.tn_tid_map[format] ~= nil);
@@ -907,6 +907,15 @@ date_utils.dtt_from_dto = function(dto, format, tzo)
 	cdt.type = date_utils.tn_tid_map[format];
 	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
 	return cdt;
+end
+
+date_utils.convert_format = function(cdt, desired_format)
+	assert(type(cdt) == 'cdata');
+	assert(ffi.istype("dt_s_type", cdt));
+	assert(desired_format == 'date' or desired_format == 'dateTime');
+
+	local dto, tzo = date_utils.date_obj_from_dtt(cdt);
+	return date_utils.cdt_from_dto(dto, desired_format, tzo);
 end
 
 date_utils.time_from_dtt = function(dtt)
