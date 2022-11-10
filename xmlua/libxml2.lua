@@ -25,7 +25,7 @@ require("xmlua.libxml2.schemas_structures")
 require("xmlua.libxml2.xmlschemastypes")
 
 local ffi = require("ffi")
-local loaded, xml2 = pcall(ffi.load, "xml2")
+local loaded, xml2 = pcall(ffi.load, "cxml2")
 if not loaded then
   --[[if _G.jit.os == "Windows" then
     xml2 = ffi.load("libxml2-2.dll")
@@ -33,7 +33,7 @@ if not loaded then
     xml2 = ffi.load("libxml2.so.2")
   end
   --]]
-  xml2 = ffi.load("libxml2.so.2")
+  xml2 = ffi.load("libcxml2.so.2")
 end
 local function __xmlParserVersionIsAvailable()
   local success, err = pcall(function()
