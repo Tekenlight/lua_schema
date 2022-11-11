@@ -24,6 +24,17 @@ require("xmlua.libxml2.xmlregexp")
 require("xmlua.libxml2.schemas_structures")
 require("xmlua.libxml2.xmlschemastypes")
 
+local function os()
+	local osname = "???";
+	local fh, err = assert(io.popen("uname -o 2>/dev/null","r"))
+	if fh then
+		osname = fh:read()
+	end
+	io.close(fh);
+
+	return (osname);
+end
+
 local ffi = require("ffi")
 local loaded, xml2 = pcall(ffi.load, "cxml2")
 if not loaded then
@@ -33,8 +44,14 @@ if not loaded then
     xml2 = ffi.load("libxml2.so.2")
   end
   --]]
-  xml2 = ffi.load("libcxml2.so.2")
+  local osname = os();
+  if (os == 'Darwin') then
+	  xml2 = ffi.load("libcxml2.2.dylib")
+  else
+	  xml2 = ffi.load("libcxml2.so.2")
+  end
 end
+
 local function __xmlParserVersionIsAvailable()
   local success, err = pcall(function()
       local func = xml2.__xmlParserVersion
