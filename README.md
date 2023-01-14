@@ -15,5 +15,5 @@ git clone https://github.com/Tekenlight/lua_schema
 luarocks [--local] make
 ```
 
-For more details please see [documentation](Library to handle xsd schema in lua)
+For more details please see [documentation](https://github.com/Tekenlight/lua_schema/wiki)
 
