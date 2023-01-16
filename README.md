@@ -15,6 +15,6 @@ git clone https://github.com/Tekenlight/lua_schema
 luarocks [--local] make
 ```
 
-For more details please see [documentation](https://github.com/Tekenlight/lua_schema/wiki)
+For more details please see [documentation](https://github.com/Tekenlight/lua_schema/wiki)<br/>
 Other links: [evlua documentation](https://github.com/Tekenlight/.github/wiki)
 
