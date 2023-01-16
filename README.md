@@ -16,4 +16,5 @@ luarocks [--local] make
 ```
 
 For more details please see [documentation](https://github.com/Tekenlight/lua_schema/wiki)
+Other links: [evlua documentation](https://github.com/Tekenlight/.github/wiki)
 
