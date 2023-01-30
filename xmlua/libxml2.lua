@@ -24,7 +24,7 @@ require("xmlua.libxml2.xmlregexp")
 require("xmlua.libxml2.schemas_structures")
 require("xmlua.libxml2.xmlschemastypes")
 
-local function os()
+local function os_name()
 	local osname = "???";
 	local fh, err = assert(io.popen("uname -o 2>/dev/null","r"))
 	if fh then
@@ -35,21 +35,37 @@ local function os()
 	return (osname);
 end
 
+local function search_so(libname)
+	local ld_library_path=os.getenv("LD_LIBRARY_PATH");
+	local paths=(require "pl.stringx".split(os.getenv("LD_LIBRARY_PATH"), ':'))
+	local file_name;
+	for _,path in ipairs(paths) do
+		file_name = path.."/"..libname;
+		local file = io.open(file_name, "r");
+		if (file ~= nil) then
+			file:close();
+			break;
+		end
+		file_name = nil;
+	end
+	return file_name;
+end
+
 local ffi = require("ffi")
-local loaded, xml2 = pcall(ffi.load, "cxml2")
+
+local so_full_path;
+if ('Darwin' == os_name()) then
+	so_full_path = search_so("lua_schema/libcxml2.2.dylib");
+else
+	so_full_path = search_so("lua_schema/libcxml2.so.2")
+end
+if (so_full_path == nil) then
+	error("Cannot find the library " .. "lua_schema/libcxml2");
+end
+
+local loaded, xml2 = pcall(ffi.load, so_full_path);
 if not loaded then
-	--[[if _G.jit.os == "Windows" then
-	xml2 = ffi.load("libcxml2-2.dll")
-	else
-	xml2 = ffi.load("libcxml2.so.2")
-	end
-	--]]
-	local osname = os();
-	if (os == 'Darwin') then
-		xml2 = ffi.load("libcxml2.2.dylib")
-	else
-		xml2 = ffi.load("libcxml2.so.2")
-	end
+	error("Cannot load the library " .. "lua_schema/libcxml2");
 end
 
 local function __xmlParserVersionIsAvailable()
@@ -977,7 +993,10 @@ function libxml2.strToDate(built_in_type_id, datetime)
 	end
 end
 
-libxml2.xmlSchemaCompareDates = xml2.xmlSchemaCompareDates;
+--libxml2.xmlSchemaCompareDates = xml2.xmlSchemaCompareDates;
+libxml2.xmlSchemaCompareDates = function(x, y)
+	return xml2.xmlSchemaCompareDates(x, y);
+end
 
 libxml2.xmlSchemaValidateDuration = function(duration)
 	if (duration == nil) then

@@ -11,12 +11,20 @@ ffi.cdef[[
  */
 
 
+typedef unsigned char xmlChar;
+
 typedef enum {
     XML_SCHEMA_WHITESPACE_UNKNOWN = 0,
     XML_SCHEMA_WHITESPACE_PRESERVE = 1,
     XML_SCHEMA_WHITESPACE_REPLACE = 2,
     XML_SCHEMA_WHITESPACE_COLLAPSE = 3
 } xmlSchemaWhitespaceValueType;
+
+typedef struct _xmlSchemaType xmlSchemaType;
+typedef xmlSchemaType *xmlSchemaTypePtr;
+
+typedef struct _xmlSchemaVal xmlSchemaVal;
+typedef xmlSchemaVal *xmlSchemaValPtr;
 
 void xmlSchemaInitTypes(void);
 
