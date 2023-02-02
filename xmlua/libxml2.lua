@@ -1,3 +1,4 @@
+local ffi = require("ffi")
 local libxml2 = {}
 
 require("xmlua.libxml2.memory")
@@ -24,15 +25,23 @@ require("xmlua.libxml2.xmlregexp")
 require("xmlua.libxml2.schemas_structures")
 require("xmlua.libxml2.xmlschemastypes")
 
-local function os_name()
-	local osname = "???";
-	local fh, err = assert(io.popen("uname -o 2>/dev/null","r"))
-	if fh then
-		osname = fh:read()
-	end
-	io.close(fh);
 
-	return (osname);
+ffi.cdef[[
+struct  utsname {
+	char    sysname[256];  /* [XSI] Name of OS */
+	char    nodename[256]; /* [XSI] Name of this network node */
+	char    release[256];  /* [XSI] Release level */
+	char    version[256];  /* [XSI] Version level */
+	char    machine[256];  /* [XSI] Hardware type */
+};
+int uname(struct utsname *name);
+]]
+
+local function os_name()
+	local uname_s = ffi.new("struct utsname", {});
+	ffi.C.uname(uname_s);
+
+	return (ffi.string(uname_s.sysname));
 end
 
 local function search_so(libname)
@@ -51,7 +60,6 @@ local function search_so(libname)
 	return file_name;
 end
 
-local ffi = require("ffi")
 
 local so_full_path;
 if ('Darwin' == os_name()) then
