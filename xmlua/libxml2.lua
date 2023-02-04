@@ -37,6 +37,28 @@ struct  utsname {
 int uname(struct utsname *name);
 ]]
 
+--[[
+-- io.popen (popen) at least in MACOS is causing SIGINT when called the second time
+-- this causes the main thread to get interrupted and the server initiates a
+-- shutdown.
+--
+-- The cause for this behavior needs to be investigated.
+local function os_name()
+	local osname = "???";
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, "JUST BEFORE POPEN");
+	local fh, err = assert(io.popen("uname -o 2>/dev/null","r"))
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, fh, err);
+	if fh then
+		osname = fh:read()
+	end
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, osname);
+	io.close(fh);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+
+	return (osname);
+end
+]]
+
 local function os_name()
 	local uname_s = ffi.new("struct utsname", {});
 	ffi.C.uname(uname_s);
