@@ -38,11 +38,8 @@ int uname(struct utsname *name);
 ]]
 
 --[[
--- io.popen (popen) at least in MACOS is causing SIGINT when called the second time
--- this causes the main thread to get interrupted and the server initiates a
--- shutdown.
---
--- The cause for this behavior needs to be investigated.
+-- This version of os_name determination involves forking another proces via popen
+-- which is costly
 local function os_name()
 	local osname = "???";
 	print(debug.getinfo(1).source, debug.getinfo(1).currentline, "JUST BEFORE POPEN");
@@ -59,6 +56,10 @@ local function os_name()
 end
 ]]
 
+--[[
+--This version of os_name implementation uses function calls
+--hence much better than the one involving forking another process
+--]]
 local function os_name()
 	local uname_s = ffi.new("struct utsname", {});
 	ffi.C.uname(uname_s);
