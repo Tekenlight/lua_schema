@@ -288,11 +288,12 @@ end
 
 
 local function xmlPreviousElementSiblingIsBuggy()
-	local xml = "<root><child1/>text<child2/></root>"
-	local context = libxml2.xmlNewParserCtxt()
-	local document = libxml2.xmlCtxtReadMemory(context, xml)
-	local root = xml2.xmlDocGetRootElement(document)
-	local child2 = xml2.xmlLastElementChild(root)
+	local xml = "<root><child1/>text<child2/></root>";
+	local context = libxml2.xmlNewParserCtxt();
+	ffi.gc(context, xml2.xmlFreeParserCtxt);
+	local document = libxml2.xmlCtxtReadMemory(context, xml);
+	local root = xml2.xmlDocGetRootElement(document);
+	local child2 = xml2.xmlLastElementChild(root);
 	return xml2.xmlPreviousElementSibling(child2) == child2
 end
 
