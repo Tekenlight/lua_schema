@@ -164,6 +164,23 @@ core_utils.str_base64_encode = function(input, add_line_breaks)
 	return str;
 end
 
+core_utils.bin_base64_encode = function(input, size, add_line_breaks)
+	if (input == nil or type(input) ~= 'userdata' or #input == 0) then
+		error("Invalid input");
+	end
+	assert(math.type(size) == 'integer')
+	local bin_inp = ffi.new("hex_data_s_type", 0);
+	bin_inp.buf_mem_managed = 0;
+	bin_inp.size = size;
+	bin_inp.value = ffi.C.malloc(bin_inp.size+1);
+	ffi.C.memset(bin_inp.value, 0, (bin_inp.size+1));
+	ffi.C.memcpy(bin_inp.value, input, bin_inp.size);
+
+	local str = core_utils.base64_encode(bin_inp, add_line_breaks);
+
+	return str;
+end
+
 core_utils.str_base64_decode = function(input)
 	local bin_data = core_utils.base64_decode(input);
 	local string_data = ffi.string(bin_data.value, bin_data.size);
@@ -220,6 +237,46 @@ core_utils.new_hex_data_s_type = function()
     ddata.value = ffi.NULL;
 
 	return ddata;
+end
+
+--[[
+-- This version of os_name determination involves forking another proces via popen
+-- which is costly
+local function os_name()
+	local osname = "???";
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, "JUST BEFORE POPEN");
+	local fh, err = assert(io.popen("uname -o 2>/dev/null","r"))
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, fh, err);
+	if fh then
+		osname = fh:read()
+	end
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline, osname);
+	io.close(fh);
+	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+
+	return (osname);
+end
+]]
+
+--[[
+--This version of os_name implementation uses function calls
+--hence much better than the one involving forking another process
+--]]
+ffi.cdef[[
+struct  utsname {
+	char    sysname[256];  /* [XSI] Name of OS */
+	char    nodename[256]; /* [XSI] Name of this network node */
+	char    release[256];  /* [XSI] Release level */
+	char    version[256];  /* [XSI] Version level */
+	char    machine[256];  /* [XSI] Hardware type */
+};
+int uname(struct utsname *name);
+]]
+function core_utils.os_name()
+	local uname_s = ffi.new("struct utsname", {});
+	ffi.C.uname(uname_s);
+
+	return (ffi.string(uname_s.sysname));
 end
 
 return core_utils;
