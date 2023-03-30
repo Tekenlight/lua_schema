@@ -67,6 +67,20 @@ local to_json_string = function(message_handler_instance, obj)
 	return json_output;
 end
 
+local to_json_content = function(message_handler_instance, obj)
+	local content = basic_stuff.to_intermediate_json(message_handler_instance, obj);
+	local json_parser = cjson.new();
+	local tag = get_json_tag(message_handler_instance);
+	local table_output = nil;
+	if (message_handler_instance.properties.element_type == 'S') then
+		table_output = {[tag] = content};
+	else
+		table_output = content;
+	end
+
+	return table_output;
+end
+
 local from_json_string = function(schema_type_handler, xmlua, json_input)
 	assert(type(schema_type_handler) == 'table');
 	assert(type(xmlua) == 'table');
@@ -169,6 +183,15 @@ local function form_complete_message_handler(message_handler)
 		local status, msg = validate_doc(self, content)
 		if (status) then
 			return to_json_string(self, content);
+		else
+			return nil, msg;
+		end
+	end
+
+	function message_handler:to_json_content(content)
+		local status, msg = validate_doc(self, content)
+		if (status) then
+			return to_json_content(self, content);
 		else
 			return nil, msg;
 		end
@@ -294,5 +317,39 @@ function _message_handler_factory:get_message_handler(type_name, name_space)
 
 	return form_complete_message_handler(message_handler);
 end
+
+function _message_handler_factory:serialize_primitive(n, ns, content)
+	assert(content ~= nil);
+	local handler = _message_handler_factory:get_message_handler(n, ns);
+
+	local json_data = handler:to_json_content(content);
+	if (json_data == nil) then
+		error(msg);
+	end
+
+	return json_data[n];
+end
+
+function _message_handler_factory:deserialize_primitive(n, ns, content)
+	assert(content ~= nil);
+	local handler = _message_handler_factory:get_message_handler(n, ns);
+	local input_json = [[{"]]..n..[[":]];
+
+	if (type(content) == 'string') then
+		input_json = input_json .. [["]] .. content..[["}]]
+	elseif (type(content) == 'number' or type(content) == 'boolean') then
+		input_json = input_json .. content..[[}]]
+	else
+		error("Invalid datatype found in the received data");
+	end
+
+	local value, msg = handler:from_json(input_json);
+	if (value == nil) then
+		error(msg);
+	end
+
+	return value;
+end
+
 
 return _message_handler_factory;
