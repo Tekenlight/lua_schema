@@ -338,7 +338,7 @@ function _message_handler_factory:deserialize_primitive(n, ns, content)
 	if (type(content) == 'string') then
 		input_json = input_json .. [["]] .. content..[["}]]
 	elseif (type(content) == 'number' or type(content) == 'boolean') then
-		input_json = input_json .. content..[[}]]
+		input_json = input_json .. tostring(content)..[[}]]
 	else
 		error("Invalid datatype found in the received data");
 	end
