@@ -1353,6 +1353,8 @@ basic_stuff.primitive_to_intermediate_json = function(th, content)
 		else
 			i_content = tonumber(content);
 		end
+	elseif (th.datatype == 'boolean') then
+		i_content = th:to_xmlua(nil, content);
 	end
 	return i_content;
 end
@@ -1533,6 +1535,8 @@ basic_stuff.primitive_from_intermediate_json = function(th, content)
 		--]]
 		local sn = string.gsub(tostring(content), "([%d]+)[%.]0+", "%1");
 		content = th:to_type(nil, sn);
+	elseif (th.datatype == 'boolean') then
+		content = th:to_type(nil, content);
 	end
 	return content;
 end
