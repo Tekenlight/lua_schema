@@ -42,14 +42,20 @@ function __boolean_handler_class:to_xmlua(ns, i)
 end
 
 function __boolean_handler_class:to_schema_type(ns, x)
-	if (type(x) ~= 'string') then
-		error_handler.raise_validation_error(-1,
-						"Field:["..tostring(i).."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
-		local msv = error_handler.reset_init();
-		error(msv.status.error_message);
-	end
-	local i = self.facets:process_white_space(x);
+	local i = nil;
 	local n = nil;
+	if (type(x) ~= 'string') then
+		if (type(x) ~= 'boolean') then
+			error_handler.raise_validation_error(-1,
+							"Field:["..tostring(i).."]:{"..error_handler.get_fieldpath().."} is not a valid boolean", debug.getinfo(1));
+			local msv = error_handler.reset_init();
+			error(msv.status.error_message);
+		else
+			i = x;
+		end
+	else
+		i = self.facets:process_white_space(x);
+	end
 	local status = true;
 	if (type(i) ~= 'boolean') then
 		if (type(i) == 'string') then

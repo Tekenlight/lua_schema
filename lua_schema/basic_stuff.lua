@@ -1354,7 +1354,7 @@ basic_stuff.primitive_to_intermediate_json = function(th, content)
 			i_content = tonumber(content);
 		end
 	elseif (th.datatype == 'boolean') then
-		i_content = tonumber(content);
+		i_content = content;
 	end
 	return i_content;
 end
