@@ -1,6 +1,6 @@
 #!/opt/local/bin/lua
 
-local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?><basic_string_nons>hello hello</basic_string_nons>]=]
+local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?><basic_string_nons>   hello hello</basic_string_nons>]=]
 
 mhf = require("schema_processor")
 
