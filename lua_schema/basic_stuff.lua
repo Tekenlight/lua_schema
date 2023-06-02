@@ -1497,7 +1497,10 @@ end
 
 basic_stuff.primitive_from_intermediate_json = function(th, content)
 
-	if ('binary' == th.datatype) then 
+	if ('string' == th.datatype
+		and ('token' == th.type_name or 'string' == th.type_name)) then
+		content = th:to_type(nil, content);
+	elseif ('binary' == th.datatype) then
 		if ('base64Binary' == th.type_name) then
 			content = th:to_type(nil, content);
 		elseif ('hexBinary' == th.type_name) then
