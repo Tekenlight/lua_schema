@@ -65,7 +65,7 @@ error_handler.get_fieldpath = function()
 end
 
 error_handler.low_raise_validation_error = function(error_no, message, d_info)
-	local tb = debug.traceback();
+	local tb = debug.traceback(nil, 2);
 	local src, line;
 	if (_G.message_validation_context == nil) then
 		--print(tb);
@@ -108,7 +108,6 @@ error_handler.low_raise_validation_error = function(error_no, message, d_info)
 end
 
 error_handler.raise_validation_error = function(error_no, message, i_d_info)
-	local tb = debug.traceback();
 	local d_info = debug.getinfo(2);
 	return error_handler.low_raise_validation_error(error_no, message, d_info);
 end
