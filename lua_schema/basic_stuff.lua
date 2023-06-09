@@ -1431,6 +1431,9 @@ basic_stuff.complex_to_intermediate_json = function(schema_type_handler, content
 						target_content[i] =
 										basic_stuff.inner_complex_to_intermediate_json(schema_type_handler, v, content_model, nil);
 					end
+					if (#target_content == 0) then
+						target_content[-1] = "EMPTY_ARRAY";
+					end
 				else
 					i_content = basic_stuff.inner_complex_to_intermediate_json(schema_type_handler, content, content_model, nil);
 				end
