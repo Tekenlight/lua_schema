@@ -99,7 +99,9 @@ local from_json_string = function(schema_type_handler, xmlua, json_input)
 		status, obj, err =  pcall(json_parser.decode, json_input);
 	end
 	if ((not status) or (obj == nil)) then
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		print(err);
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
 		status = false;
 		parsing_result_msg = "Could not parse json ".. ':'.. err .. ':'.. json_input;
 		obj = nil;
