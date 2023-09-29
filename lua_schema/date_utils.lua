@@ -408,7 +408,7 @@ date_utils.compare_dates = function(cdt1, cdt2)
 		if (type(cdt1) == 'string') then
 			s1 = cdt1;
 		else
-			error_handler.raise_fatal_error(-1, "Invalid inputs first argument", debug.getinfo(1));
+			error_handler.raise_fatal_error(-1, "Invalid inputs first argument ["..  tostring(cdt1) .. "]", debug.getinfo(1));
 		end
 	else
 		s1 = ffi.string(cdt1.value);
@@ -417,7 +417,7 @@ date_utils.compare_dates = function(cdt1, cdt2)
 		if (type(cdt2) == 'string') then
 			s2 = cdt2;
 		else
-			error_handler.raise_fatal_error(-1, "Invalid inputs first argument", debug.getinfo(1));
+			error_handler.raise_fatal_error(-1, "Invalid inputs second argument [".. tostring(cdt2) .. "]", debug.getinfo(1));
 		end
 	else
 		s2 = ffi.string(cdt2.value);
