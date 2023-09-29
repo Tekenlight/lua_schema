@@ -1,0 +1,18 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+targetNamespace="http://test_example.com">
+
+	<xsd:element name="basic_choice_struct">
+		<xsd:complexType>
+			<xsd:choice>
+				<xsd:element name="author" type="xsd:string"/>
+				<xsd:element name="title" type="xsd:string"/>
+				<xsd:element name="genre" type="xsd:string"/>
+				<xsd:choice minOccurs="1" maxOccurs="2">
+					<xsd:element name="author_1" type="xsd:string"/>
+					<xsd:element name="title_1" type="xsd:string"/>
+					<xsd:element name="genre_1" type="xsd:string"/>
+				</xsd:choice>
+			</xsd:choice>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

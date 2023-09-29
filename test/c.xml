@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns:basic_choice_struct xmlns:ns="http://test_example.com">
+	<author_1>aa</author_1>
+</ns:basic_choice_struct>

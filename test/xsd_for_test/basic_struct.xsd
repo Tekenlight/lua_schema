@@ -1,0 +1,28 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+targetNamespace="http://test_example.com">
+
+	<xsd:element name="basic_struct">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="author" type="xsd:string"/>
+				<xsd:element name="title" type="xsd:string"/>
+				<xsd:element name="genre" type="xsd:string"/>
+				<xsd:sequence minOccurs="0" maxOccurs="1">
+					<xsd:element name="author_1" type="xsd:string"/>
+					<xsd:sequence minOccurs="0" maxOccurs="1">
+						<xsd:element name="author_11" type="xsd:string"/>
+						<xsd:element name="title_11" type="xsd:string"/>
+						<xsd:element name="genre_11" type="xsd:string"/>
+					</xsd:sequence>
+					<xsd:element name="title_1" type="xsd:string"/>
+					<xsd:element name="genre_1" type="xsd:string"/>
+					<xsd:sequence maxOccurs="unbounded">
+						<xsd:element name="author_12" type="xsd:string"/>
+						<xsd:element name="title_12" type="xsd:string"/>
+						<xsd:element name="genre_12" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:sequence>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

@@ -369,6 +369,10 @@ basic_stuff.execute_validation_for_complex_type_all = function(schema_type_handl
 end
 
 basic_stuff.data_present_within_model = function(content_model, content)
+	if (content_model.max_occurs ~= 1) then
+		assert(type(content) == 'table', "INVALID CONTENT");
+		return (#content > 1);
+	end
 	local count = 0;
 	for _, field_name in ipairs(content_model) do
 		if ('string' == type(field_name)) then
@@ -398,6 +402,61 @@ basic_stuff.data_present_within_model = function(content_model, content)
 	end
 	return false;
 end
+
+local determine_fsa_pos = function(schema_type_handler, model)
+	local pos = 0;
+	for i,v in ipairs(schema_type_handler.properties.content_fsa_properties) do
+		if (v.generated_symbol_name == model.generated_subelement_name) then
+			pos = i;
+			break;
+		end
+	end
+	assert(pos ~= 0, "INVALID CONDITION");
+	return pos;
+end
+
+local inner_content_present = function(schema_type_handler, model, content)
+	local fsa_position = determine_fsa_pos(schema_type_handler, model);
+	local push_count = 0;
+	local i = fsa_position;
+	local fsa = schema_type_handler.properties.content_fsa_properties;
+	local skip_atoms = false;
+	local skip_atom_begin_index = 0;
+
+	assert(fsa[i].symbol_type == 'cm_begin', "INVALID START POSITION (NOT cm_begin)");
+	assert(fsa[i].cm.max_occurs == 1, "INVALID START POSITION (cm.max_occurs ~= 1)");
+
+	while (true) do
+		if (not skip_atoms and fsa[i].symbol_type == 'cm_begin') then
+			push_count = push_count + 1;
+			if (fsa[i].cm.max_occurs ~= 1) then
+				if (content[fsa[i].cm.generated_subelement_name] ~= nil) then
+					return true;
+				end
+				skip_atoms = true;
+				skip_atoms_begin_index = i;
+			end
+		elseif (fsa[i].symbol_type == 'cm_end') then
+			if (skip_atoms and fsa[i].cm_begin_index == skip_atoms_begin_index) then
+				skip_atoms = false
+				skip_atoms_begin_index = 0;
+			end
+			if (not skip_atoms) then
+				push_count = push_count - 1;
+			end
+			if (push_count == 0) then break; end
+		elseif (not skip_atoms and fsa[i].symbol_type == 'element') then
+			if (content[fsa[i].generated_name] ~= nil) then
+				return true;
+			end
+		else
+			assert((skip_atoms or (1 ~= 1)), "Invalid symbol type [".. fsa[i].symbol_type .. "] at [".. i.."]") 
+		end
+		i = i + 1;
+	end
+	return false;
+end
+
 
 basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_handler, content, content_model)
 
@@ -434,9 +493,24 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 			end
 		elseif(t == 'table') then
 			local xmlc = nil;
+			local skip_validation = false;
 			if (1 == v.max_occurs) then
 				-- No depth
-				xmlc = content;
+				-- However min_occurs can be 0 =>
+				-- the content need not be there =>
+				-- we should further validate only after making sure that
+				-- the inner content is present
+				assert(content ~= nil, "INVALID CONDITION");
+				if (v.min_occurs == 0 and inner_content_present(schema_type_handler, v, content)) then
+					xmlc = content;
+					present_count = present_count + 1;
+				elseif (v.min_occurs == 0) then
+					xmlc = nil;
+					skip_validation = true;
+				else
+					xmlc = content;
+					present_count = present_count + 1;
+				end
 			else
 				if (nil == v.generated_subelement_name) then
 					error("The model group should contain a generated name");
@@ -453,7 +527,22 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 				else
 					xmlc = content[v.generated_subelement_name];
 				end
-				if (#xmlc > 0) then
+				if (xmlc == nil) then
+					if (v.min_occurs ~= 0) then
+						--[[ Within a choice min_occurs, does it make sense?
+						error_handler.raise_validation_error(-1,
+							"Object field: {"..v.generated_subelement_name.."} should not be null");
+						return false;
+						--]]
+						skip_validation = true;
+					else
+						skip_validation = true;
+						--content[v.generated_subelement_name] = {};
+						--xmlc = content[v.generated_subelement_name];
+					end
+				end
+
+				if (not skip_validation and #xmlc > 0) then
 					-- Treat the n elements as 1 item present in the content model.
 					count = 1;
 				end
@@ -474,14 +563,14 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 				local count = 0;
 				]]
 				if (basic_stuff.data_present_within_model(v, xmlc)) then
-					present_count = present_count + 1;
+					--present_count = present_count + 1;
 					if (present_count > 1) then
 						error_handler.raise_validation_error(-1,
 							"Element: {"..error_handler.get_fieldpath()..
 									"} one and only one of the fields in the model should be present", debug.getinfo(1));
 						return false;
 					else
-						if (not basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, v)) then
+						if (not skip_validation and not basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, v)) then
 							return false;
 						end
 					end
@@ -544,9 +633,22 @@ basic_stuff.execute_validation_for_complex_type_sequence = function(schema_type_
 			end
 		elseif(t == 'table') then
 			local xmlc = nil;
+			local skip_validation = false;
 			if (1 == v.max_occurs) then
 				-- No depth
-				xmlc = content;
+				-- However min_occurs can be 0 =>
+				-- the content need not be there =>
+				-- we should further validate only after making sure that
+				-- the inner content is present
+				assert(content ~= nil, "INVALID CONDITION");
+				if (v.min_occurs == 0 and inner_content_present(schema_type_handler, v, content)) then
+					xmlc = content;
+				elseif (v.min_occurs == 0) then
+					xmlc = nil;
+					skip_validation = true;
+				else
+					xmlc = content;
+				end
 			else
 				-- One level deep
 				if (nil == v.generated_subelement_name) then
@@ -558,12 +660,18 @@ basic_stuff.execute_validation_for_complex_type_sequence = function(schema_type_
 					xmlc = content[v.generated_subelement_name];
 				end
 				if (xmlc == nil) then
-					error_handler.raise_validation_error(-1,
-						"Object field: {"..v.generated_subelement_name.."} should not be null", debug.getinfo(1));
-					return false;
+					if (v.min_occurs ~= 0) then
+						error_handler.raise_validation_error(-1,
+							"Object field: {"..v.generated_subelement_name.."} should not be null", debug.getinfo(1));
+						return false;
+					else
+						skip_validation = true;
+						content[v.generated_subelement_name] = {};
+						xmlc = content[v.generated_subelement_name];
+					end
 				end
 			end
-			if (not basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, v)) then
+			if (not skip_validation and not basic_stuff.execute_validation_for_complex_type_s_or_c(schema_type_handler, xmlc, v)) then
 				return false;
 			end
 		else
@@ -1085,8 +1193,16 @@ basic_stuff.add_model_content_s_or_c = function(schema_type_handler, nns, doc, i
 	end
 
 	if (content_model.max_occurs ~= 1) then
-		for _, v in ipairs(content) do
-			i = add_func(schema_type_handler, nns, doc, i, v, content_model)
+		if (content ~= nil) then
+			for _, v in ipairs(content) do
+				i = add_func(schema_type_handler, nns, doc, i, v, content_model)
+			end
+		else
+			--[[
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+			require 'pl.pretty'.dump(content_model);
+			print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+			]]
 		end
 	else
 		i = add_func(schema_type_handler, nns, doc, i, content, content_model)

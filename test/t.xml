@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns:basic_struct xmlns:ns="http://test_example.com">
+	<author>a</author>
+	<title>b</title>
+	<genre>c</genre>
+</ns:basic_struct>
