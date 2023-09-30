@@ -501,7 +501,8 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 				-- we should further validate only after making sure that
 				-- the inner content is present
 				assert(content ~= nil, "INVALID CONDITION");
-				if (v.min_occurs == 0 and inner_content_present(schema_type_handler, v, content)) then
+				local icp = inner_content_present(schema_type_handler, v, content);
+				if (v.min_occurs == 0 and icp) then
 					xmlc = content;
 					present_count = present_count + 1;
 				elseif (v.min_occurs == 0) then
@@ -509,13 +510,14 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 					skip_validation = true;
 				else
 					xmlc = content;
-					present_count = present_count + 1;
+					if (icp) then
+						present_count = present_count + 1;
+					end
 				end
 			else
 				if (nil == v.generated_subelement_name) then
 					error("The model group should contain a generated name");
 				end
-				local count = 0;
 				-- One level deep
 				if (fields == nil) then
 					fields = v.generated_subelement_name;
@@ -544,10 +546,7 @@ basic_stuff.execute_validation_for_complex_type_choice = function(schema_type_ha
 
 				if (not skip_validation and #xmlc > 0) then
 					-- Treat the n elements as 1 item present in the content model.
-					count = 1;
-				end
-				if (count ~= 0) then
-					present_count = present_count + count;
+					present_count = present_count + 1;
 					if (present_count > 1) then
 						error_handler.raise_validation_error(-1,
 							"Element: {"..error_handler.get_fieldpath()..
