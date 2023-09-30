@@ -431,7 +431,7 @@ elem_code_generator.get_content_model = function(model)
 	return _content_model;
 end
 
-elem_code_generator.get_content_fsa_properties = function(model, content_model)
+elem_code_generator.get_content_fsa_properties = function(model, content_model, from)
 	local _content_fsa_properties = {};
 	local bis = (require('lua_schema.stack')).new();
 	local cmps = (require('lua_schema.stack')).new();
@@ -463,8 +463,9 @@ elem_code_generator.get_content_fsa_properties = function(model, content_model)
 			_content_fsa_properties[index].cm = cmps:top();
 			_content_fsa_properties[index].generated_symbol_name = item.generated_q_name;
 			cmps:pop();
-			cmi = nil;
+			--cmi = nil;
 			cmi = cmis:pop();
+			cmi = cmi + 1;
 		elseif (item.symbol_type == 'any') then
 			_content_fsa_properties[index].min_occurs = item.min_occurs;
 			_content_fsa_properties[index].max_occurs = item.max_occurs;
@@ -678,7 +679,7 @@ elem_code_generator.get_element_handler = function(elem, to_generate_names, glob
 			local model = elem:get_element_content_model();
 			elem_code_generator.prepare_generated_names(model);
 			props.content_model = elem_code_generator.get_content_model(model);
-			props.content_fsa_properties = elem_code_generator.get_content_fsa_properties(model, props.content_model);
+			props.content_fsa_properties = elem_code_generator.get_content_fsa_properties(model, props.content_model, 'E');
 			props.subelement_properties = elem_code_generator.get_subelement_properties(model, dbg);
 			props.generated_subelements = elem_code_generator.get_generated_subelements(props)
 			props.declared_subelements = elem_code_generator.get_declared_subelements(model);
@@ -953,8 +954,9 @@ function elem_code_generator.put_content_fsa_properties_code(content_fsa_propert
 			cm_ref = get_cm_ref_str(content_model_rval);
 
 			content_model_rval[#content_model_rval] = nil;
-			cmi = nil;
+			--cmi = nil;
 			cmi = cmis:pop();
+			cmi = cmi + 1;
 		else
 			cm_ref = get_cm_ref_str(content_model_rval);
 

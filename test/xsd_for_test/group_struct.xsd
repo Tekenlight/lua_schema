@@ -1,0 +1,42 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://test_example.com"
+xmlns:ns="http://test_example.com">
+
+	<xsd:group name="second_level">
+		<xsd:sequence>
+			<xsd:element name="sl1"	type="xsd:string"/>
+			<xsd:element name="sl2"	type="xsd:string"/>
+			<xsd:element name="sl3"	type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:group name="first_level">
+		<xsd:sequence>
+			<!--xsd:group ref="ns:second_level"/-->
+			<xsd:sequence>
+				<xsd:element name="sl1"	type="xsd:string"/>
+				<xsd:element name="sl2"	type="xsd:string"/>
+				<xsd:element name="sl3"	type="xsd:string"/>
+			</xsd:sequence>
+			<xsd:element name="author" type="xsd:string"/>
+			<xsd:sequence minOccurs="0">
+				<xsd:element name="title" type="xsd:string"/>
+				<xsd:element name="genre" type="xsd:string"/>
+			</xsd:sequence>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="group_struct_type">
+		<!--xsd:group ref="ns:first_level"/-->
+		<xsd:sequence>
+			<xsd:sequence>
+				<xsd:element name="sl1"	type="xsd:string"/>
+				<xsd:element name="sl2"	type="xsd:string"/>
+				<xsd:element name="sl3"	type="xsd:string"/>
+			</xsd:sequence>
+			<xsd:element name="author" type="xsd:string"/>
+			<xsd:sequence minOccurs="0">
+				<xsd:element name="title" type="xsd:string"/>
+				<xsd:element name="genre" type="xsd:string"/>
+			</xsd:sequence>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="group_struct" type="ns:group_struct_type"/>
+</xsd:schema>

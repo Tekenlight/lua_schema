@@ -99,7 +99,7 @@ type_code_generator.get_element_handler = function(typedef, to_generate_names, g
 			local model = typedef:get_typedef_content_model();
 			elem_code_generator.prepare_generated_names(model);
 			props.content_model = elem_code_generator.get_content_model(model);
-			props.content_fsa_properties = elem_code_generator.get_content_fsa_properties(model, props.content_model);
+			props.content_fsa_properties = elem_code_generator.get_content_fsa_properties(model, props.content_model, 'T');
 			props.subelement_properties = elem_code_generator.get_subelement_properties(model);
 			props.generated_subelements = elem_code_generator.get_generated_subelements(props)
 			props.declared_subelements = elem_code_generator.get_declared_subelements(model);
