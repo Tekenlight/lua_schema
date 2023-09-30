@@ -10,7 +10,6 @@ local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>
   </ns1:element_struct2>
   <author>asdf</author>
   <author>asdf</author>
-  <author>1</author>
   <title>adfas</title>
   <genre>as</genre>
   <s2>

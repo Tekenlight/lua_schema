@@ -10,7 +10,6 @@
 			<xsd:sequence minOccurs="0">
 				<xsd:element ref="ns1:element_struct2"/>
 				<xsd:element name="author"	type="xsd:string" minOccurs="2" maxOccurs="2"/>
-				<xsd:element name="author"	type="xsd:int"/>
 				<!--
 				-->
 				<xsd:element name="title"	type="xsd:string"/>

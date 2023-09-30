@@ -371,7 +371,7 @@ end
 basic_stuff.data_present_within_model = function(content_model, content)
 	if (content_model.max_occurs ~= 1) then
 		assert(type(content) == 'table', "INVALID CONTENT");
-		return (#content > 1);
+		return (#content >= 1);
 	end
 	local count = 0;
 	for _, field_name in ipairs(content_model) do
