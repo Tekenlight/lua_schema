@@ -368,8 +368,18 @@ basic_stuff.execute_validation_for_complex_type_all = function(schema_type_handl
 	return basic_stuff.execute_validation_for_struct(schema_type_handler, content, content_model);
 end
 
+--[[
+-- This function checks if any data defined in the content_model is present
+-- in content
+-- Is it the same as  inner_content_present
+-- Chance to refactor and have onlu one of them ??
+]]
 basic_stuff.data_present_within_model = function(content_model, content)
 	if (content_model.max_occurs ~= 1) then
+		--[[
+		-- This portion of logic does not check present of data
+		-- recursively
+		]]
 		assert(type(content) == 'table', "INVALID CONTENT");
 		return (#content >= 1);
 	end
@@ -415,6 +425,12 @@ local determine_fsa_pos = function(schema_type_handler, model)
 	return pos;
 end
 
+--[[
+-- This function cheks any of the data defined in the model is 
+-- present in the content
+-- Is it the same as  basic_stuff.data_present_within_model
+-- Chance to refactor and have onlu one of them ??
+]]
 local inner_content_present = function(schema_type_handler, model, content)
 	local fsa_position = determine_fsa_pos(schema_type_handler, model);
 	local push_count = 0;
