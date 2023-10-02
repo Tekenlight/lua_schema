@@ -958,7 +958,7 @@ date_utils.free_cdur = function(cdur)
 end
 
 date_utils.now = function(utc)
-	if (type(utc) ~= 'boolean') then
+	if (utc ~= nil and type(utc) ~= 'boolean') then
 		error("Invalid inputs");
 	end
 	local p = require('posix.sys.time');
@@ -966,13 +966,17 @@ date_utils.now = function(utc)
 	local dt = date(t.tv_sec+t.tv_usec/1000000);
 	dt.dayfrc = nu.round(dt.dayfrc, 1);
 	local dtt;
-	if (not utc) then
-		local tzb = date(false):getbias();
+	if (utc == false) then
+		local tzb = date(true):getbias();
 		date_utils.add_tzoffset_to_dto(dt, tzb);
 		local tzs = tostring(-1*tzb);
 		dtt = date_utils.dtt_from_date_obj(dt, tzs);
-	else
+	elseif (utc == true) then
 		dtt =  date_utils.dtt_from_date_obj(dt, "0");
+	else
+		local tzb = date(true):getbias();
+		date_utils.add_tzoffset_to_dto(dt, tzb);
+		dtt =  date_utils.dtt_from_date_obj(dt, nil);
 	end
 	local cdt = ffi.new("dt_s_type", 0);
 	cdt.type = date_utils.tn_tid_map['dateTime'];
@@ -1002,21 +1006,25 @@ date_utils.set_tz = function(cdt, tzo)
 end
 
 date_utils.today = function(utc)
-	if (type(utc) ~= 'boolean') then
+	if (utc ~= nil and type(utc) ~= 'boolean') then
 		error("Invalid inputs");
 	end
 	local today = os.date("*t");
 	local dt = date(today.year, today.month, today.day)
 	dt.dayfrc = nu.round(dt.dayfrc, 1);
 	local dtt;
-	if (not utc) then
+	if (utc == false) then
 		local tzb = date(false):getbias();
 		date_utils.add_tzoffset_to_dto(dt, tzb);
 		dt.dayfrc = 0;
 		local tzs = tostring(-1*tzb);
 		dtt = date_utils.dtt_from_date_obj(dt, tzs);
-	else
+	elseif (utc == true) then
 		dtt =  date_utils.dtt_from_date_obj(dt, "0");
+	else
+		local tzb = date(false):getbias();
+		date_utils.add_tzoffset_to_dto(dt, tzb);
+		dtt =  date_utils.dtt_from_date_obj(dt, nil);
 	end
 	local cdt = ffi.new("dt_s_type", 0);
 	cdt.type = date_utils.tn_tid_map['date'];
