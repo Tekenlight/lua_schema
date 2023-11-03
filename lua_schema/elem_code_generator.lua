@@ -5,6 +5,7 @@ local xmlua = require("xmlua")
 local basic_stuff = require("lua_schema.basic_stuff");
 local facets = require("lua_schema.facets");
 local codegen_eh_cache = require("lua_schema.codegen_eh_cache");
+local ffi = require('ffi');
 
 local elem_code_generator = {};
 
@@ -205,6 +206,11 @@ elem_code_generator.get_attr_decls = function(attrs)
 			properties.type.name = v.type.name;
 			properties.type.ns = v.type.ns;
 			properties.default = v.def_value;
+			if (type(properties.default) == 'cdata') then
+				properties.default_str = ffi.string(properties.default);
+			else
+				properties.default_str = tostring(properties.default);
+			end
 			properties.fixed = v.fixed;
 			properties.use = v.use;
 			properties.form = v.form;
@@ -756,7 +762,7 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
 						element_handler.properties.attr._attr_properties[n].properties.schema_type..'\';\n';
 			code = code..indentation..'    '
 						..attr_props_name..'['..i_n..'].properties.default = \''..
-						element_handler.properties.attr._attr_properties[n].properties.default..'\';\n';
+						element_handler.properties.attr._attr_properties[n].properties.default_str..'\';\n';
 			local loc_fixed_value = '';
 			if (element_handler.properties.attr._attr_properties[n].properties.fixed) then
 				loc_fixed_value = 'true';

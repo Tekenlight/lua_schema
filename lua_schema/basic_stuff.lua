@@ -1608,6 +1608,9 @@ basic_stuff.low_to_intermediate_json = function(schema_type_handler, content)
 				i_content[i] = basic_stuff.simple_to_intermediate_json(schema_type_handler, v);
 			end
 		end
+		if (#i_content == 0) then
+			i_content[-1] = "EMPTY_ARRAY";
+		end
 	else
 		if (schema_type_handler.properties.element_type == 'C') then
 			i_content = basic_stuff.complex_to_intermediate_json(schema_type_handler, content);
