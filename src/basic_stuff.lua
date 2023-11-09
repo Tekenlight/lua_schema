@@ -1820,6 +1820,14 @@ local function validate_content(sth, content)
 	return true, nil;
 end
 
+local function get_uri(u)
+	local uri = u;
+	if (uri == nil) then
+		uri = '';
+	end
+	return uri;
+end
+
 local function read_ahead(reader)
 	local s, ret = pcall(reader.read, reader);
 	if (s == false) then
@@ -1827,14 +1835,6 @@ local function read_ahead(reader)
 		error("Failed to parse document");
 	end
 	return ret;
-end
-
-local function get_uri(u)
-	local uri = u;
-	if (uri == nil) then
-		uri = '';
-	end
-	return uri;
 end
 
 local function get_qname(sth)
@@ -2175,9 +2175,9 @@ local process_start_of_element = function(reader, sts, objs, pss, mcos)
 			local element_found = false;
 			local l_sth = sts:top();
 			local l_top_obj = objs:top();
-			local cm = l_top_obj['___METADATA___'].cm;
-			if (cm == nil) then
-				cm = l_sth.properties.content_model;
+			local l_cm = l_top_obj['___METADATA___'].cm;
+			if (l_cm == nil) then
+				l_cm = l_sth.properties.content_model;
 			end
 			element_found = basic_stuff.continue_cm_fsa(reader, sts, objs, pss);
 			if (not element_found) then
@@ -2192,13 +2192,25 @@ local process_start_of_element = function(reader, sts, objs, pss, mcos)
 				new_schema_type_handler = schema_type_handler.properties.subelement_properties[generated_q_name];
 				if (new_schema_type_handler.properties.schema_type == '{http://www.w3.org/2001/XMLSchema}anyType') then
 				elseif ((not l_top_obj['___METADATA___'].empty) and
-					(cm ~= nil) and
-					(cm.group_type == 'C') ) then
+					(l_cm ~= nil) and
+					(l_cm.group_type == 'C') and
+					(l_cm.max_occurs == -1)) then
 
 					if ((l_top_obj['___METADATA___'].element_gqn_being_parsed ~= nil) and
 						(l_top_obj['___METADATA___'].element_gqn_being_parsed ~= generated_q_name)) then 
 
-						basic_stuff.move_fsa_to_end_of_cm(reader, sts, objs, pss)
+						--[[
+						print(debug.getinfo(1).source, debug.getinfo(1).currentline, generated_q_name);
+						require 'pl.pretty'.dump(l_top_obj);
+						require 'pl.pretty'.dump(l_cm);
+						print(debug.getinfo(1).source, debug.getinfo(1).currentline, "HAHAHAHAHA");
+
+
+						print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+						print("SHOULD NOT COME HERE");
+						print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+						--]]
+						--basic_stuff.move_fsa_to_end_of_cm(reader, sts, objs, pss)
 					end
 				end
 			end
@@ -2402,6 +2414,7 @@ local process_end_of_element = function(reader, sts, objs, pss, mcos)
 			parsed_output = parsed_element['___DATA___'];
 		else
 			--print(debug.getinfo(1).source, debug.getinfo(1).currentline, "NO CONDITION MET. NO PARSED_OUTPUT");
+			error("NO CONDITION MET. NO PARSED_OUTPUT");
 		end
 	else
 		if (not parsed_element['___METADATA___'].empty) then
@@ -2451,7 +2464,7 @@ local process_end_of_element = function(reader, sts, objs, pss, mcos)
 	end
 	pss:pop();
 	if ((not top_obj['___METADATA___'].empty) and
-		(top_obj['___METADATA___'].cm ~= nil)) then -- cm will not be null only in case of repeating content models.
+		(top_obj['___METADATA___'].cm ~= nil)) then
 
 		if (top_obj['___METADATA___'].cm.group_type == 'C') then
 
@@ -2667,6 +2680,7 @@ local process_node = function(reader, sts, objs, pss, mcos)
 		ret = process_end_of_element(reader, sts, objs, pss, mcos);
 		error_handler.pop_element();
 		--]]
+
 		ret = call_process_end_of_element(reader, sts, objs, pss, mcos);
 	elseif (typ == reader.node_types.XML_READER_TYPE_SIGNIFICANT_WHITESPACE) then
 		if (schema_type_handler.properties.content_type == 'M') then
@@ -2713,10 +2727,10 @@ local low_parse_xml = function(schema_type_handler, xmlua, xml)
 	-- We dont populate cm, simce cm is that of the parent and this is the root
 	-- element
 	obj['___DATA___'] = {};
-	local objs = (require('lua_schema.stack')).new();
-	local sts = (require('lua_schema.stack')).new();
-	local pss = (require('lua_schema.stack')).new();
-	local mcos = (require('lua_schema.stack')).new();
+	local objs = (require('lua_schema.stack')).new(); -- [[ Parsed objects stack ]]
+	local sts = (require('lua_schema.stack')).new(); --[[ Schema type stack ]]
+	local pss = (require('lua_schema.stack')).new(); --[[ Parsing status stack ]]
+	local mcos = (require('lua_schema.stack')).new(); -- [[ Mixed content objects stack ]]
 
 	objs:push(obj);
 	sts:push(schema_type_handler);
