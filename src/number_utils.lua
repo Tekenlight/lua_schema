@@ -2,6 +2,7 @@ local ffi = require("ffi");
 
 ffi.cdef[[
 int printf(const char *, ...);
+int sprintf(char *str, const char *format, ...);
 float max_float();
 double max_double();
 int isfloat_nan(float f);
@@ -189,6 +190,13 @@ function number_utils.to_double(s)
 	end
 
 	return n;
+end
+
+number_utils.string_format = function (format, number)
+	local out_str = ffi.new("char [?]", 128);
+	ffi.C.sprintf(out_str, format, number);
+
+	return ffi.string(out_str);
 end
 
 local stringx = require('pl.stringx');
