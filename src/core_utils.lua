@@ -216,15 +216,21 @@ local function binary_data_gc(bd)
 	end
 end
 
+local function binary_tostring(data)
+	return "<BINARY DATA>"
+end
+
 local hex_mt = {
-	__tostring = core_utils.hex_encode,
+	--__tostring = core_utils.hex_encode,
+	__tostring = binary_tostring,
 	__gc = binary_data_gc
 }
 
 ffi.metatype("hex_data_s_type", hex_mt);
 
 local b64_mt = {
-	__tostring = core_utils.base64_encode,
+	--__tostring = core_utils.base64_encode,
+	__tostring = binary_tostring,
 	__gc = binary_data_gc
 }
 
