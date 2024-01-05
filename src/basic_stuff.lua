@@ -1638,7 +1638,7 @@ end
 basic_stuff.primitive_from_intermediate_json = function(th, content)
 
 	if ('string' == th.datatype
-		and ('token' == th.type_name or 'string' == th.type_name)) then
+		and ('token' == th.type_name or 'string' == th.type_name or 'normalizedString' == th.type_name)) then
 		content = th:to_type(nil, content);
 	elseif ('binary' == th.datatype) then
 		if ('base64Binary' == th.type_name) then
@@ -2434,7 +2434,9 @@ local process_end_of_element = function(reader, sts, objs, pss, mcos)
         (parsed_sth.properties.content_model.group_type ~= 'A')) then
 		if (parsed_sth.properties.content_model.top_level_group and
 			parsed_sth.properties.content_model.max_occurs ~= 1) then
-			parsed_output = parsed_output[parsed_sth.properties.content_model.generated_subelement_name];
+			if (parsed_output ~= nil) then
+				parsed_output = parsed_output[parsed_sth.properties.content_model.generated_subelement_name];
+			end
 		end
 	end
 	-- Essentially the variable parsed_output has the complete lua value of the element
