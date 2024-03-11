@@ -1,5 +1,5 @@
 ffi = require("ffi");
-local xmlua = require("xmlua")
+local xmlua = require("lua_schema.xmlua");
 
 
 if (#arg < 2) then

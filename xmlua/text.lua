@@ -1,7 +1,7 @@
 local Text = {}
 
-local libxml2 = require("xmlua.libxml2")
-local Node = require("xmlua.node")
+local libxml2 = require("lua_schema.xmlua.libxml2")
+local Node = require("lua_schema.xmlua.node")
 
 local methods = {}
 

@@ -1,6 +1,6 @@
 local DocumentFragment = {}
 
-local Element = require("xmlua.element")
+local Element = require("lua_schema.xmlua.element")
 
 local methods = {}
 local metatable = {}

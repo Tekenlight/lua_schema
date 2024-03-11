@@ -1,6 +1,6 @@
 local ElementDeclaration = {}
 
-local Node = require("xmlua.node")
+local Node = require("lua_schema.xmlua.node")
 
 local methods = {}
 local metatable = {}

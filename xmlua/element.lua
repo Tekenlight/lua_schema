@@ -5,17 +5,17 @@
 
 local Element = {}
 
-local libxml2 = require("xmlua.libxml2")
+local libxml2 = require("lua_schema.xmlua.libxml2")
 local ffi = require("ffi")
 
-local Serializable = require("xmlua.serializable")
-local Searchable = require("xmlua.searchable")
+local Serializable = require("lua_schema.xmlua.serializable")
+local Searchable = require("lua_schema.xmlua.searchable")
 
-local Node = require("xmlua.node")
-local Document = require("xmlua.document")
-local Text = require("xmlua.text")
-local Namespace = require("xmlua.namespace")
-local NodeSet = require("xmlua.node-set")
+local Node = require("lua_schema.xmlua.node")
+local Document = require("lua_schema.xmlua.document")
+local Text = require("lua_schema.xmlua.text")
+local Namespace = require("lua_schema.xmlua.namespace")
+local NodeSet = require("lua_schema.xmlua.node-set")
 
 local methods = {}
 

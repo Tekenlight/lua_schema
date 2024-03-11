@@ -1,4 +1,4 @@
-local xmlua = require("xmlua")
+local xmlua = require("lua_schema.xmlua");
 local regex = xmlua.XMLRegexp.new();
 local du = require("lua_schema.date_utils");
 local nu = require("lua_schema.number_utils");

@@ -1,12 +1,12 @@
 local Document = {}
 
-local libxml2 = require("xmlua.libxml2")
+local libxml2 = require("lua_schema.xmlua.libxml2")
 local ffi = require("ffi")
-local converter = require("xmlua.converter")
+local converter = require("lua_schema.xmlua.converter")
 local to_string = converter.to_string
 
-local Serializable = require("xmlua.serializable")
-local Searchable = require("xmlua.searchable")
+local Serializable = require("lua_schema.xmlua.serializable")
+local Searchable = require("lua_schema.xmlua.searchable")
 
 
 local CDATASection
@@ -19,14 +19,14 @@ local Namespace
 local ProcessingInstruction
 
 function Document.lazy_load()
-  CDATASection = require("xmlua.cdata-section")
-  Comment = require("xmlua.comment")
-  DocumentFragment = require("xmlua.document-fragment")
-  DocumentType = require("xmlua.document-type")
-  Element = require("xmlua.element")
-  EntityReference = require("xmlua.entity-reference")
-  Namespace = require("xmlua.namespace")
-  ProcessingInstruction = require("xmlua.processing-instruction")
+  CDATASection = require("lua_schema.xmlua.cdata-section")
+  Comment = require("lua_schema.xmlua.comment")
+  DocumentFragment = require("lua_schema.xmlua.document-fragment")
+  DocumentType = require("lua_schema.xmlua.document-type")
+  Element = require("lua_schema.xmlua.element")
+  EntityReference = require("lua_schema.xmlua.entity-reference")
+  Namespace = require("lua_schema.xmlua.namespace")
+  ProcessingInstruction = require("lua_schema.xmlua.processing-instruction")
 end
 
 local methods = {}

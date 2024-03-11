@@ -3,9 +3,9 @@ local xml_date_utils = {}
 
 local metatable = {}
 
-local libxml2 = require("xmlua.libxml2")
+local libxml2 = require("lua_schema.xmlua.libxml2")
 
-local xsd = (require("xmlua.xsd")).new();
+local xsd = (require("lua_schema.xmlua.xsd")).new();
 xml_date_utils.value_type = xsd.value_type;
 
 function metatable.__index(item, key)

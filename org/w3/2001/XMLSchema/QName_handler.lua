@@ -1,4 +1,4 @@
-local xmlua = require("xmlua");
+local xmlua = require("lua_schema.xmlua");
 local facets = require("lua_schema.facets");
 local basic_stuff = require("lua_schema.basic_stuff");
 local error_handler = require("lua_schema.error_handler");

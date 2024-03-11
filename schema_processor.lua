@@ -1,4 +1,4 @@
-local xmlua = require("xmlua")
+local xmlua = require("lua_schema.xmlua");
 local cjson = require('cjson.safe');
 local basic_stuff = require("lua_schema.basic_stuff");
 local nsd_cache = require("lua_schema.nsd_cache");

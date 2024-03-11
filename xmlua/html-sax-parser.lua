@@ -1,11 +1,11 @@
 local HTMLSAXParser = {}
 
-local libxml2 = require("xmlua.libxml2")
+local libxml2 = require("lua_schema.xmlua.libxml2")
 local ffi = require("ffi")
-local converter = require("xmlua.converter")
+local converter = require("lua_schema.xmlua.converter")
 local to_string = converter.to_string
 
-local Document = require("xmlua.document")
+local Document = require("lua_schema.xmlua.document")
 
 local methods = {}
 

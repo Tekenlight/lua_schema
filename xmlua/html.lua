@@ -1,9 +1,9 @@
 local HTML = {}
 
-local libxml2 = require("xmlua.libxml2")
+local libxml2 = require("lua_schema.xmlua.libxml2")
 local ffi = require("ffi")
 
-local Document = require("xmlua.document")
+local Document = require("lua_schema.xmlua.document")
 
 local function convert_xml_error(xml_error)
   local err = {

@@ -1,4 +1,4 @@
-local xmlua = require("xmlua")
+local xmlua = require("lua_schema.xmlua");
 local mhf = require("schema_processor")
 local xsd = xmlua.XSD.new();
 local basic_stuff = require("lua_schema.basic_stuff");

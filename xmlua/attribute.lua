@@ -1,7 +1,7 @@
 local Attribute = {}
 
-local Node = require("xmlua.node")
-local Element = require("xmlua.element")
+local Node = require("lua_schema.xmlua.node")
+local Element = require("lua_schema.xmlua.element")
 local ffi = require("ffi")
 
 local methods = {}

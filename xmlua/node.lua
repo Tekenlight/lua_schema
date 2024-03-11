@@ -1,6 +1,6 @@
 local Node = {}
 
-local libxml2 = require("xmlua.libxml2")
+local libxml2 = require("lua_schema.xmlua.libxml2")
 local ffi = require("ffi")
 
 function Node:replace(replace_node)

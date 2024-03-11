@@ -1,8 +1,8 @@
 local XMLReader = {}
 
 local ffi = require("ffi")
-local libxml2 = require("xmlua.libxml2")
-local converter = require("xmlua.converter")
+local libxml2 = require("lua_schema.xmlua.libxml2")
+local converter = require("lua_schema.xmlua.converter")
 local to_string = converter.to_string
 
 local methods = {}

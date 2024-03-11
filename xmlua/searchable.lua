@@ -1,6 +1,6 @@
 local Searchable = {}
 
-local libxml2 = require("xmlua.libxml2")
+local libxml2 = require("lua_schema.xmlua.libxml2")
 local ffi = require("ffi")
 
 local luacs = require("luacs")
@@ -14,13 +14,13 @@ local ProcessingInstruction
 local Text
 
 function Searchable.lazy_load()
-  Attribute = require("xmlua.attribute")
-  CDATASection = require("xmlua.cdata-section")
-  Comment = require("xmlua.comment")
-  Element = require("xmlua.element")
-  NodeSet = require("xmlua.node-set")
-  ProcessingInstruction = require("xmlua.processing-instruction")
-  Text = require("xmlua.text")
+  Attribute = require("lua_schema.xmlua.attribute")
+  CDATASection = require("lua_schema.xmlua.cdata-section")
+  Comment = require("lua_schema.xmlua.comment")
+  Element = require("lua_schema.xmlua.element")
+  NodeSet = require("lua_schema.xmlua.node-set")
+  ProcessingInstruction = require("lua_schema.xmlua.processing-instruction")
+  Text = require("lua_schema.xmlua.text")
 end
 
 local ERROR_MESSAGES = {

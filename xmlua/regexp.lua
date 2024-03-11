@@ -4,7 +4,7 @@ local regexp = {}
 local methods = {};
 local metatable = {}
 
-local libxml2 = require("xmlua.libxml2")
+local libxml2 = require("lua_schema.xmlua.libxml2")
 
 function metatable.__index(item, key)
   return methods[key];

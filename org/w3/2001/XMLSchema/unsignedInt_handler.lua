@@ -1,5 +1,5 @@
 local ffi = require("ffi");
-local xmlua = require("xmlua");
+local xmlua = require("lua_schema.xmlua");
 local facets = require("lua_schema.facets");
 local error_handler = require("lua_schema.error_handler");
 local nu = require("lua_schema.number_utils");

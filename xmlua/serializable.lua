@@ -1,6 +1,6 @@
 local Serializable = {}
 
-local libxml2 = require("xmlua.libxml2")
+local libxml2 = require("lua_schema.xmlua.libxml2")
 local ffi = require("ffi")
 
 local function save(target, flags, failure_message, options)

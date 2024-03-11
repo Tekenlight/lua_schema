@@ -1,9 +1,9 @@
 local XML = {}
 
-local libxml2 = require("xmlua.libxml2")
+local libxml2 = require("lua_schema.xmlua.libxml2")
 local ffi = require("ffi")
 
-local Document = require("xmlua.document")
+local Document = require("lua_schema.xmlua.document")
 
 function XML.document_from_subtree(node)
   local raw_document = libxml2.xmlNewDoc("1.0")

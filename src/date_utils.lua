@@ -1,6 +1,6 @@
 local ffi = require("ffi");
 local date = require("date");
-local xmlua = require("xmlua");
+local xmlua = require("lua_schema.xmlua");
 local xml_date_utils = xmlua.XMLDateUtils.new();
 local nu = require("lua_schema.number_utils");
 

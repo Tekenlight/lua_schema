@@ -1,7 +1,7 @@
 local XMLStreamSAXParser = {}
 
-local libxml2 = require("xmlua.libxml2")
-local XMLSAXParser = require("xmlua.xml-sax-parser")
+local libxml2 = require("lua_schema.xmlua.libxml2")
+local XMLSAXParser = require("lua_schema.xmlua.xml-sax-parser")
 
 local methods = {}
 

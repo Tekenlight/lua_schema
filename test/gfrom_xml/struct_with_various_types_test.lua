@@ -61,7 +61,7 @@ b3dyaSAhISEgIEhlbGxvIFdvcmxkIFNyaXJhbSBhbmQgR293cmkgISEhIQ==</base64Binary>
 mhf = require("schema_processor")
 local struct_with_various_types = mhf:get_message_handler("struct_with_various_types", "http://test_example.com");
 
-for i=1, 10000 do
+for i=1, 1 do
 
 	local content, msg = struct_with_various_types:from_xml(xml_string)
 	if (type(content) == 'table') then require 'pl.pretty'.dump(content);

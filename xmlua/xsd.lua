@@ -4,7 +4,7 @@ local XSD = {}
 local methods = {};
 local metatable = {}
 
-local libxml2 = require("xmlua.libxml2")
+local libxml2 = require("lua_schema.xmlua.libxml2")
 local ffi = require("ffi")
 
 methods.XML_SCHEMAS_TYPE_VARIETY_LIST = 1 << 6
