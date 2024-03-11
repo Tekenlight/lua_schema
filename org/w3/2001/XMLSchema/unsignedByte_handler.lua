@@ -75,7 +75,7 @@ function __unsignedByte_handler_class:to_schema_type(ns, sf)
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);
 	end
-	n = ffi.cast("uint8_t", ffi.C.strtoul(sn, NULL, 0));
+	local n = ffi.cast("uint8_t", ffi.C.strtoul(sn, ffi.C.NULL, 0));
 	if (false == self:is_valid(n)) then
 		local msv = error_handler.reset_init();
 		error(msv.status.error_message);

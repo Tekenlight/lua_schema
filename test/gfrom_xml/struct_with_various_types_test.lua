@@ -1,5 +1,5 @@
-mhf = require("schema_processor")
-unistd = require("posix.unistd");
+local mhf = require("schema_processor")
+local unistd = require("posix.unistd");
 
 local xml_string = [=[<?xml version="1.0" encoding="UTF-8"?>                                      
 <ns1:struct_with_various_types xmlns:ns1="http://test_example.com">
@@ -59,38 +59,41 @@ b3dyaSAhISEgIEhlbGxvIFdvcmxkIFNyaXJhbSBhbmQgR293cmkgISEhIQ==</base64Binary>
 </ns1:struct_with_various_types>]=]
 
 mhf = require("schema_processor")
-struct_with_various_types = mhf:get_message_handler("struct_with_various_types", "http://test_example.com");
+local struct_with_various_types = mhf:get_message_handler("struct_with_various_types", "http://test_example.com");
 
+for i=1, 10000 do
 
-local content, msg = struct_with_various_types:from_xml(xml_string)
-if (type(content) == 'table') then require 'pl.pretty'.dump(content);
-else print(content, msg)
-end
-
-local ffi = require("ffi");
-
-ffi.cdef[[
-int printf(const char * restrict format, ...);
-]]
-
-if (content ~= nil) then
-	local json_str = struct_with_various_types:to_json(content);
-	print(json_str);
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline);
-	local content_1, msg = struct_with_various_types:from_json(json_str);
-	print(debug.getinfo(1).source, debug.getinfo(1).currentline, content_1);
-	local xml_str, msg = struct_with_various_types:to_xml(content_1);
-	if (xml_str ~= nil) then
-		print(xml_str);
-	else
-		print(msg);
+	local content, msg = struct_with_various_types:from_xml(xml_string)
+	if (type(content) == 'table') then require 'pl.pretty'.dump(content);
+	else print(content, msg)
 	end
-	local content_2, msg = struct_with_various_types:from_xml(xml_str);
-	require 'pl.pretty'.dump(content_2)
-	local xml_str1, msg = struct_with_various_types:to_xml(content_2);
-	if (xml_str1 ~= nil) then
-		print(xml_str1);
-	else
-		print(msg);
+
+	local ffi = require("ffi");
+
+	ffi.cdef[[
+	int printf(const char * restrict format, ...);
+	]]
+
+	if (content ~= nil) then
+		local json_str = struct_with_various_types:to_json(content);
+		print(json_str);
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+		local content_1, msg = struct_with_various_types:from_json(json_str);
+		print(debug.getinfo(1).source, debug.getinfo(1).currentline, content_1);
+		local xml_str, msg = struct_with_various_types:to_xml(content_1);
+		if (xml_str ~= nil) then
+			print(xml_str);
+		else
+			print(msg);
+		end
+		local content_2, msg = struct_with_various_types:from_xml(xml_str);
+		require 'pl.pretty'.dump(content_2)
+		local xml_str1, msg = struct_with_various_types:to_xml(content_2);
+		if (xml_str1 ~= nil) then
+			print(xml_str1);
+		else
+			print(msg);
+		end
 	end
+
 end
