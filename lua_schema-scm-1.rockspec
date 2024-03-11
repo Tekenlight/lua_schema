@@ -5,7 +5,17 @@ source = {
 }
 description = {
    homepage = "https://github.com/Tekenlight/lua_schema",
-   license = "MIT"
+   license = "MIT",
+   summary = "Module to enable schema driven serialization/deserialization of lua to XML and lua to JSON",
+   detailed = [[
+        lua_schema is a library for processing XML and JSON based on XSD grammar.
+
+        The API exposed by lua_schema are easy to use within lua code.
+		The library is implemented on top of customized libxml2 and a customized version of xmlua
+		(original:https://github.com/clear-code/xmlua).
+
+        The code is released under MIT license
+   ]]
 }
 dependencies = {"luacs", "customized_date", 'luaffi-tkl'}
 external_dependencies = {
