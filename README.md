@@ -11,7 +11,7 @@ The code is released under MIT license
 
 ## Installation
 ```
-git clone https://github.com/Tekenlight/lua\_schema
+git clone https://github.com/Tekenlight/lua_schema
 luarocks [--local] make
 ```
 
