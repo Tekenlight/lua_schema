@@ -1,0 +1,71 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://cond.biop.com"
+	xmlns:ns="http://cond.biop.com"
+    >
+
+    <xsd:complexType name="value">
+        <xsd:choice>
+            <xsd:element name="bool" type="xsd:boolean"/>
+            <xsd:element name="string" type="xsd:string"/>
+            <xsd:element name="number" type="xsd:decimal"/>
+            <xsd:element name="date" type="xsd:date"/>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:simpleType name="comparator">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="=="/>
+            <xsd:enumeration value="&gt;"/>
+            <xsd:enumeration value="&lt;"/>
+            <xsd:enumeration value="&gt;="/>
+            <xsd:enumeration value="&lt;="/>
+            <xsd:enumeration value="~="/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="unary_logical">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="not"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="binary_logical">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="and"/>
+            <xsd:enumeration value="or"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="condition">
+        <xsd:sequence>
+            <xsd:element name="variable" type="xsd:string"/>
+            <xsd:choice>
+                <xsd:element name="assoc_const" type="ns:value"/>
+                <xsd:element name="variable" type="xsd:string"/>
+            </xsd:choice>
+            <xsd:element name="comparator" type="ns:comparator"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="expr">
+        <xsd:choice>
+            <xsd:choice>
+                <xsd:sequence>
+                    <xsd:element name="oper" type="ns:unary_logical" minOccurs="0" />
+                    <xsd:element name="u_expr" type="ns:expr" />
+                </xsd:sequence>
+                <xsd:sequence>
+                    <xsd:element name="operator" type="ns:binary_logical"/>
+                    <xsd:element name="lhs" type="ns:expr"/>
+                    <xsd:element name="rhs" type="ns:expr"/>
+                </xsd:sequence>
+            </xsd:choice>
+            <xsd:element name="value" type="ns:value"/>
+            <xsd:element name="condition" type="ns:condition"/>
+        </xsd:choice>
+    </xsd:complexType>
+
+
+    <xsd:element name="node" type="ns:expr" />
+
+</xsd:schema>

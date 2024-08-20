@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <!-- Define the complex type 'NodeType' -->
+    <xs:complexType name="NodeType">
+        <xs:sequence>
+            <!-- The value of the node -->
+            <xs:element name="value" type="xs:string"/>
+            <!-- Child nodes, which are also of type 'NodeType' -->
+            <xs:element name="children" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <!-- Reference to the same complex type 'NodeType' -->
+                        <xs:element name="node" type="NodeType" 
+                                    maxOccurs="unbounded" minOccurs="0"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+        <!-- Optional attribute for node metadata -->
+        <xs:attribute name="id" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <!-- Root element that uses the recursive complex type -->
+    <xs:element name="a" type="NodeType"/>
+
+</xs:schema>
+

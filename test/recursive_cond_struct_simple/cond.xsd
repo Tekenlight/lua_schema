@@ -1,0 +1,17 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://cond.biop.com"
+	xmlns:ns="http://cond.biop.com"
+    >
+
+
+    <xsd:complexType name="expr">
+        <xsd:sequence>
+            <xsd:element name="neg_expr" type="ns:expr" minOccurs="0" />
+            <xsd:element name="one" type="xsd:string" />
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="e_expr" type="ns:expr" />
+
+
+</xsd:schema>

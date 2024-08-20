@@ -52,18 +52,18 @@ local xsd_name = arg[1];
 local schema = xsd:parse(xsd_name);
 local build_mode = (arg[2] ~= nil and arg[2] ~= "0");
 
-local elems = schema:get_element_decls();
-if (elems ~= nil) then
-	for _, v in ipairs(elems) do
-		generate_schema_for_element(v);
-		generate_mappings(v);
-	end
-end
-
 local types = schema:get_type_defs();
 if (types ~= nil) then
 	for _, v in ipairs(types) do
 		generate_schema_for_typedef(v);
+		generate_mappings(v);
+	end
+end
+
+local elems = schema:get_element_decls();
+if (elems ~= nil) then
+	for _, v in ipairs(elems) do
+		generate_schema_for_element(v);
 		generate_mappings(v);
 	end
 end

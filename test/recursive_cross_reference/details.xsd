@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified">
+
+    <!-- Define the AddressType complex type -->
+    <xs:complexType name="AddressType">
+        <xs:sequence>
+            <xs:element name="street" type="xs:string"/>
+            <xs:element name="city" type="xs:string"/>
+            <xs:element name="zipcode" type="xs:string"/>
+            <!-- Reference to PersonType -->
+            <xs:element name="resident" type="PersonType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Define the PersonType complex type -->
+    <xs:complexType name="PersonType">
+        <xs:sequence>
+            <xs:element name="firstName" type="xs:string"/>
+            <xs:element name="lastName" type="xs:string"/>
+            <!-- Reference to AddressType -->
+            <xs:element name="address" type="AddressType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Root element -->
+    <xs:element name="person" type="PersonType"/>
+    <xs:element name="address" type="AddressType"/>
+
+</xs:schema>
+
