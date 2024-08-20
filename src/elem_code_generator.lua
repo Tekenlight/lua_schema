@@ -734,7 +734,8 @@ elem_code_generator.get_element_handler = function(elem, options)
             local t_name ;
             if (elem.type_q_name ~= nil) then
                 t_name = get_type_q_name(elem);
-                meta.global_name = 'T:'..t_name..':subelement_properties';
+                --meta.global_name = 'T:'..t_name..':subelement_properties';
+                meta.global_name = 'T:'..t_name;
             end
             local from_cache;
             props.subelement_properties, from_cache = elem_code_generator.get_subelement_properties(model, dbg, meta);

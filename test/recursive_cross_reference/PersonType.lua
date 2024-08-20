@@ -43,11 +43,11 @@ end
 -- element_handler.properties.content_model
 do
     element_handler.properties.content_model = {
-        min_occurs = 1,
-        top_level_group = true,
         generated_subelement_name = '_sequence_group',
         max_occurs = 1,
         group_type = 'S',
+        top_level_group = true,
+        min_occurs = 1,
         'firstName',
         'lastName',
         'address',
@@ -126,6 +126,13 @@ element_handler.properties.subelement_properties['{}firstName'].type_of_simple =
         element_handler.properties.subelement_properties['{}firstName'].particle_properties.max_occurs = 1;
     end
 
+    do
+        element_handler.properties.subelement_properties['{}address'] = 
+            (basic_stuff.get_element_handler('', 'AddressType'):
+            new_instance_as_local_element({ns = '', local_name = 'address', generated_name = 'address',
+                    root_element = false, min_occurs = 0, max_occurs = 1}));
+    end
+
     element_handler.properties.subelement_properties['{}lastName'] = {};
     do
 element_handler.properties.subelement_properties['{}lastName'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
@@ -175,13 +182,6 @@ element_handler.properties.subelement_properties['{}lastName'].type_of_simple = 
         element_handler.properties.subelement_properties['{}lastName'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}lastName'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{}lastName'].particle_properties.max_occurs = 1;
-    end
-
-    do
-        element_handler.properties.subelement_properties['{}address'] = 
-            (basic_stuff.get_element_handler('', 'AddressType'):
-            new_instance_as_local_element({ns = '', local_name = 'address', generated_name = 'address',
-                    root_element = false, min_occurs = 0, max_occurs = 1}));
     end
 
 end
