@@ -203,7 +203,7 @@ elem_code_generator.get_attr_decls = function(attrs)
             local attr_q_name = get_q_name(v.ns, v.name);
 
             local properties = {};
-        
+
             properties.schema_type = get_q_name(v.type.ns, v.type.name);
             properties.bi_type = v.bi_type;
             properties.bi_type.id = v.built_in_type_id;
@@ -314,7 +314,7 @@ elem_code_generator.get_subelement_properties = function(model, dbg, meta)
 
     if (_subelement_properties == nil) then
         _subelement_properties = {};
-        if (meta ~= nil and meta.global_name ~= nil) then 
+        if (meta ~= nil and meta.global_name ~= nil) then
             codegen_eh_cache.add(meta.global_name..':subelement_properties', _subelement_properties);
         end
     else
@@ -379,9 +379,8 @@ elem_code_generator.get_subelement_properties = function(model, dbg, meta)
                         _subelement_properties[item.generated_q_name] = eh;
                         if (item.element.type_q_name ~= nil) then
                             local t_name = get_type_q_name(item.element);
-                            if ('T:'..t_name == meta.global_name) then 
-                                --local se_properties = codegen_eh_cache.get('T:'..t_name..':subelement_properties');
-                                --eh.properties.subelement_properties = se_properties;
+                            if ('T:'..t_name == meta.global_name and
+                                eh.properties.generated_subelements == nil) then
                                 gse_backlog[#gse_backlog+1] = eh;
                             end
                         end
@@ -466,7 +465,7 @@ local function low_get_content_model(model, i)
     end
 
     return _content_model, i;
-    
+
 end
 
 elem_code_generator.get_content_model = function(model)
@@ -652,7 +651,7 @@ elem_code_generator.get_type_handler_and_base = function(defn, to_generate_names
                         facets.massage_local_facets(simple_type_props.list_item_type.local_facets, th.datatype, th.type_name);
                 element_handler.list_item_type.facets =
                             facets.new_from_table(simple_type_props.list_item_type.facets, th.datatype, th.type_name);
-                
+
             end
         end
     else
@@ -746,7 +745,7 @@ elem_code_generator.get_element_handler = function(elem, options)
             props.bi_type = elem:get_element_primary_bi_type();
             props.bi_type.id = simple_type_props.built_in_type_id;
             element_handler.local_facets =
-                    facets.massage_local_facets(simple_type_props.local_facets, 
+                    facets.massage_local_facets(simple_type_props.local_facets,
                                                 element_handler.type_handler.datatype,
                                                 element_handler.type_handler.type_name);
             element_handler.facets = facets.new_from_table(simple_type_props.facets,
@@ -917,13 +916,13 @@ function elem_code_generator.get_attr_code(eh_name, element_handler, indentation
                 code = code..'\n';
 
             end
-            
+
             code = code..'\n';
             local sename = elem_code_generator.get_super_element_content_type_s(v.base.ns, v.base.name);
             code = code..indentation..'    '..attr_props_name..'['..i_n..'].super_element_content_type = require(\''
                                                             ..sename..'\'):instantiate();\n';
             code = code..indentation..'    '..attr_props_name..'['..i_n..'].type_of_simple = \''..v.type_of_simple..'\';\n';
-                                        
+
             code = code..indentation..'    '..attr_props_name..'['..i_n..'].local_facets = {}\n';
             code = elem_code_generator.gen_code_copy_facets(code,
                         indentation..'    '..attr_props_name..'['..i_n..'].local_facets', v.local_facets)
@@ -1375,7 +1374,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
         if (element_handler.type_of_simple == 'U') then
             --[[
             --In case of union of simple types we dont want to rely on inheritence
-            --of facets, since it is almost impossible to determine the base type 
+            --of facets, since it is almost impossible to determine the base type
             --of a union type clearly
             --]]
             local_facets = element_handler.facets;
