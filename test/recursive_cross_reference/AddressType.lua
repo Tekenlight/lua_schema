@@ -46,8 +46,8 @@ do
         generated_subelement_name = '_sequence_group',
         max_occurs = 1,
         min_occurs = 1,
-        group_type = 'S',
         top_level_group = true,
+        group_type = 'S',
         'street',
         'city',
         'zipcode',
@@ -136,57 +136,6 @@ element_handler.properties.subelement_properties['{}street'].type_of_simple = 'A
         element_handler.properties.subelement_properties['{}street'].particle_properties.max_occurs = 1;
     end
 
-    element_handler.properties.subelement_properties['{}city'] = {};
-    do
-element_handler.properties.subelement_properties['{}city'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
-
-element_handler.properties.subelement_properties['{}city'].type_of_simple = 'A';
-
-        do
-            element_handler.properties.subelement_properties['{}city'].properties = {};
-            element_handler.properties.subelement_properties['{}city'].properties.element_type = 'S';
-            element_handler.properties.subelement_properties['{}city'].properties.content_type = 'S';
-            element_handler.properties.subelement_properties['{}city'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
-            element_handler.properties.subelement_properties['{}city'].properties.bi_type = {};
-            element_handler.properties.subelement_properties['{}city'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}city'].properties.bi_type.name = 'string';
-            element_handler.properties.subelement_properties['{}city'].properties.bi_type.id = '1';
-            element_handler.properties.subelement_properties['{}city'].properties.attr = {};
-            element_handler.properties.subelement_properties['{}city'].properties.attr._attr_properties = {};
-            element_handler.properties.subelement_properties['{}city'].properties.attr._generated_attr = {};
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}city'].particle_properties = {};
-            element_handler.properties.subelement_properties['{}city'].particle_properties.q_name = {};
-            element_handler.properties.subelement_properties['{}city'].particle_properties.q_name.ns = '';
-            element_handler.properties.subelement_properties['{}city'].particle_properties.q_name.local_name = 'city';
-            element_handler.properties.subelement_properties['{}city'].particle_properties.generated_name = 'city';
-        end
-
-        -- Simple type properties
-        do
-            element_handler.properties.subelement_properties['{}city'].base = {};
-            element_handler.properties.subelement_properties['{}city'].base.ns = 'http://www.w3.org/2001/XMLSchema';
-            element_handler.properties.subelement_properties['{}city'].base.name = 'string';
-            element_handler.properties.subelement_properties['{}city'].local_facets = {};
-            element_handler.properties.subelement_properties['{}city'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}city']);
-        end
-
-        do
-            element_handler.properties.subelement_properties['{}city'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
-            element_handler.properties.subelement_properties['{}city'].get_attributes = basic_stuff.get_attributes;
-            element_handler.properties.subelement_properties['{}city'].is_valid = basic_stuff.simple_is_valid;
-            element_handler.properties.subelement_properties['{}city'].to_xmlua = basic_stuff.simple_to_xmlua;
-            element_handler.properties.subelement_properties['{}city'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
-            element_handler.properties.subelement_properties['{}city'].parse_xml = basic_stuff.parse_xml;
-        end
-
-        element_handler.properties.subelement_properties['{}city'].particle_properties.root_element = false;
-        element_handler.properties.subelement_properties['{}city'].particle_properties.min_occurs = 1;
-        element_handler.properties.subelement_properties['{}city'].particle_properties.max_occurs = 1;
-    end
-
     element_handler.properties.subelement_properties['{}zipcode'] = {};
     do
 element_handler.properties.subelement_properties['{}zipcode'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
@@ -236,6 +185,57 @@ element_handler.properties.subelement_properties['{}zipcode'].type_of_simple = '
         element_handler.properties.subelement_properties['{}zipcode'].particle_properties.root_element = false;
         element_handler.properties.subelement_properties['{}zipcode'].particle_properties.min_occurs = 1;
         element_handler.properties.subelement_properties['{}zipcode'].particle_properties.max_occurs = 1;
+    end
+
+    element_handler.properties.subelement_properties['{}city'] = {};
+    do
+element_handler.properties.subelement_properties['{}city'].super_element_content_type = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+
+element_handler.properties.subelement_properties['{}city'].type_of_simple = 'A';
+
+        do
+            element_handler.properties.subelement_properties['{}city'].properties = {};
+            element_handler.properties.subelement_properties['{}city'].properties.element_type = 'S';
+            element_handler.properties.subelement_properties['{}city'].properties.content_type = 'S';
+            element_handler.properties.subelement_properties['{}city'].properties.schema_type = '{http://www.w3.org/2001/XMLSchema}string';
+            element_handler.properties.subelement_properties['{}city'].properties.bi_type = {};
+            element_handler.properties.subelement_properties['{}city'].properties.bi_type.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}city'].properties.bi_type.name = 'string';
+            element_handler.properties.subelement_properties['{}city'].properties.bi_type.id = '1';
+            element_handler.properties.subelement_properties['{}city'].properties.attr = {};
+            element_handler.properties.subelement_properties['{}city'].properties.attr._attr_properties = {};
+            element_handler.properties.subelement_properties['{}city'].properties.attr._generated_attr = {};
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}city'].particle_properties = {};
+            element_handler.properties.subelement_properties['{}city'].particle_properties.q_name = {};
+            element_handler.properties.subelement_properties['{}city'].particle_properties.q_name.ns = '';
+            element_handler.properties.subelement_properties['{}city'].particle_properties.q_name.local_name = 'city';
+            element_handler.properties.subelement_properties['{}city'].particle_properties.generated_name = 'city';
+        end
+
+        -- Simple type properties
+        do
+            element_handler.properties.subelement_properties['{}city'].base = {};
+            element_handler.properties.subelement_properties['{}city'].base.ns = 'http://www.w3.org/2001/XMLSchema';
+            element_handler.properties.subelement_properties['{}city'].base.name = 'string';
+            element_handler.properties.subelement_properties['{}city'].local_facets = {};
+            element_handler.properties.subelement_properties['{}city'].facets = basic_stuff.inherit_facets(element_handler.properties.subelement_properties['{}city']);
+        end
+
+        do
+            element_handler.properties.subelement_properties['{}city'].type_handler = require('org.w3.2001.XMLSchema.string_handler'):instantiate();
+            element_handler.properties.subelement_properties['{}city'].get_attributes = basic_stuff.get_attributes;
+            element_handler.properties.subelement_properties['{}city'].is_valid = basic_stuff.simple_is_valid;
+            element_handler.properties.subelement_properties['{}city'].to_xmlua = basic_stuff.simple_to_xmlua;
+            element_handler.properties.subelement_properties['{}city'].get_unique_namespaces_declared = basic_stuff.simple_get_unique_namespaces_declared;
+            element_handler.properties.subelement_properties['{}city'].parse_xml = basic_stuff.parse_xml;
+        end
+
+        element_handler.properties.subelement_properties['{}city'].particle_properties.root_element = false;
+        element_handler.properties.subelement_properties['{}city'].particle_properties.min_occurs = 1;
+        element_handler.properties.subelement_properties['{}city'].particle_properties.max_occurs = 1;
     end
 
 end
