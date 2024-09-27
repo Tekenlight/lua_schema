@@ -29,6 +29,7 @@ end
 
 error_handler.set_validation_error = function(error_no, message, tb, s, ln)
     local path = error_handler.get_fieldpath();
+    _G.message_validation_context.status.err_type = 'E';
     if (not _G.message_validation_context.status.set) then
         -- Capture the first error explicitly
         _G.message_validation_context.status.set = true
@@ -139,8 +140,21 @@ error_handler.raise_exception = function(excp_obj)
     assert(type(excp_obj) == 'table', "Invadid exception object");
 
     _G.message_validation_context.excp_obj = excp_obj;
-    _G.message_validation_context.status.success = false;
-    _G.message_validation_context.status.err_type = 'X';
+
+    --[[ If there are already set errors the ultimate status is 
+    --unsuccessful only
+    ]]
+    if (_G.message_validation_context.status.set == false and
+        _G.message_validation_context.status.success == true) then
+        _G.message_validation_context.status.success = false;
+
+        if (excp_obj.err_count > 0) then
+            _G.message_validation_context.status.err_type = 'E';
+        else
+            _G.message_validation_context.status.err_type = 'X';
+        end
+    end
+
     _G.message_validation_context.status.error_message = 'Request processing has stopped due to exceptions';
     _G.message_validation_context.status.error_no = 401;
 
@@ -178,7 +192,7 @@ error_handler.reset = function()
 end
 
 error_handler.reset_init = function()
-    if (_G.error_init_managed == true) then return; end
+    if (_G.error_init_managed == true) then return _G.message_validation_context; end
     local message_validation_context = nil;
     if (_G.message_validation_context ~= nil) then
         message_validation_context = _G.message_validation_context;
