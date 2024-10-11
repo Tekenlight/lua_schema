@@ -6,6 +6,7 @@ if(not loaded) then
 end
 
 ffi.cdef[[
+int printf(const char *format, ...);
 void * malloc(size_t size);
 void * memset(void *b, int c, size_t len);
 void * memcpy(void *restrict dst, const void *restrict src, size_t n);
@@ -188,7 +189,7 @@ core_utils.str_base64_decode = function(input)
 end
 
 core_utils.url_base64_decode = function(input)
-    assert(type(input) == 'string');
+    assert(type(input) == 'string', "Expected input as string, received "..type(input));
     input = input:gsub('-','+'):gsub('_','/');
     local bin_data = core_utils.base64_decode(input);
     return bin_data;
