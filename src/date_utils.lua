@@ -290,7 +290,7 @@ date_utils.get_tzo_in_h_m = function(tzo)
 
 	local m_str = '';
 	if (m == 0) then
-		m_str = h_str..'00';
+		m_str = '00';
 	elseif (m < 10) then
 		m_str = m_str..'0'..m;
 	else
@@ -907,6 +907,14 @@ date_utils.cdt_from_dto = function(dto, format, tzo)
 	cdt.type = date_utils.tn_tid_map[format];
 	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
 	return cdt;
+end
+
+date_utils.date_time_from_dto = function (dto, tzo)
+	if ((tzo ~= nil) and (tzo > date_utils.MAX_TIME_ZONE or tzo < date_utils.MIN_TIME_ZONE)) then
+		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+	end
+
+	return  date_utils.cdt_from_dto(dto, 'dateTime', tzo);
 end
 
 date_utils.convert_format = function(cdt, desired_format)
