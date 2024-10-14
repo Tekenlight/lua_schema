@@ -272,6 +272,32 @@ core_utils.new_hex_data_s_type = function()
     return ddata;
 end
 
+core_utils.new_b64_data_s_type = function()
+    local ddata = ffi.new("hex_data_s_type", 0);
+    ddata.buf_mem_managed = 0;
+    ddata.size = 0;
+    ddata.value = ffi.NULL;
+
+    return ddata;
+end
+
+core_utils.b64_data_s_type_from_string = function(input)
+    assert(type(input) == 'string');
+    local data = core_utils.new_b64_data_s_type();
+
+    data.buf_mem_managed = 1;
+    data.size = string.len(input);
+    data.value = ffi.cast("unsigned char *", input);
+    --[[
+    data.value = ffi.C.malloc(data.size+1);
+    ffi.C.memset(data.value, 0, (data.size+1));
+    ffi.C.memcpy(data.value, input, data.size);
+    ]]
+
+
+    return data;
+end
+
 --[[
 -- This version of os_name determination involves forking another proces via popen
 -- which is costly

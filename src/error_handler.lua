@@ -21,6 +21,15 @@ error_handler.init = function(url)
     return;
 end
 
+error_handler.get_error_message = function()
+    if (_G.message_validation_context ~= nil and
+        _G.message_validation_context.status ~= nil) then
+        return _G.message_validation_context.status.error_message;
+    else
+        return nil;
+    end
+end
+
 error_handler.init_if_not_done = function(url)
     if (_G.message_validation_context == nil) then
         return errro_handler.init(url);
