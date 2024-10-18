@@ -1040,6 +1040,32 @@ date_utils.today = function(utc)
 	return cdt;
 end
 
+date_utils.date_obj_from_cdt = function(_s)
+	local s = '';
+	if (ffi.istype("char *", _s)) then
+		s = ffi.string(_s);
+    elseif (ffi.istype("dt_s_type", _s)) then
+		s = _s;
+	elseif (type(_s) == 'string') then
+		s = _s;
+	else
+		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+	end
+
+	local dto, tzo = date_utils.date_obj_from_dtt(s);
+
+    return dto, tzo;
+end
+
+date_utils.get_utc_date_time = function(cdt)
+    local dto, tzo = date_utils.date_obj_from_cdt(cdt);
+    if (tzo ~= nil) then
+        dto = date_utils.add_tzoffset_to_dto(dto, tzo);
+    end
+
+    return date_utils.date_time_from_dto(dto, 0);
+end
+
 local dt_mt = {
 	__tostring = date_utils.to_xml_format,
 	__gc = date_utils.free_cdt,
