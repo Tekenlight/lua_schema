@@ -189,6 +189,11 @@ core_utils.str_base64_decode = function(input)
 end
 
 core_utils.url_base64_decode = function(input)
+    if (input == nil) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print(debug.traceback());
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+    end
     assert(type(input) == 'string', "Expected input as string, received "..type(input));
     input = input:gsub('-','+'):gsub('_','/');
     local bin_data = core_utils.base64_decode(input);
@@ -216,6 +221,7 @@ end
 
 core_utils.base64_decode = function(input)
     if (input == nil or type(input) ~= 'string' or #input == 0) then
+        print(debug.traceback());
         error("Invalid input");
     end
 
@@ -230,7 +236,9 @@ core_utils.base64_decode = function(input)
     if (decoded_data ~= ffi.NULL) then
         ddata.value = decoded_data;
         ddata.size = decoded_data_len_ptr[0];
+        --[[ This is superfluous
         ddata.value[ddata.size] = 0;
+        ]]
         return (ddata);
     else
         return nil;
