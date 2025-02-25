@@ -1685,7 +1685,17 @@ basic_stuff.primitive_from_intermediate_json = function(th, content)
 end
 
 basic_stuff.simple_from_intermediate_json = function(schema_type_handler, content)
-	return basic_stuff.primitive_from_intermediate_json(schema_type_handler.type_handler, content);
+	local stat, x = pcall(basic_stuff.primitive_from_intermediate_json, schema_type_handler.type_handler, content);
+    if (not stat) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        print("type(content) = "..type(content));
+        print("Value = "..tostring(content));
+        require 'pl.pretty'.dump(schema_type_handler);
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline);
+        error(x);
+    end
+
+    return x;
 end
 
 basic_stuff.inner_complex_from_intermediate_json = function(schema_type_handler, array_element, content_model)
