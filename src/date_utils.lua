@@ -215,7 +215,7 @@ end
 
 date_utils.add_tzoffset_to_dto = function(dto, tzo)
 	local offset = -1 * 60 * tzo;
-	dto:addseconds(offset);  
+	dto:addseconds(offset);
 	return dto;
 end
 
@@ -531,6 +531,9 @@ local function duration_from_inp_dur(inp_dur)
 	return dur;
 end
 
+--[[
+--Important
+--]]
 date_utils.date_diff = function(inp_dt1, inp_dt2)
 	local dto1, tzo1, dt_format1 = date_from_inp_dt(inp_dt1);
 	local dto2, tzo2, dt_format2 = date_from_inp_dt(inp_dt2);
@@ -554,6 +557,9 @@ date_utils.date_diff = function(inp_dt1, inp_dt2)
 	return diff;
 end
 
+--[[
+--Important meta method
+--]]
 date_utils.eq = function(inp_dt1, inp_dt2)
 	local diff = date_utils.date_diff(inp_dt1, inp_dt2);
 	if (diff.day == 0) then
@@ -565,6 +571,9 @@ date_utils.eq = function(inp_dt1, inp_dt2)
 	end
 end
 
+--[[
+--Important meta method
+--]]
 date_utils.lt = function(inp_dt1, inp_dt2)
 	local diff = date_utils.date_diff(inp_dt1, inp_dt2);
 	if (diff.day < 0) then
@@ -576,6 +585,9 @@ date_utils.lt = function(inp_dt1, inp_dt2)
 	end
 end
 
+--[[
+--Important meta method
+--]]
 date_utils.le = function(inp_dt1, inp_dt2)
 	local diff = date_utils.date_diff(inp_dt1, inp_dt2);
 	if (diff.day < 0) then
@@ -587,6 +599,9 @@ date_utils.le = function(inp_dt1, inp_dt2)
 	end
 end
 
+--[[
+--Important meta method
+--]]
 date_utils.gt = function(inp_dt1, inp_dt2)
 	local diff = date_utils.date_diff(inp_dt1, inp_dt2);
 	if (diff.day > 0) then
@@ -598,6 +613,9 @@ date_utils.gt = function(inp_dt1, inp_dt2)
 	end
 end
 
+--[[
+--Important meta method
+--]]
 date_utils.ge = function(inp_dt1, inp_dt2)
 	local diff = date_utils.date_diff(inp_dt1, inp_dt2);
 	if (diff.day > 0) then
@@ -609,6 +627,12 @@ date_utils.ge = function(inp_dt1, inp_dt2)
 	end
 end
 
+--[[
+-- Important
+-- Inputs:
+--          date/dateTime in binary format
+--          duration, a lua structure with three elements, mon, day and sec
+--]]
 date_utils.add_duration_to_date = function(inp_dt, inp_dur)
 	local dto, tzo, dt_format = date_from_inp_dt(inp_dt);
 	local dur = duration_from_inp_dur(inp_dur);;
@@ -1006,7 +1030,7 @@ date_utils.set_tz = function(cdt, tzo)
 	o_cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
 	return o_cdt;
 	--]]
-	
+
 	ffi.C.free(cdt.value);
 	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
 
