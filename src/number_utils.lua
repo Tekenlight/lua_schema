@@ -192,7 +192,9 @@ function number_utils.to_double(s)
 	return n;
 end
 
-number_utils.string_format = function (format, number)
+number_utils.long_to_string_format = function (format, number)
+    assert(type(format) == 'string', "Invalid inputs to number_utils.long_to_string_format");
+    assert((number ~= nil and ffi.istype("long", number)), "Invalid inputs to number_utils.long_to_string_format");
 	local out_str = ffi.new("char [?]", 128);
 	ffi.C.sprintf(out_str, format, number);
 
