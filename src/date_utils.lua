@@ -536,10 +536,11 @@ end
 --]]
 date_utils.get_date_components = function(inp_dt)
 	local dto, tzo, dt_format = date_from_inp_dt(inp_dt);
+    local y, m, d = dto:getdate();
     return {
-        date = dto:getdate(),
-        year = dto:getyear(),
-        month = dto:getmonth(),
+        year = y,
+        month = m,
+        date = d,
         day = dto:getday(),
         hours = dto:gethours(),
         minutes = dto:getminutes(),
