@@ -485,7 +485,7 @@ date_utils.split_duration = function(inp)
 	return dur;
 end
 
-local date_from_inp_dt= function(inp_dt)
+local date_from_inp_dt = function(inp_dt)
 	local dt = '';
 	local dt_format = -1;
 	if (ffi.istype("dt_s_type", inp_dt)) then
@@ -529,6 +529,22 @@ local function duration_from_inp_dur(inp_dur)
 	end
 
 	return dur;
+end
+
+--[[
+--Important
+--]]
+date_utils.get_date_components = function(inp_dt)
+	local dto, tzo, dt_format = date_from_inp_dt(inp_dt);
+    return {
+        date = dto:getdate(),
+        year = dto:getyear(),
+        month = dto:getmonth(),
+        day = dto:getday(),
+        hours = dto:gethours(),
+        minutes = dto:getminutes(),
+        seconds = dto:getseconds(),
+    }
 end
 
 --[[
