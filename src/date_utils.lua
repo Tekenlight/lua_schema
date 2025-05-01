@@ -541,6 +541,7 @@ date_utils.get_date_components = function(inp_dt)
         year = y,
         month = m,
         date = d,
+        day = dto:getday(),
         weekday = dto:getweekday(),
         isoweekday = dto:getisoweekday(),
         hours = dto:gethours(),
