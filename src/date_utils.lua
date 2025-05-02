@@ -531,11 +531,27 @@ local function duration_from_inp_dur(inp_dur)
 	return dur;
 end
 
+local get_julian_day = function(dto)
+    local y, m, d = dto:getdate();
+    if (m <= 2) then
+        y = y - 1;
+        m = m + 12;
+    end
+    local A = math.floor(y / 100);
+    local B = 2 - A + math.floor(A / 4);
+    local jd = math.floor(365.25 * (y + 4716)) + math.floor(30.6001 * (m + 1)) + d + B - 1524.5;
+    local jdn = math.floor(jd + 0.5);
+
+    return jd, jdn;
+
+end
+
 --[[
 --Important
 --]]
 date_utils.get_date_components = function(inp_dt)
 	local dto, tzo, dt_format = date_from_inp_dt(inp_dt);
+    local jd, jdn = get_julian_day(dto);
     local y, m, d = dto:getdate();
     return {
         year = y,
@@ -547,6 +563,8 @@ date_utils.get_date_components = function(inp_dt)
         hours = dto:gethours(),
         minutes = dto:getminutes(),
         seconds = dto:getseconds(),
+        jd = jd,
+        jdn = jdn,
     }
 end
 
