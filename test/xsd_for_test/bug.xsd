@@ -1,0 +1,31 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://test_example.com"
+			xmlns:ns1="http://test_example1.com"
+			xmlns:ns2="http://test_example.com">
+
+    <xsd:complexType name="bug_type">
+        <xsd:sequence>
+            <xsd:element name="catalogue_list">
+                <xsd:complexType>
+                    <xsd:sequence >
+                        <xsd:element name="org_id" type="xsd:token" />
+                        <xsd:element name="sku" type="xsd:token" />
+                        <xsd:element name="description" type="xsd:token" />
+                        <xsd:element name="sku_unit_of_measure" type="xsd:token" />
+                        <xsd:element name="lead_time" type="xsd:decimal"/>
+                        <xsd:sequence minOccurs="0">
+                            <xsd:element name="item_id" type="xsd:token"/>
+                            <xsd:element name="conversion_rate" type="xsd:token" />
+                        </xsd:sequence>
+                        <xsd:element name="minimum_order_quantity" type="xsd:token" minOccurs="0" />
+                        <xsd:element name="order_multiple" type="xsd:token" minOccurs="0" />
+                        <xsd:element name="effective_date" type="xsd:date" minOccurs="0"/>
+                        <xsd:element name="hsn_code" type="xsd:token" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="parent_org_id" type="xsd:token"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="bug" type="ns2:bug_type" />
+</xsd:schema>
