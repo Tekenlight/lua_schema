@@ -990,7 +990,7 @@ local get_cm_ref_str = function(cm_rval_arr)
     return str;
 end
 
-function elem_code_generator.put_content_fsa_properties_code(content_fsa_properties, content_model, indentation)
+function elem_code_generator.put_content_fsa_properties_code(content_fsa_properties, content_model, indentation, eh_name)
     local code = '';
     local cmi = 0;
     local cmis = (require('lua_schema.stack')).new();
@@ -1000,7 +1000,11 @@ function elem_code_generator.put_content_fsa_properties_code(content_fsa_propert
         if (item.symbol_type == 'cm_begin') then
             cmis:push(cmi);
             if (cmi == 0) then
-                content_model_rval[#content_model_rval+1] = 'element_handler.properties.content_model';
+                if (eh_name == nil) then
+                    content_model_rval[#content_model_rval+1] = 'element_handler.properties.content_model';
+                else
+                    content_model_rval[#content_model_rval+1] = eh_name..'.properties.content_model';
+                end
             else
                 content_model_rval[#content_model_rval+1] = cmi;
             end
@@ -1304,7 +1308,7 @@ elem_code_generator.put_element_handler_code = function(eh_name, element_handler
         code = code..'-- '..eh_name..'.properties.content_fsa_properties\n';
         code = code..indent..'do\n';
         code = code..indent..'    '..eh_name..'.properties.content_fsa_properties = {\n';
-        code = code..elem_code_generator.put_content_fsa_properties_code(content_fsa_properties, content_model, indent..'    ');
+        code = code..elem_code_generator.put_content_fsa_properties_code(content_fsa_properties, content_model, indent..'    ', eh_name);
         code = code..indent..'    };\n';
         code = code..indent..'end\n\n';
 

@@ -204,7 +204,7 @@ type_code_generator.put_element_handler_code = function(eh_name, element_handler
         code = code..'-- '..eh_name..'.properties.content_fsa_properties\n';
         code = code..indent..'do\n';
         code = code..indent..'    '..eh_name..'.properties.content_fsa_properties = {\n';
-        code = code..elem_code_generator.put_content_fsa_properties_code(content_fsa_properties, content_model, indent..'    ');
+        code = code..elem_code_generator.put_content_fsa_properties_code(content_fsa_properties, content_model, indent..'    ', eh_name);
         code = code..indent..'    };\n';
         code = code..indent..'end\n\n';
 
