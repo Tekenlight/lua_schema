@@ -54,8 +54,8 @@ core_utils.new_binary_buffer = function(buf_mem_managed)
     end
     assert(type(buf_mem_managed) == 'number')
     local ddata = ffi.new(core_utils.binary_buffer_name, 0);
-    ddata.buf_mem_managed = 0;
-    ddata.size = buf_mem_managed;
+    ddata.buf_mem_managed = buf_mem_managed;
+    ddata.size = 0;
     ddata.value = ffi.NULL;
 
     return ddata;
