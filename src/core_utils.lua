@@ -132,7 +132,7 @@ end
 
 core_utils.str_hex_decode = function(input)
     local bin_data = core_utils.hex_decode(input);
-    local string_data = ffi.string(bin_data.value, bin_data.size);
+    local string_data = ffi.string(bin_data.value, tonumber(bin_data.size));
     return string_data;
 end
 
@@ -164,9 +164,11 @@ core_utils.hex_decode = function(input)
     local decoded_data = lib.hex_decode(input, #input, decoded_data_len_ptr);
 
     if (decoded_data ~= ffi.NULL) then
-        ddata.value = decoded_data;
         ddata.size = decoded_data_len_ptr[0];
-        ddata.value[ddata.size] = 0;
+        ddata.value = core_utils.alloc(ddata.size);
+        ffi.C.memcpy(ddata.value, decoded_data, ddata.size);
+        ffi.C.free(decoded_data);
+
         return (ddata);
     else
         return nil;
@@ -259,11 +261,11 @@ core_utils.url_base64_decode = function(input)
     local decoded_data = lib.url_base64_decode(input, #input, decoded_data_len_ptr);
 
     if (decoded_data ~= ffi.NULL) then
-        ddata.value = decoded_data;
         ddata.size = decoded_data_len_ptr[0];
-        --[[ This is superfluous
-        ddata.value[ddata.size] = 0;
-        ]]
+        ddata.value = core_utils.alloc(ddata.size);
+        ffi.C.memcpy(ddata.value, decoded_data, ddata.size);
+        ffi.C.free(decoded_data);
+
         return (ddata);
     else
         return nil;
@@ -272,7 +274,7 @@ end
 
 core_utils.str_url_base64_decode = function(input)
     local bin_data = core_utils.url_base64_decode(input);
-    local string_data = ffi.string(bin_data.value, bin_data.size);
+    local string_data = ffi.string(bin_data.value, tonumber(bin_data.size));
     return string_data;
 end
 
@@ -328,7 +330,7 @@ core_utils.base64_decode = function(input)
         ddata.size = decoded_data_len_ptr[0];
         ddata.value = core_utils.alloc(ddata.size);
         ffi.C.memcpy(ddata.value, decoded_data, ddata.size);
-        --ffi.C.free(decoded_data);
+        ffi.C.free(decoded_data);
 
         return (ddata);
     else
