@@ -1,5 +1,6 @@
 local ffi = require("ffi");
 local error_handler = require("lua_schema.error_handler");
+local core_utils = require("lua_schema.core_utils");
 local URI = require("uri");
 local stringx = require("pl.stringx");
 local nu = require("lua_schema.number_utils");
@@ -39,8 +40,7 @@ basic_stuff.is_simple_type = function(content)
 		(not ffi.istype("unsigned char *", content)) and
 		(not ffi.istype("dt_s_type", content)) and
 		(not ffi.istype("dur_s_type", content)) and
-		(not ffi.istype("hex_data_s_type", content)) and
-		(not ffi.istype("b64_data_s_type", content)) and
+		(not core_utils.is_binary_buffer(content)) and
 		(not (type(content) == 'userdata' and getmetatable(content).__name == 'bc bignumber'))
 		) then
 		print(debug.getinfo(1).source, debug.getinfo(1).currentline);

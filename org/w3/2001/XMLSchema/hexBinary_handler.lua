@@ -15,7 +15,7 @@ end
 
 
 function __hexBinary_handler_class:is_valid(s)
-	if((s ~= nil) and (not ffi.istype("hex_data_s_type", s))) then
+	if((s ~= nil) and (not core_utils.is_binary_buffer(s))) then
 		error_handler.raise_validation_error(-1,
 						"Field: {"..error_handler.get_fieldpath().."} is not a valid xsd:hexBinary", debug.getinfo(1));
 		return false

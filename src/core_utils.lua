@@ -7,7 +7,6 @@ end
 
 ffi.cdef[[
 int printf(const char *format, ...);
-void * malloc(size_t size);
 void * memset(void *b, int c, size_t len);
 void * memcpy(void *restrict dst, const void *restrict src, size_t n);
 unsigned char *base64_encode(const unsigned char *data,
@@ -31,21 +30,45 @@ typedef struct {
     int buf_mem_managed;
 } binary_data_s1_type, binary_data_p1_type;
 
-typedef struct {
-    size_t size;
-    unsigned char* value;
-    int buf_mem_managed;
-} binary_data_s2_type, binary_data_p2_type;
-
 typedef binary_data_s1_type hex_data_s_type;
-typedef binary_data_s2_type b64_data_s_type;
 
 ]]
 
 local core_utils = {};
+core_utils.binary_buffer_name = "hex_data_s_type";
 
 core_utils.alloc = function(size)
-    return lib.alloc_binary_data_memory(size);
+    local n_size = tonumber(size);
+    local buffer = ffi.cast("void*", ffi.new("unsigned char[?]", n_size));
+    return buffer;
+    --return lib.alloc_binary_data_memory(size);
+end
+
+core_utils.free = function(ptr)
+    return lib.free_binary_data(ptr);
+end
+
+core_utils.new_binary_buffer = function(buf_mem_managed)
+    if (buf_mem_managed == nil) then
+        buf_mem_managed = 0;
+    end
+    assert(type(buf_mem_managed) == 'number')
+    local ddata = ffi.new(core_utils.binary_buffer_name, 0);
+    ddata.buf_mem_managed = 0;
+    ddata.size = buf_mem_managed;
+    ddata.value = ffi.NULL;
+
+    return ddata;
+end
+
+core_utils.is_binary_buffer = function(b)
+    return ffi.istype(core_utils.binary_buffer_name, b);
+end
+
+
+-- Deprecated
+core_utils.new_b64_data_s_type = function(buf_mem_managed)
+    return core_utils.new_binary_buffer(buf_mem_managed);
 end
 
 core_utils.hex_encode = function(input)
@@ -53,7 +76,7 @@ core_utils.hex_encode = function(input)
         error("Invalid input");
     end
 
-    local status = ffi.istype("hex_data_s_type", input);
+    local status = core_utils.is_binary_buffer(input);
     if (not status) then
         error("Invalid input");
     end
@@ -82,11 +105,9 @@ core_utils.str_hex_encode = function(input)
     if (input == nil or type(input) ~= 'string' or #input == 0) then
         error("Invalid input");
     end
-    local bin_inp = ffi.new("hex_data_s_type", 0);
-    --bin_inp.size = string.len(input) + 1;
-    bin_inp.buf_mem_managed = 0;
+    local bin_inp = core_utils.new_b64_data_s_type()
     bin_inp.size = string.len(input);
-    bin_inp.value = ffi.C.malloc(bin_inp.size+1);
+    bin_inp.value = core_utils.alloc(bin_inp.size+1);
     ffi.C.memset(bin_inp.value, 0, (bin_inp.size+1));
     ffi.C.memcpy(bin_inp.value, input, bin_inp.size);
 
@@ -100,8 +121,7 @@ core_utils.hex_decode = function(input)
         error("Invalid input");
     end
 
-    local ddata = ffi.new("hex_data_s_type", 0);
-    ddata.buf_mem_managed = 0;
+    local ddata = core_utils.new_b64_data_s_type();
     ddata.size = 0;
     ddata.value = ffi.NULL;
 
@@ -134,7 +154,7 @@ core_utils.base64_encode = function(input, add_line_breaks)
         end
     end
 
-    local status = ffi.istype("hex_data_s_type", input);
+    local status = core_utils.is_binary_buffer(input);
     if (not status) then
         error("Invalid input");
     end
@@ -157,10 +177,9 @@ core_utils.str_base64_encode = function(input, add_line_breaks)
     if (input == nil or type(input) ~= 'string' or #input == 0) then
         error("Invalid input");
     end
-    local bin_inp = ffi.new("hex_data_s_type", 0);
-    bin_inp.buf_mem_managed = 0;
+    local bin_inp = core_utils.new_b64_data_s_type();
     bin_inp.size = string.len(input);
-    bin_inp.value = ffi.C.malloc(bin_inp.size+1);
+    bin_inp.value = core_utils.alloc(bin_inp.size+1);
     ffi.C.memset(bin_inp.value, 0, (bin_inp.size+1));
     ffi.C.memcpy(bin_inp.value, input, bin_inp.size);
 
@@ -174,10 +193,9 @@ core_utils.bin_base64_encode = function(input, size, add_line_breaks)
         error("Invalid input");
     end
     assert(math.type(size) == 'integer')
-    local bin_inp = ffi.new("hex_data_s_type", 0);
-    bin_inp.buf_mem_managed = 0;
+    local bin_inp = core_utils.new_b64_data_s_type();
     bin_inp.size = size;
-    bin_inp.value = ffi.C.malloc(bin_inp.size+1);
+    bin_inp.value = core_utils.alloc(bin_inp.size+1);
     ffi.C.memset(bin_inp.value, 0, (bin_inp.size+1));
     ffi.C.memcpy(bin_inp.value, input, bin_inp.size);
 
@@ -198,8 +216,7 @@ core_utils.url_base64_decode = function(input)
         error("Invalid input");
     end
 
-    local ddata = ffi.new("hex_data_s_type", 0);
-    ddata.buf_mem_managed = 0;
+    local ddata = core_utils.new_b64_data_s_type();
     ddata.size = 0;
     ddata.value = ffi.NULL;
 
@@ -240,7 +257,7 @@ core_utils.url_base64_encode = function(input, add_line_breaks)
         end
     end
 
-    local status = ffi.istype("hex_data_s_type", input);
+    local status = ffi.core_utils.is_binary_buffer(input);
     if (not status) then
         error("Invalid input");
     end
@@ -265,8 +282,7 @@ core_utils.base64_decode = function(input)
         error("Invalid input");
     end
 
-    local ddata = ffi.new("hex_data_s_type", 0);
-    ddata.buf_mem_managed = 0;
+    local ddata = core_utils.new_b64_data_s_type();
     ddata.size = 0;
     ddata.value = ffi.NULL;
 
@@ -286,9 +302,12 @@ core_utils.base64_decode = function(input)
 end
 
 local function binary_data_gc(bd)
+    --[[
     if (bd.value ~= ffi.NULL and bd.buf_mem_managed == 0) then
-        lib.free_binary_data(bd.value);
+        core_utils.free(bd.value);
     end
+    ]]
+    return;
 end
 
 local function binary_tostring(data)
@@ -301,33 +320,7 @@ local hex_mt = {
     __gc = binary_data_gc
 }
 
-ffi.metatype("hex_data_s_type", hex_mt);
-
-local b64_mt = {
-    --__tostring = core_utils.base64_encode,
-    __tostring = binary_tostring,
-    __gc = binary_data_gc
-}
-
-ffi.metatype("b64_data_s_type", b64_mt);
-
-core_utils.new_hex_data_s_type = function()
-    local ddata = ffi.new("hex_data_s_type", 0);
-    ddata.buf_mem_managed = 0;
-    ddata.size = 0;
-    ddata.value = ffi.NULL;
-
-    return ddata;
-end
-
-core_utils.new_b64_data_s_type = function()
-    local ddata = ffi.new("hex_data_s_type", 0);
-    ddata.buf_mem_managed = 0;
-    ddata.size = 0;
-    ddata.value = ffi.NULL;
-
-    return ddata;
-end
+ffi.metatype(core_utils.binary_buffer_name, hex_mt);
 
 core_utils.b64_data_s_type_from_string = function(input)
     assert(type(input) == 'string');
@@ -336,12 +329,6 @@ core_utils.b64_data_s_type_from_string = function(input)
     data.buf_mem_managed = 1;
     data.size = string.len(input);
     data.value = ffi.cast("unsigned char *", input);
-    --[[
-    data.value = ffi.C.malloc(data.size+1);
-    ffi.C.memset(data.value, 0, (data.size+1));
-    ffi.C.memcpy(data.value, input, data.size);
-    ]]
-
 
     return data;
 end
