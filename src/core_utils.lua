@@ -35,34 +35,69 @@ typedef binary_data_s1_type hex_data_s_type;
 ]]
 
 local core_utils = {};
-core_utils.binary_buffer_name = "hex_data_s_type";
 
 core_utils.alloc = function(size)
     local n_size = tonumber(size);
-    local buffer = ffi.cast("void*", ffi.new("unsigned char[?]", n_size));
+    --local buffer = ffi.cast("void*", ffi.new("unsigned char[?]", n_size));
+    local buffer = ffi.new("unsigned char[?]", n_size);
     return buffer;
     --return lib.alloc_binary_data_memory(size);
 end
 
 core_utils.free = function(ptr)
-    return lib.free_binary_data(ptr);
+    --return lib.free_binary_data(ptr);
+    return ;
 end
+
+core_utils.binary_buffer_name = "hex_data_s_type";
+
+local function binary_data_gc(bd)
+    --[[
+    if (bd.value ~= ffi.NULL and bd.buf_mem_managed == 0) then
+        core_utils.free(bd.value);
+    end
+    ]]
+    return;
+end
+
+local function binary_tostring(data)
+    return "<BINARY DATA>"
+end
+
+local hex_mt = {
+    --__tostring = core_utils.hex_encode,
+    __tostring = binary_tostring,
+    __gc = binary_data_gc
+}
+
+ffi.metatype(core_utils.binary_buffer_name, hex_mt);
 
 core_utils.new_binary_buffer = function(buf_mem_managed)
     if (buf_mem_managed == nil) then
         buf_mem_managed = 0;
     end
     assert(type(buf_mem_managed) == 'number')
+    --[[
     local ddata = ffi.new(core_utils.binary_buffer_name, 0);
     ddata.buf_mem_managed = buf_mem_managed;
     ddata.size = 0;
     ddata.value = ffi.NULL;
+    ]]
+    local ddata = {
+        buf_mem_managed = buf_mem_managed,
+        size = 0,
+        value = ffi.NULL,
+    };
+    setmetatable(ddata, hex_mt);
 
     return ddata;
 end
 
 core_utils.is_binary_buffer = function(b)
+    --[[
     return ffi.istype(core_utils.binary_buffer_name, b);
+    ]]
+    return (getmetatable(b) == hex_mt);
 end
 
 
@@ -206,7 +241,7 @@ end
 
 core_utils.str_base64_decode = function(input)
     local bin_data = core_utils.base64_decode(input);
-    local string_data = ffi.string(bin_data.value, bin_data.size);
+    local string_data = ffi.string(bin_data.value, tonumber(bin_data.size));
     return string_data;
 end
 
@@ -290,37 +325,16 @@ core_utils.base64_decode = function(input)
     local decoded_data = lib.base64_decode(input, #input, decoded_data_len_ptr);
 
     if (decoded_data ~= ffi.NULL) then
-        ddata.value = decoded_data;
         ddata.size = decoded_data_len_ptr[0];
-        --[[ This is superfluous
-        ddata.value[ddata.size] = 0;
-        ]]
+        ddata.value = core_utils.alloc(ddata.size);
+        ffi.C.memcpy(ddata.value, decoded_data, ddata.size);
+        --ffi.C.free(decoded_data);
+
         return (ddata);
     else
         return nil;
     end
 end
-
-local function binary_data_gc(bd)
-    --[[
-    if (bd.value ~= ffi.NULL and bd.buf_mem_managed == 0) then
-        core_utils.free(bd.value);
-    end
-    ]]
-    return;
-end
-
-local function binary_tostring(data)
-    return "<BINARY DATA>"
-end
-
-local hex_mt = {
-    --__tostring = core_utils.hex_encode,
-    __tostring = binary_tostring,
-    __gc = binary_data_gc
-}
-
-ffi.metatype(core_utils.binary_buffer_name, hex_mt);
 
 core_utils.b64_data_s_type_from_string = function(input)
     assert(type(input) == 'string');
