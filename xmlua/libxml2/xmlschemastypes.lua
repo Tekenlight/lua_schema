@@ -10,6 +10,17 @@ ffi.cdef[[
  * Author: Daniel Veillard
  */
 
+ /*
+  * for DTT used in date_utils.lua
+  */
+typedef struct dt_s {
+    int type;
+    int64_t day_num;
+    int64_t day_frac;
+    int32_t timezone;
+    int has_timezone;
+} dt_s_type;
+
 
 typedef unsigned char xmlChar;
 
@@ -146,5 +157,10 @@ int xmlSchemaCompareDates(xmlSchemaValPtr x, xmlSchemaValPtr y);
 
 int xmlSchemaValidateDuration(xmlSchemaTypePtr type, const xmlChar *duration,
 													xmlSchemaValPtr *val, int collapse);
+int
+tklXmlSchemaDateToDtt(xmlSchemaValType type,
+                    const xmlChar *dateTime, dt_s_type *dst, int collapse);
+int
+tklDttToXmlSchemaDate(const dt_s_type *dtt, xmlChar *buf, int buf_size);
 
 ]]

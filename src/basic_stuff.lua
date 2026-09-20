@@ -1453,13 +1453,18 @@ end
 
 basic_stuff.primitive_to_intermediate_json = function(th, content)
 
+    --local t = os.clock();
 	local i_content = content;
+    --local taa = os.clock() - t;
+
 	if ('binary' == th.datatype) then 
 		if ('base64Binary' == th.type_name) then
 			i_content = th:to_xmlua(nil, content);
 		elseif ('hexBinary' == th.type_name) then
 			i_content = th:to_xmlua(nil, content);
 		end
+        --bin_tt = bin_tt + os.clock() - t;
+        --bin_cc = bin_cc + 1;
 	elseif (th.type_name == 'float' or th.type_name == 'double') then
 		if (ffi.istype("float", content)) then
 			i_content = tonumber(content);
@@ -1467,12 +1472,20 @@ basic_stuff.primitive_to_intermediate_json = function(th, content)
 		if (nu.is_nan(content) or nu.is_inf(content)) then
 			i_content = th:to_xmlua('', content);
 		end
+        --floatanddouble_tt = floatanddouble_tt + os.clock() - t;
+        --floatanddouble_cc = floatanddouble_cc + 1;
 	elseif (th.datatype == 'decimal') then
 		i_content = th:to_xmlua(nil, content);
+        --dec_tt = dec_tt + os.clock() - t;
+        --dec_cc = dec_cc + 1;
 	elseif (th.datatype == 'datetime') then
 		i_content = th:to_xmlua(nil, content);
+        --date_tt = date_tt + os.clock() - t;
+        --date_cc = date_cc + 1;
 	elseif (th.datatype == 'duration') then
 		i_content = th:to_xmlua(nil, content);
+        --dur_tt = dur_tt + os.clock() - t;
+        --dur_cc = dur_cc + 1;
 	elseif (th.datatype == 'int') then
 		if (th.type_name ~= "int" and
 			th.type_name ~= "unsignedInt" and
@@ -1484,8 +1497,15 @@ basic_stuff.primitive_to_intermediate_json = function(th, content)
 		else
 			i_content = tonumber(content);
 		end
+        --ints_tt = ints_tt + os.clock() - t;
+        --ints_cc = ints_cc + 1;
 	elseif (th.datatype == 'boolean') then
 		i_content = content;
+        --bool_tt = bool_tt + os.clock() - t;
+        --bool_cc = bool_cc + 1;
+    --else
+        --allother_tt = allother_tt + taa;
+        --allother_cc = allother_cc + 1;
 	end
 	return i_content;
 end
@@ -2790,5 +2810,486 @@ basic_stuff.parse_xml = function(schema_type_handler, xmlua, xml)
 	end
 	return status, obj, parsing_result_msg;
 end
+
+
+
+--[[
+-- Attempt at fast json generation mechanism
+--]]
+
+local function get_fast_primitive_conversion(type_handler)
+
+    if type_handler == nil then
+        return "identity";
+    end
+
+    if type_handler.datatype == 'binary' then
+        return "generic";
+
+    elseif type_handler.type_name == 'float' or
+           type_handler.type_name == 'double' then
+        return "generic";
+
+    elseif type_handler.datatype == 'decimal' then
+        return "generic";
+
+    elseif type_handler.datatype == 'datetime' then
+        return "generic";
+
+    elseif type_handler.datatype == 'duration' then
+        return "generic";
+
+    elseif type_handler.datatype == 'int' then
+		if (type_handler.type_name ~= "int" and
+			type_handler.type_name ~= "unsignedInt" and
+			type_handler.type_name ~= "byte" and
+			type_handler.type_name ~= "unsignedByte" and
+			type_handler.type_name ~= "short" and
+			type_handler.type_name ~= "unsignedShort") then
+			return 'int_string';
+		else
+			return 'int_number';
+		end
+
+    elseif type_handler.datatype == 'boolean' then
+        return "identity";
+    end
+
+    return "identity";
+end
+
+
+
+local function build_fast_json_model(schema_type_handler, content_model)
+
+    local model = {
+        max_occurs = content_model.max_occurs,
+        min_occurs = content_model.min_occurs,
+        top_level_group = content_model.top_level_group,
+        generated_subelement_name = content_model.generated_subelement_name,
+        ops = {}
+    }
+
+    for _, v in ipairs(content_model) do
+
+        if type(v) == "string" then
+
+            local child =
+                schema_type_handler.properties.generated_subelements[v]
+
+            model.ops[#model.ops + 1] = {
+                kind = "field",
+                name = v,
+                handler = child
+            }
+
+        elseif type(v) == "table" then
+
+            local child_model =
+                build_fast_json_model(schema_type_handler, v)
+
+            model.ops[#model.ops + 1] = {
+                kind = "group",
+                name = v.generated_subelement_name,
+                max_occurs = v.max_occurs,
+                min_occurs = v.min_occurs,
+                top_level_group = v.top_level_group,
+                model = child_model
+            }
+
+        else
+            error("INVALID CONTENT MODEL")
+        end
+    end
+
+    return model
+end
+
+local function build_fast_json_attributes(schema_type_handler)
+
+    local result = {
+        wildcard = false,
+        handlers = {}
+    }
+
+    local attr = schema_type_handler.properties.attr
+
+    if attr == nil then
+        return result
+    end
+
+    result.wildcard = attr.attr_wildcard ~= nil
+
+    for generated_name, q_name in pairs(attr._generated_attr or {}) do
+
+        local attr_handler =
+            attr._attr_properties[q_name]
+
+        result.handlers[generated_name] =
+            attr_handler.type_handler
+    end
+
+    return result
+end
+
+local function build_fast_json_plan(schema_type_handler)
+
+    local p = schema_type_handler.properties
+
+    local plan = {
+        element_type = p.element_type,
+        content_type = p.content_type,
+        schema_type = p.schema_type
+    }
+
+    if p.element_type ~= "C" then
+
+        plan.kind = "simple"
+        plan.type_handler = schema_type_handler.type_handler
+        plan.conversion = get_fast_primitive_conversion(plan.type_handler)
+
+        return plan
+    end
+
+    if p.schema_type ==
+        "{http://www.w3.org/2001/XMLSchema}anyType" then
+
+        plan.kind = "any"
+        return plan
+    end
+
+    plan.attributes =
+        build_fast_json_attributes(schema_type_handler)
+
+    if p.content_type == "S" then
+
+        plan.kind = "complex_simple"
+        plan.type_handler = schema_type_handler.type_handler
+
+        return plan
+    end
+
+    plan.kind = "complex"
+
+    if #(p.content_fsa_properties) ~= 0 then
+        plan.model =
+            build_fast_json_model(
+                schema_type_handler,
+                p.content_model
+            )
+    end
+
+    return plan
+end
+
+local function get_fast_json_plan(schema_type_handler)
+
+    local plan =
+        schema_type_handler.properties.fast_json_plan
+
+    if plan == nil then
+        plan = build_fast_json_plan(schema_type_handler)
+
+        schema_type_handler.properties.fast_json_plan = plan
+    end
+
+    return plan
+end
+
+local function fast_primitive_to_intermediate_json(plan, content)
+
+    if plan.conversion == "identity" then
+        return content;
+    elseif (plan.conversion == "int_string") then
+        return tostring(content);
+    elseif (plan.conversion == "int_number") then
+        return tonumber(content);
+    --[[
+    elseif (plan.conversion == "dateTime") then
+        return "2026-09-13T12:34:56Z";
+    ]]
+    end
+
+    return basic_stuff.primitive_to_intermediate_json(
+        plan.type_handler,
+        content
+    );
+end
+
+local fast_low_to_intermediate_json
+
+local function fast_inner_complex(array_element, model, dest_content)
+
+    local i_content = dest_content or {}
+
+    for _, op in ipairs(model.ops) do
+
+        if op.kind == "field" then
+
+            local value = array_element[op.name]
+
+            if value ~= nil then
+
+                local child_plan = op.plan
+
+                if child_plan == nil then
+                    child_plan = get_fast_json_plan(op.handler)
+                    op.plan = child_plan
+                end
+
+                i_content[op.name] =
+                    fast_low_to_intermediate_json(
+                        op.handler,
+                        child_plan,
+                        value
+                    )
+            end
+
+        elseif op.kind == "group" then
+
+            if op.max_occurs ~= 1 and
+               array_element[op.name] ~= nil then
+
+                local xmlc
+                local target_content
+
+                if op.top_level_group then
+                    xmlc = array_element
+                    target_content = i_content
+                else
+                    xmlc = array_element[op.name]
+                    target_content = {}
+                    i_content[op.name] = target_content
+                end
+
+                for i, value in pairs(xmlc) do
+                    target_content[i] =
+                        fast_inner_complex(
+                            value,
+                            op.model,
+                            nil
+                        )
+                end
+
+                if #target_content == 0 then
+                    target_content[-1] = "EMPTY_ARRAY"
+                end
+
+            else
+
+                i_content =
+                    fast_inner_complex(
+                        array_element,
+                        op.model,
+                        i_content
+                    )
+            end
+
+        else
+            error("INVALID FAST JSON OP")
+        end
+    end
+
+    return i_content
+end
+
+local function fast_convert_attributes(plan, content, i_content)
+
+    if content._attr == nil then
+        return
+    end
+
+    i_content._attr = {}
+
+    for name, value in pairs(content._attr) do
+
+        local type_handler =
+            plan.attributes.handlers[name]
+
+        if type_handler ~= nil then
+
+            i_content._attr[name] =
+                basic_stuff.primitive_to_intermediate_json(
+                    type_handler,
+                    value
+                )
+
+        elseif plan.attributes.wildcard then
+
+            i_content._attr[name] = value
+
+        else
+
+            error("INVALID ATTR " .. tostring(name))
+
+        end
+    end
+end
+
+local function fast_complex_to_intermediate_json(
+    schema_type_handler,
+    plan,
+    content
+)
+
+    if plan.kind == "any" then
+        return content
+    end
+
+    local i_content = {}
+
+    if plan.kind == "complex_simple" then
+
+        i_content._contained_value =
+            fast_primitive_to_intermediate_json(
+                plan,
+                content._contained_value
+            );
+
+    elseif plan.model ~= nil then
+
+        local model = plan.model
+
+        if model.max_occurs ~= 1 then
+
+            local xmlc
+            local target_content
+
+            if model.top_level_group then
+
+                xmlc = content
+                target_content = i_content
+
+            else
+
+                xmlc =
+                    content[model.generated_subelement_name]
+
+                target_content = {}
+
+                i_content[model.generated_subelement_name] =
+                    target_content
+            end
+
+            for i, value in ipairs(xmlc) do
+
+                target_content[i] =
+                    fast_inner_complex(
+                        value,
+                        model,
+                        nil
+                    )
+            end
+
+            if #target_content == 0 then
+                target_content[-1] = "EMPTY_ARRAY"
+            end
+
+        else
+
+            i_content =
+                fast_inner_complex(
+                    content,
+                    model,
+                    nil
+                )
+
+        end
+    end
+
+    fast_convert_attributes(
+        plan,
+        content,
+        i_content
+    )
+
+    return i_content
+end
+
+fast_low_to_intermediate_json = function(schema_type_handler, plan, content)
+
+    if content == nil then
+        return nil
+    end
+
+    local max_occurs =
+        schema_type_handler.particle_properties.max_occurs
+
+    if max_occurs ~= 1 then
+
+        local out = {}
+
+        if plan.kind == "simple" then
+
+            if (plan.conversion == "identity") then
+
+                for i, value in ipairs(content) do
+                    out[i] = value;
+                end
+
+            else
+                local type_handler = plan.type_handler
+
+                for i, value in ipairs(content) do
+
+                    out[i] =
+                        basic_stuff.primitive_to_intermediate_json(
+                            type_handler,
+                            value
+                        )
+                end
+            end
+
+        else
+
+            for i, value in ipairs(content) do
+
+                out[i] =
+                    fast_complex_to_intermediate_json(
+                        schema_type_handler,
+                        plan,
+                        value
+                    )
+            end
+
+        end
+
+        if #out == 0 then
+            out[-1] = "EMPTY_ARRAY"
+        end
+
+        return out
+    end
+
+
+    if plan.kind == "simple" then
+
+        return fast_primitive_to_intermediate_json(
+            plan,
+            content
+        );
+
+    end
+
+
+    return fast_complex_to_intermediate_json(
+        schema_type_handler,
+        plan,
+        content
+    )
+end
+
+basic_stuff.fast_to_intermediate_json = function(schema_type_handler, content)
+
+    local plan = get_fast_json_plan(schema_type_handler)
+
+    return fast_low_to_intermediate_json(
+        schema_type_handler,
+        plan,
+        content
+    )
+end
+
+
 
 return basic_stuff;

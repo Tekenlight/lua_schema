@@ -971,6 +971,37 @@ function libxml2.isDateValid(built_in_type_id, datetime)
 	end
 end
 
+function libxml2.strToDtt(built_in_type_id, datetime)
+	if (built_in_type_id == nil or datetime == nil or type(datetime) ~= 'string') then
+		error("Invalid inputs to strToDtt");
+	end
+    local cdt = ffi.new("dt_s_type");
+
+    local rc = xml2.tklXmlSchemaDateToDtt(built_in_type_id, datetime, cdt, 1);
+    if rc == 0 then
+        return true, cdt;
+    end
+
+    return false, nil;
+end
+
+--[[
+int tklDttToXmlSchemaDate(const dt_s_type *dtt, xmlChar *buf, int buf_size);
+--]]
+function libxml2.dttToStr(cdt)
+    assert(ffi.istype("dt_s_type", cdt));
+
+    local size = 64;
+    local buf = ffi.new("char[?]", size);
+    local rc = xml2.tklDttToXmlSchemaDate(cdt, buf, size);
+    if rc < 0 then
+        return false, nil;
+    end
+
+    return true, ffi.string(buf, rc);
+end
+
+
 libxml2.xmlSchemaFreeValue = xml2.xmlSchemaFreeValue;
 
 function libxml2.strToDate(built_in_type_id, datetime)

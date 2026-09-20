@@ -22,6 +22,16 @@ end
 local xml_date = {};
 local xml_date_mt = {__index = xml_date };
 
+local function signed_12_bit(value)
+
+    if value >= 0x800 then
+        return value - 0x1000;
+    end
+
+    return value;
+
+end
+
 function xml_date.new(xml_date_str, c_date_val, xml_date_type_id)
 	local _date = {};
 	_date = setmetatable(_date, xml_date_mt);
@@ -37,7 +47,7 @@ function xml_date.new(xml_date_str, c_date_val, xml_date_type_id)
 	_date.mil_sec = tonumber((c_date_val.sec%1)*1000); -- XML Date supports only milliseconds
 	_date.tz_flag = tonumber(c_date_val.tz_flag);
 	if (_date.tz_flag == 1) then _date.tz_flag = true; else _date.tz_flag = false; end
-	_date.tzo = tonumber(c_date_val.tzo);
+	_date.tzo = signed_12_bit(tonumber(c_date_val.tzo));
 	return _date;
 end
 
@@ -50,6 +60,26 @@ function xml_date_utils.str_to_date(xml_date_type_id, xml_date_str)
 		return nil;
 	end
 	return xml_date.new(xml_date_str, c_date_val, xml_date_type_id);
+end
+
+function xml_date_utils.str_to_dtt(xml_date_type_id, xml_date_str)
+	if (xml_date_type_id == nil or type(xml_date_type_id) ~= 'number' or xml_date_str == nil or type(xml_date_str) ~= 'string') then
+		error("Invalid inputs to str_to_dtt");
+	end
+	local valid, cdt = libxml2.strToDtt(xml_date_type_id, xml_date_str);
+	if (not valid) then
+		return nil;
+	end
+	return cdt;
+end
+
+function xml_date_utils.dtt_to_str(cdt)
+    assert(ffi.istype("dt_s_type", cdt));
+	local valid, date_str = libxml2.dttToStr(cdt);
+	if (not valid) then
+		return nil;
+	end
+	return date_str;
 end
 
 local xml_duration = {};

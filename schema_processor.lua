@@ -49,8 +49,20 @@ local to_xml_string = function(message_handler_instance, content)
 	return s;
 end
 
-local to_json_string = function(message_handler_instance, obj)
-	local content = basic_stuff.to_intermediate_json(message_handler_instance, obj);
+local fast_to_json_string = function(message_handler_instance, obj)
+    local t = os.clock();
+    if (_gdbg) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+        print("beore to_intermediate_json:",t - t);
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+    end
+	local content = basic_stuff.fast_to_intermediate_json(message_handler_instance, obj);
+    if (_gdbg) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+        print("after to_intermediate_json:",(os.clock() - t));
+        t = os.clock();
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+    end
 	local json_parser = cjson.new();
 	local tag = get_json_tag(message_handler_instance);
 	local table_output = nil;
@@ -64,6 +76,48 @@ local to_json_string = function(message_handler_instance, obj)
 	if (json_output == nil or json_output == '') then
 		json_output = '{}';
 	end
+    if (_gdbg) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+        print("after cjson.encode:",(os.clock() - t));
+        t = os.clock();
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+    end
+	return json_output;
+end
+
+local to_json_string = function(message_handler_instance, obj)
+    local t = os.clock();
+    if (_gdbg) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+        print("beore to_intermediate_json:",t - t);
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+    end
+	local content = basic_stuff.to_intermediate_json(message_handler_instance, obj);
+    if (_gdbg) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+        print("after to_intermediate_json:",(os.clock() - t));
+        t = os.clock();
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+    end
+	local json_parser = cjson.new();
+	local tag = get_json_tag(message_handler_instance);
+	local table_output = nil;
+	if (message_handler_instance.properties.element_type == 'S') then
+		table_output = {[tag] = content};
+	else
+		table_output = content;
+	end
+
+	local flg, json_output, err = pcall(json_parser.encode, table_output);
+	if (json_output == nil or json_output == '') then
+		json_output = '{}';
+	end
+    if (_gdbg) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+        print("after cjson.encode:",(os.clock() - t));
+        t = os.clock();
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+    end
 	return json_output;
 end
 
@@ -182,21 +236,26 @@ end
 
 local function form_complete_message_handler(message_handler)
 	function message_handler:to_json(content)
-		local status, msg = validate_doc(self, content)
-		if (status) then
+		--local status, msg = validate_doc(self, content)
+		--if (status) then
 			return to_json_string(self, content);
-		else
-			return nil, msg;
-		end
+		--else
+			--return nil, msg;
+		--end
 	end
 
+	function message_handler:fast_to_json(content)
+        return fast_to_json_string(self, content);
+	end
+
+
 	function message_handler:to_json_content(content)
-		local status, msg = validate_doc(self, content)
-		if (status) then
+		--local status, msg = validate_doc(self, content)
+		--if (status) then
 			return to_json_content(self, content);
-		else
-			return nil, msg;
-		end
+		--else
+			--return nil, msg;
+		--end
 	end
 
 	function message_handler:to_xml(content)

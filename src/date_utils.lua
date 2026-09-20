@@ -10,10 +10,20 @@ local error_handler = require("lua_schema.error_handler");
 
 ffi.cdef [[
 
-typedef struct dt_s {
+typedef struct o_dt_s {
 	int type;
 	char * value;
-} dt_s_type, * dt_p_type;
+} o_dt_s_type, * dt_p_type;
+
+/*
+typedef struct dt_s {
+	int type;
+    int64_t day_num;
+    int64_t day_frac;
+    int32_t timezone;
+    int has_timezone;
+} dt_s_type, * n_dt_p_type;
+*/
 
 typedef struct _dur {
 	char * value;
@@ -116,6 +126,7 @@ date_utils.dto_from_num = function(dt_num)
 	return date.from_dnum_and_frac(d_day_num, d_day_frc);
 end
 
+--[[ OLD IMPLEMENTATION STARTS HERE ]]
 date_utils.split_dtt = function(s)
 	if (s == nil or type(s) ~= 'string') then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
@@ -154,6 +165,53 @@ date_utils.split_dtt = function(s)
 	return dt, tzo;
 end
 
+date_utils.fast_split_dtt = function(s)
+
+    local p1 = string.find(s, '|', 1, true);
+    if p1 == nil then
+        error_handler.raise_fatal_error(
+            -1,
+            "Invalid inputs",
+            debug.getinfo(1)
+        );
+    end
+
+    local p2 = string.find(s, '|', p1 + 1, true);
+
+    local day_num;
+    local day_frc;
+    local tzo = nil;
+
+    if p2 == nil then
+
+        day_num = tonumber(string.sub(s, 1, p1 - 1));
+        day_frc = tonumber(string.sub(s, p1 + 1));
+
+    else
+
+        day_num = tonumber(string.sub(s, 1, p1 - 1));
+        day_frc = tonumber(string.sub(s, p1 + 1, p2 - 1));
+        tzo = tonumber(string.sub(s, p2 + 1));
+
+    end
+
+    if day_num == nil or day_frc == nil then
+        error_handler.raise_fatal_error(
+            -1,
+            "Invalid inputs",
+            debug.getinfo(1)
+        );
+    end
+
+    if tzo ~= nil then
+        tzo = nu.round(tzo, 1);
+    end
+
+    local dt = date.from_dnum_and_frac(day_num, day_frc);
+
+    return dt, tzo;
+end
+
 date_utils.is_valid_date = function(date_type_id, _s)
 	local s = '';
 	if (ffi.istype("char *", _s)) then
@@ -168,7 +226,7 @@ date_utils.is_valid_date = function(date_type_id, _s)
 end
 
 date_utils.is_valid = function(cdt)
-	if (not ffi.istype("dt_s_type", cdt)) then
+	if (not ffi.istype("o_dt_s_type", cdt)) then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
 	return date_utils.is_valid_date(cdt.type, cdt.value);
@@ -186,7 +244,7 @@ date_utils.is_valid_duration = function(inp)
 end
 
 date_utils.date_obj_from_dtt = function(s)
-	if (ffi.istype("dt_s_type", s)) then
+	if (ffi.istype("o_dt_s_type", s)) then
 		s = ffi.string(s.value);
 	end
 	if (s == nil or type(s) ~= 'string') then
@@ -266,7 +324,7 @@ end
 
 date_utils.from_xml_date_field = function(date_type_id, s)
 	local ret =  date_utils.dtt_from_xml_date_field(date_type_id, s);
-	local cdt = ffi.new("dt_s_type", 0);
+	local cdt = ffi.new("o_dt_s_type", 0);
 	cdt.type = date_type_id;
 	cdt.value = ffi.C.strdup(ffi.cast("char*", ret));
 
@@ -329,6 +387,32 @@ date_utils.to_xml_date_field = function(tid, _s)
 
 	return date_utils.append_tz(date_part, tzo);
 
+end
+
+date_utils.fast_to_xml_date_field = function(tid, _s)
+
+    local s;
+
+    if ffi.istype("char *", _s) then
+        s = ffi.string(_s);
+    elseif type(_s) == 'string' then
+        s = _s;
+    else
+        error_handler.raise_fatal_error(
+            -1,
+            "Invalid inputs",
+            debug.getinfo(1)
+        );
+    end
+
+    local fmt = date_utils.tid_fmt_map[tid];
+
+    local dto, tzo =
+        date_utils.fast_split_dtt(s);
+
+    local date_part = dto:fmt(fmt);
+
+    return date_utils.append_tz(date_part, tzo);
 end
 
 date_utils.compare_dates_nn = function(dto1, dto2)
@@ -404,7 +488,7 @@ end
 date_utils.compare_dates = function(cdt1, cdt2)
 	local s1 = '';
 	local s2 = '';
-	if (not ffi.istype("dt_s_type", cdt1)) then
+	if (not ffi.istype("o_dt_s_type", cdt1)) then
 		if (type(cdt1) == 'string') then
 			s1 = cdt1;
 		else
@@ -413,7 +497,7 @@ date_utils.compare_dates = function(cdt1, cdt2)
 	else
 		s1 = ffi.string(cdt1.value);
 	end
-	if (not ffi.istype("dt_s_type", cdt2)) then
+	if (not ffi.istype("o_dt_s_type", cdt2)) then
 		if (type(cdt2) == 'string') then
 			s2 = cdt2;
 		else
@@ -488,7 +572,7 @@ end
 local date_from_inp_dt = function(inp_dt)
 	local dt = '';
 	local dt_format = -1;
-	if (ffi.istype("dt_s_type", inp_dt)) then
+	if (ffi.istype("o_dt_s_type", inp_dt)) then
 		dt = ffi.string(inp_dt.value);
 		dt_format = inp_dt.type;
 	else
@@ -599,8 +683,8 @@ end
 --]]
 date_utils.eq = function(inp_dt1, inp_dt2)
 	local diff = date_utils.date_diff(inp_dt1, inp_dt2);
-	if (diff.day == 0) then
-		return true;
+	if (diff.day ~= 0) then
+		return false;
 	elseif (diff.day == 0 and nu.compare_num(diff.sec, 0) == 0) then
 		return true;
 	else
@@ -680,7 +764,7 @@ date_utils.add_duration_to_date = function(inp_dt, inp_dur)
 	o_dto:addseconds(dur.sec);
 
 	local ret = date_utils.dtt_from_date_obj(o_dto, tzo);
-	local cdt = ffi.new("dt_s_type", 0);
+	local cdt = ffi.new("o_dt_s_type", 0);
 	if (dt_format ~= -1) then
 		cdt.type = dt_format;
 	else
@@ -701,7 +785,7 @@ date_utils.subtract_duration_from_date = function(inp_dt, inp_dur)
 	o_dto:addseconds((-1 * dur.sec));
 
 	local ret = date_utils.dtt_from_date_obj(o_dto, tzo);
-	local cdt = ffi.new("dt_s_type", 0);
+	local cdt = ffi.new("o_dt_s_type", 0);
 	if (dt_format ~= -1) then
 		cdt.type = dt_format;
 	else
@@ -921,7 +1005,7 @@ end
 date_utils.dtt_from_long = function(n, t, tzo)
 	local dto = date_utils.dto_from_num(n)
 	local dtt = date_utils.dtt_from_date_obj(dto, tzo);
-	local cdt = ffi.new("dt_s_type", 0);
+	local cdt = ffi.new("o_dt_s_type", 0);
 	cdt.type = date_utils.tn_tid_map[t];
 	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
 	return cdt;
@@ -936,7 +1020,7 @@ end
 date_utils.dtt_from_daynum = function(n, t, tzo)
 	local dto = date.from_dnum_and_frac(tonumber(n), 0);
 	local dtt = date_utils.dtt_from_date_obj(dto, tzo);
-	local cdt = ffi.new("dt_s_type", 0);
+	local cdt = ffi.new("o_dt_s_type", 0);
 	cdt.type = date_utils.tn_tid_map[t];
 	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
 	return cdt;
@@ -951,7 +1035,7 @@ end
 date_utils.dtt_from_time = function(n, t, tzo)
 	local dto = date.from_dnum_and_frac(0, tonumber(n));
 	local dtt = date_utils.dtt_from_date_obj(dto, tzo);
-	local cdt = ffi.new("dt_s_type", 0);
+	local cdt = ffi.new("o_dt_s_type", 0);
 	cdt.type = date_utils.tn_tid_map[t];
 	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
 	return cdt;
@@ -964,7 +1048,7 @@ date_utils.cdt_from_dto = function(dto, format, tzo)
 	assert(tzo == nil or type(tzo) == 'number');
 
 	local dtt = date_utils.dtt_from_date_obj(dto, tzo);
-	local cdt = ffi.new("dt_s_type", 0);
+	local cdt = ffi.new("o_dt_s_type", 0);
 	cdt.type = date_utils.tn_tid_map[format];
 	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
 	return cdt;
@@ -980,7 +1064,7 @@ end
 
 date_utils.convert_format = function(cdt, desired_format)
 	assert(type(cdt) == 'cdata');
-	assert(ffi.istype("dt_s_type", cdt));
+	assert(ffi.istype("o_dt_s_type", cdt));
 	assert(desired_format == 'date' or desired_format == 'dateTime');
 
 	local dto, tzo = date_utils.date_obj_from_dtt(cdt);
@@ -1011,11 +1095,27 @@ date_utils.bin_from_dur = function(s_dur)
 end
 
 date_utils.to_xml_format = function(cdt)
-	if (not ffi.istype("dt_s_type", cdt)) then
+	if (not ffi.istype("o_dt_s_type", cdt)) then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
 	local dt = cdt.type;
 	return date_utils.to_xml_date_field(dt, cdt.value);
+end
+
+date_utils.fast_to_xml_format = function(cdt)
+
+    if not ffi.istype("o_dt_s_type", cdt) then
+        error_handler.raise_fatal_error(
+            -1,
+            "Invalid inputs",
+            debug.getinfo(1)
+        );
+    end
+
+    return date_utils.fast_to_xml_date_field(
+        cdt.type,
+        cdt.value
+    );
 end
 
 date_utils.free_cdt = function(cdt)
@@ -1047,14 +1147,14 @@ date_utils.now = function(utc)
 		date_utils.add_tzoffset_to_dto(dt, tzb);
 		dtt =  date_utils.dtt_from_date_obj(dt, nil);
 	end
-	local cdt = ffi.new("dt_s_type", 0);
+	local cdt = ffi.new("o_dt_s_type", 0);
 	cdt.type = date_utils.tn_tid_map['dateTime'];
 	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
 	return cdt;
 end
 
 date_utils.set_tz = function(cdt, tzo)
-	if (not ffi.istype("dt_s_type", cdt)) then
+	if (not ffi.istype("o_dt_s_type", cdt)) then
 		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
 	end
 	assert(tzo ~= nil and type(tzo) == 'number');
@@ -1062,7 +1162,7 @@ date_utils.set_tz = function(cdt, tzo)
 	local dtt = date_utils.dtt_from_date_obj(dto, nu.round(tzo, 1));
 
 	--[[
-	local o_cdt = ffi.new("dt_s_type", 0);
+	local o_cdt = ffi.new("o_dt_s_type", 0);
 	o_cdt.type = cdt.type;
 	o_cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
 	return o_cdt;
@@ -1095,7 +1195,7 @@ date_utils.today = function(utc)
 		date_utils.add_tzoffset_to_dto(dt, tzb);
 		dtt =  date_utils.dtt_from_date_obj(dt, nil);
 	end
-	local cdt = ffi.new("dt_s_type", 0);
+	local cdt = ffi.new("o_dt_s_type", 0);
 	cdt.type = date_utils.tn_tid_map['date'];
 	cdt.value = ffi.C.strdup(ffi.cast("char*", dtt));
 	return cdt;
@@ -1105,7 +1205,7 @@ date_utils.date_obj_from_cdt = function(_s)
 	local s = '';
 	if (ffi.istype("char *", _s)) then
 		s = ffi.string(_s);
-    elseif (ffi.istype("dt_s_type", _s)) then
+    elseif (ffi.istype("o_dt_s_type", _s)) then
 		s = _s;
 	elseif (type(_s) == 'string') then
 		s = _s;
@@ -1126,25 +1226,6 @@ date_utils.get_utc_date_time = function(cdt)
 
     return date_utils.date_time_from_dto(dto, 0);
 end
-
-local dt_mt = {
-	__tostring = date_utils.to_xml_format,
-	__gc = date_utils.free_cdt,
-	__sub = date_utils.date_diff,
-	__eq = date_utils.eq,
-	__lt = date_utils.lt,
-	__le = date_utils.le,
-	__gt = date_utils.gt,
-	__ge = date_utils.ge,
-};
-ffi.metatype("dt_s_type", dt_mt);
-
-
-local dur_mt = {
-	__tostring = date_utils.to_xml_duration,
-	__gc = date_utils.free_cdur,
-};
-ffi.metatype("dur_s_type", dur_mt);
 
 --TS - 0
 
@@ -1248,5 +1329,961 @@ print(debug.getinfo(1).source, debug.getinfo(1).currentline, date_utils.today(fa
 print(debug.getinfo(1).source, debug.getinfo(1).currentline, date(false));
 --]]
 
+--[[ NEW IMPLEMENTATION STARTS HERE ]]
+date_utils.n_split_dtt = function(cdt)
+    assert(ffi.istype("dt_s_type", cdt));
+
+    local dto = date.from_dnum_and_frac(tonumber(cdt.day_num), tonumber(cdt.day_frac));
+
+    local tzo = nil;
+
+    if (cdt.has_timezone ~= 0) then
+        tzo = tonumber(cdt.timezone);
+    end
+
+	return dto, tzo;
+end
+
+date_utils.n_is_valid_date = function(date_type_id, cdt)
+    assert(ffi.istype("dt_s_type", cdt));
+
+	local status, dto, tzo = pcall(date_utils.n_split_dtt, cdt);
+
+	return status;
+end
+
+date_utils.n_is_valid = function(cdt)
+    assert(ffi.istype("dt_s_type", cdt));
+
+	return date_utils.n_is_valid_date(cdt.type, cdt);
+end
+
+date_utils.n_is_valid_duration = function(inp)
+	local s = '';
+	if (ffi.istype("dur_s_type", inp)) then
+		s = ffi.string(inp.value);
+	else
+		s = inp;
+	end
+	local status, dto, tzo = pcall(date_utils.split_dtt, s);
+	return status;
+end
+
+date_utils.n_date_obj_from_dtt = date_utils.n_split_dtt;
+
+date_utils.n_dtt_from_date_obj = function(dto, tzo)
+    local cdt = ffi.new("dt_s_type");
+
+    cdt.day_num = ffi.cast("int64_t", dto.daynum);
+    cdt.day_frac = ffi.cast("int64_t", dto.dayfrc);
+
+    if (tzo ~= nil) then
+        cdt.timezone = tzo;
+        cdt.has_timezone = 1;
+    else
+        cdt.timezone = 0;
+        cdt.has_timezone = 0;
+    end
+
+    return cdt;
+end
+
+--[[
+--This will return the cdt dt_s_type form of date
+--]]
+date_utils.n_o_dtt_from_xml_date_field = function(date_type_id, s)
+    if (date_type_id == nil or type(date_type_id) ~= 'number') then
+        error_handler.raise_fatal_error(-1, "Invalid inputs:"..debug.getinfo(1).currentline, debug.getinfo(1));
+    elseif (s == nil or type(s) ~= 'string') then
+        error_handler.raise_fatal_error(-1, "Invalid inputs:"..debug.getinfo(1).currentline, debug.getinfo(1));
+    end
+
+    local d1 = xml_date_utils.str_to_date(date_type_id, s);
+    if (d1 == nil) then
+        local name = date_utils.tid_name_map[date_type_id];
+        error_handler.raise_fatal_error(-1, "{"..s.."} not a valid "..name, debug.getinfo(1));
+        return nil;
+    end
+    local ticks = (d1.mil_sec * 1000);
+    ticks = nu.round(ticks, 1000);
+    if (d1.mon == 0) then
+        d1.mon = 1;
+    end
+    if (d1.day == 0) then
+        d1.day = 1;
+    end
+    local dto = date(d1.year, d1.mon, d1.day, d1.hour, d1.min, d1.sec, ticks);
+    local tzo = nil;
+    if (d1.tz_flag) then
+        tzo = nu.round(d1.tzo, 1);
+    end
+    if ((tzo ~= nil) and (tzo > date_utils.MAX_TIME_ZONE or tzo < date_utils.MIN_TIME_ZONE)) then
+        error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+    end
+    local cdt = date_utils.n_dtt_from_date_obj(dto, tzo);
+    cdt.type = date_type_id;
+    return cdt;
+end
+date_utils.n_dtt_from_xml_date_field = function(date_type_id, s)
+    if (date_type_id == nil or type(date_type_id) ~= 'number') then
+        error_handler.raise_fatal_error(-1, "Invalid inputs:"..debug.getinfo(1).currentline, debug.getinfo(1));
+    elseif (s == nil or type(s) ~= 'string') then
+        error_handler.raise_fatal_error(-1, "Invalid inputs:"..debug.getinfo(1).currentline, debug.getinfo(1));
+    end
+
+    --[[
+    local d1 = xml_date_utils.str_to_date(date_type_id, s);
+    if (d1 == nil) then
+        local name = date_utils.tid_name_map[date_type_id];
+        error_handler.raise_fatal_error(-1, "{"..s.."} not a valid "..name, debug.getinfo(1));
+        return nil;
+    end
+    local ticks = (d1.mil_sec * 1000);
+    ticks = nu.round(ticks, 1000);
+    if (d1.mon == 0) then
+        d1.mon = 1;
+    end
+    if (d1.day == 0) then
+        d1.day = 1;
+    end
+    local dto = date(d1.year, d1.mon, d1.day, d1.hour, d1.min, d1.sec, ticks);
+    local tzo = nil;
+    if (d1.tz_flag) then
+        tzo = nu.round(d1.tzo, 1);
+    end
+    if ((tzo ~= nil) and (tzo > date_utils.MAX_TIME_ZONE or tzo < date_utils.MIN_TIME_ZONE)) then
+        error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+    end
+    local cdt = date_utils.n_dtt_from_date_obj(dto, tzo);
+    cdt.type = date_type_id;
+    return cdt;
+    ]]
+    local cdt = xml_date_utils.str_to_dtt(date_type_id, s);
+
+    if (cdt == nil) then
+        error("Invalid date");
+    end
+
+    return cdt;
+end
+
+date_utils.n_from_xml_date_field = date_utils.n_dtt_from_xml_date_field;
+
+date_utils.n_o_to_xml_date_field = function(tid, cdt)
+    assert(ffi.istype("dt_s_type", cdt));
+
+	local fmt = date_utils.tid_fmt_map[tid];
+	local dto, tzo = date_utils.n_date_obj_from_dtt(cdt);
+
+	local date_part = dto:fmt(fmt);
+
+	return date_utils.append_tz(date_part, tzo);
+end
+
+date_utils.n_to_xml_date_field = function(tid, cdt)
+    assert(ffi.istype("dt_s_type", cdt));
+    assert(tid == cdt.type);
+
+    return xml_date_utils.dtt_to_str(cdt);
+end
+
+date_utils.n_compare_dates = function(cdt1, cdt2)
+    assert(ffi.istype("dt_s_type", cdt1));
+    assert(ffi.istype("dt_s_type", cdt2));
+
+    local dto1, tzo1 = date_utils.n_date_obj_from_dtt(cdt1);
+    if (tzo1 ~= nil) then
+        dto1 = date_utils.add_tzoffset_to_dto(dto1, tzo1);
+    end
+
+    local dto2, tzo2 = date_utils.n_date_obj_from_dtt(cdt2);
+    if (tzo2 ~= nil) then
+        dto2 = date_utils.add_tzoffset_to_dto(dto2, tzo2);
+    end
+
+    local ret = nil;
+    if (tzo1 == nil and tzo2 == nil) then
+        ret = date_utils.compare_dates_ntz_ntz(dto1, dto2);
+    elseif (tzo1 == nil and tzo2 ~= nil) then
+        ret = date_utils.compare_dates_ntz_tz(dto1, dto2);
+    elseif (tzo1 ~= nil and tzo2 == nil) then
+        ret = date_utils.compare_dates_tz_ntz(dto1, dto2);
+    else
+        ret = date_utils.compare_dates_tz_tz(dto1, dto2);
+    end
+
+    return ret;
+end
+
+local n_date_from_inp_dt = function(inp_dt)
+    assert(ffi.istype("dt_s_type", inp_dt));
+
+    local dto, tzo = date_utils.n_date_obj_from_dtt(inp_dt);
+
+    return dto, tzo, inp_dt.type;
+
+end
+
+--[[
+--Important
+--]]
+date_utils.n_get_date_components = function(inp_dt)
+	local dto, tzo, dt_format = n_date_from_inp_dt(inp_dt);
+    local jd, jdn = get_julian_day(dto);
+    local y, m, d = dto:getdate();
+    return {
+        year = y,
+        month = m,
+        date = d,
+        day = dto:getday(),
+        weekday = dto:getweekday(),
+        isoweekday = dto:getisoweekday(),
+        hours = dto:gethours(),
+        minutes = dto:getminutes(),
+        seconds = dto:getseconds(),
+        jd = jd,
+        jdn = jdn,
+    }
+end
+
+--[[
+--Important
+--]]
+date_utils.n_date_diff = function(inp_dt1, inp_dt2)
+	local dto1, tzo1, dt_format1 = n_date_from_inp_dt(inp_dt1);
+	local dto2, tzo2, dt_format2 = n_date_from_inp_dt(inp_dt2);
+
+	if (tzo1 ~= nil) then dto1 = date_utils.add_tzoffset_to_dto(dto1, tzo1); end
+	if (tzo2 ~= nil) then dto2 = date_utils.add_tzoffset_to_dto(dto2, tzo2); end
+
+	local loc = (dto1 - dto2);
+	loc.sec = nu.round(loc.dayfrc/1000000, 1);
+
+	if ((loc.daynum < 0) and (loc.sec > 0)) then
+		loc.daynum = loc.daynum + 1;
+		loc.sec = loc.sec - 24 * 3600;
+	elseif ((loc.daynum > 0) and (loc.sec < 0)) then
+		loc.daynum = loc.daynum - 1;
+		loc.sec = loc.sec + 24 * 3600;
+	end
+
+	local diff = {day = loc.daynum, sec = loc.sec};
+
+	return diff;
+end
+
+--[[
+--Important meta method
+--]]
+date_utils.n_eq = function(inp_dt1, inp_dt2)
+	local diff = date_utils.n_date_diff(inp_dt1, inp_dt2);
+	if (diff.day ~= 0) then
+		return false;
+	elseif (diff.day == 0 and nu.compare_num(diff.sec, 0) == 0) then
+		return true;
+	else
+		return false;
+	end
+end
+
+--[[
+--Important meta method
+--]]
+date_utils.n_lt = function(inp_dt1, inp_dt2)
+	local diff = date_utils.n_date_diff(inp_dt1, inp_dt2);
+	if (diff.day < 0) then
+		return true;
+	elseif (diff.day == 0 and nu.compare_num(diff.sec, 0) < 0) then
+		return true;
+	else
+		return false;
+	end
+end
+
+--[[
+--Important meta method
+--]]
+date_utils.n_le = function(inp_dt1, inp_dt2)
+	local diff = date_utils.n_date_diff(inp_dt1, inp_dt2);
+	if (diff.day < 0) then
+		return true;
+	elseif (diff.day == 0 and nu.compare_num(diff.sec, 0) <= 0) then
+		return true;
+	else
+		return false;
+	end
+end
+
+--[[
+--Important meta method
+--]]
+date_utils.n_gt = function(inp_dt1, inp_dt2)
+	local diff = date_utils.n_date_diff(inp_dt1, inp_dt2);
+	if (diff.day > 0) then
+		return true;
+	elseif (diff.day == 0 and nu.compare_num(diff.sec, 0) > 0) then
+		return true;
+	else
+		return false;
+	end
+end
+
+--[[
+--Important meta method
+--]]
+date_utils.n_ge = function(inp_dt1, inp_dt2)
+	local diff = date_utils.n_date_diff(inp_dt1, inp_dt2);
+	if (diff.day > 0) then
+		return true;
+	elseif (diff.day == 0 and nu.compare_num(diff.sec, 0) >= 0) then
+		return true;
+	else
+		return false;
+	end
+end
+
+--[[
+-- Important
+-- Inputs:
+--          date/dateTime in binary format
+--          duration, a lua structure with three elements, mon, day and sec
+--]]
+date_utils.n_add_duration_to_date = function(inp_dt, inp_dur)
+    local dto, tzo, dt_format = n_date_from_inp_dt(inp_dt);
+    local dur = duration_from_inp_dur(inp_dur);
+
+    local o_dto = dto:copy();
+    o_dto:addmonths(dur.mon);
+    o_dto:adddays(dur.day);
+    o_dto:addseconds(dur.sec);
+
+    local cdt = date_utils.n_dtt_from_date_obj(o_dto, tzo);
+    cdt.type = dt_format;
+
+    return cdt;
+end
+
+date_utils.n_subtract_duration_from_date = function(inp_dt, inp_dur)
+	local dto, tzo, dt_format = n_date_from_inp_dt(inp_dt);
+	local dur = duration_from_inp_dur(inp_dur);;
+
+	local o_dto = dto:copy();
+	o_dto:addmonths((-1 * dur.mon));
+	o_dto:adddays((-1 *dur.day));
+	o_dto:addseconds((-1 * dur.sec));
+
+    local cdt = date_utils.n_dtt_from_date_obj(o_dto, tzo);
+    cdt.type = dt_format;
+
+	return cdt;
+end
+
+date_utils.n_from_xml_date = function(s)
+	return date_utils.n_from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATE, s);
+end
+
+date_utils.n_to_xml_date = function(s)
+	return date_utils.n_to_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATE, s);
+end
+
+date_utils.n_from_xml_datetime = function(s)
+	return date_utils.n_from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, s);
+end
+
+date_utils.n_to_xml_datetime = function(s)
+	return date_utils.n_to_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, s);
+end
+
+date_utils.n_from_xml_time = function(s)
+	return date_utils.n_from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_TIME, s);
+end
+
+date_utils.n_to_xml_time = function(s)
+	return date_utils.n_to_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_TIME, s);
+end
+
+date_utils.n_dtt_from_long = function(n, t, tzo)
+	local dto = date_utils.dto_from_num(n)
+	local cdt = date_utils.n_dtt_from_date_obj(dto, tzo);
+	cdt.type = date_utils.tn_tid_map[t];
+
+	return cdt;
+end
+
+date_utils.n_long_from_dtt = function(dtt)
+    local dto, tzo = date_utils.n_date_obj_from_dtt(dtt)
+    local n = date_utils.num_from_dto(dto);
+    return n, tzo;
+end
+
+date_utils.n_dtt_from_daynum = function(n, t, tzo)
+    local dto = date.from_dnum_and_frac(tonumber(n), 0);
+    local cdt = date_utils.n_dtt_from_date_obj(dto, tzo);
+    cdt.type = date_utils.tn_tid_map[t];
+    return cdt;
+end
+
+date_utils.n_daynum_from_dtt = function(dtt)
+    local dto, tzo = date_utils.n_date_obj_from_dtt(dtt)
+    local n = date_utils.daynum_from_dto(dto);
+    return n, tzo;
+end
+
+date_utils.n_dtt_from_time = function(n, t, tzo)
+    local dto = date.from_dnum_and_frac(0, tonumber(n));
+    local cdt = date_utils.n_dtt_from_date_obj(dto, tzo);
+    cdt.type = date_utils.tn_tid_map[t];
+    return cdt;
+end
+
+date_utils.n_dtt_from_time = function(n, t, tzo)
+	local dto = date.from_dnum_and_frac(0, tonumber(n));
+	local cdt = date_utils.n_dtt_from_date_obj(dto, tzo);
+	cdt.type = date_utils.tn_tid_map[t];
+	return cdt;
+end
+
+date_utils.n_cdt_from_dto = function(dto, format, tzo)
+	assert(type(dto) == 'table');
+	assert(type(format) == 'string');
+	assert(date_utils.tn_tid_map[format] ~= nil);
+	assert(tzo == nil or type(tzo) == 'number');
+
+	local cdt = date_utils.n_dtt_from_date_obj(dto, tzo);
+	cdt.type = date_utils.tn_tid_map[format];
+	return cdt;
+end
+
+date_utils.n_date_time_from_dto = function (dto, tzo)
+	if ((tzo ~= nil) and (tzo > date_utils.MAX_TIME_ZONE or tzo < date_utils.MIN_TIME_ZONE)) then
+		error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+	end
+
+	return  date_utils.n_cdt_from_dto(dto, 'dateTime', tzo);
+end
+
+date_utils.n_convert_format = function(cdt, desired_format)
+    assert(type(cdt) == 'cdata');
+    assert(ffi.istype("dt_s_type", cdt));
+    assert(desired_format == 'date' or desired_format == 'dateTime');
+
+    local dto, tzo = date_utils.n_date_obj_from_dtt(cdt);
+    return date_utils.n_cdt_from_dto(dto, desired_format, tzo);
+end
+
+date_utils.n_time_from_dtt = function(dtt)
+	local dto, tzo = date_utils.n_date_obj_from_dtt(dtt)
+	local n = date_utils.time_from_dto(dto);
+	return n, tzo;
+end
+
+date_utils.n_to_xml_format = function(cdt)
+    if (not ffi.istype("dt_s_type", cdt)) then
+        error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+    end
+    local dt = cdt.type;
+    return date_utils.n_to_xml_date_field(dt, cdt);
+end
+
+date_utils.n_free_cdt = function(cdt)
+end
+
+date_utils.n_now = function(utc)
+	if (utc ~= nil and type(utc) ~= 'boolean') then
+		error("Invalid inputs");
+	end
+	local p = require('posix.sys.time');
+	local t = p.gettimeofday();
+	local dt = date(t.tv_sec+t.tv_usec/1000000);
+	dt.dayfrc = nu.round(dt.dayfrc, 1);
+	local cdt;
+	if (utc == false) then
+		local tzb = date(true):getbias();
+		date_utils.add_tzoffset_to_dto(dt, tzb);
+		cdt = date_utils.n_dtt_from_date_obj(dt, -1*tzb);
+	elseif (utc == true) then
+		cdt =  date_utils.n_dtt_from_date_obj(dt, 0);
+	else
+		local tzb = date(true):getbias();
+		date_utils.add_tzoffset_to_dto(dt, tzb);
+		cdt =  date_utils.n_dtt_from_date_obj(dt, nil);
+	end
+	cdt.type = date_utils.tn_tid_map['dateTime'];
+	return cdt;
+end
+
+date_utils.n_set_tz = function(cdt, tzo)
+    if (not ffi.istype("dt_s_type", cdt)) then
+        error_handler.raise_fatal_error(-1, "Invalid inputs", debug.getinfo(1));
+    end
+    assert(tzo ~= nil and type(tzo) == 'number');
+
+    cdt.timezone = ffi.cast("int32_t", nu.round(tzo, 1));
+    cdt.has_timezone = 1;
+
+    return cdt;
+end
+
+date_utils.n_today = function(utc)
+	if (utc ~= nil and type(utc) ~= 'boolean') then
+		error("Invalid inputs");
+	end
+
+	local today = os.date("*t");
+	local dt = date(today.year, today.month, today.day)
+	dt.dayfrc = nu.round(dt.dayfrc, 1);
+
+	local cdt;
+	if (utc == false) then
+		local tzb = date(false):getbias();
+		date_utils.add_tzoffset_to_dto(dt, tzb);
+		dt.dayfrc = 0;
+		cdt = date_utils.n_dtt_from_date_obj(dt, -1*tzb);
+	elseif (utc == true) then
+		cdt =  date_utils.n_dtt_from_date_obj(dt, 0);
+	else
+		local tzb = date(false):getbias();
+		date_utils.add_tzoffset_to_dto(dt, tzb);
+		cdt =  date_utils.n_dtt_from_date_obj(dt, nil);
+	end
+	cdt.type = date_utils.tn_tid_map['date'];
+	return cdt;
+end
+
+date_utils.n_date_obj_from_cdt = function(cdt)
+    assert(ffi.istype("dt_s_type", cdt));
+
+	local dto, tzo = date_utils.n_date_obj_from_dtt(cdt);
+
+    return dto, tzo;
+end
+
+date_utils.n_get_utc_date_time = function(cdt)
+    local dto, tzo = date_utils.n_date_obj_from_cdt(cdt);
+    if (tzo ~= nil) then
+        dto = date_utils.add_tzoffset_to_dto(dto, tzo);
+    end
+
+    return date_utils.n_date_time_from_dto(dto, 0);
+end
+
+
+
+
+
+
+
+
+------CODEEND------
+
+
+
+
+
+
+
+
+--[[ migration test
+local function migration_test(date_type_id, value)
+
+    local old = date_utils.from_xml_date_field(date_type_id, value);
+
+    local new = date_utils.n_from_xml_date_field(date_type_id, value);
+
+    local old_dto, old_tzo = date_utils.date_obj_from_dtt(old);
+
+    local new_dto, new_tzo = date_utils.n_date_obj_from_dtt(new);
+
+    assert(old_dto.daynum == new_dto.daynum, "daynum mismatch: "..value);
+    assert(old_dto.dayfrc == new_dto.dayfrc, "dayfrc mismatch: "..value);
+    assert(old_tzo == new_tzo, "timezone mismatch: "..value);
+
+    local old_xml = date_utils.to_xml_date_field(date_type_id, old.value);
+
+    local new_xml = date_utils.n_to_xml_date_field(date_type_id, new);
+
+    assert(old_xml == new_xml, "XML output mismatch: old={" ..  tostring(old_xml) ..  "} new={" ..
+            tostring(new_xml) ..  "} input={" ..  value ..  "}");
+end
+
+local function compare_dates_migration_test(date_type_id, value1, value2)
+    local old1 = date_utils.from_xml_date_field(date_type_id, value1);
+
+    local old2 = date_utils.from_xml_date_field(date_type_id, value2);
+
+    local new1 = date_utils.n_from_xml_date_field(date_type_id, value1);
+
+    local new2 = date_utils.n_from_xml_date_field(date_type_id, value2);
+
+    local old_ret = date_utils.compare_dates(old1, old2);
+
+    local new_ret = date_utils.n_compare_dates(new1, new2);
+
+    assert(old_ret == new_ret, "compare_dates mismatch: {" ..  value1 ..  "} vs {" ..
+            value2 ..  "} old={" ..  tostring(old_ret) ..  "} new={" ..  tostring(new_ret) ..  "}");
+
+end
+
+local function date_from_inp_dt_migration_test(date_type_id, value)
+
+    local old = date_utils.from_xml_date_field(date_type_id, value);
+
+    local new = date_utils.n_from_xml_date_field(date_type_id, value);
+
+    local old_dto, old_tzo, old_type = date_from_inp_dt(old);
+
+    local new_dto, new_tzo, new_type = n_date_from_inp_dt(new);
+
+    assert(old_dto.daynum == new_dto.daynum);
+    assert(old_dto.dayfrc == new_dto.dayfrc);
+    assert(old_tzo == new_tzo);
+    assert(old_type == new_type);
+
+end
+
+local function assert_same_dtt(old, new)
+
+    local old_dto, old_tzo = date_utils.date_obj_from_dtt(old);
+    local new_dto, new_tzo = date_utils.n_date_obj_from_dtt(new);
+
+    assert(old_dto.daynum == new_dto.daynum);
+    assert(old_dto.dayfrc == new_dto.dayfrc);
+    assert(old_tzo == new_tzo);
+    assert(old.type == new.type);
+end
+
+local xmlua = require("lua_schema.xmlua");
+local xml_date_utils = xmlua.XMLDateUtils.new();
+
+date_from_inp_dt_migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATE, '1973-04-26');
+date_from_inp_dt_migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T07:30:00');
+date_from_inp_dt_migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T07:30:00Z');
+date_from_inp_dt_migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T07:30:00-01:00');
+date_from_inp_dt_migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T07:30:00+05:30');
+date_from_inp_dt_migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T07:30:00-05:00');
+
+
+migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATE, '1973-04-26');
+migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T07:30:00');
+migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T07:30:00Z');
+migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T07:30:00-01:00');
+migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T07:30:00+05:30');
+migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T07:30:00-05:00');
+
+migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATE, '1973-04-26');
+migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T12:34:56');
+migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T12:34:56Z');
+migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T12:34:56+05:30');
+migration_test(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T12:34:56-05:00');
+
+local DATETIME = xml_date_utils.value_type.XML_SCHEMAS_DATETIME;
+
+-- Equal, no timezone
+compare_dates_migration_test(DATETIME, '1973-04-26T12:34:56', '1973-04-26T12:34:56');
+
+-- Earlier / later, no timezone
+compare_dates_migration_test(DATETIME, '1973-04-26T12:34:55', '1973-04-26T12:34:56');
+compare_dates_migration_test(DATETIME, '1973-04-26T12:34:57', '1973-04-26T12:34:56');
+
+-- Equal, both with same timezone
+compare_dates_migration_test(DATETIME, '1973-04-26T12:34:56+05:30', '1973-04-26T12:34:56+05:30');
+
+-- Different lexical times representing same instant
+compare_dates_migration_test(DATETIME, '1973-04-26T12:34:56+05:30', '1973-04-26T07:04:56Z');
+
+-- Positive vs negative timezone
+compare_dates_migration_test(DATETIME, '1973-04-26T12:34:56+05:30', '1973-04-26T12:34:56-05:00');
+
+-- First has timezone, second does not
+compare_dates_migration_test(DATETIME, '1973-04-26T12:34:56+05:30', '1973-04-26T12:34:56');
+
+-- First has no timezone, second does
+compare_dates_migration_test(DATETIME, '1973-04-26T12:34:56', '1973-04-26T12:34:56+05:30');
+
+-- UTC is NOT the same representation as "no timezone"
+compare_dates_migration_test(DATETIME, '1973-04-26T12:34:56Z', '1973-04-26T12:34:56');
+
+-- Cross-day comparison caused by timezone adjustment
+compare_dates_migration_test(DATETIME, '1973-04-26T01:00:00+05:30', '1973-04-25T20:00:00Z');
+
+-- Fractional seconds
+compare_dates_migration_test(DATETIME, '1973-04-26T12:34:56.123', '1973-04-26T12:34:56.124');
+
+local d1 = date_utils.n_from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T12:34:56');
+local d2 = date_utils.n_from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T12:34:57');
+assert(date_utils.n_eq(d1, d1) == true);
+assert(date_utils.n_eq(d1, d2) == false);
+local d1 = date_utils.n_from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T12:34:56+05:30');
+local d2 = date_utils.n_from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T07:04:56Z');
+assert(date_utils.n_eq(d1, d2) == true);
+
+
+
+local old_dt = date_utils.from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T12:34:56+05:30')
+local new_dt = date_utils.n_from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, '1973-04-26T12:34:56+05:30')
+local dur = date_utils.from_xml_duration("P2M4D");
+local old_result = date_utils.add_duration_to_date(old_dt, dur);
+local new_result = date_utils.n_add_duration_to_date(new_dt, dur);
+
+local old_dto, old_tzo = date_utils.date_obj_from_dtt(old_result);
+local new_dto, new_tzo = date_utils.n_date_obj_from_dtt(new_result);
+
+assert(old_dto.daynum == new_dto.daynum);
+assert(old_dto.dayfrc == new_dto.dayfrc);
+assert(old_tzo == new_tzo);
+assert(old_result.type == new_result.type);
+
+local old_result = date_utils.subtract_duration_from_date(old_dt, dur);
+local new_result = date_utils.n_subtract_duration_from_date(new_dt, dur);
+
+local old_dto, old_tzo = date_utils.date_obj_from_dtt(old_result);
+local new_dto, new_tzo = date_utils.n_date_obj_from_dtt(new_result);
+
+assert(old_dto.daynum == new_dto.daynum);
+assert(old_dto.dayfrc == new_dto.dayfrc);
+assert(old_tzo == new_tzo);
+assert(old_result.type == new_result.type);
+
+
+local old = date_utils.dtt_from_long(ffi.new("long", 62240227200000000), 'date', 330);
+local new = date_utils.n_dtt_from_long(ffi.new("long", 62240227200000000), 'date', 330);
+
+assert_same_dtt(old, new);
+
+local old_n, old_tzo = date_utils.long_from_dtt(old);
+local new_n, new_tzo = date_utils.n_long_from_dtt(new);
+
+assert(old_n == new_n);
+assert(old_tzo == new_tzo);
+
+local old_n, old_tzo = date_utils.daynum_from_dtt(old);
+local new_n, new_tzo = date_utils.n_daynum_from_dtt(new);
+
+assert(old_n == new_n);
+assert(old_tzo == new_tzo);
+
+
+
+local dto = date(1973, 4, 26, 12, 34, 56);
+local old = date_utils.cdt_from_dto(dto, 'dateTime', 330);
+local new = date_utils.n_cdt_from_dto(dto, 'dateTime', 330);
+assert_same_dtt(old, new);
+
+local old = date_utils.date_time_from_dto(dto, 330);
+local new = date_utils.n_date_time_from_dto(dto, 330);
+assert_same_dtt(old, new);
+
+local old_result = date_utils.convert_format(old_dt, 'date');
+local new_result = date_utils.n_convert_format(new_dt, 'date');
+assert_same_dtt(old_result, new_result);
+
+local old_n, old_tzo = date_utils.time_from_dtt(old_dt);
+local new_n, new_tzo = date_utils.n_time_from_dtt(new_dt);
+assert(old_n == new_n);
+assert(old_tzo == new_tzo);
+
+
+local old_xml = date_utils.to_xml_format(old_dt);
+local new_xml = date_utils.n_to_xml_format(new_dt);
+
+assert(old_xml == new_xml);
+
+local function test_dtt(date_type_id, input, expected)
+
+    local cdt = date_utils.n_dtt_from_xml_date_field(
+        date_type_id,
+        input
+    );
+
+    assert(cdt ~= nil);
+    assert(ffi.istype("dt_s_type", cdt));
+    assert(cdt.type == date_type_id);
+
+    local output = date_utils.n_to_xml_date_field(
+        date_type_id,
+        cdt
+    );
+
+    print(input, "->", output);
+
+    assert(output == expected,
+        "Expected {" .. expected .. "} got {" .. output .. "}");
+end
+
+
+-- date
+test_dtt(xml_date_utils.value_type.XML_SCHEMAS_DATE, "2026-09-19", "2026-09-19");
+
+-- date with UTC
+test_dtt(xml_date_utils.value_type.XML_SCHEMAS_DATE, "2026-09-19Z", "2026-09-19Z");
+
+-- date with positive timezone
+test_dtt(xml_date_utils.value_type.XML_SCHEMAS_DATE, "2026-09-19+05:30", "2026-09-19+05:30");
+
+
+-- dateTime
+test_dtt(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "2026-09-19T12:34:56", "2026-09-19T12:34:56.000");
+
+-- dateTime UTC
+test_dtt(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "2026-09-19T12:34:56Z", "2026-09-19T12:34:56.000Z");
+
+-- positive timezone
+test_dtt(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "2026-09-19T12:34:56+05:30", "2026-09-19T12:34:56.000+05:30");
+
+-- negative timezone -- important test
+test_dtt(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "1973-04-26T12:34:56-05:00", "1973-04-26T12:34:56.000-05:00");
+
+
+-- fractional seconds
+test_dtt(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "2026-09-19T12:34:56.123", "2026-09-19T12:34:56.123");
+
+
+-- time
+test_dtt(xml_date_utils.value_type.XML_SCHEMAS_TIME, "12:34:56", "12:34:56.000");
+test_dtt(xml_date_utils.value_type.XML_SCHEMAS_TIME, "12:34:56+05:30", "12:34:56.000+05:30");
+
+print("str_to_dtt tests passed");
+
+do
+    local cdt = date_utils.n_dtt_from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "2026-09-19T12:34:56+05:30");
+
+    assert(cdt.has_timezone == 1);
+    assert(tonumber(cdt.timezone) == 330);
+
+    print(
+        "day_num =", tonumber(cdt.day_num),
+        "day_frac =", tonumber(cdt.day_frac),
+        "timezone =", tonumber(cdt.timezone)
+    );
+end
+
+do
+    local cdt = date_utils.n_dtt_from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "1973-04-26T12:34:56-05:00");
+
+    assert(cdt.has_timezone == 1);
+
+    -- Particularly important: proves the old signed-bitfield
+    -- FFI problem is no longer leaking across the boundary.
+    assert(tonumber(cdt.timezone) == -300);
+end
+
+do
+    local cdt = date_utils.n_dtt_from_xml_date_field(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "2026-09-19T12:34:56");
+
+    assert(cdt.has_timezone == 0);
+    assert(tonumber(cdt.timezone) == 0);
+end
+
+print("dt_s_type field tests passed");
+
+
+local function test_to_xml(tid, input)
+
+    local dtt = date_utils.n_from_xml_date_field(tid, input);
+
+    local old = date_utils.n_o_to_xml_date_field(tid, dtt);
+    local new = date_utils.n_to_xml_date_field(tid, dtt);
+
+    print(input, "OLD:", old, "NEW:", new);
+
+    assert(old == new, "OLD {" .. old .. "} NEW {" .. new .. "}");
+end
+
+test_to_xml(xml_date_utils.value_type.XML_SCHEMAS_DATE, "1973-04-26");
+test_to_xml(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "1973-04-26T07:30:00-05:00");
+test_to_xml( xml_date_utils.value_type.XML_SCHEMAS_TIME, "12:34:56+05:30");
+
+test_to_xml(xml_date_utils.value_type.XML_SCHEMAS_DATE, "2026-09-19Z");
+test_to_xml(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "2026-09-19T12:34:56+05:30");
+test_to_xml(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "2026-09-19T12:34:56.123");
+test_to_xml(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "2000-02-29T23:59:59Z");
+
+print("dtt_to_str tests passed");
+
+]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- New datetime implementation mappings
+date_utils.split_dtt                   = date_utils.n_split_dtt;
+date_utils.date_obj_from_dtt           = date_utils.n_date_obj_from_dtt;
+date_utils.is_valid_date               = date_utils.n_is_valid_date;
+date_utils.is_valid                    = date_utils.n_is_valid;
+
+date_utils.dtt_from_date_obj           = date_utils.n_dtt_from_date_obj;
+
+date_utils.dtt_from_xml_date_field     = date_utils.n_dtt_from_xml_date_field;
+date_utils.from_xml_date_field         = date_utils.n_from_xml_date_field;
+date_utils.to_xml_date_field           = date_utils.n_to_xml_date_field;
+
+date_utils.from_xml_date               = date_utils.n_from_xml_date;
+date_utils.to_xml_date                 = date_utils.n_to_xml_date;
+
+date_utils.from_xml_datetime           = date_utils.n_from_xml_datetime;
+date_utils.to_xml_datetime             = date_utils.n_to_xml_datetime;
+
+date_utils.from_xml_time               = date_utils.n_from_xml_time;
+date_utils.to_xml_time                 = date_utils.n_to_xml_time;
+
+date_utils.compare_dates               = date_utils.n_compare_dates;
+date_utils.get_date_components         = date_utils.n_get_date_components;
+
+date_utils.date_diff                   = date_utils.n_date_diff;
+
+date_utils.add_duration_to_date        = date_utils.n_add_duration_to_date;
+date_utils.subtract_duration_from_date = date_utils.n_subtract_duration_from_date;
+
+date_utils.dtt_from_long               = date_utils.n_dtt_from_long;
+date_utils.long_from_dtt               = date_utils.n_long_from_dtt;
+
+date_utils.dtt_from_daynum             = date_utils.n_dtt_from_daynum;
+date_utils.daynum_from_dtt             = date_utils.n_daynum_from_dtt;
+
+date_utils.dtt_from_time               = date_utils.n_dtt_from_time;
+date_utils.time_from_dtt               = date_utils.n_time_from_dtt;
+
+date_utils.cdt_from_dto                = date_utils.n_cdt_from_dto;
+date_utils.date_time_from_dto          = date_utils.n_date_time_from_dto;
+
+date_utils.convert_format              = date_utils.n_convert_format;
+date_utils.to_xml_format               = date_utils.n_to_xml_format;
+
+date_utils.now                         = date_utils.n_now;
+date_utils.today                       = date_utils.n_today;
+
+date_utils.set_tz                      = date_utils.n_set_tz;
+date_utils.date_obj_from_cdt           = date_utils.n_date_obj_from_cdt;
+date_utils.get_utc_date_time           = date_utils.n_get_utc_date_time;
+
+local dt_mt = {
+	__tostring = date_utils.n_to_xml_format,
+	__gc = date_utils.n_free_cdt,
+	__sub = date_utils.n_date_diff,
+	__eq = date_utils.n_eq,
+	__lt = date_utils.n_lt,
+	__le = date_utils.n_le,
+	__gt = date_utils.n_gt,
+	__ge = date_utils.n_ge,
+};
+ffi.metatype("dt_s_type", dt_mt);
+
+
+local dur_mt = {
+	__tostring = date_utils.to_xml_duration,
+	__gc = date_utils.free_cdur,
+};
+ffi.metatype("dur_s_type", dur_mt);
 
 return date_utils;
