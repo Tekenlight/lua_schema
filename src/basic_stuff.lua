@@ -2825,20 +2825,15 @@ local function get_fast_primitive_conversion(type_handler)
 
     if type_handler.datatype == 'binary' then
         return "generic";
-
     elseif type_handler.type_name == 'float' or
            type_handler.type_name == 'double' then
         return "generic";
-
     elseif type_handler.datatype == 'decimal' then
         return "generic";
-
     elseif type_handler.datatype == 'datetime' then
         return "generic";
-
     elseif type_handler.datatype == 'duration' then
         return "generic";
-
     elseif type_handler.datatype == 'int' then
 		if (type_handler.type_name ~= "int" and
 			type_handler.type_name ~= "unsignedInt" and
@@ -2850,7 +2845,6 @@ local function get_fast_primitive_conversion(type_handler)
 		else
 			return 'int_number';
 		end
-
     elseif type_handler.datatype == 'boolean' then
         return "identity";
     end
@@ -2858,36 +2852,24 @@ local function get_fast_primitive_conversion(type_handler)
     return "identity";
 end
 
-
-
 local function build_fast_json_model(schema_type_handler, content_model)
-
     local model = {
         max_occurs = content_model.max_occurs,
         min_occurs = content_model.min_occurs,
         top_level_group = content_model.top_level_group,
         generated_subelement_name = content_model.generated_subelement_name,
         ops = {}
-    }
-
+    };
     for _, v in ipairs(content_model) do
-
         if type(v) == "string" then
-
-            local child =
-                schema_type_handler.properties.generated_subelements[v]
-
+            local child = schema_type_handler.properties.generated_subelements[v];
             model.ops[#model.ops + 1] = {
                 kind = "field",
                 name = v,
                 handler = child
-            }
-
+            };
         elseif type(v) == "table" then
-
-            local child_model =
-                build_fast_json_model(schema_type_handler, v)
-
+            local child_model = build_fast_json_model(schema_type_handler, v);
             model.ops[#model.ops + 1] = {
                 kind = "group",
                 name = v.generated_subelement_name,
@@ -2895,109 +2877,74 @@ local function build_fast_json_model(schema_type_handler, content_model)
                 min_occurs = v.min_occurs,
                 top_level_group = v.top_level_group,
                 model = child_model
-            }
-
+            };
         else
-            error("INVALID CONTENT MODEL")
+            error("INVALID CONTENT MODEL");
         end
     end
 
-    return model
+    return model;
 end
 
 local function build_fast_json_attributes(schema_type_handler)
-
     local result = {
         wildcard = false,
         handlers = {}
-    }
-
-    local attr = schema_type_handler.properties.attr
-
+    };
+    local attr = schema_type_handler.properties.attr;
     if attr == nil then
-        return result
+        return result;
     end
-
-    result.wildcard = attr.attr_wildcard ~= nil
-
+    result.wildcard = attr.attr_wildcard ~= nil;
     for generated_name, q_name in pairs(attr._generated_attr or {}) do
-
-        local attr_handler =
-            attr._attr_properties[q_name]
-
-        result.handlers[generated_name] =
-            attr_handler.type_handler
+        local attr_handler = attr._attr_properties[q_name];
+        result.handlers[generated_name] = attr_handler.type_handler;
     end
-
-    return result
+    return result;
 end
 
 local function build_fast_json_plan(schema_type_handler)
-
-    local p = schema_type_handler.properties
-
+    local p = schema_type_handler.properties;
     local plan = {
         element_type = p.element_type,
         content_type = p.content_type,
         schema_type = p.schema_type
-    }
-
+    };
     if p.element_type ~= "C" then
-
-        plan.kind = "simple"
-        plan.type_handler = schema_type_handler.type_handler
-        plan.conversion = get_fast_primitive_conversion(plan.type_handler)
-
-        return plan
+        plan.kind = "simple";
+        plan.type_handler = schema_type_handler.type_handler;
+        plan.conversion = get_fast_primitive_conversion(plan.type_handler);
+        return plan;
     end
-
-    if p.schema_type ==
-        "{http://www.w3.org/2001/XMLSchema}anyType" then
-
-        plan.kind = "any"
-        return plan
+    if p.schema_type == "{http://www.w3.org/2001/XMLSchema}anyType" then
+        plan.kind = "any";
+        return plan;
     end
-
-    plan.attributes =
-        build_fast_json_attributes(schema_type_handler)
-
+    plan.attributes = build_fast_json_attributes(schema_type_handler);
     if p.content_type == "S" then
-
-        plan.kind = "complex_simple"
-        plan.type_handler = schema_type_handler.type_handler
-
-        return plan
+        plan.kind = "complex_simple";
+        plan.type_handler = schema_type_handler.type_handler;
+        return plan;
     end
-
-    plan.kind = "complex"
-
+    plan.kind = "complex";
     if #(p.content_fsa_properties) ~= 0 then
-        plan.model =
-            build_fast_json_model(
-                schema_type_handler,
-                p.content_model
-            )
+        plan.model = build_fast_json_model(schema_type_handler, p.content_model);
     end
 
-    return plan
+    return plan;
 end
 
 local function get_fast_json_plan(schema_type_handler)
-
-    local plan =
-        schema_type_handler.properties.fast_json_plan
-
+    local plan = schema_type_handler.properties.fast_json_plan;
     if plan == nil then
-        plan = build_fast_json_plan(schema_type_handler)
-
-        schema_type_handler.properties.fast_json_plan = plan
+        plan = build_fast_json_plan(schema_type_handler);
+        schema_type_handler.properties.fast_json_plan = plan;
     end
 
-    return plan
+    return plan;
 end
 
 local function fast_primitive_to_intermediate_json(plan, content)
-
     if plan.conversion == "identity" then
         return content;
     elseif (plan.conversion == "int_string") then
@@ -3009,285 +2956,771 @@ local function fast_primitive_to_intermediate_json(plan, content)
         return "2026-09-13T12:34:56Z";
     ]]
     end
-
-    return basic_stuff.primitive_to_intermediate_json(
-        plan.type_handler,
-        content
-    );
+    return basic_stuff.primitive_to_intermediate_json(plan.type_handler, content);
 end
 
-local fast_low_to_intermediate_json
+local fast_low_to_intermediate_json;
 
 local function fast_inner_complex(array_element, model, dest_content)
-
-    local i_content = dest_content or {}
-
+    local i_content = dest_content or {};
     for _, op in ipairs(model.ops) do
-
         if op.kind == "field" then
-
-            local value = array_element[op.name]
-
+            local value = array_element[op.name];
             if value ~= nil then
-
-                local child_plan = op.plan
+                local child_plan = op.plan;
 
                 if child_plan == nil then
-                    child_plan = get_fast_json_plan(op.handler)
-                    op.plan = child_plan
+                    child_plan = get_fast_json_plan(op.handler);
+                    op.plan = child_plan;
                 end
-
-                i_content[op.name] =
-                    fast_low_to_intermediate_json(
-                        op.handler,
-                        child_plan,
-                        value
-                    )
+                i_content[op.name] = fast_low_to_intermediate_json(op.handler, child_plan, value);
             end
-
         elseif op.kind == "group" then
-
             if op.max_occurs ~= 1 and
                array_element[op.name] ~= nil then
-
-                local xmlc
-                local target_content
-
+                local xmlc;
+                local target_content;
                 if op.top_level_group then
-                    xmlc = array_element
-                    target_content = i_content
+                    xmlc = array_element;
+                    target_content = i_content;
                 else
                     xmlc = array_element[op.name]
-                    target_content = {}
-                    i_content[op.name] = target_content
+                    target_content = {};
+                    i_content[op.name] = target_content;
                 end
-
                 for i, value in pairs(xmlc) do
-                    target_content[i] =
-                        fast_inner_complex(
-                            value,
-                            op.model,
-                            nil
-                        )
+                    target_content[i] = fast_inner_complex(value, op.model, nil);
                 end
-
                 if #target_content == 0 then
-                    target_content[-1] = "EMPTY_ARRAY"
+                    target_content[-1] = "EMPTY_ARRAY";
                 end
-
             else
-
-                i_content =
-                    fast_inner_complex(
-                        array_element,
-                        op.model,
-                        i_content
-                    )
+                i_content = fast_inner_complex(array_element, op.model, i_content);
             end
-
         else
-            error("INVALID FAST JSON OP")
+            error("INVALID FAST JSON OP");
         end
     end
 
-    return i_content
+    return i_content;
 end
 
 local function fast_convert_attributes(plan, content, i_content)
-
     if content._attr == nil then
         return
     end
-
-    i_content._attr = {}
-
+    i_content._attr = {};
     for name, value in pairs(content._attr) do
-
         local type_handler =
-            plan.attributes.handlers[name]
-
+            plan.attributes.handlers[name];
         if type_handler ~= nil then
-
-            i_content._attr[name] =
-                basic_stuff.primitive_to_intermediate_json(
-                    type_handler,
-                    value
-                )
-
+            i_content._attr[name] = basic_stuff.primitive_to_intermediate_json(type_handler, value);
         elseif plan.attributes.wildcard then
-
-            i_content._attr[name] = value
-
+            i_content._attr[name] = value;
         else
-
-            error("INVALID ATTR " .. tostring(name))
-
+            error("INVALID ATTR " .. tostring(name));
         end
     end
 end
 
-local function fast_complex_to_intermediate_json(
-    schema_type_handler,
-    plan,
-    content
-)
-
+local function fast_complex_to_intermediate_json(schema_type_handler, plan, content)
     if plan.kind == "any" then
-        return content
+        return content;
     end
-
-    local i_content = {}
-
+    local i_content = {};
     if plan.kind == "complex_simple" then
-
-        i_content._contained_value =
-            fast_primitive_to_intermediate_json(
-                plan,
-                content._contained_value
-            );
-
+        i_content._contained_value = fast_primitive_to_intermediate_json(plan, content._contained_value);
     elseif plan.model ~= nil then
-
-        local model = plan.model
-
+        local model = plan.model;
         if model.max_occurs ~= 1 then
-
-            local xmlc
-            local target_content
-
+            local xmlc;
+            local target_content;
             if model.top_level_group then
-
-                xmlc = content
-                target_content = i_content
-
+                xmlc = content;
+                target_content = i_content;
             else
-
-                xmlc =
-                    content[model.generated_subelement_name]
-
-                target_content = {}
-
-                i_content[model.generated_subelement_name] =
-                    target_content
+                xmlc = content[model.generated_subelement_name];
+                target_content = {};
+                i_content[model.generated_subelement_name] = target_content;
             end
-
             for i, value in ipairs(xmlc) do
-
-                target_content[i] =
-                    fast_inner_complex(
-                        value,
-                        model,
-                        nil
-                    )
+                target_content[i] = fast_inner_complex(value, model, nil);
             end
-
             if #target_content == 0 then
-                target_content[-1] = "EMPTY_ARRAY"
+                target_content[-1] = "EMPTY_ARRAY";
             end
-
         else
-
-            i_content =
-                fast_inner_complex(
-                    content,
-                    model,
-                    nil
-                )
-
+            i_content = fast_inner_complex(content, model, nil);
         end
     end
+    fast_convert_attributes(plan, content, i_content);
 
-    fast_convert_attributes(
-        plan,
-        content,
-        i_content
-    )
-
-    return i_content
+    return i_content;
 end
 
 fast_low_to_intermediate_json = function(schema_type_handler, plan, content)
-
     if content == nil then
-        return nil
+        return nil;
     end
-
-    local max_occurs =
-        schema_type_handler.particle_properties.max_occurs
-
+    local max_occurs = schema_type_handler.particle_properties.max_occurs;
     if max_occurs ~= 1 then
-
-        local out = {}
-
+        local out = {};
         if plan.kind == "simple" then
-
             if (plan.conversion == "identity") then
-
                 for i, value in ipairs(content) do
                     out[i] = value;
                 end
-
             else
-                local type_handler = plan.type_handler
-
+                local type_handler = plan.type_handler;
                 for i, value in ipairs(content) do
-
-                    out[i] =
-                        basic_stuff.primitive_to_intermediate_json(
-                            type_handler,
-                            value
-                        )
+                    out[i] = basic_stuff.primitive_to_intermediate_json(type_handler, value);
                 end
             end
-
         else
-
             for i, value in ipairs(content) do
-
-                out[i] =
-                    fast_complex_to_intermediate_json(
-                        schema_type_handler,
-                        plan,
-                        value
-                    )
+                out[i] = fast_complex_to_intermediate_json(schema_type_handler, plan, value);
             end
-
         end
-
         if #out == 0 then
-            out[-1] = "EMPTY_ARRAY"
+            out[-1] = "EMPTY_ARRAY";
         end
-
-        return out
+        return out;
     end
-
 
     if plan.kind == "simple" then
-
-        return fast_primitive_to_intermediate_json(
-            plan,
-            content
-        );
-
+        return fast_primitive_to_intermediate_json(plan, content);
     end
-
-
-    return fast_complex_to_intermediate_json(
-        schema_type_handler,
-        plan,
-        content
-    )
+    return fast_complex_to_intermediate_json(schema_type_handler, plan, content);
 end
 
 basic_stuff.fast_to_intermediate_json = function(schema_type_handler, content)
+    local plan = get_fast_json_plan(schema_type_handler);
+    return fast_low_to_intermediate_json(schema_type_handler, plan, content);
+end
 
-    local plan = get_fast_json_plan(schema_type_handler)
 
-    return fast_low_to_intermediate_json(
-        schema_type_handler,
-        plan,
-        content
-    )
+
+
+
+
+--[[
+-- ===========================================================================================
+--
+-- Fast JSON V2
+--
+-- This mechanism avoids constructing a complete intermediate JSON Lua object.
+--
+-- The schema is walked once, on first use, and a small cached execution plan
+-- is generated containing only the locations which need special handling for
+-- JSON:
+--
+--      1. Arrays
+--             Empty Lua tables must be marked so lua-cjson knows that they
+--             represent [] rather than {}.
+--
+--      2. int64 / uint64 / decimal / base64Binary / hexBinary
+--             These must be represented as JSON strings so that their exact
+--             integer value is not lost through conversion to a Lua number.
+--
+-- The application object is temporarily modified immediately before
+-- cjson.encode(). Every modification is recorded in a change list and can
+-- therefore be restored immediately after encoding.
+--
+--
+-- PATH REPRESENTATION
+-- -------------------
+--
+-- A string represents a Lua table key:
+--
+--      { "order", "serial_number" }
+--
+-- FAST_JSON_ARRAY_STEP means:
+--
+--      iterate over every element of the current array
+--
+-- Example:
+--
+--      {
+--          FAST_JSON_ARRAY_STEP,
+--          "_sequence_group_1",
+--          FAST_JSON_ARRAY_STEP,
+--          "serial_number"
+--      }
+--
+-- represents:
+--
+--      root[]
+--          -> _sequence_group_1[]
+--              -> serial_number
+--
+--
+-- COMPLEX TYPE WITH SIMPLE CONTENT
+-- --------------------------------
+--
+-- Runtime representation:
+--
+--      {
+--          _contained_value = ...,
+--          _attr = {
+--              attr1 = ...,
+--              attr2 = ...
+--          }
+--      }
+--
+-- The simple value is therefore represented by:
+--
+--      "_contained_value"
+--
+-- Attributes are represented by:
+--
+--      "_attr", <generated attribute name>
+--
+--
+-- IMPORTANT
+-- ---------
+--
+-- mark_fast_json() and unmark_fast_json() must always be paired.
+--
+-- ===========================================================================================
+--]]
+
+
+-- Use a unique table rather than a string/number as the internal array
+-- traversal marker. It can never collide with a generated Lua field name.
+
+local FAST_JSON_ARRAY_STEP = {};
+
+
+-- ===========================================================================================
+-- Utility functions for building paths
+-- ===========================================================================================
+local function fast_json_v2_copy_path(path)
+    local out = {};
+    for i = 1, #path do
+        out[i] = path[i];
+    end
+    return out;
+end
+
+local function fast_json_v2_add_array(metadata, path)
+    metadata.array_ops[#metadata.array_ops + 1] = fast_json_v2_copy_path(path);
+end
+
+local function fast_json_v2_add_stringified_path(metadata, path, type_handler)
+    metadata.stringified_ops[#metadata.stringified_ops + 1] = {
+        path = fast_json_v2_copy_path(path),
+        type_handler = type_handler,
+    }
+end
+
+
+-- ===========================================================================================
+-- Primitive type classification
+-- ===========================================================================================
+
+local function fast_json_v2_is_stringified_element(schema_type_handler)
+    if schema_type_handler == nil then
+        return false
+    end
+
+    local type_handler = schema_type_handler.type_handler
+    if type_handler == nil then
+        return false
+    end
+
+    return type_handler.type_name == "long"
+        or type_handler.type_name == "unsignedLong"
+        or type_handler.type_name == "decimal"
+        or type_handler.type_name == "base64Binary"
+        or type_handler.type_name == "hexBinary"
+        ;
+end
+
+-- ===========================================================================================
+-- Metadata generation
+-- ===========================================================================================
+
+
+local fast_json_v2_walk_element;
+local fast_json_v2_walk_content_model;
+
+
+--[[
+-- Add attribute paths belonging to a complex type.
+--
+-- Attributes exist independently of whether the complex type has:
+--
+--      simple content
+--
+-- or
+--
+--      complex content
+--
+-- Therefore attribute processing is deliberately kept outside the
+-- content_type == "S" logic.
+--]]
+local function fast_json_v2_walk_attributes(schema_type_handler, path, metadata)
+    local properties = schema_type_handler.properties;
+    if properties == nil then
+        return;
+    end
+
+    local attr = properties.attr;
+    if attr == nil or attr._attr_properties == nil then
+        return;
+    end
+
+    for _, attr_handler in pairs(attr._attr_properties) do
+        if fast_json_v2_is_stringified_element(attr_handler) then
+            path[#path + 1] = "_attr";
+            path[#path + 1] = attr_handler.particle_properties.generated_name;
+
+            fast_json_v2_add_stringified_path(metadata, path, attr_handler.type_handler);
+
+            path[#path] = nil;
+            path[#path] = nil;
+        end
+    end
+end
+
+--[[
+-- Walk one element handler.
+--
+-- On entry:
+--
+--      path points to the runtime value represented by
+--      schema_type_handler.
+--]]
+fast_json_v2_walk_element = function(schema_type_handler, path, metadata)
+    if schema_type_handler == nil then
+        return;
+    end
+
+    local properties = schema_type_handler.properties;
+    local particle_properties = schema_type_handler.particle_properties;
+
+    assert(properties ~= nil, "FAST JSON V2: element handler has no properties");
+
+    -- =======================================================================================
+    -- Repeating element
+    --
+    -- The current path points to the array itself.
+    -- =======================================================================================
+
+    local element_is_array = particle_properties ~= nil and particle_properties.max_occurs ~= nil and particle_properties.max_occurs ~= 1;
+    if element_is_array then
+        -- This location must be known as an array even when it contains
+        -- zero elements.
+        fast_json_v2_add_array(metadata, path);
+
+        -- Anything inside this element is reached through each member
+        -- of the array.
+        path[#path + 1] = FAST_JSON_ARRAY_STEP;
+    end
+
+    -- =======================================================================================
+    -- Simple element
+    -- =======================================================================================
+    if properties.element_type ~= "C" then
+        if fast_json_v2_is_stringified_element(schema_type_handler) then
+            fast_json_v2_add_stringified_path(metadata, path, schema_type_handler.type_handler);
+        end
+
+        if element_is_array then
+            path[#path] = nil;
+        end
+
+        return;
+    end
+
+    -- =======================================================================================
+    -- Complex type attributes
+    --
+    -- Applies both to complex/simple and complex/complex.
+    -- =======================================================================================
+    fast_json_v2_walk_attributes(schema_type_handler, path, metadata);
+
+    -- =======================================================================================
+    -- Complex type with simple content
+    --
+    -- Runtime representation:
+    --
+    --      {
+    --          _contained_value = <simple value>,
+    --          _attr = {...}
+    --      }
+    --
+    -- Attributes were handled above.
+    -- =======================================================================================
+    if properties.content_type == "S" then
+        if fast_json_v2_is_stringified_element(schema_type_handler) then
+            path[#path + 1] = "_contained_value";
+            fast_json_v2_add_stringified_path(metadata, path, schema_type_handler.type_handler);
+            path[#path] = nil;
+        end
+
+        if element_is_array then
+            path[#path] = nil;
+        end
+
+        return;
+    end
+
+    -- =======================================================================================
+    -- Complex content
+    -- =======================================================================================
+    if properties.content_model ~= nil then
+        fast_json_v2_walk_content_model(schema_type_handler, properties.content_model, path, metadata);
+    end
+
+    if element_is_array then
+        path[#path] = nil;
+    end
+end
+
+--[[
+-- Walk a sequence / choice / all content model.
+--
+-- A repeating nested content model has its own synthetic runtime key:
+--
+--      _sequence_group
+--      _sequence_group_1
+--      _choice_group
+--      _choice_group_1
+--      ...
+--
+-- A repeating TOP LEVEL content model does NOT introduce another runtime
+-- field. The value supplied by its containing element is already the array.
+--
+-- Non-repeating nested groups are flattened into the containing runtime
+-- table and therefore introduce no additional path component.
+--]]
+fast_json_v2_walk_content_model = function(schema_type_handler, content_model, path, metadata)
+    local model_is_array = content_model.max_occurs ~= 1;
+    local pushed_group_name = false;
+    local pushed_array_step = false;
+
+    -- =======================================================================================
+    -- Repeating content model
+    -- =======================================================================================
+    if model_is_array then
+        -- A nested repeating group has a synthetic runtime field.
+        --
+        -- A top-level repeating group uses the current container itself.
+        if not content_model.top_level_group then
+            assert(content_model.generated_subelement_name ~= nil, "FAST JSON V2: repeating nested content model has no generated name");
+
+            path[#path + 1] = content_model.generated_subelement_name;
+            pushed_group_name = true;
+        end
+
+        -- path now points to the array.
+        fast_json_v2_add_array(metadata, path);
+
+        -- Everything inside the model occurs inside each array member.
+        path[#path + 1] = FAST_JSON_ARRAY_STEP;
+        pushed_array_step = true;
+    end
+
+    -- =======================================================================================
+    -- Walk the members of the content model
+    -- =======================================================================================
+    for _, v in ipairs(content_model) do
+        local t = type(v);
+
+        -- -----------------------------------------------------------------------------------
+        -- Element
+        -- -----------------------------------------------------------------------------------
+        if t == "string" then
+            local child = schema_type_handler.properties.generated_subelements[v];
+            if child ~= nil then
+                -- The actual runtime Lua table key is the generated name
+                -- from particle_properties.
+
+                local child_name = child.particle_properties.generated_name;
+                path[#path + 1] = child_name;
+                fast_json_v2_walk_element(child, path, metadata);
+                path[#path] = nil;
+            end
+
+        -- -----------------------------------------------------------------------------------
+        -- Nested sequence / choice / all
+        -- -----------------------------------------------------------------------------------
+        elseif t == "table" then
+            fast_json_v2_walk_content_model(schema_type_handler, v, path, metadata);
+        else
+            error("FAST JSON V2: invalid content model member type [" ..  tostring(t) ..  "]");
+        end
+    end
+
+    -- =======================================================================================
+    -- Restore path
+    -- =======================================================================================
+    if pushed_array_step then
+        path[#path] = nil;
+    end
+
+    if pushed_group_name then
+        path[#path] = nil;
+    end
+end
+
+local function build_fast_json_v2_metadata(schema_type_handler)
+    local metadata = {
+        array_ops = {},
+        stringified_ops = {}
+    };
+    local path = {};
+
+    fast_json_v2_walk_element(schema_type_handler, path, metadata);
+
+    return metadata;
+end
+
+local function get_fast_json_v2_metadata(schema_type_handler)
+    local metadata = schema_type_handler.properties.fast_json_v2_metadata;
+    if metadata == nil then
+        metadata = build_fast_json_v2_metadata(schema_type_handler);
+        schema_type_handler.properties.fast_json_v2_metadata = metadata;
+    end
+
+    return metadata;
+end
+
+-- ===========================================================================================
+-- Runtime path execution
+-- ===========================================================================================
+
+--[[
+-- Execute one precompiled path against an actual Lua object.
+--
+-- callback(parent, key, value)
+--
+-- At the final path location:
+--
+--      parent[key] == value
+--
+-- except when the path is empty, in which case the value itself is the
+-- root object and parent/key are nil.
+--]]
+local function fast_json_v2_execute_path(value, path, pos, callback, parent, key)
+    if value == nil then
+        return;
+    end
+
+    -- Reached the object described by this metadata operation.
+    if pos > #path then
+        callback(parent, key, value);
+        return;
+    end
+
+    local step = path[pos];
+
+    -- =======================================================================================
+    -- Array traversal
+    -- =======================================================================================
+    if step == FAST_JSON_ARRAY_STEP then
+        -- The schema tells us this is an array.
+        --
+        -- Numeric iteration is intentional. We do not want the temporary
+        -- -1 EMPTY_ARRAY marker, should one exist, to participate in
+        -- traversal.
+
+        for i = 1, #value do
+            fast_json_v2_execute_path(value[i], path, pos + 1, callback, value, i);
+        end
+
+    -- =======================================================================================
+    -- Table field
+    -- =======================================================================================
+    else
+        local child = value[step];
+        if child ~= nil then
+            fast_json_v2_execute_path(child, path, pos + 1, callback, value, step);
+        end
+    end
+end
+
+
+-- ===========================================================================================
+-- Temporary transformations
+-- ===========================================================================================
+
+
+local function fast_json_v2_mark_empty_array(changes, parent, key, value)
+    if #value ~= 0 then
+        return;
+    end
+
+    -- Save the old value even though normally application data should
+    -- never contain key -1. This guarantees exact restoration.
+    changes[#changes + 1] = {
+        tbl = value,
+        key = -1,
+        value = value[-1]
+    };
+
+    value[-1] = "EMPTY_ARRAY";
+end
+
+
+local function fast_json_v2_mark_stringified_element(changes, parent, key, value, type_handler)
+    -- A simple primitive root is the only situation where there is no
+    -- parent table.
+    --
+    -- schema_processor should deal with that separately because it already
+    -- creates:
+    --
+    --      {[tag] = content}
+    --
+    -- for simple root elements.
+    assert(parent ~= nil, "FAST JSON V2: cannot replace a root stringified element without a parent");
+
+    changes[#changes + 1] = {
+        tbl = parent,
+        key = key,
+        value = value
+    };
+    parent[key] = type_handler:to_xmlua(nil, value);
+end
+
+
+-- ===========================================================================================
+-- Public marking API
+-- ===========================================================================================
+
+
+--[[
+-- Temporarily prepare an application object for direct cjson encoding.
+--
+-- Only schema locations requiring special JSON representation are visited.
+--
+-- The returned change list MUST subsequently be passed to:
+--
+--      basic_stuff.unmark_fast_json()
+--]]
+basic_stuff.mark_fast_json = function(schema_type_handler, content)
+    if content == nil then
+        return {};
+    end
+
+    local metadata = get_fast_json_v2_metadata(schema_type_handler);
+    local changes = {};
+
+    -- =======================================================================================
+    -- Empty arrays
+    -- =======================================================================================
+    for i = 1, #metadata.array_ops do
+        local path = metadata.array_ops[i];
+        fast_json_v2_execute_path(
+            content,
+            path,
+            1,
+            function(parent, key, value)
+                fast_json_v2_mark_empty_array(
+                    changes,
+                    parent,
+                    key,
+                    value);
+            end,
+            nil,
+            nil);
+    end
+
+    -- =======================================================================================
+    -- int64 / uint64 / decimal / base64Binary / hexBinary
+    -- =======================================================================================
+
+    for i = 1, #metadata.stringified_ops do
+        local op = metadata.stringified_ops[i];
+        fast_json_v2_execute_path(
+            content,
+            op.path,
+            1,
+            function(parent, key, value)
+
+                fast_json_v2_mark_stringified_element(
+                    changes,
+                    parent,
+                    key,
+                    value,
+                    op.type_handler);
+            end,
+            nil,
+            nil);
+    end
+
+    return changes;
+end
+
+--[[
+-- Restore everything changed by mark_fast_json().
+--
+-- Reverse order is deliberate. If a future transformation ever touches the
+-- same location more than once, reverse restoration retains stack semantics.
+--]]
+basic_stuff.unmark_fast_json = function(changes)
+    if changes == nil then
+        return;
+    end
+
+    for i = #changes, 1, -1 do
+        local change = changes[i];
+        change.tbl[change.key] = change.value;
+    end
+end
+
+-- ===========================================================================================
+-- Simple root helper
+-- ===========================================================================================
+
+--[[
+-- A simple root element is slightly different because schema_processor wraps
+-- it for JSON:
+--
+--      {
+--          [tag] = content
+--      }
+--
+-- This helper handles the int64, decimal, base64Binary, hexBinary case directly against that wrapper.
+--
+-- For ordinary simple types it does nothing.
+--
+-- A repeating simple root is not expected for a document root because the
+-- instantiated root particle has max_occurs == 1.
+--]]
+basic_stuff.mark_fast_json_simple_root = function(schema_type_handler, table_output, tag)
+    local changes = {};
+
+    if fast_json_v2_is_stringified_element(schema_type_handler) then
+        local value = table_output[tag];
+        if value ~= nil then
+            changes[#changes + 1] = {
+                tbl = table_output,
+                key = tag,
+                value = value
+            };
+            table_output[tag] = tostring(value);
+        end
+    end
+
+    return changes;
+end
+
+
+-- ===========================================================================================
+-- Debug / inspection helper
+-- ===========================================================================================
+
+
+--[[
+-- Exposed temporarily because it is useful while validating the new
+-- mechanism against different XSD structures.
+--
+-- It can be removed once V2 is established.
+--]]
+basic_stuff.get_fast_json_v2_metadata = function(schema_type_handler)
+    return get_fast_json_v2_metadata(schema_type_handler);
 end
 
 

@@ -85,6 +85,86 @@ local fast_to_json_string = function(message_handler_instance, obj)
 	return json_output;
 end
 
+local fast_to_json_string_v2 = function(message_handler_instance, obj)
+    local t = os.clock();
+    if (_gdbg) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+        print("before mark_fast_json:", t - t);
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+    end
+    local json_parser = cjson.new();
+    local tag = get_json_tag(message_handler_instance);
+    local table_output = nil;
+    local changes = nil;
+    -- -----------------------------------------------------------------------
+    -- Simple root element
+    --
+    -- JSON representation requires the element-name wrapper:
+    --
+    --      {
+    --          [tag] = value
+    --      }
+    --
+    -- Since the primitive value is now inside a table, an int64 can be
+    -- temporarily replaced and subsequently restored.
+    -- -----------------------------------------------------------------------
+    if (message_handler_instance.properties.element_type == 'S') then
+        table_output = {
+            [tag] = obj
+        };
+        changes = basic_stuff.mark_fast_json_simple_root(message_handler_instance, table_output, tag);
+    -- -----------------------------------------------------------------------
+    -- Complex root element
+    --
+    -- No intermediate object is created. mark_fast_json() temporarily
+    -- modifies only the exceptional locations in the original object.
+    -- -----------------------------------------------------------------------
+    else
+        table_output = obj;
+        changes = basic_stuff.mark_fast_json(message_handler_instance, obj);
+    end
+    if (_gdbg) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+        print("after mark_fast_json:", (os.clock() - t));
+        t = os.clock();
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+    end
+    -- -----------------------------------------------------------------------
+    -- Encode.
+    --
+    -- pcall is important here because the original object must be restored
+    -- even if cjson.encode() raises an error.
+    -- -----------------------------------------------------------------------
+    local flg, json_output, err = pcall(json_parser.encode, table_output);
+    if (_gdbg) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+        print("after cjson.encode:", (os.clock() - t));
+        t = os.clock();
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+    end
+    -- -----------------------------------------------------------------------
+    -- Restore every temporary modification before examining or propagating
+    -- the result of cjson.encode().
+    -- -----------------------------------------------------------------------
+    basic_stuff.unmark_fast_json(changes);
+    if (_gdbg) then
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+        print("after unmark_fast_json:", (os.clock() - t));
+        t = os.clock();
+        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+    end
+    -- -----------------------------------------------------------------------
+    -- Preserve failure semantics while ensuring restoration happened first.
+    -- -----------------------------------------------------------------------
+    if not flg then
+        return nil, err;
+    end
+    if (json_output == nil or json_output == '') then
+        json_output = '{}';
+    end
+    return json_output;
+end
+
 local to_json_string = function(message_handler_instance, obj)
     local t = os.clock();
     if (_gdbg) then
@@ -236,16 +316,20 @@ end
 
 local function form_complete_message_handler(message_handler)
 	function message_handler:to_json(content)
-		--local status, msg = validate_doc(self, content)
-		--if (status) then
+		local status, msg = validate_doc(self, content)
+		if (status) then
 			return to_json_string(self, content);
-		--else
-			--return nil, msg;
-		--end
+		else
+			return nil, msg;
+		end
 	end
 
 	function message_handler:fast_to_json(content)
         return fast_to_json_string(self, content);
+	end
+
+	function message_handler:fast_to_json_v2(content)
+        return fast_to_json_string_v2(self, content);
 	end
 
 
