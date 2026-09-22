@@ -22,16 +22,6 @@ end
 local xml_date = {};
 local xml_date_mt = {__index = xml_date };
 
-local function signed_12_bit(value)
-
-    if value >= 0x800 then
-        return value - 0x1000;
-    end
-
-    return value;
-
-end
-
 function xml_date.new(xml_date_str, c_date_val, xml_date_type_id)
 	local _date = {};
 	_date = setmetatable(_date, xml_date_mt);
@@ -47,7 +37,7 @@ function xml_date.new(xml_date_str, c_date_val, xml_date_type_id)
 	_date.mil_sec = tonumber((c_date_val.sec%1)*1000); -- XML Date supports only milliseconds
 	_date.tz_flag = tonumber(c_date_val.tz_flag);
 	if (_date.tz_flag == 1) then _date.tz_flag = true; else _date.tz_flag = false; end
-	_date.tzo = signed_12_bit(tonumber(c_date_val.tzo));
+	_date.tzo = tonumber(c_date_val.tzo);
 	return _date;
 end
 
