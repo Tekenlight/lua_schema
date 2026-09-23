@@ -2200,6 +2200,80 @@ test_to_xml(xml_date_utils.value_type.XML_SCHEMAS_DATETIME, "2000-02-29T23:59:59
 
 print("dtt_to_str tests passed");
 
+
+local d = date_utils.n_from_xml_datetime("2026-09-19T12:30:45");
+
+print(date_utils.n_to_xml_format(d));
+
+local day_num  = tonumber(d.day_num);
+local day_frac = tonumber(d.day_frac);
+local typ      = d.type;
+
+local ret = date_utils.n_set_tz(d, 330);
+
+print(date_utils.n_to_xml_format(d));
+
+assert(tonumber(d.timezone) == 330);
+assert(tonumber(d.has_timezone) == 1);
+
+-- Date/time itself must not change
+assert(tonumber(d.day_num) == day_num);
+assert(tonumber(d.day_frac) == day_frac);
+
+-- Type must not change
+assert(d.type == typ);
+
+-- It mutates and returns the same object
+assert(ret == d);
+
+print("n_set_tz smoke test passed");
+
+date_utils.n_set_tz(d, -300);
+print(date_utils.n_to_xml_format(d));
+
+assert(tonumber(d.timezone) == -300);
+
+local cdt = date_utils.n_from_xml_datetime(
+    "2026-09-19T12:34:56+05:30"
+);
+
+local dto, tzo = date_utils.n_date_obj_from_cdt(cdt);
+
+print(dto);
+print(tzo);
+
+assert(tzo == 330);
+
+local cdt2 = date_utils.n_dtt_from_date_obj(dto, tzo);
+
+assert(tonumber(cdt.day_num) == tonumber(cdt2.day_num));
+assert(tonumber(cdt.day_frac) == tonumber(cdt2.day_frac));
+assert(tonumber(cdt.timezone) == tonumber(cdt2.timezone));
+assert(tonumber(cdt.has_timezone) == tonumber(cdt2.has_timezone));
+
+print("n_date_obj_from_cdt smoke test passed");
+
+local d = date_utils.n_from_xml_datetime(
+    "2026-09-19T12:30:45+05:30"
+);
+
+local u = date_utils.n_get_utc_date_time(d);
+
+print(date_utils.n_to_xml_format(d));
+print(date_utils.n_to_xml_format(u));
+
+assert(tonumber(u.timezone) == 0);
+assert(tonumber(u.has_timezone) == 1);
+
+print("n_get_utc_date_time smoke test passed");
+
+local d = date_utils.n_from_xml_datetime(
+    "2026-09-19T12:30:45-05:00"
+);
+
+local u = date_utils.n_get_utc_date_time(d);
+
+print(date_utils.n_to_xml_format(u));
 ]]
 
 
