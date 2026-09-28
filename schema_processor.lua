@@ -85,7 +85,10 @@ local fast_to_json_string = function(message_handler_instance, obj)
 	return json_output;
 end
 
-local fast_to_json_string_v2 = function(message_handler_instance, obj)
+local fast_to_json_string_v2 = function(message_handler_instance, obj, no_unmark)
+    if (no_unmark == nil) then
+        no_unmark = false;
+    end
     local t = os.clock();
     if (_gdbg) then
         print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
@@ -146,12 +149,14 @@ local fast_to_json_string_v2 = function(message_handler_instance, obj)
     -- Restore every temporary modification before examining or propagating
     -- the result of cjson.encode().
     -- -----------------------------------------------------------------------
-    basic_stuff.unmark_fast_json(changes);
-    if (_gdbg) then
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
-        print("after unmark_fast_json:", (os.clock() - t));
-        t = os.clock();
-        print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+    if (not no_unmark) then
+        basic_stuff.unmark_fast_json(changes);
+        if (_gdbg) then
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+            print("after unmark_fast_json:", (os.clock() - t));
+            t = os.clock();
+            print(debug.getinfo(1).source, debug.getinfo(1).currentline, os.date());
+        end
     end
     -- -----------------------------------------------------------------------
     -- Preserve failure semantics while ensuring restoration happened first.
@@ -328,8 +333,9 @@ local function form_complete_message_handler(message_handler)
         return fast_to_json_string(self, content);
 	end
 
-	function message_handler:fast_to_json_v2(content)
-        return fast_to_json_string_v2(self, content);
+	function message_handler:fast_to_json_v2(content, no_unmark)
+        assert(type(no_unmark) == 'boolean' or no_unmark == nil);
+        return fast_to_json_string_v2(self, content, no_unmark);
 	end
 
 
